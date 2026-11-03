@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoteRoute - Cross-Device Knowledge Agent & Multi-LLM Gateway</title>
+  <meta name="description" content="Aplikasi asisten dokumen lintas perangkat berbasis Native Android Kotlin dan Smart Multi-LLM Router.">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col justify-between">
+
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+          <i class="fa-solid fa-route text-lg"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-slate-900">Note<span class="text-indigo-600">Route</span></span>
+          <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">Proyek 2</span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <a href="#fitur" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition">Fitur</a>
+        <a href="#panduan" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition">Panduan</a>
+        <a href="https://github.com/CRootAgent/noteroute" target="_blank" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition flex items-center space-x-1.5">
+          <i class="fa-brands fa-github text-base"></i>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      
+      <!-- JSCroot Badge -->
+      <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-violet-50 border border-violet-200 text-violet-800 text-xs font-medium mb-6">
+        <span class="w-2 h-2 rounded-full bg-violet-600 animate-pulse"></span>
+        <span>Powered by <strong>JSCroot (CRootJS)</strong> &bull; Zero-Build Micro-Framework</span>
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight mb-6">
+        Akses Dokumen Laptop dari HP & Diskusi dengan <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Multi-LLM Cerdas</span>
+      </h1>
+
+      <p class="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed mb-10">
+        Perpaduan <strong>Grounded Document Agent ala NotebookLM</strong> dengan kebebasan <strong>Smart Multi-LLM Router</strong> (Gemini 1.5 Flash 1M Context, Groq Kilat, DeepSeek, & 9Router). Dilengkapi fitur ambil berkas laptop langsung ke memori ponsel.
+      </p>
+
+      <!-- CTA DOWNLOAD AREA (DIKONTROL SECARA DINAMIS OLEH CROOTJS) -->
+      <div class="glass-card max-w-md mx-auto p-6 rounded-2xl shadow-xl shadow-slate-200/50 mb-8">
+        <a id="btn-download-apk" href="https://github.com/CRootAgent/noteroute/releases" target="_blank"
+           class="w-full inline-flex items-center justify-center space-x-3 px-6 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base shadow-lg shadow-indigo-300 hover:from-indigo-700 hover:to-violet-700 transition transform hover:-translate-y-0.5">
+          <i class="fa-solid fa-download text-lg"></i>
+          <span>Unduh NoteRoute APK</span>
+        </a>
+
+        <!-- Dynamic metadata render by CRootJS -->
+        <div class="mt-4 flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-100">
+          <span id="release-version" class="font-medium text-slate-700">Memeriksa rilis terbaru...</span>
+          <span id="release-size" class="font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-600">Native Android</span>
+          <span id="release-date" class="text-slate-400">GitHub Releases</span>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-6 text-xs text-slate-500">
+        <span class="flex items-center space-x-1.5">
+          <i class="fa-solid fa-check text-emerald-500"></i>
+          <span>100% Gratis & Open Source</span>
+        </span>
+        <span class="flex items-center space-x-1.5">
+          <i class="fa-solid fa-check text-emerald-500"></i>
+          <span>1 Juta Token Context Gemini</span>
+        </span>
+        <span class="flex items-center space-x-1.5">
+          <i class="fa-solid fa-check text-emerald-500"></i>
+          <span>Failover Otomatis HTTP 429</span>
+        </span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- LIVE METRICS & HEALTH (POWERED BY CROOTJS) -->
+  <section class="max-w-5xl mx-auto px-4 pb-16">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="glass-card p-5 rounded-2xl border border-slate-200 text-center">
+        <div class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-1">Status Server Alwaysdata</div>
+        <div id="metric-server-status" class="text-xl font-extrabold text-emerald-600 flex items-center justify-center space-x-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>ONLINE (HTTPS)</span>
+        </div>
+      </div>
+      <div class="glass-card p-5 rounded-2xl border border-slate-200 text-center">
+        <div class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-1">Kapasitas Konteks Dokumen</div>
+        <div class="text-xl font-extrabold text-indigo-600">1.000.000 Token</div>
+        <div class="text-xs text-slate-500 mt-0.5">Google Gemini 1.5 Flash Free Tier</div>
+      </div>
+      <div class="glass-card p-5 rounded-2xl border border-slate-200 text-center">
+        <div class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-1">Latensi Alih Kueri (Failover)</div>
+        <div class="text-xl font-extrabold text-violet-600">&lt; 500 ms</div>
+        <div class="text-xs text-slate-500 mt-0.5">Smart Heuristic Router</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FITUR UTAMA -->
+  <section id="fitur" class="py-16 bg-white border-y border-slate-200">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">4 Keunggulan NoteRoute</h2>
+        <p class="text-slate-600 mt-2 text-sm sm:text-base">Dirancang khusus untuk memecahkan problem harian mahasiswa dan akademisi dengan biaya Rp 0.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Fitur 1 -->
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-indigo-300 transition">
+          <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl mb-4">
+            <i class="fa-solid fa-folder-open"></i>
+          </div>
+          <h3 class="font-bold text-slate-900 text-base mb-2">Ambil File dari Laptop</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Menelusuri direktori laptop dari HP dan mengunduh berkas fisik (PDF, DOCX, TXT, MD) langsung ke folder <code>Downloads</code> ponsel secara asinkron.
+          </p>
+        </div>
+
+        <!-- Fitur 2 -->
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-indigo-300 transition">
+          <div class="w-12 h-12 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center text-xl mb-4">
+            <i class="fa-solid fa-comments"></i>
+          </div>
+          <h3 class="font-bold text-slate-900 text-base mb-2">Document Chat & Sitasi</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Tanya-jawab isi berkas ala NotebookLM dengan <strong>Citation Badges</strong> transparan yang menunjukkan nomor halaman dan cuplikan teks rujukan.
+          </p>
+        </div>
+
+        <!-- Fitur 3 -->
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-indigo-300 transition">
+          <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl mb-4">
+            <i class="fa-solid fa-brain"></i>
+          </div>
+          <h3 class="font-bold text-slate-900 text-base mb-2">Multi-LLM Switcher</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Bebas berganti otak AI: Gemini 1.5 Flash (Konteks 1M), Groq Llama 3.3 (Kilat 300 token/s), DeepSeek R1/V3, atau bridge 9Router lokal.
+          </p>
+        </div>
+
+        <!-- Fitur 4 -->
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-indigo-300 transition">
+          <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl mb-4">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h3 class="font-bold text-slate-900 text-base mb-2">Smart Failover (HTTP 429)</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Otomatis mendeteksi limit kuota API dan mengalihkan ke model cadangan secara transparan tanpa menginterupsi sesi obrolan pengguna.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PANDUAN SETUP INTERAKTIF DENGAN CROOTJS -->
+  <section id="panduan" class="py-16 max-w-4xl mx-auto px-4">
+    <div class="text-center mb-8">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Panduan Cepat Setup NoteRoute</h2>
+      <p class="text-slate-600 text-sm mt-1">Pilih topik panduan di bawah untuk melihat langkah konfigurasi interaktif:</p>
+    </div>
+
+    <!-- Tab Buttons (CRootJS Controlled) -->
+    <div class="flex items-center justify-center space-x-2 mb-6">
+      <button id="tab-btn-laptop" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 text-white shadow-sm transition">
+        1. Setup Agen Laptop
+      </button>
+      <button id="tab-btn-apikey" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition">
+        2. Dapatkan API Key Gratis
+      </button>
+      <button id="tab-btn-9router" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition">
+        3. Hubungkan ke 9Router
+      </button>
+    </div>
+
+    <!-- Content Card (CRootJS Controlled) -->
+    <div class="glass-card p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
+      <div id="guide-box">
+        <h3 class="font-bold text-slate-900 text-lg mb-3">Langkah 1: Setup Agen Sinkronisasi Dokumen di Laptop</h3>
+        <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+          Agen laptop bertugas membaca folder materi kuliah dan menyinkronkan berkas ke cloud backend NoteRoute agar bisa diakses dari HP Android Anda.
+        </p>
+        <div class="bg-slate-900 text-slate-200 p-4 rounded-xl text-xs font-mono overflow-x-auto mb-4">
+          <code># 1. Masuk ke direktori proyek server NoteRoute<br>cd noteroute/server<br><br># 2. Pasang dependensi dan jalankan server<br>npm install<br>npm start</code>
+        </div>
+        <p class="text-xs text-slate-500">
+          Folder dokumen Anda otomatis terindeks dan dapat ditelusuri langsung melalui layar File Explorer di HP Android.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-900 text-slate-400 py-10 border-t border-slate-800 text-xs">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <span class="font-bold text-white text-sm">NoteRoute</span> &bull; Proyek 2 (CRUD & Code Coverage)
+        <div class="mt-1">D4 Teknik Informatika &bull; Universitas Logistik dan Bisnis Internasional (ULBI)</div>
+      </div>
+      <div class="text-center sm:text-right">
+        <div><strong>Kelompok 12:</strong> Ahmad Zakky Nurfauzan (714250028) &amp; Izat Ibrahimovic Irawan (714250024)</div>
+        <div class="mt-1">Dosen Pembimbing: <strong>Rolly Maulana Awangga, S.T., M.T., CAIP.</strong></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CROOTJS (JSCROOT) INTERACTION SCRIPT -->
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
