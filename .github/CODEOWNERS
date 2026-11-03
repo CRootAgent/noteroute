@@ -1,0 +1,22 @@
+# ==============================================================================
+# GITHUB CODEOWNERS: ISOLASI KEPEMILIKAN FILE & REVIEWER OTOMATIS
+# ==============================================================================
+# Aturan ini memastikan bahwa setiap perubahan file pada folder tertentu harus
+# disetujui oleh pemilik modul masing-masing saat membuat Pull Request (PR).
+
+# Default Fallback (Ketua Tim - Ahmad Zakky Nurfauzan)
+* @CRootAgent
+
+# ------------------------------------------------------------------------------
+# MODUL A: Ahmad Zakky Nurfauzan (Backend, Landing Page, CI/CD, Cloud Infra)
+# ------------------------------------------------------------------------------
+/server/ @CRootAgent
+/landing/ @CRootAgent
+/.github/ @CRootAgent
+/docs/API_CONTRACT.md @CRootAgent
+
+# ------------------------------------------------------------------------------
+# MODUL B: Izat Ibrahimovic Irawan (Native Android Kotlin Mobile Client)
+# Note: Ganti @izat-github dengan username akun GitHub Izat yang sebenarnya
+# ------------------------------------------------------------------------------
+/android/ @CRootAgent
