@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="light">
+<html lang="id" class="light mode-doc">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,50 +14,131 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* NOTEBOOKLM THEME COLOR PALETTES */
-    :root.light {
-      --nlm-bg: #f8f9fa;
+    /* ======================================================== */
+    /* 1. PALET WARNA DINAMIS & AMBIENCE (DOKUMEN VS AI UMUM)    */
+    /* ======================================================== */
+
+    /* MODE DOKUMEN - TEMA TERANG (Ambience Biru Lembut) */
+    :root.light, html.light.mode-doc {
+      --nlm-bg: #f4f8fc;
       --nlm-surface: #ffffff;
-      --nlm-surface-variant: #f0f4f9;
-      --nlm-surface-hover: #e8ecf4;
-      --nlm-border: #e3e3e3;
-      --nlm-border-subtle: #eeeff1;
-      --nlm-text-primary: #1f1f1f;
-      --nlm-text-secondary: #444746;
-      --nlm-text-tertiary: #747775;
-      --nlm-accent: #0b57d0;
-      --nlm-accent-bg: #e8f0fe;
+      --nlm-surface-variant: #ebf3fa;
+      --nlm-surface-hover: #dfeaf5;
+      --nlm-border: #d7e2ee;
+      --nlm-border-subtle: #edf3fa;
+      --nlm-text-primary: #19212c;
+      --nlm-text-secondary: #405167;
+      --nlm-text-tertiary: #6b7c93;
+      --nlm-brand: #0b57d0;
+      --nlm-brand-hover: #0842a0;
+      --nlm-brand-light: #e8f0fe;
+      --nlm-brand-dark: #042b6a;
+      --nlm-brand-ring: rgba(11, 87, 208, 0.35);
       --nlm-citation-bg: #e0eafd;
       --nlm-citation-text: #0842a0;
-      --nlm-modal-overlay: rgba(0, 0, 0, 0.48);
-      --nlm-dropzone-bg: #fbfcfe;
-      --nlm-dropzone-border: #c4c7c5;
-      --nlm-card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --nlm-modal-overlay: rgba(15, 23, 42, 0.45);
+      --nlm-dropzone-bg: #f7faff;
+      --nlm-dropzone-border: #bfd3ec;
+      --nlm-card-shadow: 0 1px 3px rgba(11, 87, 208, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
     }
 
-    :root.dark {
-      --nlm-bg: #131314;
-      --nlm-surface: #1e1f20;
-      --nlm-surface-variant: #28292a;
-      --nlm-surface-hover: #333537;
-      --nlm-border: #37393b;
-      --nlm-border-subtle: #2b2d2f;
-      --nlm-text-primary: #e3e3e3;
-      --nlm-text-secondary: #c4c7c5;
-      --nlm-text-tertiary: #8e918f;
-      --nlm-accent: #a8c7fa;
-      --nlm-accent-bg: #004a77;
-      --nlm-citation-bg: #004a77;
-      --nlm-citation-text: #d3e3fd;
-      --nlm-modal-overlay: rgba(0, 0, 0, 0.72);
-      --nlm-dropzone-bg: #18191a;
-      --nlm-dropzone-border: #444746;
-      --nlm-card-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    /* MODE AI UMUM (BEBAS) - TEMA TERANG (Ambience Hijau Segar) */
+    html.light.mode-general {
+      --nlm-bg: #f2faf5;
+      --nlm-surface: #ffffff;
+      --nlm-surface-variant: #e6f6ee;
+      --nlm-surface-hover: #d7f1e2;
+      --nlm-border: #c8ebd5;
+      --nlm-border-subtle: #e1f6ea;
+      --nlm-text-primary: #122319;
+      --nlm-text-secondary: #31513f;
+      --nlm-text-tertiary: #5c826e;
+      --nlm-brand: #059669;
+      --nlm-brand-hover: #047857;
+      --nlm-brand-light: #ecfdf5;
+      --nlm-brand-dark: #064e3b;
+      --nlm-brand-ring: rgba(5, 150, 105, 0.35);
+      --nlm-citation-bg: #d1fae5;
+      --nlm-citation-text: #047857;
+      --nlm-modal-overlay: rgba(6, 44, 28, 0.45);
+      --nlm-dropzone-bg: #f3fcf7;
+      --nlm-dropzone-border: #b1e5c4;
+      --nlm-card-shadow: 0 1px 3px rgba(5, 150, 105, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+
+    /* MODE DOKUMEN - TEMA GELAP (Hitam Pekat dengan Sentuhan Kebiruan) */
+    :root.dark, html.dark.mode-doc {
+      --nlm-bg: #0c1117;
+      --nlm-surface: #131923;
+      --nlm-surface-variant: #1c2433;
+      --nlm-surface-hover: #253144;
+      --nlm-border: #29364b;
+      --nlm-border-subtle: #1e2838;
+      --nlm-text-primary: #e6edf7;
+      --nlm-text-secondary: #b1c3d9;
+      --nlm-text-tertiary: #7a8fa9;
+      --nlm-brand: #3b82f6;
+      --nlm-brand-hover: #2563eb;
+      --nlm-brand-light: rgba(59, 130, 246, 0.16);
+      --nlm-brand-dark: #1d4ed8;
+      --nlm-brand-ring: rgba(59, 130, 246, 0.4);
+      --nlm-citation-bg: rgba(59, 130, 246, 0.22);
+      --nlm-citation-text: #93c5fd;
+      --nlm-modal-overlay: rgba(0, 0, 0, 0.75);
+      --nlm-dropzone-bg: #0f151f;
+      --nlm-dropzone-border: #2e3d55;
+      --nlm-card-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+    }
+
+    /* MODE AI UMUM (BEBAS) - TEMA GELAP (Hitam Sedikit Kehijauan sesuai instruksi user) */
+    html.dark.mode-general {
+      --nlm-bg: #09120e;
+      --nlm-surface: #101c15;
+      --nlm-surface-variant: #17281f;
+      --nlm-surface-hover: #20372b;
+      --nlm-border: #234130;
+      --nlm-border-subtle: #193023;
+      --nlm-text-primary: #e3f4eb;
+      --nlm-text-secondary: #aed6be;
+      --nlm-text-tertiary: #73a186;
+      --nlm-brand: #10b981;
+      --nlm-brand-hover: #059669;
+      --nlm-brand-light: rgba(16, 185, 129, 0.16);
+      --nlm-brand-dark: #047857;
+      --nlm-brand-ring: rgba(16, 185, 129, 0.4);
+      --nlm-citation-bg: rgba(16, 185, 129, 0.22);
+      --nlm-citation-text: #6ee7b7;
+      --nlm-modal-overlay: rgba(0, 0, 0, 0.75);
+      --nlm-dropzone-bg: #0d1712;
+      --nlm-dropzone-border: #234130;
+      --nlm-card-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
     }
 
     body {
       background-color: var(--nlm-bg);
       color: var(--nlm-text-primary);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* DYNAMIC BRAND CLASSES */
+    .bg-brand {
+      background-color: var(--nlm-brand) !important;
+      color: #ffffff !important;
+    }
+    .bg-brand:hover {
+      background-color: var(--nlm-brand-hover) !important;
+    }
+    .text-brand {
+      color: var(--nlm-brand) !important;
+    }
+    .border-brand {
+      border-color: var(--nlm-brand) !important;
+    }
+    .bg-brand-light {
+      background-color: var(--nlm-brand-light) !important;
+    }
+    .accent-brand {
+      accent-color: var(--nlm-brand) !important;
     }
 
     /* CITATION BADGE */
@@ -110,8 +191,8 @@
     
     <!-- Left: Logo & Project Title with Inline Renaming -->
     <div class="flex items-center space-x-3">
-      <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-xs">
-        <i class="fa-solid fa-book-open"></i>
+      <div class="w-7 h-7 rounded-lg bg-[var(--nlm-brand)] flex items-center justify-center text-white text-xs font-bold shadow-xs transition-colors duration-300">
+        <i class="fa-solid fa-route"></i>
       </div>
       
       <!-- Editable Project Name Area -->
@@ -121,9 +202,9 @@
               title="Klik untuk mengubah nama proyek">Materi Kuliah Semester 5 &bull; Sistem Terdistribusi</span>
         
         <input id="project-title-input" type="text" onblur="saveProjectRename()" onkeydown="handleProjectRenameKey(event)"
-               class="hidden bg-[var(--nlm-surface-variant)] border border-blue-500 rounded-lg px-2 py-0.5 text-sm font-semibold text-[var(--nlm-text-primary)] focus:outline-none">
+               class="hidden bg-[var(--nlm-surface-variant)] border border-[var(--nlm-brand)] rounded-lg px-2 py-0.5 text-sm font-semibold text-[var(--nlm-text-primary)] focus:outline-none">
         
-        <button onclick="enableProjectRename()" class="text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] text-xs p-1" title="Ubah Nama Proyek">
+        <button onclick="enableProjectRename()" class="text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-brand)] text-xs p-1" title="Ubah Nama Proyek">
           <i class="fa-solid fa-pen text-[10px]"></i>
         </button>
       </div>
@@ -136,7 +217,7 @@
       
       <!-- MODE TOGGLE (DOKUMEN VS AI UMUM/BEBAS) -->
       <div class="flex items-center p-0.5 rounded-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs">
-        <button id="btn-mode-doc" onclick="setAiMode('document')" class="px-3 py-1 rounded-full font-semibold bg-blue-600 text-white transition flex items-center space-x-1.5 shadow-xs">
+        <button id="btn-mode-doc" onclick="setAiMode('document')" class="px-3 py-1 rounded-full font-semibold bg-[var(--nlm-brand)] text-white transition flex items-center space-x-1.5 shadow-xs">
           <i class="fa-solid fa-file-shield text-[10px]"></i>
           <span>Mode Dokumen</span>
         </button>
@@ -146,9 +227,9 @@
         </button>
       </div>
 
-      <!-- THEME TOGGLE (GELAP & TERANG) -->
-      <button onclick="toggleNotebookTheme()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center text-[var(--nlm-text-secondary)] transition" title="Ganti Tema">
-        <span id="theme-btn-icon"><i class="fa-solid fa-moon text-sm"></i></span>
+      <!-- THEME & APPEARANCE (MEMBUKA PENGATURAN TAMPILAN) -->
+      <button onclick="openSettingsModal('appearance')" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-brand)] transition" title="Pengaturan Tampilan &amp; Tema">
+        <i class="fa-solid fa-palette text-sm"></i>
       </button>
 
       <!-- SHARE BUTTON -->
@@ -159,7 +240,7 @@
 
       <!-- USER PROFILE AVATAR (TRIGGER SETTINGS MODAL & MENU) -->
       <div class="relative">
-        <button onclick="toggleProfileDropdown()" id="topbar-avatar-btn" class="w-8 h-8 rounded-full bg-indigo-600 hover:ring-2 hover:ring-blue-500 text-white font-bold text-xs flex items-center justify-center transition shadow-xs overflow-hidden" title="Menu Akun &amp; Pengaturan">
+        <button onclick="toggleProfileDropdown()" id="topbar-avatar-btn" class="w-8 h-8 rounded-full bg-indigo-600 hover:ring-2 hover:ring-[var(--nlm-brand)] text-white font-bold text-xs flex items-center justify-center transition shadow-xs overflow-hidden" title="Menu Akun &amp; Pengaturan">
           <span id="topbar-avatar-text">AZ</span>
           <img id="topbar-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover hidden">
         </button>
@@ -185,6 +266,10 @@
             <button onclick="openSettingsModal('profile')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
               <i class="fa-regular fa-user text-[11px] w-4 text-[var(--nlm-text-tertiary)]"></i>
               <span>Profil Pengguna</span>
+            </button>
+            <button onclick="openSettingsModal('appearance')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
+              <i class="fa-solid fa-palette text-[11px] w-4 text-[var(--nlm-brand)]"></i>
+              <span>Tampilan &amp; Tema</span>
             </button>
             <button onclick="openSettingsModal('security')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
               <i class="fa-solid fa-shield-halved text-[11px] w-4 text-[var(--nlm-text-tertiary)]"></i>
@@ -223,7 +308,7 @@
 
     <!-- FLOATING TAB TO RE-OPEN SOURCES (WHEN COLLAPSED) -->
     <button id="reopen-sources-btn" onclick="toggleLeftSidebar()" class="hidden absolute top-3 left-3 z-20 px-3 py-1.5 rounded-full bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] shadow-md text-xs font-semibold text-[var(--nlm-text-primary)] items-center space-x-2 transition">
-      <i class="fa-solid fa-folder-open text-blue-600"></i>
+      <i class="fa-solid fa-folder-open text-[var(--nlm-brand)]"></i>
       <span>Sumber &amp; Catatan (<span id="reopen-source-count">4</span>)</span>
     </button>
 
@@ -243,7 +328,7 @@
           <div class="flex items-center space-x-2">
             <!-- Select All Checkbox -->
             <label class="flex items-center space-x-1.5 text-xs text-[var(--nlm-text-secondary)] cursor-pointer">
-              <input type="checkbox" id="check-all-sources" checked onchange="toggleAllSources(this)" class="w-3.5 h-3.5 rounded accent-blue-600">
+              <input type="checkbox" id="check-all-sources" checked onchange="toggleAllSources(this)" class="w-3.5 h-3.5 rounded accent-[var(--nlm-brand)]">
               <span class="text-[11px]">Semua</span>
             </label>
             <!-- Collapse Button inside panel -->
@@ -256,14 +341,14 @@
         <!-- PAIRED BUTTONS: [ + Tambahkan sumber ] & [ + Buat catatan ] -->
         <div class="grid grid-cols-2 gap-2">
           <!-- Button 1: Tambahkan sumber (Opens Drag and Drop Modal) -->
-          <button onclick="openAddSourceModal()" class="py-2 px-2 rounded-xl border border-[var(--nlm-border)] hover:border-blue-500 hover:bg-[var(--nlm-surface-variant)] text-xs font-semibold text-blue-600 dark:text-blue-400 flex items-center justify-center space-x-1.5 transition">
+          <button onclick="openAddSourceModal()" class="py-2 px-2 rounded-xl border border-[var(--nlm-border)] hover:border-[var(--nlm-brand)] hover:bg-[var(--nlm-surface-variant)] text-xs font-semibold text-[var(--nlm-brand)] flex items-center justify-center space-x-1.5 transition">
             <i class="fa-solid fa-plus text-[10px]"></i>
             <span class="truncate">Tambahkan sumber</span>
           </button>
 
           <!-- Button 2: Buat catatan (Direct create in this panel) -->
-          <button onclick="openCreateNoteModal()" class="py-2 px-2 rounded-xl border border-[var(--nlm-border)] hover:border-indigo-500 hover:bg-[var(--nlm-surface-variant)] text-xs font-semibold text-[var(--nlm-text-primary)] flex items-center justify-center space-x-1.5 transition">
-            <i class="fa-solid fa-pen-to-square text-[10px] text-indigo-500"></i>
+          <button onclick="openCreateNoteModal()" class="py-2 px-2 rounded-xl border border-[var(--nlm-border)] hover:border-[var(--nlm-brand)] hover:bg-[var(--nlm-surface-variant)] text-xs font-semibold text-[var(--nlm-text-primary)] flex items-center justify-center space-x-1.5 transition">
+            <i class="fa-solid fa-pen-to-square text-[10px] text-[var(--nlm-brand)]"></i>
             <span class="truncate">Buat catatan</span>
           </button>
         </div>
@@ -282,68 +367,68 @@
           <div id="sources-list-container" class="space-y-1.5">
             <!-- Source Card 1 (PDF) -->
             <div id="src-1" onclick="previewSource(1, 'Slide_Bab3_Distributed_Systems.pdf', 14)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
-              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
+              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-[var(--nlm-brand)]">
               <div class="w-6 h-6 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
                 <i class="fa-solid fa-file-pdf text-[11px]"></i>
               </div>
               <div class="flex-1 min-w-0">
-                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">Slide_Bab3_Distributed_Systems.pdf</h4>
+                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-[var(--nlm-brand)] transition">Slide_Bab3_Distributed_Systems.pdf</h4>
                 <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
                   <span>18 halaman</span> &bull; <span>2.34 MB</span>
                 </div>
               </div>
-              <button onclick="downloadFile(event, 'Slide_Bab3_Distributed_Systems.pdf')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
+              <button onclick="downloadFile(event, 'Slide_Bab3_Distributed_Systems.pdf')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-brand)]" title="Unduh">
                 <i class="fa-solid fa-download text-[11px]"></i>
               </button>
             </div>
 
             <!-- Source Card 2 (Markdown) -->
             <div id="src-2" onclick="previewSource(2, 'Catatan_Riset_Multi_LLM.md', 1)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
-              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
-              <div class="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
+              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-[var(--nlm-brand)]">
+              <div class="w-6 h-6 rounded-lg bg-[var(--nlm-brand-light)] text-[var(--nlm-brand)] flex items-center justify-center text-xs shrink-0 mt-0.5">
                 <i class="fa-solid fa-file-lines text-[11px]"></i>
               </div>
               <div class="flex-1 min-w-0">
-                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">Catatan_Riset_Multi_LLM.md</h4>
+                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-[var(--nlm-brand)] transition">Catatan_Riset_Multi_LLM.md</h4>
                 <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
                   <span>420 baris</span> &bull; <span>15.1 KB</span>
                 </div>
               </div>
-              <button onclick="downloadFile(event, 'Catatan_Riset_Multi_LLM.md')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
+              <button onclick="downloadFile(event, 'Catatan_Riset_Multi_LLM.md')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-brand)]" title="Unduh">
                 <i class="fa-solid fa-download text-[11px]"></i>
               </button>
             </div>
 
             <!-- Source Card 3 (DOCX) -->
             <div id="src-3" onclick="previewSource(3, 'Modul_Praktikum_Cloud_ULBI.docx', 1)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
-              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
+              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-[var(--nlm-brand)]">
               <div class="w-6 h-6 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
                 <i class="fa-solid fa-file-word text-[11px]"></i>
               </div>
               <div class="flex-1 min-w-0">
-                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">Modul_Praktikum_Cloud_ULBI.docx</h4>
+                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-[var(--nlm-brand)] transition">Modul_Praktikum_Cloud_ULBI.docx</h4>
                 <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
                   <span>32 halaman</span> &bull; <span>1.12 MB</span>
                 </div>
               </div>
-              <button onclick="downloadFile(event, 'Modul_Praktikum_Cloud_ULBI.docx')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
+              <button onclick="downloadFile(event, 'Modul_Praktikum_Cloud_ULBI.docx')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-brand)]" title="Unduh">
                 <i class="fa-solid fa-download text-[11px]"></i>
               </button>
             </div>
 
             <!-- Source Card 4 (JS Code) -->
             <div id="src-4" onclick="previewSource(4, 'llmRouterService.js', 1)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
-              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
+              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-[var(--nlm-brand)]">
               <div class="w-6 h-6 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
                 <i class="fa-solid fa-file-code text-[11px]"></i>
               </div>
               <div class="flex-1 min-w-0">
-                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">llmRouterService.js</h4>
+                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-[var(--nlm-brand)] transition">llmRouterService.js</h4>
                 <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
                   <span>Backend Code</span> &bull; <span>8.4 KB</span>
                 </div>
               </div>
-              <button onclick="downloadFile(event, 'llmRouterService.js')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
+              <button onclick="downloadFile(event, 'llmRouterService.js')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-brand)]" title="Unduh">
                 <i class="fa-solid fa-download text-[11px]"></i>
               </button>
             </div>
@@ -414,7 +499,7 @@
         
         <!-- INITIAL EMPTY STATE / HERO -->
         <div id="nlm-welcome-hero" class="max-w-2xl mx-auto text-center pt-8 pb-4">
-          <div class="w-12 h-12 rounded-2xl bg-blue-600/10 text-blue-600 flex items-center justify-center text-xl mx-auto mb-3">
+          <div class="w-12 h-12 rounded-2xl bg-[var(--nlm-brand-light)] text-[var(--nlm-brand)] flex items-center justify-center text-xl mx-auto mb-3 transition-colors duration-300">
             <i class="fa-solid fa-wand-magic-sparkles"></i>
           </div>
           
@@ -428,33 +513,33 @@
           <!-- SUGGESTED PROMPT CHIPS -->
           <div id="hero-suggestions" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left max-w-xl mx-auto">
             <button onclick="sendPrompt('Apa kesimpulan inti Teorema CAP pada Slide Bab 3?')" class="p-3 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition shadow-xs flex items-start space-x-2.5 group">
-              <span class="text-blue-600 text-sm mt-0.5"><i class="fa-regular fa-lightbulb"></i></span>
+              <span class="text-[var(--nlm-brand)] text-sm mt-0.5"><i class="fa-regular fa-lightbulb"></i></span>
               <div>
-                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 transition">Kesimpulan Teorema CAP</div>
+                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] group-hover:text-[var(--nlm-brand)] transition">Kesimpulan Teorema CAP</div>
                 <div class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">Analisis consistency vs availability</div>
               </div>
             </button>
 
             <button onclick="sendPrompt('Buatkan daftar 5 pertanyaan kuis penting dari materi ini')" class="p-3 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition shadow-xs flex items-start space-x-2.5 group">
-              <span class="text-indigo-600 text-sm mt-0.5"><i class="fa-solid fa-list-check"></i></span>
+              <span class="text-[var(--nlm-brand)] text-sm mt-0.5"><i class="fa-solid fa-list-check"></i></span>
               <div>
-                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 transition">Buat Pertanyaan Kuis</div>
+                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] group-hover:text-[var(--nlm-brand)] transition">Buat Pertanyaan Kuis</div>
                 <div class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">5 soal penting untuk bahan ujian</div>
               </div>
             </button>
 
             <button onclick="sendPrompt('Jelaskan cara kerja algoritma Heuristic Failover pada llmRouterService.js')" class="p-3 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition shadow-xs flex items-start space-x-2.5 group">
-              <span class="text-emerald-600 text-sm mt-0.5"><i class="fa-solid fa-code"></i></span>
+              <span class="text-[var(--nlm-brand)] text-sm mt-0.5"><i class="fa-solid fa-code"></i></span>
               <div>
-                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 transition">Analisis Kode Router</div>
+                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] group-hover:text-[var(--nlm-brand)] transition">Analisis Kode Router</div>
                 <div class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">Penanganan HTTP 429 Rate Limit</div>
               </div>
             </button>
 
             <button onclick="sendPrompt('Bantu rancang arsitektur backend REST API dengan Express.js')" class="p-3 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition shadow-xs flex items-start space-x-2.5 group">
-              <span class="text-amber-600 text-sm mt-0.5"><i class="fa-solid fa-laptop-code"></i></span>
+              <span class="text-[var(--nlm-brand)] text-sm mt-0.5"><i class="fa-solid fa-laptop-code"></i></span>
               <div>
-                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 transition">Diskusi Bebas AI</div>
+                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] group-hover:text-[var(--nlm-brand)] transition">Diskusi Bebas AI</div>
                 <div class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">Tanya ide pemrograman umum</div>
               </div>
             </button>
@@ -474,17 +559,17 @@
               </div>
 
               <!-- Inline Edit Form -->
-              <div id="user-edit-form" class="hidden w-full bg-[var(--nlm-surface)] border border-blue-500 rounded-2xl p-3 shadow-md space-y-2">
+              <div id="user-edit-form" class="hidden w-full bg-[var(--nlm-surface)] border border-[var(--nlm-brand)] rounded-2xl p-3 shadow-md space-y-2">
                 <textarea id="user-edit-textarea" rows="2" class="w-full bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] focus:outline-none resize-none"></textarea>
                 <div class="flex justify-end space-x-2 text-xs">
                   <button onclick="cancelPromptEdit()" class="px-2.5 py-1 rounded-lg hover:bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)]">Batal</button>
-                  <button onclick="saveAndResubmitPrompt()" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-medium">Simpan &amp; Kirim</button>
+                  <button onclick="saveAndResubmitPrompt()" class="px-3 py-1 rounded-lg bg-[var(--nlm-brand)] hover:bg-[var(--nlm-brand-hover)] text-white font-medium">Simpan &amp; Kirim</button>
                 </div>
               </div>
 
               <!-- Action Bar (Edit Button) -->
               <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] pr-1 opacity-0 group-hover:opacity-100 transition">
-                <button onclick="enablePromptEdit()" class="hover:text-blue-600 flex items-center space-x-1">
+                <button onclick="enablePromptEdit()" class="hover:text-[var(--nlm-brand)] flex items-center space-x-1">
                   <i class="fa-solid fa-pen text-[9px]"></i>
                   <span>Edit Pertanyaan</span>
                 </button>
@@ -495,7 +580,7 @@
 
           <!-- Sample Grounded AI Response with REGENERATE capability -->
           <div class="flex items-start space-x-3.5">
-            <div class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+            <div class="w-7 h-7 rounded-full bg-[var(--nlm-brand)] text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 transition-colors duration-300">
               <i class="fa-solid fa-wand-magic-sparkles text-[11px]"></i>
             </div>
             
@@ -520,14 +605,14 @@
               <div class="pt-2 flex items-center justify-between border-t border-[var(--nlm-border-subtle)] text-xs text-[var(--nlm-text-tertiary)]">
                 <div class="flex items-center space-x-1">
                   <!-- Regenerate Button -->
-                  <button onclick="regenerateAiResponse()" class="p-1.5 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-blue-600 transition flex items-center space-x-1.5 text-[11px] font-medium" title="Hasilkan Ulang Jawaban">
+                  <button onclick="regenerateAiResponse()" class="p-1.5 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-[var(--nlm-brand)] transition flex items-center space-x-1.5 text-[11px] font-medium" title="Hasilkan Ulang Jawaban">
                     <i id="regen-icon" class="fa-solid fa-arrows-rotate text-xs"></i>
                     <span>Hasilkan Ulang</span>
                   </button>
                   <button onclick="copyAnswerText()" class="p-1.5 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-[var(--nlm-text-primary)] transition" title="Salin Jawaban">
                     <i class="fa-regular fa-copy text-xs"></i>
                   </button>
-                  <button onclick="saveAnswerAsNote()" class="px-2.5 py-1 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-blue-600 transition flex items-center space-x-1.5 text-[11px] font-medium" title="Simpan ke Catatan">
+                  <button onclick="saveAnswerAsNote()" class="px-2.5 py-1 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-[var(--nlm-brand)] transition flex items-center space-x-1.5 text-[11px] font-medium" title="Simpan ke Catatan">
                     <i class="fa-regular fa-bookmark text-xs"></i>
                     <span>Simpan ke Catatan</span>
                   </button>
@@ -535,7 +620,7 @@
                 <div class="flex items-center space-x-2 text-[11px]">
                   <span id="response-grounding-tag">2 rujukan terverifikasi</span>
                   <span>&bull;</span>
-                  <span class="text-emerald-600 dark:text-emerald-400 font-medium">Gemini 1.5 Flash</span>
+                  <span class="text-[var(--nlm-brand)] font-medium">Gemini 1.5 Flash</span>
                 </div>
               </div>
 
@@ -550,20 +635,20 @@
       <div class="p-3 sm:p-4 bg-transparent shrink-0">
         <div class="max-w-2xl mx-auto">
           
-          <div class="relative bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-full p-2 pl-4 pr-3 shadow-[var(--nlm-card-shadow)] flex items-center space-x-2.5 focus-within:border-blue-600 transition">
+          <div class="relative bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-full p-2 pl-4 pr-3 shadow-[var(--nlm-card-shadow)] flex items-center space-x-2.5 focus-within:border-[var(--nlm-brand)] transition">
             
             <!-- Context Mode Pill inside input -->
             <button onclick="cycleMode()" class="px-2.5 py-1 rounded-full bg-[var(--nlm-surface-variant)] text-[11px] font-medium text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] flex items-center space-x-1 shrink-0 border border-[var(--nlm-border)]">
-              <span id="input-mode-icon"><i class="fa-solid fa-file-shield text-blue-600"></i></span>
+              <span id="input-mode-icon"><i class="fa-solid fa-file-shield text-[var(--nlm-brand)]"></i></span>
               <span id="input-mode-text" class="hidden sm:inline">4 Dokumen</span>
             </button>
 
             <input id="nlm-chat-input" type="text" placeholder="Tanyakan seputar 4 dokumen laptop..." 
                    class="flex-1 bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none min-w-0">
 
-            <!-- SEND BUTTON (WARNA BERUBAH MENJADI HIJAU SAAT MODE AI UMUM) -->
+            <!-- SEND BUTTON (WARNA MENGIKUTI PALET BRAND SECARA DINAMIS) -->
             <button id="nlm-send-btn" onclick="submitNlmPrompt()" 
-                    class="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all duration-300 shadow-xs shrink-0">
+                    class="w-8 h-8 rounded-full bg-[var(--nlm-brand)] hover:bg-[var(--nlm-brand-hover)] text-white flex items-center justify-center transition-all duration-300 shadow-xs shrink-0">
               <i class="fa-solid fa-arrow-up text-xs"></i>
             </button>
           </div>
@@ -852,12 +937,16 @@
         
         <!-- Tab Navigation -->
         <div class="w-56 border-r border-[var(--nlm-border)] p-3 space-y-1 bg-[var(--nlm-surface-variant)] text-xs font-medium shrink-0">
-          <button onclick="switchSettingsTab('profile')" id="stab-profile" class="w-full text-left px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold transition flex items-center space-x-2">
+          <button onclick="switchSettingsTab('profile')" id="stab-profile" class="w-full text-left px-3 py-2 rounded-xl bg-[var(--nlm-brand)] text-white font-semibold transition flex items-center space-x-2">
             <i class="fa-regular fa-user text-xs w-4"></i>
             <span>Profil Pengguna</span>
           </button>
+          <button onclick="switchSettingsTab('appearance')" id="stab-appearance" class="w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
+            <i class="fa-solid fa-palette text-xs w-4 text-[var(--nlm-brand)]"></i>
+            <span>Tampilan &amp; Tema</span>
+          </button>
           <button onclick="switchSettingsTab('security')" id="stab-security" class="w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
-            <i class="fa-solid fa-shield-halved text-xs w-4"></i>
+            <i class="fa-solid fa-shield-halved text-xs w-4 text-purple-500"></i>
             <span>Keamanan Akun</span>
           </button>
           <button onclick="switchSettingsTab('api')" id="stab-api" class="w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
@@ -986,6 +1075,129 @@
                 Akun Anda terhubung dengan basis data cloud <strong>MongoDB Atlas</strong> dan server Alwaysdata. Seluruh berkas laptop yang Anda unggah serta kunci API yang disimpan akan <strong>tetap ada dan tersambung otomatis</strong> saat Anda berpindah antar-laptop atau membukanya dari aplikasi HP Android Izat.
               </p>
             </div>
+          </div>
+
+          <!-- TAB: TAMPILAN & TEMA (BARU: TERANG, GELAP, MENGIKUTI SISTEM & AMBIENCE WARNA) -->
+          <div id="scontent-appearance" class="hidden space-y-5">
+            <div>
+              <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Tampilan &amp; Tema NoteRoute</h4>
+              <p class="text-[11px] text-[var(--nlm-text-tertiary)]">Sesuaikan tema visual antarmuka atau biarkan otomatis mengikuti sistem operasi perangkat Anda.</p>
+            </div>
+
+            <!-- 3 KARTU OPSI TEMA: TERANG, GELAP, MENGIKUTI SISTEM -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              
+              <!-- OPSI 1: TEMA TERANG -->
+              <div id="theme-card-light" onclick="setThemePreference('light')" class="theme-card p-3.5 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition relative flex flex-col justify-between group">
+                <div class="space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-sm font-bold">
+                      <i class="fa-solid fa-sun"></i>
+                    </div>
+                    <span id="theme-radio-light"><div class="w-4 h-4 rounded-full border border-[var(--nlm-border)] bg-[var(--nlm-surface)]"></div></span>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Tema Terang</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] leading-snug mt-0.5">Kontras bersih dan jernih, nyaman untuk siang hari.</div>
+                  </div>
+                </div>
+
+                <!-- Mini Mock Preview -->
+                <div class="mt-3 p-2 rounded-xl bg-[#f8fafd] border border-[#e2e8f0] space-y-1.5 shadow-xs">
+                  <div class="flex items-center space-x-1.5">
+                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <div class="h-1.5 w-12 rounded bg-slate-300"></div>
+                  </div>
+                  <div class="h-6 rounded-lg bg-white border border-slate-200 p-1 flex items-center">
+                    <div class="h-1.5 w-16 rounded bg-slate-200"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- OPSI 2: TEMA GELAP -->
+              <div id="theme-card-dark" onclick="setThemePreference('dark')" class="theme-card p-3.5 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition relative flex flex-col justify-between group">
+                <div class="space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <div class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-sm font-bold">
+                      <i class="fa-solid fa-moon"></i>
+                    </div>
+                    <span id="theme-radio-dark"><div class="w-4 h-4 rounded-full border border-[var(--nlm-border)] bg-[var(--nlm-surface)]"></div></span>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Tema Gelap</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] leading-snug mt-0.5">Latar hitam bertekstur, nyaman dan ramah di mata malam hari.</div>
+                  </div>
+                </div>
+
+                <!-- Mini Mock Preview -->
+                <div class="mt-3 p-2 rounded-xl bg-[#0c1117] border border-[#29364b] space-y-1.5 shadow-xs">
+                  <div class="flex items-center space-x-1.5">
+                    <div class="w-2 h-2 rounded-full bg-blue-400"></div>
+                    <div class="h-1.5 w-12 rounded bg-slate-700"></div>
+                  </div>
+                  <div class="h-6 rounded-lg bg-[#141a24] border border-[#2a374c] p-1 flex items-center">
+                    <div class="h-1.5 w-16 rounded bg-slate-600"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- OPSI 3: MENGIKUTI SISTEM -->
+              <div id="theme-card-system" onclick="setThemePreference('system')" class="theme-card p-3.5 rounded-2xl border-2 border-[var(--nlm-brand)] bg-[var(--nlm-brand-light)] cursor-pointer transition relative flex flex-col justify-between group">
+                <div class="space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <div class="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center text-sm font-bold">
+                      <i class="fa-solid fa-desktop"></i>
+                    </div>
+                    <span id="theme-radio-system"><i class="fa-solid fa-circle-check text-sm text-[var(--nlm-brand)]"></i></span>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Mengikuti Sistem</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] leading-snug mt-0.5">Otomatis beralih mengikuti setelan macOS / Windows / Android.</div>
+                  </div>
+                </div>
+
+                <!-- Status Deteksi Sistem -->
+                <div class="mt-3 p-2 rounded-xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-secondary)] font-medium">Status OS:</span>
+                  <span id="system-theme-badge" class="text-[9px] font-bold text-[var(--nlm-brand)] bg-[var(--nlm-brand-light)] px-2 py-0.5 rounded">Sistem: Terdeteksi</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- KETERANGAN AMBIENCE WARNA DINAMIS -->
+            <div class="p-4 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] space-y-3">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-[var(--nlm-brand)] text-xs"></i>
+                <h5 class="font-bold text-xs text-[var(--nlm-text-primary)]">Palet Warna &amp; Ambience Dinamis NoteRoute</h5>
+              </div>
+              <p class="text-[11px] text-[var(--nlm-text-secondary)] leading-relaxed">
+                Seluruh warna dasar aplikasi menyesuaikan mode kerja Anda:
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                <div class="p-3 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-1">
+                  <div class="font-bold text-blue-600 dark:text-blue-400 flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span>Mode Dokumen (Biru)</span>
+                  </div>
+                  <p class="text-[10px] text-[var(--nlm-text-secondary)] leading-relaxed">
+                    Tema Gelap: Hitam pekat sedikit kebiruan.<br>
+                    Tema Terang: Ambience biru muda jernih &amp; terfokus rujukan dokumen.
+                  </p>
+                </div>
+                <div class="p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 space-y-1">
+                  <div class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Mode AI Umum (Hijau)</span>
+                  </div>
+                  <p class="text-[10px] text-[var(--nlm-text-secondary)] leading-relaxed">
+                    Tema Gelap: Hitam pekat sedikit kehijauan.<br>
+                    Tema Terang: Ambience hijau mint segar &amp; penalaran bebas terbuka.
+                  </p>
+                </div>
+              </div>
+            </div>
+
           </div>
 
           <!-- TAB 2: KEAMANAN AKUN -->
@@ -1705,26 +1917,70 @@
       }, 700);
     }
 
-    // 4. THEME SWITCHER
-    function toggleNotebookTheme() {
-      const html = document.documentElement;
-      const icon = document.getElementById('theme-btn-icon');
+    // 4. THEME & APPEARANCE MANAGEMENT (TERANG, GELAP, MENGIKUTI SISTEM)
+    let themePreference = 'system'; // 'light' | 'dark' | 'system'
+    const systemDarkQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-      isDarkTheme = !isDarkTheme;
-      if (isDarkTheme) {
-        html.classList.remove('light');
-        html.classList.add('dark');
-        icon.innerHTML = '<i class="fa-solid fa-sun text-amber-400 text-sm"></i>';
-        showToast("Mode Gelap Aktif", "Tema resmi NotebookLM Dark diaktifkan.");
-      } else {
-        html.classList.remove('dark');
-        html.classList.add('light');
-        icon.innerHTML = '<i class="fa-solid fa-moon text-blue-600 text-sm"></i>';
-        showToast("Mode Terang Aktif", "Tema resmi NotebookLM Light diaktifkan.");
+    function setThemePreference(pref, showNotification = true) {
+      themePreference = pref;
+      localStorage.setItem('noteroute-theme-pref', pref);
+      applyResolvedTheme();
+      updateThemeSettingsUi();
+
+      if (showNotification) {
+        const labels = {
+          light: "Tema Terang",
+          dark: "Tema Gelap",
+          system: `Mengikuti Sistem (${systemDarkQuery.matches ? 'Mode Gelap' : 'Mode Terang'})`
+        };
+        showToast("Tampilan Diperbarui", `Tema diatur ke ${labels[pref] || pref}.`);
       }
     }
 
+    function applyResolvedTheme() {
+      const html = document.documentElement;
+      let isDark = false;
+      if (themePreference === 'system') {
+        isDark = systemDarkQuery.matches;
+      } else {
+        isDark = (themePreference === 'dark');
+      }
+
+      html.classList.remove('light', 'dark');
+      html.classList.add(isDark ? 'dark' : 'light');
+
+      const badge = document.getElementById('system-theme-badge');
+      if (badge) {
+        badge.textContent = `Sistem: ${systemDarkQuery.matches ? 'Mode Gelap' : 'Mode Terang'}`;
+      }
+    }
+
+    function updateThemeSettingsUi() {
+      ['light', 'dark', 'system'].forEach(p => {
+        const card = document.getElementById(`theme-card-${p}`);
+        const radio = document.getElementById(`theme-radio-${p}`);
+        if (!card || !radio) return;
+
+        if (themePreference === p) {
+          card.className = "theme-card p-3.5 rounded-2xl border-2 border-[var(--nlm-brand)] bg-[var(--nlm-brand-light)] cursor-pointer transition relative flex flex-col justify-between shadow-xs";
+          radio.innerHTML = '<i class="fa-solid fa-circle-check text-sm text-[var(--nlm-brand)]"></i>';
+        } else {
+          card.className = "theme-card p-3.5 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition relative flex flex-col justify-between";
+          radio.innerHTML = '<div class="w-4 h-4 rounded-full border border-[var(--nlm-border)] bg-[var(--nlm-surface)]"></div>';
+        }
+      });
+    }
+
+    // Auto-listen to system dark mode changes
+    systemDarkQuery.addEventListener('change', () => {
+      if (themePreference === 'system') {
+        applyResolvedTheme();
+      }
+    });
+
     // 5. PROFILE & SETTINGS DROPDOWN & MODAL
+    let currentOpenSettingsTab = 'profile';
+
     function toggleProfileDropdown() {
       const menu = document.getElementById('profile-dropdown-menu');
       menu.classList.toggle('hidden');
@@ -1741,15 +1997,29 @@
     }
 
     function switchSettingsTab(tabName) {
-      ['profile', 'security', 'api', 'routing', 'general'].forEach(t => {
+      currentOpenSettingsTab = tabName;
+      ['profile', 'appearance', 'security', 'api', 'routing', 'general'].forEach(t => {
         const btn = document.getElementById(`stab-${t}`);
         const content = document.getElementById(`scontent-${t}`);
+        if (!btn || !content) return;
         if (t === tabName) {
-          btn.className = "w-full text-left px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold transition flex items-center space-x-2";
+          btn.className = "w-full text-left px-3 py-2 rounded-xl bg-[var(--nlm-brand)] text-white font-semibold transition flex items-center space-x-2 shadow-xs";
           content.classList.remove('hidden');
         } else {
           btn.className = "w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2";
           content.classList.add('hidden');
+        }
+      });
+      if (tabName === 'appearance') {
+        updateThemeSettingsUi();
+      }
+    }
+
+    function updateActiveSettingsTabStyle() {
+      ['profile', 'appearance', 'security', 'api', 'routing', 'general'].forEach(t => {
+        const btn = document.getElementById(`stab-${t}`);
+        if (btn && t === currentOpenSettingsTab) {
+          btn.className = "w-full text-left px-3 py-2 rounded-xl bg-[var(--nlm-brand)] text-white font-semibold transition flex items-center space-x-2 shadow-xs";
         }
       });
     }
@@ -2189,40 +2459,45 @@
       openViewNoteModal("Catatan Baru", "Tulis ide, rangkuman, atau poin penting materi kuliah di sini...", "Catatan Buatan Sendiri");
     }
 
-    // 7. AI MODE SWITCHER (SEND BUTTON CHANGES TO GREEN ON AI BEBAS)
+    // 7. AI MODE SWITCHER (SELURUH PALET WARNA BERUBAH SECARA SISTEMIK)
     function setAiMode(mode) {
       currentMode = mode;
+      const html = document.documentElement;
       const btnDoc = document.getElementById('btn-mode-doc');
       const btnGen = document.getElementById('btn-mode-general');
       const input = document.getElementById('nlm-chat-input');
       const modeText = document.getElementById('input-mode-text');
       const modeIcon = document.getElementById('input-mode-icon');
-      const sendBtn = document.getElementById('nlm-send-btn');
       const heroSub = document.getElementById('hero-subtitle');
 
       if (mode === 'document') {
-        btnDoc.className = "px-3 py-1 rounded-full font-semibold bg-blue-600 text-white transition flex items-center space-x-1.5 shadow-xs";
+        html.classList.remove('mode-general');
+        html.classList.add('mode-doc');
+
+        btnDoc.className = "px-3 py-1 rounded-full font-semibold bg-[var(--nlm-brand)] text-white transition flex items-center space-x-1.5 shadow-xs";
         btnGen.className = "px-3 py-1 rounded-full font-medium text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] transition flex items-center space-x-1.5";
         input.placeholder = "Tanyakan seputar 4 dokumen laptop...";
         modeText.textContent = "4 Dokumen";
-        modeIcon.innerHTML = '<i class="fa-solid fa-file-shield text-blue-600"></i>';
+        modeIcon.innerHTML = '<i class="fa-solid fa-file-shield text-[var(--nlm-brand)]"></i>';
         
-        // SEND BUTTON BLUE
-        sendBtn.className = "w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all duration-300 shadow-xs shrink-0";
         heroSub.textContent = "NoteRoute membumikan analisis ke dalam berkas dokumen yang Anda pilih. Dapatkan jawaban terverifikasi dengan rujukan sitasi akurat.";
-        showToast("Mode Dokumen", "Jawaban difokuskan pada isi dokumen laptop.");
+        showToast("Mode Dokumen Aktif", "Palet warna beralih ke Biru & ambience dokumen.");
       } else {
-        btnGen.className = "px-3 py-1 rounded-full font-semibold bg-emerald-600 text-white transition flex items-center space-x-1.5 shadow-xs";
+        html.classList.remove('mode-doc');
+        html.classList.add('mode-general');
+
+        btnGen.className = "px-3 py-1 rounded-full font-semibold bg-[var(--nlm-brand)] text-white transition flex items-center space-x-1.5 shadow-xs";
         btnDoc.className = "px-3 py-1 rounded-full font-medium text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] transition flex items-center space-x-1.5";
         input.placeholder = "Tanyakan apa saja kepada AI (Mode Bebas & Terbuka)...";
         modeText.textContent = "AI Bebas";
-        modeIcon.innerHTML = '<i class="fa-solid fa-globe text-emerald-600"></i>';
+        modeIcon.innerHTML = '<i class="fa-solid fa-globe text-[var(--nlm-brand)]"></i>';
         
-        // SEND BUTTON TURNS GREEN (SESUAI INSTRUKSI GAMBAR 2)
-        sendBtn.className = "w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all duration-300 shadow-xs shrink-0";
         heroSub.textContent = "Gunakan NoteRoute sebagai asisten AI umum serbaguna tanpa batasan berkas yang diunggah.";
-        showToast("Mode AI Bebas", "Tombol kirim aktif hijau & pertanyaan terbuka untuk apa saja.");
+        showToast("Mode AI Bebas Aktif", "Seluruh palet warna beralih ke Hijau & ambience penalaran terbuka.");
       }
+
+      updateActiveSettingsTabStyle();
+      updateThemeSettingsUi();
     }
 
     function cycleMode() {
@@ -2488,6 +2763,10 @@
         pMenu.classList.add('hidden');
       }
     });
+
+    // INITIALIZATION (THEME & SYSTEM LISTENER)
+    const savedTheme = localStorage.getItem('noteroute-theme-pref') || 'system';
+    setThemePreference(savedTheme, false);
   </script>
 </body>
 </html>
