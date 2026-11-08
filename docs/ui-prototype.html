@@ -159,20 +159,25 @@
 
       <!-- USER PROFILE AVATAR (TRIGGER SETTINGS MODAL & MENU) -->
       <div class="relative">
-        <button onclick="toggleProfileDropdown()" class="w-8 h-8 rounded-full bg-indigo-600 hover:ring-2 hover:ring-blue-500 text-white font-bold text-xs flex items-center justify-center transition shadow-xs" title="Menu Akun &amp; Pengaturan">
-          AZ
+        <button onclick="toggleProfileDropdown()" id="topbar-avatar-btn" class="w-8 h-8 rounded-full bg-indigo-600 hover:ring-2 hover:ring-blue-500 text-white font-bold text-xs flex items-center justify-center transition shadow-xs overflow-hidden" title="Menu Akun &amp; Pengaturan">
+          <span id="topbar-avatar-text">AZ</span>
+          <img id="topbar-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover hidden">
         </button>
 
         <!-- PROFILE DROPDOWN MENU -->
         <div id="profile-dropdown-menu" class="hidden absolute right-0 mt-2 w-72 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-xl p-2 z-50">
           <div class="p-3 border-b border-[var(--nlm-border-subtle)] flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0">
-              AZ
+            <div id="dropdown-avatar-box" class="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0 overflow-hidden">
+              <span id="dropdown-avatar-text">AZ</span>
+              <img id="dropdown-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover hidden">
             </div>
             <div class="truncate">
-              <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">Ahmad Zakky Nurfauzan</div>
-              <div class="text-[11px] text-[var(--nlm-text-tertiary)] truncate">ahmadzakky@ulbi.ac.id</div>
-              <div class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold mt-0.5">Ketua Tim &bull; NPM 714250028</div>
+              <div id="topbar-user-name" class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">Ahmad Zakky Nurfauzan</div>
+              <div id="topbar-user-email" class="text-[11px] text-[var(--nlm-text-tertiary)] truncate">ahmadzakky@ulbi.ac.id</div>
+              <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5 flex items-center space-x-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span>Akun Cloud &bull; Aktif</span>
+              </div>
             </div>
           </div>
 
@@ -874,23 +879,100 @@
           
           <!-- TAB 1: PROFIL -->
           <div id="scontent-profile" class="space-y-4">
-            <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Profil Pengembang &amp; Tim</h4>
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Nama Lengkap</label>
-                <input type="text" value="Ahmad Zakky Nurfauzan" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)]">
+            <div>
+              <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Profil Pengguna</h4>
+              <p class="text-[11px] text-[var(--nlm-text-tertiary)]">Atur identitas akun, foto profil, nama panggilan otomatis, dan kata sandi Anda.</p>
+            </div>
+
+            <!-- FOTO PROFIL SECTION -->
+            <div class="p-4 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
+              <div class="relative group">
+                <div id="settings-avatar-preview" class="w-16 h-16 rounded-full bg-indigo-600 text-white font-bold text-xl flex items-center justify-center shadow-md overflow-hidden ring-4 ring-blue-500/20">
+                  <span id="settings-avatar-text">AZ</span>
+                  <img id="settings-avatar-img" src="" alt="Foto Profil" class="w-full h-full object-cover hidden">
+                </div>
+                <button onclick="document.getElementById('profile-photo-input').click()" class="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] shadow hover:bg-blue-700 transition" title="Ganti Foto">
+                  <i class="fa-solid fa-camera"></i>
+                </button>
               </div>
-              <div>
-                <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">NPM</label>
-                <input type="text" value="714250028" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)]">
+
+              <div class="flex-1 text-center sm:text-left space-y-1.5">
+                <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Foto Profil</div>
+                <p class="text-[10px] text-[var(--nlm-text-tertiary)]">Format JPG, PNG, atau GIF. Disarankan gambar persegi (maks. 2MB).</p>
+                
+                <input type="file" id="profile-photo-input" accept="image/*" class="hidden" onchange="handleProfilePhotoUpload(event)">
+                
+                <div class="flex items-center justify-center sm:justify-start space-x-2 pt-1">
+                  <button onclick="document.getElementById('profile-photo-input').click()" class="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-semibold transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-upload text-[10px]"></i>
+                    <span>Ganti Foto</span>
+                  </button>
+                  <button onclick="removeProfilePhoto()" class="px-2.5 py-1 rounded-lg border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-secondary)] text-[11px] font-medium transition">
+                    Hapus
+                  </button>
+                </div>
               </div>
-              <div>
-                <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Peran Tim</label>
-                <input type="text" value="Ketua Tim (Modul A: Backend &amp; Cloud)" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)]" disabled>
+            </div>
+
+            <!-- NAMA & NAMA PANGGILAN OTOMATIS -->
+            <div class="space-y-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Nama Depan</label>
+                  <input type="text" id="prof-first-name" value="Ahmad" oninput="onFirstNameChange(this.value)" placeholder="Nama depan Anda" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-medium focus:border-blue-500 focus:outline-none transition">
+                </div>
+                <div>
+                  <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Nama Belakang</label>
+                  <input type="text" id="prof-last-name" value="Zakky Nurfauzan" oninput="onLastNameChange(this.value)" placeholder="Nama belakang Anda" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-medium focus:border-blue-500 focus:outline-none transition">
+                </div>
               </div>
-              <div>
-                <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Rekan Modul B</label>
-                <input type="text" value="Izat Ibrahimovic Irawan (714250024)" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)]" disabled>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="block font-medium text-[var(--nlm-text-tertiary)]">Nama Panggilan</label>
+                    <span class="text-[9px] text-blue-600 dark:text-blue-400 font-semibold bg-blue-500/10 px-1.5 py-0.5 rounded">Otomatis dari Nama Depan</span>
+                  </div>
+                  <input type="text" id="prof-nickname" value="Ahmad" readonly class="w-full bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-bold cursor-not-allowed opacity-90">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)] mt-1 block">Otomatis digunakan untuk sapaan AI dan sistem.</span>
+                </div>
+                <div>
+                  <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Alamat Email</label>
+                  <input type="email" id="prof-email" value="ahmadzakky@ulbi.ac.id" oninput="onEmailChange(this.value)" placeholder="nama@email.com" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-medium focus:border-blue-500 focus:outline-none transition">
+                </div>
+              </div>
+            </div>
+
+            <!-- GANTI KATA SANDI (PASSWORD) -->
+            <div class="p-3.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <i class="fa-solid fa-lock text-amber-500 text-xs"></i>
+                  <span class="font-bold text-xs text-[var(--nlm-text-primary)]">Ganti Kata Sandi (Password)</span>
+                </div>
+                <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Minimal 8 karakter</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <div>
+                  <label class="block text-[10px] font-medium text-[var(--nlm-text-tertiary)] mb-1">Kata Sandi Saat Ini</label>
+                  <input type="password" id="prof-pass-current" placeholder="••••••••" class="w-full bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] focus:border-blue-500 focus:outline-none font-mono">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-medium text-[var(--nlm-text-tertiary)] mb-1">Kata Sandi Baru</label>
+                  <input type="password" id="prof-pass-new" placeholder="••••••••" class="w-full bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] focus:border-blue-500 focus:outline-none font-mono">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-medium text-[var(--nlm-text-tertiary)] mb-1">Konfirmasi Kata Sandi</label>
+                  <input type="password" id="prof-pass-confirm" placeholder="••••••••" class="w-full bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] focus:border-blue-500 focus:outline-none font-mono">
+                </div>
+              </div>
+
+              <div class="flex justify-end pt-1">
+                <button onclick="changePasswordSubmit()" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition flex items-center space-x-1.5">
+                  <i class="fa-solid fa-key text-[10px]"></i>
+                  <span>Perbarui Kata Sandi</span>
+                </button>
               </div>
             </div>
 
@@ -959,120 +1041,208 @@
               </button>
             </div>
 
-            <!-- PROVIDERS GRID (MODEL PERSIS SCREENSHOT GAMBAR 3) -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <!-- PROVIDERS GRID (MODEL PERSIS SCREENSHOT PROVIDERS DENGAN TOMBOL TUTORIAL & KETERANGAN 9ROUTER) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
               
               <!-- Card 1: Google Gemini -->
-              <div onclick="openConfigureApiKey('Google Gemini', 'AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', '1.500 req/hari &bull; 1M Context Free')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
-                <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm shrink-0">
-                  <i class="fa-brands fa-google"></i>
-                </div>
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Gemini AI</div>
-                  <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    <span>1M Free Ready</span>
+              <div onclick="openConfigureApiKey('Google Gemini', 'AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', '1.500 req/hari &bull; 1M Context Free')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-brands fa-google"></i>
                   </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Gemini AI</div>
+                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span>1M Free Ready</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Free Tier</span>
+                  <button onclick="openApiTutorial('gemini', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Tutorial API</span>
+                  </button>
                 </div>
               </div>
 
               <!-- Card 2: Groq Cloud -->
-              <div onclick="openConfigureApiKey('Groq Cloud', 'gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'Ultra-fast 300+ t/s &bull; Free Tier')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
-                <div class="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-600 flex items-center justify-center text-sm shrink-0">
-                  <i class="fa-solid fa-bolt"></i>
-                </div>
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Groq (Llama 3.3)</div>
-                  <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    <span>300 t/s Kilat</span>
+              <div onclick="openConfigureApiKey('Groq Cloud', 'gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'Ultra-fast 300+ t/s &bull; Free Tier')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-bolt"></i>
                   </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Groq (Llama 3.3)</div>
+                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span>300 t/s Kilat</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Ultra-fast</span>
+                  <button onclick="openApiTutorial('groq', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-orange-600 dark:text-orange-400 bg-orange-500/10 hover:bg-orange-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Tutorial API</span>
+                  </button>
                 </div>
               </div>
 
               <!-- Card 3: Kiiro / Kiro AI -->
-              <div onclick="openConfigureApiKey('Kiro AI', 'kiro_free_auth_key', 'Free Tier Connected')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
-                <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 flex items-center justify-center text-sm shrink-0">
-                  <i class="fa-solid fa-ghost"></i>
-                </div>
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Kiro AI</div>
-                  <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    <span>1 Connected</span>
+              <div onclick="openConfigureApiKey('Kiro AI', 'kiro_free_auth_key', 'Free Tier Connected')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-ghost"></i>
                   </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Kiro AI</div>
+                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span>1 Connected</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Free Token</span>
+                  <button onclick="openApiTutorial('kiro', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-purple-600 dark:text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Tutorial API</span>
+                  </button>
                 </div>
               </div>
 
               <!-- Card 4: DeepSeek -->
-              <div onclick="openConfigureApiKey('DeepSeek', 'sk_deepseek_xxxxxxxxxxxxxxxx', 'Reasoning Murah / Free Credits')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
-                <div class="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-600 flex items-center justify-center text-sm shrink-0">
-                  <i class="fa-solid fa-brain"></i>
-                </div>
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">DeepSeek R1/V3</div>
-                  <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    <span>Aktif</span>
+              <div onclick="openConfigureApiKey('DeepSeek', 'sk_deepseek_xxxxxxxxxxxxxxxx', 'Reasoning Murah / Free Credits')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-brain"></i>
                   </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">DeepSeek R1/V3</div>
+                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span>Aktif</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Reasoning</span>
+                  <button onclick="openApiTutorial('deepseek', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Tutorial API</span>
+                  </button>
                 </div>
               </div>
 
-              <!-- Card 5: 9Router / OmniRoute Local -->
-              <div onclick="openConfigureApiKey('9Router Local', 'http://localhost:20128/v1', 'Local Daemon Bridge &bull; 100% Gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
-                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-sm shrink-0">
-                  <i class="fa-solid fa-network-wired"></i>
-                </div>
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">9Router Local</div>
-                  <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    <span>Port 20128</span>
+              <!-- Card 5: 9Router Local Daemon (DENGAN KETERANGAN KHUSUS 1 JARINGAN & LAPTOP AKTIF) -->
+              <div onclick="openConfigureApiKey('9Router Local', 'http://localhost:20128/v1', 'Local Daemon Bridge &bull; 100% Gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-network-wired"></i>
                   </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">9Router Local</div>
+                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span>Port 20128</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- KETERANGAN WAJIB 9ROUTER -->
+                <div class="mt-2 p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] leading-tight flex items-start space-x-1.5">
+                  <i class="fa-solid fa-triangle-exclamation text-[10px] mt-0.5 shrink-0 text-amber-500"></i>
+                  <span>Hanya tersedia jika 9Router di laptop aktif &amp; dalam 1 jaringan (WiFi/LAN)</span>
+                </div>
+
+                <div class="mt-2 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Local Bridge</span>
+                  <button onclick="openApiTutorial('9router', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Tutorial API</span>
+                  </button>
                 </div>
               </div>
 
               <!-- Card 6: OpenRouter Free -->
-              <div onclick="openConfigureApiKey('OpenRouter (Free)', 'sk-or-xxxxxxxxxxxxxxxx', 'Akses model Llama &amp; Mistral Gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
-                <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-sm shrink-0">
-                  <i class="fa-solid fa-shuffle"></i>
+              <div onclick="openConfigureApiKey('OpenRouter (Free)', 'sk-or-xxxxxxxxxxxxxxxx', 'Akses model Llama &amp; Mistral Gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-shuffle"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">OpenRouter Free</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Tersedia</div>
+                  </div>
                 </div>
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">OpenRouter Free</div>
-                  <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Tersedia</div>
+                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Free Models</span>
+                  <button onclick="openApiTutorial('openrouter', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Tutorial API</span>
+                  </button>
                 </div>
               </div>
 
               <!-- Card 7: Ollama Localhost -->
-              <div onclick="openConfigureApiKey('Ollama Local', 'http://localhost:11434', 'Model lokal offline tanpa internet')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
-                <div class="w-8 h-8 rounded-lg bg-slate-500/10 text-slate-600 dark:text-slate-400 flex items-center justify-center text-sm shrink-0">
-                  <i class="fa-solid fa-server"></i>
+              <div onclick="openConfigureApiKey('Ollama Local', 'http://localhost:11434', 'Model lokal offline tanpa internet')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-slate-500/10 text-slate-600 dark:text-slate-400 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-server"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Ollama Local</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Offline Free</div>
+                  </div>
                 </div>
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Ollama Local</div>
-                  <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Offline Free</div>
+                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Port 11434</span>
+                  <button onclick="openApiTutorial('ollama', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-slate-600 dark:text-slate-400 bg-slate-500/10 hover:bg-slate-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Tutorial API</span>
+                  </button>
                 </div>
               </div>
 
               <!-- Card 8: Cloudflare Workers AI -->
-              <div onclick="openConfigureApiKey('Cloudflare AI', 'cf_api_xxxxxxxx', '10.000 neurons/hari gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
-                <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm shrink-0">
-                  <i class="fa-solid fa-cloud"></i>
+              <div onclick="openConfigureApiKey('Cloudflare AI', 'cf_api_xxxxxxxx', '10.000 neurons/hari gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-cloud"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Cloudflare AI</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Free Tier</div>
+                  </div>
                 </div>
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Cloudflare AI</div>
-                  <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Free Tier</div>
+                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Edge 10k</span>
+                  <button onclick="openApiTutorial('cloudflare', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Tutorial API</span>
+                  </button>
                 </div>
               </div>
 
               <!-- Card 9: Cerebras Inference -->
-              <div onclick="openConfigureApiKey('Cerebras', 'csk_xxxxxxxxxxxxxxxx', 'Inference ultra-cepat gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
-                <div class="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-sm shrink-0">
-                  <i class="fa-solid fa-microchip"></i>
+              <div onclick="openConfigureApiKey('Cerebras', 'csk_xxxxxxxxxxxxxxxx', 'Inference ultra-cepat gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-microchip"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Cerebras Fast</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Free Tier</div>
+                  </div>
                 </div>
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Cerebras Fast</div>
-                  <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Free Tier</div>
+                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">1.800+ t/s</span>
+                  <button onclick="openApiTutorial('cerebras', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Tutorial API</span>
+                  </button>
                 </div>
               </div>
 
@@ -1091,69 +1261,132 @@
             </div>
           </div>
 
-          <!-- TAB 4: ATUR PRIORITAS AI (SEBELUMNYA TAB ROUTING) -->
+          <!-- TAB 4: ATUR PRIORITAS AI (DRAGGABLE KE ATAS & KE BAWAH) -->
           <div id="scontent-routing" class="hidden space-y-4">
-            <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Atur Prioritas AI yang Digunakan</h4>
-            <p class="text-[11px] text-[var(--nlm-text-tertiary)]">
-              Sistem akan memanggil AI urutan teratas terlebih dahulu. Jika terjadi HTTP 429 (Rate Limit Exceeded), Heuristic Failover NoteRoute otomatis mengalihkan kueri ke prioritas berikutnya dalam &lt; 500ms.
-            </p>
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Atur Prioritas AI yang Digunakan</h4>
+                <p class="text-[11px] text-[var(--nlm-text-tertiary)]">
+                  Tarik (drag) kartu ke atas atau ke bawah untuk mengatur urutan prioritas model AI. Nomor 1 akan dipanggil utama, otomatis failover ke urutan berikutnya.
+                </p>
+              </div>
+              <span class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold bg-blue-500/10 px-2.5 py-1 rounded-lg border border-blue-500/20 flex items-center space-x-1 shrink-0">
+                <i class="fa-solid fa-arrows-up-down"></i>
+                <span>Tarik ke Atas/Bawah</span>
+              </span>
+            </div>
 
-            <div class="space-y-2.5">
-              <!-- Priority 1 -->
-              <div class="p-3.5 rounded-xl border border-blue-500/30 bg-blue-500/5 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                  <span class="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">1</span>
-                  <div>
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Google Gemini 1.5 Flash (Prioritas Utama)</div>
-                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">1.000.000 Token Context &bull; Ekstraksi ratusan halaman berkas gratis</div>
+            <!-- DRAGGABLE CONTAINER -->
+            <div id="priority-list" class="space-y-2">
+              
+              <!-- Item 1: Google Gemini -->
+              <div class="priority-item p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 flex items-center justify-between transition-all duration-150 select-none cursor-move" draggable="true" data-id="gemini" ondragstart="onPriorityDragStart(event)" ondragover="onPriorityDragOver(event)" ondragleave="onPriorityDragLeave(event)" ondrop="onPriorityDrop(event)" ondragend="onPriorityDragEnd(event)">
+                <div class="flex items-center space-x-3 min-w-0">
+                  <div class="cursor-grab active:cursor-grabbing text-[var(--nlm-text-tertiary)] hover:text-blue-500 p-1" title="Tarik untuk memindahkan">
+                    <i class="fa-solid fa-grip-vertical text-sm"></i>
+                  </div>
+                  <span class="priority-rank-badge w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">1</span>
+                  <div class="min-w-0">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">Google Gemini 1.5 Flash</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">1.000.000 Token Context &bull; Ekstraksi dokumen besar gratis</div>
                   </div>
                 </div>
-                <div class="flex items-center space-x-1.5">
-                  <span class="text-[10px] text-blue-600 font-bold bg-blue-500/10 px-2 py-0.5 rounded">Utama</span>
+                <div class="flex items-center space-x-2 shrink-0">
+                  <span class="priority-status-badge text-[10px] font-bold text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded">Utama</span>
+                  <div class="flex flex-col space-y-0.5">
+                    <button onclick="movePriority(this, -1, event)" class="p-1 hover:bg-[var(--nlm-surface-hover)] rounded text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)]" title="Geser ke Atas"><i class="fa-solid fa-chevron-up text-[9px]"></i></button>
+                    <button onclick="movePriority(this, 1, event)" class="p-1 hover:bg-[var(--nlm-surface-hover)] rounded text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)]" title="Geser ke Bawah"><i class="fa-solid fa-chevron-down text-[9px]"></i></button>
+                  </div>
                 </div>
               </div>
 
-              <!-- Priority 2 -->
-              <div class="p-3.5 rounded-xl border border-orange-500/30 bg-orange-500/5 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                  <span class="w-6 h-6 rounded-full bg-orange-600 text-white font-bold text-xs flex items-center justify-center">2</span>
-                  <div>
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Groq Cloud (Llama 3.3 70B) (Failover Cadangan)</div>
-                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Respon kilat 300+ token/s &bull; Otomatis menggantikan jika Gemini 429</div>
+              <!-- Item 2: Groq Cloud -->
+              <div class="priority-item p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 flex items-center justify-between transition-all duration-150 select-none cursor-move" draggable="true" data-id="groq" ondragstart="onPriorityDragStart(event)" ondragover="onPriorityDragOver(event)" ondragleave="onPriorityDragLeave(event)" ondrop="onPriorityDrop(event)" ondragend="onPriorityDragEnd(event)">
+                <div class="flex items-center space-x-3 min-w-0">
+                  <div class="cursor-grab active:cursor-grabbing text-[var(--nlm-text-tertiary)] hover:text-blue-500 p-1" title="Tarik untuk memindahkan">
+                    <i class="fa-solid fa-grip-vertical text-sm"></i>
+                  </div>
+                  <span class="priority-rank-badge w-6 h-6 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center shrink-0">2</span>
+                  <div class="min-w-0">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">Groq Cloud (Llama 3.3 70B)</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Respon kilat 300+ token/s &bull; Failover otomatis bila 429</div>
                   </div>
                 </div>
-                <div class="flex items-center space-x-1.5">
-                  <span class="text-[10px] text-orange-600 font-bold bg-orange-500/10 px-2 py-0.5 rounded">Failover #1</span>
+                <div class="flex items-center space-x-2 shrink-0">
+                  <span class="priority-status-badge text-[10px] font-bold text-orange-600 bg-orange-500/10 px-2 py-0.5 rounded">Failover #1</span>
+                  <div class="flex flex-col space-y-0.5">
+                    <button onclick="movePriority(this, -1, event)" class="p-1 hover:bg-[var(--nlm-surface-hover)] rounded text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)]" title="Geser ke Atas"><i class="fa-solid fa-chevron-up text-[9px]"></i></button>
+                    <button onclick="movePriority(this, 1, event)" class="p-1 hover:bg-[var(--nlm-surface-hover)] rounded text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)]" title="Geser ke Bawah"><i class="fa-solid fa-chevron-down text-[9px]"></i></button>
+                  </div>
                 </div>
               </div>
 
-              <!-- Priority 3 -->
-              <div class="p-3.5 rounded-xl border border-purple-500/30 bg-purple-500/5 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                  <span class="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center">3</span>
-                  <div>
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Kiro AI / DeepSeek R1 (Penalaran Kompleks)</div>
-                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Digunakan untuk kueri logika berbiaya ultra-murah</div>
+              <!-- Item 3: DeepSeek / Kiro -->
+              <div class="priority-item p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 flex items-center justify-between transition-all duration-150 select-none cursor-move" draggable="true" data-id="deepseek" ondragstart="onPriorityDragStart(event)" ondragover="onPriorityDragOver(event)" ondragleave="onPriorityDragLeave(event)" ondrop="onPriorityDrop(event)" ondragend="onPriorityDragEnd(event)">
+                <div class="flex items-center space-x-3 min-w-0">
+                  <div class="cursor-grab active:cursor-grabbing text-[var(--nlm-text-tertiary)] hover:text-blue-500 p-1" title="Tarik untuk memindahkan">
+                    <i class="fa-solid fa-grip-vertical text-sm"></i>
+                  </div>
+                  <span class="priority-rank-badge w-6 h-6 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center shrink-0">3</span>
+                  <div class="min-w-0">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">DeepSeek R1 / Kiro AI</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Penalaran kompleks (Reasoning) hemat biaya</div>
                   </div>
                 </div>
-                <div class="flex items-center space-x-1.5">
-                  <span class="text-[10px] text-purple-600 font-bold bg-purple-500/10 px-2 py-0.5 rounded">Penalaran</span>
+                <div class="flex items-center space-x-2 shrink-0">
+                  <span class="priority-status-badge text-[10px] font-bold text-purple-600 bg-purple-500/10 px-2 py-0.5 rounded">Failover #2</span>
+                  <div class="flex flex-col space-y-0.5">
+                    <button onclick="movePriority(this, -1, event)" class="p-1 hover:bg-[var(--nlm-surface-hover)] rounded text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)]" title="Geser ke Atas"><i class="fa-solid fa-chevron-up text-[9px]"></i></button>
+                    <button onclick="movePriority(this, 1, event)" class="p-1 hover:bg-[var(--nlm-surface-hover)] rounded text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)]" title="Geser ke Bawah"><i class="fa-solid fa-chevron-down text-[9px]"></i></button>
+                  </div>
                 </div>
               </div>
 
-              <!-- Priority 4 -->
-              <div class="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                  <span class="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">4</span>
-                  <div>
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">9Router / OmniRoute Local Daemon (Offline Bridge)</div>
-                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Target proksi terminal laptop port 20128</div>
+              <!-- Item 4: 9Router Local Daemon (DENGAN KETERANGAN KHUSUS 1 JARINGAN & LAPTOP AKTIF) -->
+              <div class="priority-item p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 flex items-center justify-between transition-all duration-150 select-none cursor-move" draggable="true" data-id="9router" ondragstart="onPriorityDragStart(event)" ondragover="onPriorityDragOver(event)" ondragleave="onPriorityDragLeave(event)" ondrop="onPriorityDrop(event)" ondragend="onPriorityDragEnd(event)">
+                <div class="flex items-center space-x-3 min-w-0">
+                  <div class="cursor-grab active:cursor-grabbing text-[var(--nlm-text-tertiary)] hover:text-blue-500 p-1" title="Tarik untuk memindahkan">
+                    <i class="fa-solid fa-grip-vertical text-sm"></i>
+                  </div>
+                  <span class="priority-rank-badge w-6 h-6 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center shrink-0">4</span>
+                  <div class="min-w-0">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">9Router Local Daemon (Port 20128)</div>
+                    <div class="text-[10px] text-amber-600 dark:text-amber-400 font-semibold truncate flex items-center space-x-1">
+                      <i class="fa-solid fa-triangle-exclamation text-[9px]"></i>
+                      <span>Hanya tersedia jika 9Router di laptop aktif &amp; dalam 1 jaringan</span>
+                    </div>
                   </div>
                 </div>
-                <div class="flex items-center space-x-1.5">
-                  <span class="text-[10px] text-emerald-600 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">Lokal</span>
+                <div class="flex items-center space-x-2 shrink-0">
+                  <span class="priority-status-badge text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded">Failover #3</span>
+                  <div class="flex flex-col space-y-0.5">
+                    <button onclick="movePriority(this, -1, event)" class="p-1 hover:bg-[var(--nlm-surface-hover)] rounded text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)]" title="Geser ke Atas"><i class="fa-solid fa-chevron-up text-[9px]"></i></button>
+                    <button onclick="movePriority(this, 1, event)" class="p-1 hover:bg-[var(--nlm-surface-hover)] rounded text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)]" title="Geser ke Bawah"><i class="fa-solid fa-chevron-down text-[9px]"></i></button>
+                  </div>
                 </div>
               </div>
+
+              <!-- Item 5: OpenRouter Free -->
+              <div class="priority-item p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 flex items-center justify-between transition-all duration-150 select-none cursor-move" draggable="true" data-id="openrouter" ondragstart="onPriorityDragStart(event)" ondragover="onPriorityDragOver(event)" ondragleave="onPriorityDragLeave(event)" ondrop="onPriorityDrop(event)" ondragend="onPriorityDragEnd(event)">
+                <div class="flex items-center space-x-3 min-w-0">
+                  <div class="cursor-grab active:cursor-grabbing text-[var(--nlm-text-tertiary)] hover:text-blue-500 p-1" title="Tarik untuk memindahkan">
+                    <i class="fa-solid fa-grip-vertical text-sm"></i>
+                  </div>
+                  <span class="priority-rank-badge w-6 h-6 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center shrink-0">5</span>
+                  <div class="min-w-0">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">OpenRouter (Free Tier Models)</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Koleksi model Llama 3.1 8B &amp; Mistral gratis</div>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2 shrink-0">
+                  <span class="priority-status-badge text-[10px] font-bold text-indigo-600 bg-indigo-500/10 px-2 py-0.5 rounded">Failover #4</span>
+                  <div class="flex flex-col space-y-0.5">
+                    <button onclick="movePriority(this, -1, event)" class="p-1 hover:bg-[var(--nlm-surface-hover)] rounded text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)]" title="Geser ke Atas"><i class="fa-solid fa-chevron-up text-[9px]"></i></button>
+                    <button onclick="movePriority(this, 1, event)" class="p-1 hover:bg-[var(--nlm-surface-hover)] rounded text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)]" title="Geser ke Bawah"><i class="fa-solid fa-chevron-down text-[9px]"></i></button>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -1252,6 +1485,82 @@
           <p class="mt-3">
             Implikasi praktis: Arsitek sistem harus memilih antara CP atau AP saat terjadi split-brain...
           </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 7. MODAL: TUTORIAL CARA MENDAPATKAN API KEY PROVIDER     -->
+  <!-- ======================================================== -->
+  <div id="modal-api-tutorial" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      
+      <!-- Tutorial Modal Header -->
+      <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div id="tut-icon-box" class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm font-bold shrink-0">
+            <i id="tut-icon" class="fa-brands fa-google"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h3 id="tut-title" class="font-bold text-sm text-[var(--nlm-text-primary)]">Tutorial API: Google Gemini</h3>
+              <span id="tut-badge" class="text-[9px] bg-emerald-500/10 text-emerald-600 font-bold px-2 py-0.5 rounded">Free Tier</span>
+            </div>
+            <span id="tut-quota" class="text-[11px] text-[var(--nlm-text-tertiary)]">1.500 request/hari &bull; 1.000.000 Token Context Free</span>
+          </div>
+        </div>
+        <button onclick="closeApiTutorial()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Tutorial Body -->
+      <div class="p-5 overflow-y-auto space-y-4 text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+        
+        <!-- Peringatan Khusus 9Router (Hanya muncul jika provider 9router) -->
+        <div id="tut-9router-alert" class="hidden p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-300">
+          <div class="font-bold flex items-center space-x-1.5 text-xs mb-1">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600 text-sm"></i>
+            <span>SYARAT WAJIB KONEKSI 9ROUTER:</span>
+          </div>
+          <p class="text-[11px] leading-relaxed">
+            9Router hanya tersedia jika aplikasi 9Router di <strong>laptop Anda aktif (Daemon running di port 20128)</strong> dan seluruh perangkat (laptop dan HP Android) terhubung ke dalam <strong>1 JARINGAN (WiFi / Hotspot yang sama)</strong>.
+          </p>
+        </div>
+
+        <!-- Langkah demi Langkah -->
+        <div>
+          <div class="font-bold text-xs text-[var(--nlm-text-primary)] mb-2 flex items-center space-x-1.5">
+            <i class="fa-solid fa-list-check text-blue-600"></i>
+            <span>Langkah Mendapatkan Kunci:</span>
+          </div>
+          <ol id="tut-steps-list" class="space-y-2.5 list-decimal ml-4 pl-1">
+            <!-- Populated dynamically via JS -->
+          </ol>
+        </div>
+
+        <!-- Contoh / Format Kunci -->
+        <div class="p-3 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)]">
+          <div class="text-[10px] uppercase font-bold text-[var(--nlm-text-tertiary)] mb-1">Format / Contoh Input:</div>
+          <code id="tut-format-sample" class="text-xs font-mono text-blue-600 dark:text-blue-400 select-all font-semibold">AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</code>
+        </div>
+      </div>
+
+      <!-- Tutorial Footer -->
+      <div class="p-3.5 bg-[var(--nlm-surface-variant)] border-t border-[var(--nlm-border)] flex items-center justify-between text-xs">
+        <a id="tut-official-link" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center space-x-1 font-semibold">
+          <span>Buka Dashboard Resmi</span>
+          <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+        </a>
+        <div class="flex items-center space-x-2">
+          <button onclick="closeApiTutorial()" class="px-3 py-1.5 rounded-xl border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-secondary)] font-medium">
+            Tutup
+          </button>
+          <button id="tut-btn-use" onclick="useCurrentTutorialProvider()" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+            Masukkan Kunci Ini
+          </button>
         </div>
       </div>
 
@@ -1473,6 +1782,379 @@
       if (confirm("PERINGATAN: Seluruh berkas laptop di MongoDB Atlas dan akun NoteRoute Anda akan dihapus permanen. Lanjutkan?")) {
         showToast("Akun Dihapus", "Akun dan berkas Anda telah dibersihkan.");
         closeSettingsModal();
+      }
+    }
+
+    // PROFILE MANAGEMENT FUNCTIONS
+    function onFirstNameChange(val) {
+      const trimmed = val.trim();
+      const nickname = trimmed || 'Pengguna';
+      document.getElementById('prof-nickname').value = nickname;
+      updateHeaderUserIdentity();
+    }
+
+    function onLastNameChange(val) {
+      updateHeaderUserIdentity();
+    }
+
+    function onEmailChange(val) {
+      const email = val.trim() || 'user@noteroute.app';
+      document.getElementById('topbar-user-email').textContent = email;
+    }
+
+    function updateHeaderUserIdentity() {
+      const fn = document.getElementById('prof-first-name').value.trim();
+      const ln = document.getElementById('prof-last-name').value.trim();
+      const fullName = (fn + ' ' + ln).trim() || 'Ahmad Zakky';
+      document.getElementById('topbar-user-name').textContent = fullName;
+      
+      // Update avatar initials if image is not uploaded
+      let initials = 'U';
+      if (fn && ln) {
+        initials = (fn[0] + ln[0]).toUpperCase();
+      } else if (fn) {
+        initials = fn.substring(0, 2).toUpperCase();
+      }
+      document.getElementById('topbar-avatar-text').textContent = initials;
+      document.getElementById('dropdown-avatar-text').textContent = initials;
+      document.getElementById('settings-avatar-text').textContent = initials;
+    }
+
+    function handleProfilePhotoUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const dataUrl = evt.target.result;
+          
+          // Preview in settings modal
+          const sImg = document.getElementById('settings-avatar-img');
+          sImg.src = dataUrl;
+          sImg.classList.remove('hidden');
+          document.getElementById('settings-avatar-text').classList.add('hidden');
+
+          // Preview in topbar button
+          const tImg = document.getElementById('topbar-avatar-img');
+          tImg.src = dataUrl;
+          tImg.classList.remove('hidden');
+          document.getElementById('topbar-avatar-text').classList.add('hidden');
+
+          // Preview in dropdown menu
+          const dImg = document.getElementById('dropdown-avatar-img');
+          dImg.src = dataUrl;
+          dImg.classList.remove('hidden');
+          document.getElementById('dropdown-avatar-text').classList.add('hidden');
+
+          showToast("Foto Profil Diperbarui", "Foto berhasil disimpan ke akun cloud.");
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function removeProfilePhoto() {
+      document.getElementById('profile-photo-input').value = '';
+      
+      document.getElementById('settings-avatar-img').classList.add('hidden');
+      document.getElementById('settings-avatar-text').classList.remove('hidden');
+      
+      document.getElementById('topbar-avatar-img').classList.add('hidden');
+      document.getElementById('topbar-avatar-text').classList.remove('hidden');
+
+      document.getElementById('dropdown-avatar-img').classList.add('hidden');
+      document.getElementById('dropdown-avatar-text').classList.remove('hidden');
+
+      showToast("Foto Profil Dihapus", "Foto dikembalikan ke inisial nama.");
+    }
+
+    function changePasswordSubmit() {
+      const cur = document.getElementById('prof-pass-current').value;
+      const pNew = document.getElementById('prof-pass-new').value;
+      const pConf = document.getElementById('prof-pass-confirm').value;
+
+      if (!cur) {
+        showToast("Peringatan", "Silakan masukkan kata sandi saat ini.");
+        return;
+      }
+      if (pNew.length < 8) {
+        showToast("Peringatan", "Kata sandi baru minimal 8 karakter.");
+        return;
+      }
+      if (pNew !== pConf) {
+        showToast("Gagal", "Konfirmasi kata sandi baru tidak sesuai.");
+        return;
+      }
+
+      document.getElementById('prof-pass-current').value = '';
+      document.getElementById('prof-pass-new').value = '';
+      document.getElementById('prof-pass-confirm').value = '';
+      showToast("Kata Sandi Diperbarui", "Kata sandi akun NoteRoute Anda berhasil diperbarui.");
+    }
+
+    // AI PRIORITY DRAG & DROP LOGIC
+    let draggedPriorityItem = null;
+
+    function onPriorityDragStart(e) {
+      draggedPriorityItem = e.currentTarget;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', e.currentTarget.dataset.id);
+      setTimeout(() => e.currentTarget.classList.add('opacity-40', 'scale-[0.98]', 'border-blue-500'), 0);
+    }
+
+    function onPriorityDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const target = e.currentTarget;
+      if (target && target !== draggedPriorityItem && target.classList.contains('priority-item')) {
+        target.classList.add('border-blue-500', 'bg-blue-500/10');
+      }
+    }
+
+    function onPriorityDragLeave(e) {
+      e.currentTarget.classList.remove('border-blue-500', 'bg-blue-500/10');
+    }
+
+    function onPriorityDrop(e) {
+      e.preventDefault();
+      const target = e.currentTarget;
+      target.classList.remove('border-blue-500', 'bg-blue-500/10');
+      
+      if (draggedPriorityItem && target && target !== draggedPriorityItem && target.classList.contains('priority-item')) {
+        const list = document.getElementById('priority-list');
+        const items = Array.from(list.querySelectorAll('.priority-item'));
+        const draggedIdx = items.indexOf(draggedPriorityItem);
+        const targetIdx = items.indexOf(target);
+
+        if (draggedIdx < targetIdx) {
+          list.insertBefore(draggedPriorityItem, target.nextSibling);
+        } else {
+          list.insertBefore(draggedPriorityItem, target);
+        }
+        reindexPriorityList();
+      }
+    }
+
+    function onPriorityDragEnd(e) {
+      e.currentTarget.classList.remove('opacity-40', 'scale-[0.98]', 'border-blue-500');
+      document.querySelectorAll('.priority-item').forEach(el => el.classList.remove('border-blue-500', 'bg-blue-500/10'));
+      draggedPriorityItem = null;
+    }
+
+    function movePriority(btn, direction, e) {
+      if (e) e.stopPropagation();
+      const item = btn.closest('.priority-item');
+      const list = document.getElementById('priority-list');
+      if (direction === -1 && item.previousElementSibling) {
+        list.insertBefore(item, item.previousElementSibling);
+        reindexPriorityList();
+      } else if (direction === 1 && item.nextElementSibling) {
+        list.insertBefore(item.nextElementSibling, item);
+        reindexPriorityList();
+      }
+    }
+
+    function reindexPriorityList() {
+      const list = document.getElementById('priority-list');
+      const items = list.querySelectorAll('.priority-item');
+      items.forEach((item, index) => {
+        const rank = index + 1;
+        const rankBadge = item.querySelector('.priority-rank-badge');
+        const statusBadge = item.querySelector('.priority-status-badge');
+        
+        rankBadge.textContent = rank;
+        if (rank === 1) {
+          rankBadge.className = "priority-rank-badge w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0";
+          statusBadge.className = "priority-status-badge text-[10px] font-bold text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded";
+          statusBadge.textContent = "Utama";
+        } else {
+          rankBadge.className = "priority-rank-badge w-6 h-6 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center shrink-0";
+          statusBadge.className = "priority-status-badge text-[10px] font-bold text-[var(--nlm-text-secondary)] bg-[var(--nlm-surface-hover)] px-2 py-0.5 rounded";
+          statusBadge.textContent = `Failover #${rank - 1}`;
+        }
+      });
+      const topName = items[0].querySelector('.font-bold.text-xs').textContent;
+      showToast("Prioritas Diperbarui", `${topName} kini urutan #1.`);
+    }
+
+    // API TUTORIAL MODAL DATA & HANDLERS
+    let currentTutorialId = 'gemini';
+
+    const tutorialData = {
+      gemini: {
+        name: "Google Gemini AI",
+        icon: "fa-brands fa-google text-blue-600",
+        badge: "100% Gratis",
+        quota: "1.500 req/hari • 1.000.000 Token Context Free",
+        sample: "AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://aistudio.google.com/app/apikey",
+        is9Router: false,
+        steps: [
+          "Buka Google AI Studio di aistudio.google.com/app/apikey.",
+          "Masuk menggunakan akun Google Anda.",
+          "Klik tombol biru 'Create API Key'.",
+          "Pilih project Google Cloud default atau 'Create key in new project'.",
+          "Salin kunci berawalan 'AIzaSy...' dan tempelkan ke form NoteRoute."
+        ]
+      },
+      groq: {
+        name: "Groq Cloud (Llama 3.3 70B)",
+        icon: "fa-solid fa-bolt text-orange-500",
+        badge: "Ultra-Fast Free Tier",
+        quota: "Inference 300+ token/detik • Kuota gratis harian",
+        sample: "gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://console.groq.com/keys",
+        is9Router: false,
+        steps: [
+          "Buka Groq Console di console.groq.com/keys.",
+          "Daftar atau login dengan Google / GitHub.",
+          "Klik menu 'API Keys' di navigasi kiri.",
+          "Klik 'Create API Key', beri nama (contoh: 'NoteRoute').",
+          "Salin kunci berawalan 'gsk_...' dan masukkan ke NoteRoute."
+        ]
+      },
+      kiro: {
+        name: "Kiro AI (Kiiro Gateway)",
+        icon: "fa-solid fa-ghost text-purple-600",
+        badge: "Free Connected",
+        quota: "Free Tier Auth Key • Multimodal & Reasoning",
+        sample: "kiro_free_auth_key_xxxxxxxx",
+        link: "https://kiro.ai",
+        is9Router: false,
+        steps: [
+          "Kunjungi portal pengembang Kiro AI di kiro.ai.",
+          "Daftarkan akun developer gratis.",
+          "Buka menu Developer Settings -> API Tokens.",
+          "Buat token baru dan salin kunci 'kiro_...' ke NoteRoute."
+        ]
+      },
+      deepseek: {
+        name: "DeepSeek R1 / V3",
+        icon: "fa-solid fa-brain text-blue-600",
+        badge: "Free Credits",
+        quota: "Reasoning canggih • Saldo gratis awal untuk pengguna baru",
+        sample: "sk-deepseek_xxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://platform.deepseek.com/api_keys",
+        is9Router: false,
+        steps: [
+          "Buka platform resmi di platform.deepseek.com/api_keys.",
+          "Daftar dengan alamat email Anda.",
+          "Pilih 'API Keys' pada menu navigasi.",
+          "Klik 'Create API Key' dan salin kuncinya.",
+          "Tempelkan ke form pengaturan NoteRoute."
+        ]
+      },
+      '9router': {
+        name: "9Router Local Daemon",
+        icon: "fa-solid fa-network-wired text-emerald-600",
+        badge: "100% Offline & Gratis",
+        quota: "Bridge Port 20128 • Tanpa Internet & Tanpa Kartu Kredit",
+        sample: "http://localhost:20128/v1 (atau IP LAN laptop: http://192.168.1.x:20128/v1)",
+        link: "http://localhost:20128",
+        is9Router: true,
+        steps: [
+          "Pastikan aplikasi 9Router di laptop Anda sudah berjalan (status aktif di port 20128).",
+          "Cek status daemon dengan membuka http://localhost:20128 di browser laptop.",
+          "SYARAT UTAMA: Jika NoteRoute dibuka dari HP Android Izat atau perangkat lain, seluruh perangkat HARUS BERADA DALAM 1 JARINGAN (WiFi / Hotspot yang sama).",
+          "Gunakan IP LAN laptop Anda (contoh: http://192.168.1.50:20128/v1) sebagai target endpoint di NoteRoute."
+        ]
+      },
+      openrouter: {
+        name: "OpenRouter (Free Tier)",
+        icon: "fa-solid fa-shuffle text-indigo-600",
+        badge: "Free Models",
+        quota: "Model gratis: Llama 3.1 8B, Gemma 2 9B, Mistral 7B",
+        sample: "sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://openrouter.ai/keys",
+        is9Router: false,
+        steps: [
+          "Buka openrouter.ai/keys dan login dengan Google atau GitHub.",
+          "Klik tombol 'Create Key'.",
+          "Beri nama kunci 'NoteRoute'. Batas kredit $0 tetap dapat mengakses model berlabel :free.",
+          "Salin string kunci yang diawali 'sk-or-v1-...' ke NoteRoute."
+        ]
+      },
+      ollama: {
+        name: "Ollama Localhost",
+        icon: "fa-solid fa-server text-slate-600",
+        badge: "Lokal Offline",
+        quota: "Port 11434 • Berjalan 100% di komputer sendiri tanpa internet",
+        sample: "http://localhost:11434",
+        link: "https://ollama.com/download",
+        is9Router: false,
+        steps: [
+          "Unduh Ollama dari ollama.com/download.",
+          "Jalankan model di terminal, misal: 'ollama run llama3.2'.",
+          "Pastikan servis berjalan di http://localhost:11434.",
+          "Masukkan URL tersebut ke NoteRoute untuk pemrosesan 100% offline."
+        ]
+      },
+      cloudflare: {
+        name: "Cloudflare Workers AI",
+        icon: "fa-solid fa-cloud text-amber-600",
+        badge: "Free Edge AI",
+        quota: "10.000 Neuron komputasi gratis setiap hari",
+        sample: "cf_api_token_xxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://dash.cloudflare.com/",
+        is9Router: false,
+        steps: [
+          "Login ke dash.cloudflare.com.",
+          "Navigasi ke menu AI -> Workers AI.",
+          "Klik 'Create API Token' dengan template Workers AI Read.",
+          "Salin token dan Account ID ke NoteRoute."
+        ]
+      },
+      cerebras: {
+        name: "Cerebras Inference",
+        icon: "fa-solid fa-microchip text-red-600",
+        badge: "1.800+ t/s",
+        quota: "Hardware wafer-scale tercepat di dunia dengan kuota gratis",
+        sample: "csk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://cloud.cerebras.ai/",
+        is9Router: false,
+        steps: [
+          "Daftar akun di cloud.cerebras.ai.",
+          "Buka tab 'API Keys' di dashboard konsol.",
+          "Klik 'Create New API Key' dan salin kodenya ke NoteRoute."
+        ]
+      }
+    };
+
+    function openApiTutorial(providerId, event) {
+      if (event) event.stopPropagation();
+      currentTutorialId = providerId;
+      const data = tutorialData[providerId] || tutorialData.gemini;
+      
+      document.getElementById('tut-title').textContent = `Tutorial API: ${data.name}`;
+      document.getElementById('tut-badge').textContent = data.badge;
+      document.getElementById('tut-quota').textContent = data.quota;
+      document.getElementById('tut-format-sample').textContent = data.sample;
+      document.getElementById('tut-official-link').href = data.link;
+
+      const iconBox = document.getElementById('tut-icon-box');
+      iconBox.innerHTML = `<i class="${data.icon}"></i>`;
+
+      const alert9 = document.getElementById('tut-9router-alert');
+      if (data.is9Router) {
+        alert9.classList.remove('hidden');
+      } else {
+        alert9.classList.add('hidden');
+      }
+
+      const stepsList = document.getElementById('tut-steps-list');
+      stepsList.innerHTML = data.steps.map(step => `<li class="leading-relaxed">${step}</li>`).join('');
+
+      document.getElementById('modal-api-tutorial').classList.remove('hidden');
+    }
+
+    function closeApiTutorial() {
+      document.getElementById('modal-api-tutorial').classList.add('hidden');
+    }
+
+    function useCurrentTutorialProvider() {
+      closeApiTutorial();
+      const data = tutorialData[currentTutorialId];
+      if (data) {
+        openConfigureApiKey(data.name, data.sample, data.quota);
+        switchSettingsTab('api');
       }
     }
 
