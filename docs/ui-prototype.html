@@ -750,7 +750,7 @@
                   <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-700 dark:text-red-300 font-mono font-medium">Semua Kuota Terlampaui (429)</span>
                 </div>
                 <p class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
-                  Seluruh 5 penyedia AI di rantai failover Anda (Gemini, Groq, Kiro, DeepSeek, OpenRouter) telah mencapai batas harian token. Anda dapat menambahkan kunci API baru di Pengaturan atau mengaktifkan daemon lokal tanpa kuota.
+                  Seluruh 5 penyedia AI di rantai failover Anda (Gemini, Groq, Cerebras, DeepSeek, OpenRouter) telah mencapai batas harian token. Anda dapat menambahkan kunci API baru di Pengaturan atau mengaktifkan daemon lokal tanpa kuota.
                 </p>
               </div>
             </div>
@@ -1450,15 +1450,23 @@
 
           <!-- TAB 3: MENGATUR KUNCI API (PERSIS SCREENSHOT PROVIDERS GRID - HANYA AI GRATIS & BYOK) -->
           <div id="scontent-api" class="hidden space-y-4">
-            <div class="flex items-center justify-between">
+            
+            <!-- HEADER PENGATURAN API DENGAN TOMBOL TAMBAH API LAIN (BYOK) -->
+            <div class="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Penyedia AI Gratis (Free Tier Providers)</h4>
-                <p class="text-[11px] text-[var(--nlm-text-tertiary)]">Pilih dan konfigurasikan model AI yang dapat tersambung gratis untuk NoteRoute.</p>
+                <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Kunci API &amp; Penyedia AI (Dual-Tier Free &amp; BYOK)</h4>
+                <p class="text-[11px] text-[var(--nlm-text-tertiary)]">Pilih model AI gratis dari kurasi GitHub free-ai-apis atau tambahkan endpoint kustom sendiri.</p>
               </div>
-              <button onclick="showToast('Uji Koneksi', 'Memeriksa status semua provider AI gratis...')" class="px-3 py-1.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-xs font-semibold text-blue-600 flex items-center space-x-1.5 transition">
-                <i class="fa-solid fa-play text-[9px]"></i>
-                <span>Test All Free</span>
-              </button>
+              <div class="flex items-center space-x-1.5">
+                <button onclick="openCustomApiModal('anthropic')" class="px-2.5 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold flex items-center space-x-1.5 transition shadow-xs">
+                  <i class="fa-solid fa-plus text-[10px]"></i>
+                  <span>Add Anthropic Compatible</span>
+                </button>
+                <button onclick="openCustomApiModal('openai')" class="px-2.5 py-1.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-primary)] text-xs font-semibold flex items-center space-x-1.5 transition">
+                  <i class="fa-solid fa-plus text-[10px]"></i>
+                  <span>Add OpenAI Compatible</span>
+                </button>
+              </div>
             </div>
 
             <!-- DUAL-TIER VALUE BANNER (RAMAH ORANG AWAM & SANGAT MENARIK UNTUK ADVANCE) -->
@@ -1479,218 +1487,399 @@
                       <strong class="text-[var(--nlm-text-primary)]">👤 Orang Awam (Tanpa Setup):</strong> Anda tidak wajib mengisi kunci API. NoteRoute menyediakan <em>Community Shared Pool</em> gratis bawaan sehingga dapat langsung digunakan untuk bertanya pada dokumen.
                     </p>
                     <p>
-                      <strong class="text-[var(--nlm-text-primary)]">⚡ Pengguna Advance (BYOK - Bring Your Own Key):</strong> Punya 1 atau lebih API key sendiri? Masukkan di bawah untuk menikmati <strong>kuota tanpa batas harian</strong>, latensi kilat, rotasi otomatis anti-limit (<em>auto-failover</em>), serta dukungan AI lokal offline (Ollama / 9Router) dengan enkripsi lokal aman.
+                      <strong class="text-[var(--nlm-text-primary)]">⚡ Pengguna Advance (BYOK - Bring Your Own Key):</strong> Punya 1 atau lebih API key sendiri? Tambahkan endpoint kustom atau kunci resmi di bawah untuk menikmati <strong>kuota tanpa batas harian</strong>, latensi kilat, rotasi otomatis anti-limit (<em>auto-failover</em>), serta dukungan AI lokal offline (Ollama / 9Router) dengan enkripsi lokal aman.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- PROVIDERS GRID (MODEL PERSIS SCREENSHOT PROVIDERS DENGAN TOMBOL TUTORIAL & KETERANGAN 9ROUTER) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-              
-              <!-- Card 1: Google Gemini -->
-              <div onclick="openConfigureApiKey('Google Gemini', 'AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', '1.500 req/hari &bull; 1M Context Free')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
-                <div class="flex items-start space-x-2.5">
-                  <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm shrink-0">
-                    <i class="fa-brands fa-google"></i>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Gemini AI</div>
-                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      <span>1M Free Ready</span>
+            <!-- SECTION 1: CUSTOM PROVIDERS (OPENAI / ANTHROPIC COMPATIBLE - BYOK) -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <h5 class="font-bold text-xs text-[var(--nlm-text-primary)] flex items-center space-x-1.5">
+                  <i class="fa-solid fa-server text-blue-500"></i>
+                  <span>Custom Providers (OpenAI/Anthropic Compatible)</span>
+                  <span id="custom-provider-count-badge" class="px-1.5 py-0.2 rounded-full bg-blue-500/10 text-blue-600 text-[10px] font-mono font-bold">0</span>
+                </h5>
+              </div>
+              <div id="custom-providers-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                <!-- Dynamically populated or empty state by renderCustomProviders() -->
+              </div>
+            </div>
+
+            <!-- SECTION 2: FREE TIER PROVIDERS (LENGKAP SESUAI GITHUB OuterSpacee/free-ai-apis) -->
+            <div class="space-y-2.5 pt-2 border-t border-[var(--nlm-border-subtle)]">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h5 class="font-bold text-xs text-[var(--nlm-text-primary)] flex items-center space-x-1.5">
+                    <i class="fa-solid fa-gift text-emerald-500"></i>
+                    <span>Free Tier Providers (Kurasi OuterSpacee/free-ai-apis)</span>
+                  </h5>
+                  <p class="text-[10px] text-[var(--nlm-text-tertiary)]">100% Free tier tanpa kartu kredit atau AI lokal offline.</p>
+                </div>
+                <button onclick="showToast('Uji Koneksi', 'Memeriksa status semua provider AI gratis...')" class="px-2.5 py-1 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-[11px] font-semibold text-blue-600 flex items-center space-x-1 transition">
+                  <i class="fa-solid fa-play text-[9px]"></i>
+                  <span>Test All Free</span>
+                </button>
+              </div>
+
+              <!-- GRID 15 FREE TIER PROVIDERS DARI REPO GITHUB (KIRO TELAH DIHAPUS) -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                
+                <!-- 1. Google Gemini AI -->
+                <div onclick="openConfigureApiKey('Google Gemini', 'AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', '1.500 req/hari &bull; 1M Context Free')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-brands fa-google"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Gemini AI (Flash/Pro)</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>1.500 RPD &bull; 1M Free</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
-                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Free Tier</span>
-                  <button onclick="openApiTutorial('gemini', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
-                    <i class="fa-solid fa-circle-question text-[9px]"></i>
-                    <span>Tutorial API</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Card 2: Groq Cloud -->
-              <div onclick="openConfigureApiKey('Groq Cloud', 'gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'Ultra-fast 300+ t/s &bull; Free Tier')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
-                <div class="flex items-start space-x-2.5">
-                  <div class="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-600 flex items-center justify-center text-sm shrink-0">
-                    <i class="fa-solid fa-bolt"></i>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Free Tier</span>
+                    <button onclick="openApiTutorial('gemini', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
                   </div>
-                  <div class="min-w-0 flex-1">
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Groq (Llama 3.3)</div>
-                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      <span>300 t/s Kilat</span>
+                </div>
+
+                <!-- 2. Groq Cloud -->
+                <div onclick="openConfigureApiKey('Groq Cloud', 'gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'Ultra-fast 300+ t/s &bull; Free Tier')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Groq (Llama 3.3 70B)</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>300+ t/s Kilat</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
-                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Ultra-fast</span>
-                  <button onclick="openApiTutorial('groq', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-orange-600 dark:text-orange-400 bg-orange-500/10 hover:bg-orange-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
-                    <i class="fa-solid fa-circle-question text-[9px]"></i>
-                    <span>Tutorial API</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Card 3: Kiiro / Kiro AI -->
-              <div onclick="openConfigureApiKey('Kiro AI', 'kiro_free_auth_key', 'Free Tier Connected')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
-                <div class="flex items-start space-x-2.5">
-                  <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 flex items-center justify-center text-sm shrink-0">
-                    <i class="fa-solid fa-ghost"></i>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Ultra-fast Free</span>
+                    <button onclick="openApiTutorial('groq', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-orange-600 dark:text-orange-400 bg-orange-500/10 hover:bg-orange-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
                   </div>
-                  <div class="min-w-0 flex-1">
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Kiro AI</div>
-                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      <span>1 Connected</span>
+                </div>
+
+                <!-- 3. Cerebras Inference -->
+                <div onclick="openConfigureApiKey('Cerebras', 'csk_xxxxxxxxxxxxxxxx', 'Inference ultra-cepat gratis &bull; 1.800+ t/s')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Cerebras (Llama 3.1)</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>1.800+ t/s &bull; 1M/hari</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
-                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Free Token</span>
-                  <button onclick="openApiTutorial('kiro', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-purple-600 dark:text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
-                    <i class="fa-solid fa-circle-question text-[9px]"></i>
-                    <span>Tutorial API</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Card 4: DeepSeek -->
-              <div onclick="openConfigureApiKey('DeepSeek', 'sk_deepseek_xxxxxxxxxxxxxxxx', 'Reasoning Murah / Free Credits')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
-                <div class="flex items-start space-x-2.5">
-                  <div class="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-600 flex items-center justify-center text-sm shrink-0">
-                    <i class="fa-solid fa-brain"></i>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Wafer-Scale</span>
+                    <button onclick="openApiTutorial('cerebras', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
                   </div>
-                  <div class="min-w-0 flex-1">
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">DeepSeek R1/V3</div>
-                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      <span>Aktif</span>
+                </div>
+
+                <!-- 4. DeepSeek -->
+                <div onclick="openConfigureApiKey('DeepSeek', 'sk_deepseek_xxxxxxxxxxxxxxxx', 'Reasoning Canggih / Free Credits')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">DeepSeek (V3 / R1)</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>Reasoning Free</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
-                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Reasoning</span>
-                  <button onclick="openApiTutorial('deepseek', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
-                    <i class="fa-solid fa-circle-question text-[9px]"></i>
-                    <span>Tutorial API</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Card 5: 9Router Local Daemon (DENGAN KETERANGAN KHUSUS 1 JARINGAN & LAPTOP AKTIF) -->
-              <div onclick="openConfigureApiKey('9Router Local', 'http://localhost:20128/v1', 'Local Daemon Bridge &bull; 100% Gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
-                <div class="flex items-start space-x-2.5">
-                  <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-sm shrink-0">
-                    <i class="fa-solid fa-network-wired"></i>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Open-Weights</span>
+                    <button onclick="openApiTutorial('deepseek', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
                   </div>
-                  <div class="min-w-0 flex-1">
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">9Router Local</div>
-                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      <span>Port 20128</span>
+                </div>
+
+                <!-- 5. OpenRouter Free -->
+                <div onclick="openConfigureApiKey('OpenRouter (Free)', 'sk-or-v1-xxxxxxxxxxxxxxxx', 'Akses model Llama &amp; Mistral Gratis (:free)')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-solid fa-shuffle"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">OpenRouter (:free)</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>Multi-Model Free</span>
+                      </div>
                     </div>
                   </div>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Aggregator</span>
+                    <button onclick="openApiTutorial('openrouter', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
+                  </div>
                 </div>
 
-                <!-- KETERANGAN WAJIB 9ROUTER -->
-                <div class="mt-2 p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] leading-tight flex items-start space-x-1.5">
-                  <i class="fa-solid fa-triangle-exclamation text-[10px] mt-0.5 shrink-0 text-amber-500"></i>
-                  <span>Hanya tersedia jika 9Router di laptop aktif &amp; dalam 1 jaringan (WiFi/LAN)</span>
+                <!-- 6. Mistral AI -->
+                <div onclick="openConfigureApiKey('Mistral AI', 'mis_xxxxxxxxxxxxxxxx', 'Codestral &amp; Mistral 7B &bull; Free Tier')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-solid fa-wind"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Mistral AI</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>Codestral &amp; 7B Free</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">La Plateforme</span>
+                    <button onclick="openApiTutorial('mistral', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
+                  </div>
                 </div>
 
-                <div class="mt-2 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
-                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Local Bridge</span>
-                  <button onclick="openApiTutorial('9router', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
-                    <i class="fa-solid fa-circle-question text-[9px]"></i>
-                    <span>Tutorial API</span>
-                  </button>
+                <!-- 7. Cohere -->
+                <div onclick="openConfigureApiKey('Cohere', 'coh_xxxxxxxxxxxxxxxx', 'Command R / R+ &bull; Trial Key 1.000 Call/Bulan')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Cohere (Command R)</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>1.000 Call/Bulan</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Enterprise LLM</span>
+                    <button onclick="openApiTutorial('cohere', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-teal-600 dark:text-teal-400 bg-teal-500/10 hover:bg-teal-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
+                  </div>
                 </div>
+
+                <!-- 8. Together AI -->
+                <div onclick="openConfigureApiKey('Together AI', 'tog_xxxxxxxxxxxxxxxx', '100+ Model Open Source &bull; $5 Free Credits')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Together AI</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>$5 Free Credits</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">100+ Open LLM</span>
+                    <button onclick="openApiTutorial('together', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 9. Fireworks AI -->
+                <div onclick="openConfigureApiKey('Fireworks AI', 'fw_xxxxxxxxxxxxxxxx', 'Fast Open-Source Inference &bull; $1 Free Credits')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-solid fa-fire"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Fireworks AI</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>$1 Free Credits</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Fast Inference</span>
+                    <button onclick="openApiTutorial('fireworks', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 10. NVIDIA NIM -->
+                <div onclick="openConfigureApiKey('NVIDIA NIM', 'nvapi-xxxxxxxxxxxxxxxx', 'Developer Prototyping &bull; 405B Models Free')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">NVIDIA NIM</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>Dev Prototyping</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Llama 405B &amp; Qwen</span>
+                    <button onclick="openApiTutorial('nvidia', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 11. SambaNova Cloud -->
+                <div onclick="openConfigureApiKey('SambaNova', 'samba_xxxxxxxxxxxxxxxx', 'Fast Inference &bull; Llama 3.1 70B/405B Free Tier')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-solid fa-gauge-high"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">SambaNova Cloud</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>Fast Free Tier</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">SN40L Chips</span>
+                    <button onclick="openApiTutorial('sambanova', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-purple-600 dark:text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 12. Cloudflare Workers AI -->
+                <div onclick="openConfigureApiKey('Cloudflare AI', 'cf_api_xxxxxxxx', '10.000 neurons/hari gratis edge')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-solid fa-cloud"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Cloudflare AI</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>10.000 Neurons/Hari</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Edge Network</span>
+                    <button onclick="openApiTutorial('cloudflare', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 13. Z.ai / Zhipu AI -->
+                <div onclick="openConfigureApiKey('Z.ai (Zhipu)', 'zai_xxxxxxxxxxxxxxxx', 'GLM-4-Flash Free Tier')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-solid fa-gem"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Z.ai (GLM-4-Flash)</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>Free Tier Ready</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Bilingual / Coding</span>
+                    <button onclick="openApiTutorial('zai', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 14. Ollama Localhost -->
+                <div onclick="openConfigureApiKey('Ollama Local', 'http://localhost:11434', 'Model lokal offline tanpa internet')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-slate-500/10 text-slate-600 dark:text-slate-400 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-solid fa-server"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Ollama Local</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>100% Offline Lokal</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Port 11434</span>
+                    <button onclick="openApiTutorial('ollama', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-slate-600 dark:text-slate-400 bg-slate-500/10 hover:bg-slate-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 15. 9Router Local Daemon (DENGAN KETERANGAN KHUSUS 1 JARINGAN & LAPTOP AKTIF) -->
+                <div onclick="openConfigureApiKey('9Router Local', 'http://localhost:20128/v1', 'Local Daemon Bridge &bull; 100% Gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-solid fa-network-wired"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">9Router Local</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>Port 20128 Active</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- KETERANGAN WAJIB 9ROUTER -->
+                  <div class="mt-2 p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] leading-tight flex items-start space-x-1.5">
+                    <i class="fa-solid fa-triangle-exclamation text-[10px] mt-0.5 shrink-0 text-amber-500"></i>
+                    <span>Hanya tersedia jika 9Router di laptop aktif &amp; dalam 1 jaringan (WiFi/LAN)</span>
+                  </div>
+
+                  <div class="mt-2 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Local Bridge</span>
+                    <button onclick="openApiTutorial('9router', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
+                  </div>
+                </div>
+
               </div>
-
-              <!-- Card 6: OpenRouter Free -->
-              <div onclick="openConfigureApiKey('OpenRouter (Free)', 'sk-or-xxxxxxxxxxxxxxxx', 'Akses model Llama &amp; Mistral Gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
-                <div class="flex items-start space-x-2.5">
-                  <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-sm shrink-0">
-                    <i class="fa-solid fa-shuffle"></i>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">OpenRouter Free</div>
-                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Tersedia</div>
-                  </div>
-                </div>
-                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
-                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Free Models</span>
-                  <button onclick="openApiTutorial('openrouter', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
-                    <i class="fa-solid fa-circle-question text-[9px]"></i>
-                    <span>Tutorial API</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Card 7: Ollama Localhost -->
-              <div onclick="openConfigureApiKey('Ollama Local', 'http://localhost:11434', 'Model lokal offline tanpa internet')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
-                <div class="flex items-start space-x-2.5">
-                  <div class="w-8 h-8 rounded-lg bg-slate-500/10 text-slate-600 dark:text-slate-400 flex items-center justify-center text-sm shrink-0">
-                    <i class="fa-solid fa-server"></i>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Ollama Local</div>
-                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Offline Free</div>
-                  </div>
-                </div>
-                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
-                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Port 11434</span>
-                  <button onclick="openApiTutorial('ollama', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-slate-600 dark:text-slate-400 bg-slate-500/10 hover:bg-slate-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
-                    <i class="fa-solid fa-circle-question text-[9px]"></i>
-                    <span>Tutorial API</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Card 8: Cloudflare Workers AI -->
-              <div onclick="openConfigureApiKey('Cloudflare AI', 'cf_api_xxxxxxxx', '10.000 neurons/hari gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
-                <div class="flex items-start space-x-2.5">
-                  <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm shrink-0">
-                    <i class="fa-solid fa-cloud"></i>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Cloudflare AI</div>
-                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Free Tier</div>
-                  </div>
-                </div>
-                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
-                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Edge 10k</span>
-                  <button onclick="openApiTutorial('cloudflare', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
-                    <i class="fa-solid fa-circle-question text-[9px]"></i>
-                    <span>Tutorial API</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Card 9: Cerebras Inference -->
-              <div onclick="openConfigureApiKey('Cerebras', 'csk_xxxxxxxxxxxxxxxx', 'Inference ultra-cepat gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
-                <div class="flex items-start space-x-2.5">
-                  <div class="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-sm shrink-0">
-                    <i class="fa-solid fa-microchip"></i>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Cerebras Fast</div>
-                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Free Tier</div>
-                  </div>
-                </div>
-                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
-                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">1.800+ t/s</span>
-                  <button onclick="openApiTutorial('cerebras', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
-                    <i class="fa-solid fa-circle-question text-[9px]"></i>
-                    <span>Tutorial API</span>
-                  </button>
-                </div>
-              </div>
-
             </div>
 
             <!-- Single Key Edit Card (Visible when card clicked) -->
@@ -1766,7 +1955,7 @@
                 </div>
               </div>
 
-              <!-- Item 3: DeepSeek / Kiro -->
+              <!-- Item 3: DeepSeek Reasoning -->
               <div class="priority-item p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 flex items-center justify-between transition-all duration-150 select-none cursor-move" draggable="true" data-id="deepseek" ondragstart="onPriorityDragStart(event)" ondragover="onPriorityDragOver(event)" ondragleave="onPriorityDragLeave(event)" ondrop="onPriorityDrop(event)" ondragend="onPriorityDragEnd(event)">
                 <div class="flex items-center space-x-3 min-w-0">
                   <div class="cursor-grab active:cursor-grabbing text-[var(--nlm-text-tertiary)] hover:text-blue-500 p-1" title="Tarik untuk memindahkan">
@@ -1774,7 +1963,7 @@
                   </div>
                   <span class="priority-rank-badge w-6 h-6 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center shrink-0">3</span>
                   <div class="min-w-0">
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">DeepSeek R1 / Kiro AI</div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">DeepSeek R1 / V3 (Reasoning Canggih)</div>
                     <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Penalaran kompleks (Reasoning) hemat biaya</div>
                   </div>
                 </div>
@@ -2009,6 +2198,93 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 8. MODAL: TAMBAH / EDIT CUSTOM PROVIDER (OPENAI/ANTHROPIC)-->
+  <!-- ======================================================== -->
+  <div id="modal-custom-api" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-lg bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] modal-animate-in">
+      
+      <!-- Modal Header -->
+      <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm font-bold shrink-0">
+            <i class="fa-solid fa-server"></i>
+          </div>
+          <div>
+            <h3 id="custom-api-modal-title" class="font-bold text-sm text-[var(--nlm-text-primary)]">Tambah Provider API Kustom</h3>
+            <span class="text-[11px] text-[var(--nlm-text-tertiary)]">Hubungkan endpoint model mandiri (BYOK)</span>
+          </div>
+        </div>
+        <button onclick="closeCustomApiModal()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <form onsubmit="handleCustomApiSubmit(event)" class="p-5 overflow-y-auto space-y-4 text-xs">
+        <input type="hidden" id="custom-api-edit-id" value="">
+
+        <!-- Protocol Selector -->
+        <div>
+          <label class="block font-semibold text-[var(--nlm-text-primary)] mb-1.5">Tipe Protokol API</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" id="btn-proto-openai" onclick="setCustomApiProto('openai')" class="p-2.5 rounded-xl border border-blue-500 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold flex items-center justify-center space-x-2 transition">
+              <i class="fa-solid fa-bolt"></i>
+              <span>OpenAI Compatible</span>
+            </button>
+            <button type="button" id="btn-proto-anthropic" onclick="setCustomApiProto('anthropic')" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] font-medium flex items-center justify-center space-x-2 transition">
+              <i class="fa-solid fa-microchip"></i>
+              <span>Anthropic Compatible</span>
+            </button>
+          </div>
+          <input type="hidden" id="custom-api-proto" value="openai">
+          <p id="custom-api-proto-hint" class="text-[10px] text-[var(--nlm-text-tertiary)] mt-1">Menggunakan format standar <code>/v1/chat/completions</code> (cocok untuk vLLM, LM Studio, Ollama, Together, OpenRouter).</p>
+        </div>
+
+        <!-- Provider Name -->
+        <div>
+          <label class="block font-semibold text-[var(--nlm-text-primary)] mb-1">Nama Provider / Label</label>
+          <input type="text" id="custom-api-name" required placeholder="Contoh: LM Studio Kantor / vLLM Server" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500">
+        </div>
+
+        <!-- Base URL -->
+        <div>
+          <label class="block font-semibold text-[var(--nlm-text-primary)] mb-1">Base URL Endpoint</label>
+          <input type="url" id="custom-api-url" required placeholder="http://localhost:1234/v1 atau https://api.mycustomai.com/v1" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs font-mono text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500">
+          <p class="text-[10px] text-[var(--nlm-text-tertiary)] mt-1">Sertakan skema (http/https) dan path v1.</p>
+        </div>
+
+        <!-- Model ID -->
+        <div>
+          <label class="block font-semibold text-[var(--nlm-text-primary)] mb-1">Model ID</label>
+          <input type="text" id="custom-api-model" required placeholder="Contoh: llama-3.3-70b-instruct, mistral-large, qwen-2.5" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs font-mono text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500">
+        </div>
+
+        <!-- API Key -->
+        <div>
+          <label class="block font-semibold text-[var(--nlm-text-primary)] mb-1">API Key (Kunci Rahasia)</label>
+          <input type="password" id="custom-api-key" placeholder="sk-xxxxxxxx... (Opsional jika server lokal tanpa otentikasi)" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs font-mono text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500">
+          <p class="text-[10px] text-[var(--nlm-text-tertiary)] mt-1">Tersimpan aman di penyimpanan lokal (localStorage) browser Anda.</p>
+        </div>
+
+        <!-- Optional Notes -->
+        <div>
+          <label class="block font-semibold text-[var(--nlm-text-primary)] mb-1">Catatan Tambahan (Opsional)</label>
+          <input type="text" id="custom-api-notes" placeholder="Contoh: Server GPU RTX 4090 di lab komputer" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500">
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="pt-3 border-t border-[var(--nlm-border)] flex items-center justify-end space-x-2">
+          <button type="button" onclick="closeCustomApiModal()" class="px-4 py-2 rounded-xl border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-secondary)] font-semibold transition">Batal</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition shadow-xs flex items-center space-x-1.5">
+            <i class="fa-solid fa-floppy-disk text-xs"></i>
+            <span>Simpan Provider</span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -2576,21 +2852,6 @@
           "Salin kunci berawalan 'gsk_...' dan masukkan ke NoteRoute."
         ]
       },
-      kiro: {
-        name: "Kiro AI (Kiiro Gateway)",
-        icon: "fa-solid fa-ghost text-purple-600",
-        badge: "Free Connected",
-        quota: "Free Tier Auth Key • Multimodal & Reasoning",
-        sample: "kiro_free_auth_key_xxxxxxxx",
-        link: "https://kiro.ai",
-        is9Router: false,
-        steps: [
-          "Kunjungi portal pengembang Kiro AI di kiro.ai.",
-          "Daftarkan akun developer gratis.",
-          "Buka menu Developer Settings -> API Tokens.",
-          "Buat token baru dan salin kunci 'kiro_...' ke NoteRoute."
-        ]
-      },
       deepseek: {
         name: "DeepSeek R1 / V3",
         icon: "fa-solid fa-brain text-blue-600",
@@ -2626,7 +2887,7 @@
         name: "OpenRouter (Free Tier)",
         icon: "fa-solid fa-shuffle text-indigo-600",
         badge: "Free Models",
-        quota: "Model gratis: Llama 3.1 8B, Gemma 2 9B, Mistral 7B",
+        quota: "Model gratis: Llama 3.1 8B, Gemma 2 9B, Mistral 7B (:free)",
         sample: "sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         link: "https://openrouter.ai/keys",
         is9Router: false,
@@ -2635,6 +2896,106 @@
           "Klik tombol 'Create Key'.",
           "Beri nama kunci 'NoteRoute'. Batas kredit $0 tetap dapat mengakses model berlabel :free.",
           "Salin string kunci yang diawali 'sk-or-v1-...' ke NoteRoute."
+        ]
+      },
+      mistral: {
+        name: "Mistral AI (La Plateforme)",
+        icon: "fa-solid fa-wind text-amber-600",
+        badge: "Free Tier",
+        quota: "Codestral & Mistral 7B • Kuota pengembang gratis",
+        sample: "mis_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://console.mistral.ai/api-keys/",
+        is9Router: false,
+        steps: [
+          "Buka console.mistral.ai/api-keys/ dan buat akun.",
+          "Masuk ke tab 'API Keys'.",
+          "Klik 'Create new key' dan salin kunci rahasia Anda.",
+          "Gunakan di NoteRoute untuk akses Codestral & Mistral model."
+        ]
+      },
+      cohere: {
+        name: "Cohere (Command R / R+)",
+        icon: "fa-solid fa-cubes text-teal-600",
+        badge: "1.000 Call/Bulan",
+        quota: "Free Trial Key • 1.000 panggilan gratis per bulan",
+        sample: "coh_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://dashboard.cohere.com/api-keys",
+        is9Router: false,
+        steps: [
+          "Daftar di dashboard.cohere.com/api-keys.",
+          "Salin Trial API Key default yang disediakan di dashboard.",
+          "Trial key otomatis menyediakan 1.000 request per bulan tanpa biaya."
+        ]
+      },
+      together: {
+        name: "Together AI",
+        icon: "fa-solid fa-layer-group text-blue-600",
+        badge: "$5 Free Credits",
+        quota: "100+ Model Open Source • $5 Saldo Uji Coba Gratis",
+        sample: "tog_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://api.together.ai/settings/api-keys",
+        is9Router: false,
+        steps: [
+          "Daftar akun di api.together.ai.",
+          "Dapatkan bonus kredit $5 saat verifikasi nomor ponsel / email.",
+          "Buka Settings -> API Keys, salin kunci dan tempelkan ke NoteRoute."
+        ]
+      },
+      fireworks: {
+        name: "Fireworks AI",
+        icon: "fa-solid fa-fire text-red-600",
+        badge: "$1 Free Credits",
+        quota: "Ultra-fast Open Inference • $1 Saldo Gratis",
+        sample: "fw_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://fireworks.ai/api-keys",
+        is9Router: false,
+        steps: [
+          "Buka fireworks.ai/api-keys dan buat akun.",
+          "Dapatkan kredit $1 gratis untuk uji coba model inference kilat.",
+          "Buat API key baru dan salin kodenya ke NoteRoute."
+        ]
+      },
+      nvidia: {
+        name: "NVIDIA NIM",
+        icon: "fa-solid fa-microchip text-emerald-600",
+        badge: "Dev Prototyping",
+        quota: "Llama 3.1 405B & Qwen • 1.000 API Credits Gratis",
+        sample: "nvapi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://build.nvidia.com/",
+        is9Router: false,
+        steps: [
+          "Kunjungi build.nvidia.com dan login dengan NVIDIA account.",
+          "Pilih model seperti Meta Llama 3.1 405B Instruct.",
+          "Klik tombol 'Get API Key' untuk mendapatkan 1.000 kredit prototyping gratis.",
+          "Salin kunci 'nvapi-...' ke pengaturan NoteRoute."
+        ]
+      },
+      sambanova: {
+        name: "SambaNova Cloud",
+        icon: "fa-solid fa-gauge-high text-purple-600",
+        badge: "Fast Free Tier",
+        quota: "Inference SN40L Cepat • Free Developer Quota",
+        sample: "samba_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://cloud.sambanova.ai/apis",
+        is9Router: false,
+        steps: [
+          "Buka cloud.sambanova.ai/apis dan daftar akun developer.",
+          "Pilih menu API Keys dan klik 'Create API Key'.",
+          "Salin kunci API untuk inferensi Llama 3.1 dengan kecepatan tinggi."
+        ]
+      },
+      zai: {
+        name: "Z.ai / Zhipu AI",
+        icon: "fa-solid fa-gem text-cyan-600",
+        badge: "Free Tier",
+        quota: "GLM-4-Flash • Kuota gratis tanpa batas token",
+        sample: "zai_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://open.bigmodel.cn/",
+        is9Router: false,
+        steps: [
+          "Buka portal pengembang open.bigmodel.cn atau z.ai.",
+          "Daftar akun gratis dan buka menu API Management.",
+          "Salin API Key GLM-4-Flash untuk penalaran & coding dwibahasa."
         ]
       },
       ollama: {
@@ -2721,6 +3082,184 @@
         openConfigureApiKey(data.name, data.sample, data.quota);
         switchSettingsTab('api');
       }
+    }
+
+    // 5b. CUSTOM PROVIDER (BYOK) MANAGEMENT & STORAGE
+    let currentCustomProto = 'openai';
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function openCustomApiModal(proto, editId) {
+      setCustomApiProto(proto || 'openai');
+      const titleEl = document.getElementById('custom-api-modal-title');
+      const idInput = document.getElementById('custom-api-edit-id');
+      
+      if (editId) {
+        const list = getCustomProviders();
+        const item = list.find(p => p.id === editId);
+        if (item) {
+          titleEl.textContent = 'Edit Provider API Kustom';
+          idInput.value = item.id;
+          setCustomApiProto(item.proto);
+          document.getElementById('custom-api-name').value = item.name;
+          document.getElementById('custom-api-url').value = item.baseUrl;
+          document.getElementById('custom-api-model').value = item.model;
+          document.getElementById('custom-api-key').value = item.apiKey || '';
+          document.getElementById('custom-api-notes').value = item.notes || '';
+          document.getElementById('modal-custom-api').classList.remove('hidden');
+          return;
+        }
+      }
+      
+      titleEl.textContent = 'Tambah Provider API Kustom';
+      idInput.value = '';
+      document.getElementById('custom-api-name').value = '';
+      document.getElementById('custom-api-url').value = proto === 'anthropic' ? 'https://api.anthropic.com/v1' : 'http://localhost:1234/v1';
+      document.getElementById('custom-api-model').value = proto === 'anthropic' ? 'claude-3-5-sonnet-20241022' : 'llama-3.3-70b-instruct';
+      document.getElementById('custom-api-key').value = '';
+      document.getElementById('custom-api-notes').value = '';
+      document.getElementById('modal-custom-api').classList.remove('hidden');
+    }
+
+    function closeCustomApiModal() {
+      document.getElementById('modal-custom-api').classList.add('hidden');
+    }
+
+    function setCustomApiProto(proto) {
+      currentCustomProto = proto;
+      document.getElementById('custom-api-proto').value = proto;
+      const btnOpenai = document.getElementById('btn-proto-openai');
+      const btnAnthropic = document.getElementById('btn-proto-anthropic');
+      const hint = document.getElementById('custom-api-proto-hint');
+      
+      if (proto === 'anthropic') {
+        if (btnAnthropic) btnAnthropic.className = "p-2.5 rounded-xl border border-orange-500 bg-orange-500/10 text-orange-600 dark:text-orange-400 font-bold flex items-center justify-center space-x-2 transition";
+        if (btnOpenai) btnOpenai.className = "p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] font-medium flex items-center justify-center space-x-2 transition";
+        if (hint) hint.innerHTML = 'Menggunakan format Anthropic <code>/v1/messages</code> dengan header <code>x-api-key</code>.';
+      } else {
+        if (btnOpenai) btnOpenai.className = "p-2.5 rounded-xl border border-blue-500 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold flex items-center justify-center space-x-2 transition";
+        if (btnAnthropic) btnAnthropic.className = "p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] font-medium flex items-center justify-center space-x-2 transition";
+        if (hint) hint.innerHTML = 'Menggunakan format standar <code>/v1/chat/completions</code> (cocok untuk vLLM, LM Studio, Ollama, Together, OpenRouter).';
+      }
+    }
+
+    function getCustomProviders() {
+      try {
+        const raw = localStorage.getItem('noteroute_custom_providers');
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveCustomProvidersList(list) {
+      localStorage.setItem('noteroute_custom_providers', JSON.stringify(list));
+      renderCustomProviders();
+    }
+
+    function handleCustomApiSubmit(e) {
+      e.preventDefault();
+      const idInput = document.getElementById('custom-api-edit-id').value;
+      const proto = document.getElementById('custom-api-proto').value;
+      const name = document.getElementById('custom-api-name').value.trim();
+      const baseUrl = document.getElementById('custom-api-url').value.trim();
+      const model = document.getElementById('custom-api-model').value.trim();
+      const apiKey = document.getElementById('custom-api-key').value.trim();
+      const notes = document.getElementById('custom-api-notes').value.trim();
+      
+      let list = getCustomProviders();
+      if (idInput) {
+        const idx = list.findIndex(p => p.id === idInput);
+        if (idx !== -1) {
+          list[idx] = { id: idInput, proto, name, baseUrl, model, apiKey, notes };
+          showToast("Provider Diperbarui", `${name} berhasil disimpan.`);
+        }
+      } else {
+        const newId = 'cust_' + Date.now();
+        list.push({ id: newId, proto, name, baseUrl, model, apiKey, notes });
+        showToast("Provider Ditambahkan", `${name} siap digunakan di rantai routing NoteRoute.`);
+      }
+      
+      saveCustomProvidersList(list);
+      closeCustomApiModal();
+    }
+
+    function deleteCustomProvider(id, name) {
+      if (confirm(`Hapus provider kustom "${name}"?`)) {
+        let list = getCustomProviders().filter(p => p.id !== id);
+        saveCustomProvidersList(list);
+        showToast("Provider Dihapus", `Provider ${name} telah dihapus.`);
+      }
+    }
+
+    function renderCustomProviders() {
+      const container = document.getElementById('custom-providers-list');
+      const countBadge = document.getElementById('custom-provider-count-badge');
+      if (!container) return;
+      
+      const list = getCustomProviders();
+      if (countBadge) countBadge.textContent = list.length;
+      
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-4 px-3 rounded-xl border border-dashed border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-center text-xs text-[var(--nlm-text-tertiary)]">
+            <i class="fa-solid fa-server text-base mb-1 block opacity-40"></i>
+            <span>No custom providers — gunakan tombol di atas untuk menambah endpoint lokal (LM Studio, vLLM, Ollama kustom) atau cloud endpoint sendiri (BYOK).</span>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = list.map(item => {
+        const isAnthropic = item.proto === 'anthropic';
+        const protoBadge = isAnthropic 
+          ? '<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400">Anthropic</span>'
+          : '<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400">OpenAI</span>';
+        
+        return `
+          <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 transition flex flex-col justify-between group">
+            <div>
+              <div class="flex items-start justify-between gap-1 mb-1.5">
+                <div class="flex items-center space-x-2 min-w-0">
+                  <div class="w-7 h-7 rounded-lg ${isAnthropic ? 'bg-orange-500/10 text-orange-600' : 'bg-blue-500/10 text-blue-600'} flex items-center justify-center text-xs shrink-0">
+                    <i class="fa-solid ${isAnthropic ? 'fa-microchip' : 'fa-server'}"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">${escapeHtml(item.name)}</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">${escapeHtml(item.model)}</div>
+                  </div>
+                </div>
+                ${protoBadge}
+              </div>
+              <div class="text-[10px] font-mono text-[var(--nlm-text-secondary)] bg-[var(--nlm-surface)] p-1.5 rounded border border-[var(--nlm-border-subtle)] truncate">
+                ${escapeHtml(item.baseUrl)}
+              </div>
+              ${item.notes ? `<div class="text-[10px] text-[var(--nlm-text-tertiary)] mt-1 truncate">${escapeHtml(item.notes)}</div>` : ''}
+            </div>
+            <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between text-[11px]">
+              <span class="text-[10px] text-emerald-600 font-semibold flex items-center space-x-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span>Tersambung</span>
+              </span>
+              <div class="flex items-center space-x-1">
+                <button onclick="openCustomApiModal('${item.proto}', '${item.id}')" class="p-1 px-1.5 rounded text-[10px] font-semibold text-[var(--nlm-text-secondary)] hover:text-blue-600 hover:bg-[var(--nlm-surface-hover)] transition" title="Edit Provider">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button onclick="deleteCustomProvider('${item.id}', '${escapeHtml(item.name)}')" class="p-1 px-1.5 rounded text-[10px] font-semibold text-red-500 hover:bg-red-500/10 transition" title="Hapus Provider">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     // 6. NOTE VIEWER & EDITOR MODAL (MELIHAT ISI CATATAN)
@@ -3233,10 +3772,11 @@
       }
     });
 
-    // INITIALIZATION (THEME & SYSTEM LISTENER & PROFILE)
+    // INITIALIZATION (THEME & SYSTEM LISTENER & PROFILE & CUSTOM APIS)
     const savedTheme = localStorage.getItem('noteroute-theme-pref') || 'system';
     setThemePreference(savedTheme, false);
     loadStoredProfile();
+    renderCustomProviders();
   </script>
 </body>
 </html>
