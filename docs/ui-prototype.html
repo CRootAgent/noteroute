@@ -1,764 +1,991 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NoteRoute - Unified Adaptive UI (Web, Desktop & Mobile)</title>
+  <title>NoteRoute - Ultra-Premium Cross-Device AI Agent</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    /* Custom scrollbar styling */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    
+    * {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* THEME VARIABLES */
+    :root.light {
+      --bg-page: #f1f3f9;
+      --bg-window: rgba(255, 255, 255, 0.85);
+      --bg-sidebar: rgba(248, 250, 252, 0.75);
+      --bg-card: rgba(255, 255, 255, 0.95);
+      --bg-card-hover: rgba(241, 245, 249, 0.9);
+      --border-subtle: rgba(226, 232, 240, 0.8);
+      --border-card: rgba(226, 232, 240, 0.9);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --shadow-ambient: 0 20px 45px -15px rgba(99, 102, 241, 0.08), 0 0 1px 1px rgba(0,0,0,0.03);
+      --shadow-floating: 0 25px 50px -12px rgba(99, 102, 241, 0.12), 0 8px 24px -4px rgba(0, 0, 0, 0.04);
+      --glow-orb: radial-gradient(circle at 35% 35%, #ffffff 0%, #c7d2fe 25%, #818cf8 60%, #6366f1 85%, #4f46e5 100%);
+      --aura-color: rgba(99, 102, 241, 0.18);
+    }
+
+    :root.dark {
+      --bg-page: #06080e;
+      --bg-window: rgba(13, 16, 26, 0.88);
+      --bg-sidebar: rgba(10, 12, 20, 0.75);
+      --bg-card: rgba(19, 23, 38, 0.85);
+      --bg-card-hover: rgba(26, 31, 51, 0.95);
+      --border-subtle: rgba(255, 255, 255, 0.07);
+      --border-card: rgba(255, 255, 255, 0.1);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-subtle: #64748b;
+      --shadow-ambient: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+      --shadow-floating: 0 30px 60px -15px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.08);
+      --glow-orb: radial-gradient(circle at 35% 35%, #e0e7ff 0%, #818cf8 35%, #6366f1 70%, #4338ca 90%, #312e81 100%);
+      --aura-color: rgba(129, 140, 248, 0.22);
+    }
+
+    /* 3D IRIDESCENT SPHERE */
+    .pearl-orb {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: var(--glow-orb);
+      box-shadow: 
+        inset -8px -8px 20px rgba(79, 70, 229, 0.6),
+        inset 6px 6px 14px rgba(255, 255, 255, 0.8),
+        0 12px 35px var(--aura-color);
+      animation: float 5s ease-in-out infinite, pulse-glow 3s ease-in-out infinite alternate;
+      position: relative;
+    }
+
+    .pearl-orb::after {
+      content: '';
+      position: absolute;
+      top: 14%;
+      left: 20%;
+      width: 22px;
+      height: 14px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.75);
+      filter: blur(1.5px);
+      transform: rotate(-35deg);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-7px) scale(1.02); }
+    }
+
+    @keyframes pulse-glow {
+      0% { box-shadow: 0 10px 30px var(--aura-color); }
+      100% { box-shadow: 0 18px 45px rgba(129, 140, 248, 0.35); }
+    }
+
+    /* FROSTED GLASS SURFACES */
+    .frosted-window {
+      background: var(--bg-window);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .frosted-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-card);
+      box-shadow: var(--shadow-floating);
+    }
+
+    /* CUSTOM SCROLLBAR */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.7); }
-    .transition-all-300 { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.6); }
+    
+    .smooth-transition {
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-3 sm:p-6 antialiased flex flex-col font-sans select-none">
+<body class="bg-[var(--bg-page)] text-[var(--text-main)] min-h-screen p-2 sm:p-5 flex flex-col justify-start items-center transition-colors duration-500 selection:bg-indigo-500 selection:text-white">
 
-  <!-- TOP BAR / VIEWPORT SWITCHER -->
-  <header class="max-w-7xl mx-auto w-full mb-4 flex flex-wrap items-center justify-between gap-3 bg-slate-900/90 border border-slate-800 rounded-2xl p-3 shadow-xl backdrop-blur-md">
+  <!-- ========================================== -->
+  <!-- TOP CONTROL TOOLBAR: THEME & VIEWPORT MODE -->
+  <!-- ========================================== -->
+  <header class="w-full max-w-7xl mb-3 flex flex-wrap items-center justify-between gap-3 px-2 py-1">
     <div class="flex items-center space-x-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center font-black text-white shadow-lg shadow-indigo-500/20">
-        NR
+      <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+        <i class="fa-solid fa-route text-xs"></i>
       </div>
       <div>
         <div class="flex items-center space-x-2">
-          <span class="font-extrabold text-base tracking-tight text-white">Note<span class="text-indigo-400">Route</span></span>
-          <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-medium">Design System v1.0</span>
+          <span class="font-bold text-sm tracking-tight text-[var(--text-main)]">Note<span class="text-indigo-500">Route</span></span>
+          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">Proyek 2 Design System</span>
         </div>
-        <p class="text-xs text-slate-400">Unified UX: Satu Desain Adaptif untuk Web, Desktop & Mobile</p>
       </div>
     </div>
 
-    <!-- VIEWPORT SIMULATOR SWITCHER -->
-    <div class="flex items-center bg-slate-950 p-1.5 rounded-xl border border-slate-800 text-xs">
-      <span class="text-slate-400 px-2 font-medium hidden sm:inline">Simulasi Tampilan:</span>
-      <button id="btn-view-desktop" onclick="setViewport('desktop')" class="px-3 py-1.5 rounded-lg font-semibold bg-indigo-600 text-white transition-all-300 flex items-center space-x-1.5 shadow-sm">
-        <span>🖥️ Desktop</span>
-      </button>
-      <button id="btn-view-tablet" onclick="setViewport('tablet')" class="px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition-all-300 flex items-center space-x-1.5">
-        <span>💻 Web / Tablet</span>
-      </button>
-      <button id="btn-view-mobile" onclick="setViewport('mobile')" class="px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition-all-300 flex items-center space-x-1.5">
-        <span>📱 Mobile HP</span>
-      </button>
-    </div>
-
-    <!-- LIVE METRICS PILL -->
-    <div class="hidden lg:flex items-center space-x-3 text-xs bg-slate-950/80 px-3 py-2 rounded-xl border border-slate-800/80">
-      <div class="flex items-center space-x-1.5 text-emerald-400 font-medium">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span>Alwaysdata HTTPS</span>
+    <!-- CENTER & RIGHT: VIEWPORT & THEME SWITCHERS -->
+    <div class="flex items-center space-x-2 sm:space-x-3">
+      <!-- VIEWPORT SELECTOR -->
+      <div class="flex items-center p-1 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-sm text-xs">
+        <button id="btn-vp-desktop" onclick="switchViewport('desktop')" class="px-2.5 py-1 rounded-lg font-semibold bg-indigo-600 text-white shadow-xs smooth-transition flex items-center space-x-1.5">
+          <i class="fa-solid fa-desktop text-[11px]"></i>
+          <span class="hidden sm:inline">Desktop</span>
+        </button>
+        <button id="btn-vp-tablet" onclick="switchViewport('tablet')" class="px-2.5 py-1 rounded-lg font-medium text-[var(--text-muted)] hover:text-[var(--text-main)] smooth-transition flex items-center space-x-1.5">
+          <i class="fa-solid fa-tablet-screen-button text-[11px]"></i>
+          <span class="hidden sm:inline">Web / Tablet</span>
+        </button>
+        <button id="btn-vp-mobile" onclick="switchViewport('mobile')" class="px-2.5 py-1 rounded-lg font-medium text-[var(--text-muted)] hover:text-[var(--text-main)] smooth-transition flex items-center space-x-1.5">
+          <i class="fa-solid fa-mobile-screen-button text-[11px]"></i>
+          <span class="hidden sm:inline">Mobile HP</span>
+        </button>
       </div>
-      <span class="text-slate-600">&bull;</span>
-      <div class="text-indigo-300 font-medium">
-        Hemat: <span class="text-white font-bold">$12.85 (Rp 208k)</span>
+
+      <!-- THEME TOGGLE: GELAP & TERANG -->
+      <button onclick="toggleTheme()" class="px-3 py-1.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-[var(--text-main)] text-xs font-semibold shadow-sm smooth-transition flex items-center space-x-2">
+        <span id="theme-icon"><i class="fa-solid fa-moon text-indigo-500"></i></span>
+        <span id="theme-label" class="hidden sm:inline">Mode Gelap</span>
+      </button>
+
+      <!-- LIVE METRIC BADGE -->
+      <div class="hidden md:flex items-center space-x-2 text-[11px] font-medium px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>Alwaysdata Online</span>
       </div>
     </div>
   </header>
 
-  <!-- MAIN SIMULATOR CONTAINER -->
-  <main class="flex-1 flex justify-center items-start w-full transition-all-300">
-    <div id="viewport-frame" class="w-full max-w-7xl h-[840px] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-all-300 relative">
+  <!-- ========================================== -->
+  <!-- MAIN OS / BROWSER SIMULATOR FRAME          -->
+  <!-- ========================================== -->
+  <main id="app-wrapper" class="w-full max-w-7xl h-[860px] frosted-window rounded-[28px] shadow-[var(--shadow-ambient)] flex flex-col overflow-hidden smooth-transition relative border border-[var(--border-subtle)]">
+    
+    <!-- 1. OS WINDOW CHROME & BROWSER TABS (PERSIS REFERENSI GAMBAR) -->
+    <div class="h-11 px-4 border-b border-[var(--border-subtle)] flex items-center justify-between select-none bg-[var(--bg-sidebar)]">
+      <!-- Chrome Tabs on the Left -->
+      <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar">
+        <!-- New Tab Plus Button -->
+        <button class="w-6 h-6 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center text-[var(--text-subtle)] text-xs transition">
+          <i class="fa-solid fa-plus text-[10px]"></i>
+        </button>
 
-      <!-- APP TOPBAR (Cross-Platform) -->
-      <nav class="h-14 border-b border-slate-800/80 px-4 flex items-center justify-between bg-slate-900/90 backdrop-blur-md z-20">
-        <div class="flex items-center space-x-3">
-          <!-- Mobile Menu Toggle Button -->
-          <button id="mobile-nav-toggle" onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl hover:bg-slate-800 text-slate-300">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        <!-- Inactive Tab 1 -->
+        <div class="flex items-center space-x-2 px-3 py-1 rounded-xl text-xs text-[var(--text-muted)] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition">
+          <span class="w-2 h-2 rounded-full bg-pink-500"></span>
+          <span class="font-medium text-[11px]">Judha | Dribbble</span>
+        </div>
+
+        <!-- Inactive Tab 2 -->
+        <div class="flex items-center space-x-2 px-3 py-1 rounded-xl text-xs text-[var(--text-muted)] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition">
+          <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+          <span class="font-medium text-[11px]">Emura Studio</span>
+        </div>
+
+        <!-- Active Tab (NoteRoute / BeeBot Style in Reference) -->
+        <div class="flex items-center space-x-2 px-3.5 py-1 rounded-xl text-xs font-semibold bg-[var(--bg-card)] text-[var(--text-main)] shadow-xs border border-[var(--border-subtle)]">
+          <i class="fa-solid fa-robot text-indigo-500 text-[11px]"></i>
+          <span class="text-[11px]">NoteRoute Agent</span>
+          <button class="text-[var(--text-subtle)] hover:text-[var(--text-main)] ml-1">
+            <i class="fa-solid fa-xmark text-[9px]"></i>
           </button>
-          <div class="flex items-center space-x-2">
-            <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-xs text-white">NR</div>
-            <span class="font-bold text-sm tracking-tight text-white">Materi Kuliah Semester 5</span>
-            <span class="text-[11px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700 hidden sm:inline">Laptop: MacBook Pro Zakky</span>
+        </div>
+      </div>
+
+      <!-- Window Control Buttons (Right) -->
+      <div class="flex items-center space-x-2">
+        <button class="w-6 h-6 rounded-md hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center text-[var(--text-subtle)] text-xs">
+          <i class="fa-solid fa-minus text-[9px]"></i>
+        </button>
+        <button class="w-6 h-6 rounded-md hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center text-[var(--text-subtle)] text-xs">
+          <i class="fa-regular fa-square text-[9px]"></i>
+        </button>
+        <button class="w-6 h-6 rounded-md hover:bg-red-500 hover:text-white flex items-center justify-center text-[var(--text-subtle)] text-xs transition">
+          <i class="fa-solid fa-xmark text-[10px]"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. INNER APP BODY (SIDEBAR + MAIN CANVAS) -->
+    <div class="flex-1 flex overflow-hidden relative">
+
+      <!-- ========================================== -->
+      <!-- LEFT SIDEBAR (PERSIS REFERENSI GAMBAR)     -->
+      <!-- ========================================== -->
+      <aside id="app-sidebar" class="w-64 border-r border-[var(--border-subtle)] bg-[var(--bg-sidebar)] flex flex-col justify-between shrink-0 smooth-transition p-3 z-20">
+        
+        <!-- Top Section -->
+        <div>
+          <!-- Brand Logo & Name -->
+          <div class="flex items-center justify-between px-2 py-1 mb-4">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-xs">
+                <i class="fa-solid fa-route"></i>
+              </div>
+              <span class="font-extrabold text-sm tracking-tight text-[var(--text-main)]">NoteRoute</span>
+            </div>
+            <!-- Notification Dot -->
+            <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+          </div>
+
+          <!-- Quick Search Pill (with ⌘K badge) -->
+          <div class="relative mb-4">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-[11px] text-[var(--text-subtle)]"></i>
+            <input type="text" placeholder="Search..." 
+                   class="w-full bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl pl-8 pr-8 py-1.5 text-xs text-[var(--text-main)] placeholder-[var(--text-subtle)] focus:outline-none focus:border-indigo-500 transition shadow-2xs">
+            <span class="absolute right-2.5 top-2 text-[9px] font-mono font-bold text-[var(--text-subtle)] bg-black/5 dark:bg-white/5 px-1 py-0.5 rounded">⌘K</span>
+          </div>
+
+          <!-- Navigation Menu List -->
+          <nav class="space-y-1 text-xs font-medium">
+            <a href="#" onclick="showView('home')" id="nav-home" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 font-semibold transition">
+              <i class="fa-solid fa-house text-[13px] w-4"></i>
+              <span>Home</span>
+            </a>
+            <a href="#" onclick="showView('explorer')" id="nav-explorer" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-black/5 dark:hover:bg-white/5 transition">
+              <i class="fa-solid fa-compass text-[13px] w-4"></i>
+              <span>Explore (File Laptop)</span>
+            </a>
+            <a href="#" onclick="showView('library')" id="nav-library" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-black/5 dark:hover:bg-white/5 transition">
+              <i class="fa-solid fa-book-bookmark text-[13px] w-4"></i>
+              <span>Library</span>
+            </a>
+            <a href="#" onclick="showView('history')" id="nav-history" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-black/5 dark:hover:bg-white/5 transition">
+              <i class="fa-solid fa-clock-rotate-left text-[13px] w-4"></i>
+              <span>History</span>
+            </a>
+          </nav>
+
+          <!-- History / Recent Groups (Persis Style Gambar) -->
+          <div class="mt-6 space-y-4">
+            <!-- Group: Tomorrow / Recent -->
+            <div>
+              <div class="text-[10px] font-bold text-[var(--text-subtle)] uppercase tracking-wider px-3 mb-1.5">Hari Ini</div>
+              <div class="space-y-0.5 text-xs text-[var(--text-muted)]">
+                <div onclick="loadRecentThread('Kesimpulan Bab 3 Teorema CAP')" class="px-3 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 truncate cursor-pointer transition text-[11px] hover:text-[var(--text-main)]">
+                  Kesimpulan Bab 3 Teorema CAP...
+                </div>
+                <div onclick="loadRecentThread('Analisis Latensi Groq vs Gemini')" class="px-3 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 truncate cursor-pointer transition text-[11px] hover:text-[var(--text-main)]">
+                  Analisis Latensi Groq vs Gemini...
+                </div>
+                <div onclick="loadRecentThread('Ringkasan Slide Kuliah Sistem Terdistribusi')" class="px-3 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 truncate cursor-pointer transition text-[11px] hover:text-[var(--text-main)]">
+                  Ringkasan Slide Kuliah Sistem...
+                </div>
+              </div>
+            </div>
+
+            <!-- Group: 7 Days Ago -->
+            <div>
+              <div class="text-[10px] font-bold text-[var(--text-subtle)] uppercase tracking-wider px-3 mb-1.5">7 Hari Lalu</div>
+              <div class="space-y-0.5 text-xs text-[var(--text-muted)]">
+                <div class="px-3 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 truncate cursor-pointer transition text-[11px] hover:text-[var(--text-main)]">
+                  Setup Alwaysdata & MongoDB...
+                </div>
+                <div class="px-3 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 truncate cursor-pointer transition text-[11px] hover:text-[var(--text-main)]">
+                  Format Keystore Signing APK...
+                </div>
+                <div class="px-3 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 truncate cursor-pointer transition text-[11px] hover:text-[var(--text-main)]">
+                  Bridge ke 9Router port 20128...
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- RIGHT CONTROLS: MODEL SWITCHER PILL -->
-        <div class="flex items-center space-x-2">
-          <!-- Active Model Dropdown Trigger -->
+        <!-- Bottom User Profile Card (Persis Style Gambar) -->
+        <div class="pt-3 border-t border-[var(--border-subtle)]">
+          <div class="p-2 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex items-center justify-between shadow-2xs hover:bg-[var(--bg-card-hover)] cursor-pointer transition">
+            <div class="flex items-center space-x-2.5 truncate">
+              <!-- Avatar -->
+              <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-600 to-indigo-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                AZ
+              </div>
+              <div class="truncate">
+                <div class="font-bold text-xs text-[var(--text-main)] leading-tight truncate">Ahmad Zakky</div>
+                <div class="text-[10px] text-[var(--text-subtle)] truncate">Ketua Tim &bull; 714250028</div>
+              </div>
+            </div>
+            <button class="text-[var(--text-subtle)] hover:text-[var(--text-main)] text-xs p-1">
+              <i class="fa-solid fa-ellipsis-vertical text-[11px]"></i>
+            </button>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- ========================================== -->
+      <!-- MAIN CANVAS / CHAT STAGE (PERSIS GAMBAR)   -->
+      <!-- ========================================== -->
+      <section class="flex-1 flex flex-col overflow-hidden relative bg-transparent">
+
+        <!-- SUB-TOPBAR: MODEL SELECTOR & ACTION BUTTONS -->
+        <div class="h-14 px-6 flex items-center justify-between z-10">
+          
+          <!-- MODEL SELECTOR PILL (iBeeBot 4o Style in Reference) -->
           <div class="relative">
-            <button onclick="toggleModelMenu()" class="flex items-center space-x-2 bg-slate-800/90 hover:bg-slate-700 border border-slate-700/80 text-xs px-3 py-1.5 rounded-xl transition text-slate-200">
-              <span id="model-badge-dot" class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
-              <span id="active-model-name" class="font-semibold text-white">Gemini 1.5 Flash</span>
-              <span class="text-[11px] text-indigo-300 font-mono hidden sm:inline">(1M Free)</span>
-              <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            <button onclick="toggleModelDropdown()" class="flex items-center space-x-2.5 px-3 py-1.5 rounded-2xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] shadow-xs transition text-xs font-semibold text-[var(--text-main)]">
+              <span class="w-6 h-6 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center text-[10px]">
+                <i class="fa-solid fa-bolt-lightning"></i>
+              </span>
+              <span id="current-model-display">Gemini 1.5 Flash</span>
+              <i class="fa-solid fa-chevron-down text-[10px] text-[var(--text-subtle)]"></i>
             </button>
 
-            <!-- MODEL SELECTION DROPDOWN -->
-            <div id="model-dropdown" class="hidden absolute right-0 mt-2 w-72 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-2 z-50">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3 py-1.5">Pilih Router AI Target</div>
+            <!-- DROPDOWN CONTENT -->
+            <div id="model-dropdown-menu" class="hidden absolute left-0 mt-2 w-72 bg-[var(--bg-card)] border border-[var(--border-card)] rounded-2xl shadow-xl p-2 z-50 frosted-card">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-subtle)] px-3 py-1.5">Pilih Otak AI Gateway</div>
               
-              <button onclick="selectModel('gemini', 'Gemini 1.5 Flash', '1M Free Context', 'bg-indigo-400')" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-700/80 transition flex items-start justify-between">
+              <button onclick="pickModel('Gemini 1.5 Flash', '1M Context', 'Gratis 1.500 req/hari')" class="w-full text-left p-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center justify-between">
                 <div>
-                  <div class="font-semibold text-xs text-white flex items-center space-x-1.5">
-                    <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                  <div class="font-bold text-xs text-[var(--text-main)] flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
                     <span>Google Gemini 1.5 Flash</span>
                   </div>
-                  <div class="text-[11px] text-slate-400 mt-0.5">1 Juta Token Context &bull; 1.500 req/hari gratis</div>
+                  <div class="text-[10px] text-[var(--text-muted)] mt-0.5">1 Juta Token Context &bull; Baca Ratusan Halaman</div>
                 </div>
-                <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded font-mono">Utama</span>
+                <span class="text-[9px] bg-indigo-500/10 text-indigo-500 font-mono px-1.5 py-0.5 rounded font-bold">1M Free</span>
               </button>
 
-              <button onclick="selectModel('groq', 'Groq Llama 3.3 70B', 'Ultra-Fast 300 t/s', 'bg-violet-400')" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-700/80 transition flex items-start justify-between">
+              <button onclick="pickModel('Groq Llama 3.3', '300 t/s', 'Respon Kilat Ultra-Cepat')" class="w-full text-left p-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center justify-between">
                 <div>
-                  <div class="font-semibold text-xs text-white flex items-center space-x-1.5">
-                    <span class="w-2 h-2 rounded-full bg-violet-400"></span>
-                    <span>Groq Cloud (Llama 3.3)</span>
+                  <div class="font-bold text-xs text-[var(--text-main)] flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-violet-500"></span>
+                    <span>Groq Cloud (Llama 3.3 70B)</span>
                   </div>
-                  <div class="text-[11px] text-slate-400 mt-0.5">Respon Kilat 300+ token/detik &bull; Gratis</div>
+                  <div class="text-[10px] text-[var(--text-muted)] mt-0.5">Kecepatan 300+ token/s &bull; Failover Cadangan</div>
                 </div>
-                <span class="text-[10px] bg-violet-500/20 text-violet-300 px-1.5 py-0.5 rounded font-mono">Kilat</span>
+                <span class="text-[9px] bg-violet-500/10 text-violet-500 font-mono px-1.5 py-0.5 rounded font-bold">Kilat</span>
               </button>
 
-              <button onclick="selectModel('deepseek', 'DeepSeek R1 / V3', 'Reasoning Murah', 'bg-blue-400')" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-700/80 transition flex items-start justify-between">
+              <button onclick="pickModel('DeepSeek R1/V3', 'Reasoning', 'Penalaran Hemat Rp 8/kueri')" class="w-full text-left p-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center justify-between">
                 <div>
-                  <div class="font-semibold text-xs text-white flex items-center space-x-1.5">
-                    <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                  <div class="font-bold text-xs text-[var(--text-main)] flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                     <span>DeepSeek R1 / V3</span>
                   </div>
-                  <div class="text-[11px] text-slate-400 mt-0.5">Penalaran logis mendalam &bull; Rp 8 / kueri</div>
+                  <div class="text-[10px] text-[var(--text-muted)] mt-0.5">Analisis logika berbiaya ultra-murah</div>
                 </div>
-                <span class="text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded font-mono">Hemat</span>
+                <span class="text-[9px] bg-blue-500/10 text-blue-500 font-mono px-1.5 py-0.5 rounded font-bold">Hemat</span>
               </button>
 
-              <button onclick="selectModel('9router', '9Router Local Bridge', 'Port 20128', 'bg-emerald-400')" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-700/80 transition flex items-start justify-between">
+              <button onclick="pickModel('9Router Local', 'Port 20128', 'Daemon Bridge Laptop')" class="w-full text-left p-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center justify-between">
                 <div>
-                  <div class="font-semibold text-xs text-white flex items-center space-x-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <div class="font-bold text-xs text-[var(--text-main)] flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                     <span>9Router / OmniRoute Local</span>
                   </div>
-                  <div class="text-[11px] text-slate-400 mt-0.5">Daemon lokal laptop port 20128 (OpenAI API)</div>
+                  <div class="text-[10px] text-[var(--text-muted)] mt-0.5">Proxy OpenAI-compatible di laptop</div>
                 </div>
-                <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-mono">Local</span>
+                <span class="text-[9px] bg-emerald-500/10 text-emerald-500 font-mono px-1.5 py-0.5 rounded font-bold">Local</span>
               </button>
             </div>
           </div>
 
-          <!-- Failover Shield Indicator -->
-          <div class="hidden sm:flex items-center space-x-1 px-2.5 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-[11px] text-emerald-400" title="Smart Failover Aktif: Otomatis beralih ke Groq jika HTTP 429">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-            <span class="font-medium">Failover OK</span>
+          <!-- RIGHT ACTIONS: + NEW CHAT & PROFILE (PERSIS GAMBAR) -->
+          <div class="flex items-center space-x-3">
+            <button onclick="startNewChat()" class="px-3.5 py-1.5 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:opacity-90 font-semibold text-xs shadow-sm flex items-center space-x-1.5 transition">
+              <i class="fa-solid fa-plus text-[10px]"></i>
+              <span>New Chat</span>
+            </button>
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold shadow-xs">
+              <i class="fa-solid fa-user-graduate text-[11px]"></i>
+            </div>
           </div>
         </div>
-      </nav>
 
-      <!-- WORKSPACE BODY (FLEX 3-COLUMN ADAPTIVE LAYOUT) -->
-      <div class="flex-1 flex overflow-hidden relative">
-
-        <!-- COLUMN 1: WORKSPACES & FILE EXPLORER (Ambil File dari Laptop) -->
-        <aside id="col-explorer" class="w-80 border-r border-slate-800 bg-slate-900/60 flex flex-col shrink-0 transition-all-300 z-10">
+        <!-- MAIN SCROLLABLE CONTENT AREA -->
+        <div id="main-content-area" class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 flex flex-col justify-center items-center relative">
           
-          <!-- Explorer Header -->
-          <div class="p-3 border-b border-slate-800 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-              <span class="font-bold text-xs uppercase tracking-wider text-slate-400">Laptop Documents</span>
-              <span id="doc-badge-count" class="bg-indigo-500/20 text-indigo-400 text-[10px] font-bold px-1.5 py-0.5 rounded-full">4 File</span>
-            </div>
-            <button onclick="simulateSync()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs flex items-center space-x-1" title="Sinkronkan dengan Laptop">
-              <svg id="sync-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-              <span class="text-[11px]">Sync</span>
-            </button>
-          </div>
+          <!-- VIEW 1: HERO INITIAL STATE (PERSIS PERSIS REFERENSI GAMBAR!) -->
+          <div id="hero-initial-view" class="w-full max-w-2xl flex flex-col items-center text-center my-auto">
+            
+            <!-- 3D PEARL GLOWING ORB -->
+            <div class="pearl-orb mb-7"></div>
 
-          <!-- Document List Items -->
-          <div class="flex-1 overflow-y-auto p-2 space-y-1.5">
+            <!-- GREETING HEADLINES (PERSIS TYPOGRAPHY GAMBAR) -->
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-[var(--text-main)] tracking-tight mb-1">
+              Selamat Pagi, Ahmad Zakky
+            </h2>
+            <h3 class="text-2xl sm:text-3xl font-extrabold text-[var(--text-main)] tracking-tight mb-8">
+              Apa yang Ingin Kamu <span class="text-indigo-600 dark:text-indigo-400">Bedah Hari Ini?</span>
+            </h3>
 
-            <!-- Item 1: PDF Active -->
-            <div id="doc-item-1" onclick="selectDocument(1)" class="p-3 rounded-2xl bg-indigo-600/15 border border-indigo-500/40 cursor-pointer hover:bg-indigo-600/20 transition-all-300 group">
-              <div class="flex items-start justify-between">
-                <div class="flex items-center space-x-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center font-bold text-xs shrink-0">
-                    PDF
-                  </div>
-                  <div>
-                    <h4 class="font-semibold text-xs text-white leading-snug group-hover:text-indigo-300 transition">Slide_Bab3_Distributed_Systems.pdf</h4>
-                    <div class="flex items-center space-x-2 text-[11px] text-slate-400 mt-0.5">
-                      <span>2.34 MB</span>
-                      <span>&bull;</span>
-                      <span>18 Halaman</span>
-                      <span>&bull;</span>
-                      <span class="text-emerald-400 font-medium">Tersinkron</span>
-                    </div>
-                  </div>
-                </div>
+            <!-- FLOATING CENTRAL PROMPT CONSOLE (PERSIS REFERENSI GAMBAR) -->
+            <div class="w-full frosted-card rounded-3xl p-4 sm:p-5 text-left border border-[var(--border-card)] relative shadow-[var(--shadow-floating)] transition-all duration-300 hover:border-indigo-500/40">
+              
+              <!-- Input Textarea with Sparkle Icon -->
+              <div class="flex items-start space-x-3 mb-6">
+                <i class="fa-solid fa-wand-magic-sparkles text-indigo-500 text-sm mt-1"></i>
+                <textarea id="prompt-input" rows="2" placeholder="Initiate a query or tanyakan isi dokumen laptop..." 
+                          class="w-full bg-transparent text-xs sm:text-sm text-[var(--text-main)] placeholder-[var(--text-subtle)] resize-none focus:outline-none leading-relaxed"></textarea>
               </div>
-              <div class="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-800/80 text-[11px]">
-                <button onclick="openDocPreview(event, 1)" class="text-slate-400 hover:text-white flex items-center space-x-1">
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                  <span>Pratinjau Teks</span>
-                </button>
-                <button onclick="downloadFileToDevice(event, 'Slide_Bab3_Distributed_Systems.pdf', 2.34)" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium flex items-center space-x-1 shadow-sm transition">
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                  <span>Ambil ke HP</span>
-                </button>
-              </div>
-            </div>
 
-            <!-- Item 2: Markdown -->
-            <div id="doc-item-2" onclick="selectDocument(2)" class="p-3 rounded-2xl bg-slate-800/40 border border-slate-800 cursor-pointer hover:bg-slate-800/80 transition-all-300 group">
-              <div class="flex items-start justify-between">
-                <div class="flex items-center space-x-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center font-bold text-xs shrink-0">
-                    MD
-                  </div>
-                  <div>
-                    <h4 class="font-semibold text-xs text-white leading-snug group-hover:text-indigo-300 transition">Catatan_Riset_Multi_LLM.md</h4>
-                    <div class="flex items-center space-x-2 text-[11px] text-slate-400 mt-0.5">
-                      <span>15.1 KB</span>
-                      <span>&bull;</span>
-                      <span>420 Baris</span>
-                      <span>&bull;</span>
-                      <span class="text-emerald-400 font-medium">Tersinkron</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-800/80 text-[11px]">
-                <button onclick="openDocPreview(event, 2)" class="text-slate-400 hover:text-white flex items-center space-x-1">
-                  <span>Pratinjau Teks</span>
-                </button>
-                <button onclick="downloadFileToDevice(event, 'Catatan_Riset_Multi_LLM.md', 0.02)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium flex items-center space-x-1 transition">
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                  <span>Ambil ke HP</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Item 3: DOCX -->
-            <div id="doc-item-3" onclick="selectDocument(3)" class="p-3 rounded-2xl bg-slate-800/40 border border-slate-800 cursor-pointer hover:bg-slate-800/80 transition-all-300 group">
-              <div class="flex items-start justify-between">
-                <div class="flex items-center space-x-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-violet-500/20 text-violet-400 border border-violet-500/30 flex items-center justify-center font-bold text-xs shrink-0">
-                    DOC
-                  </div>
-                  <div>
-                    <h4 class="font-semibold text-xs text-white leading-snug group-hover:text-indigo-300 transition">Modul_Praktikum_Cloud_ULBI.docx</h4>
-                    <div class="flex items-center space-x-2 text-[11px] text-slate-400 mt-0.5">
-                      <span>1.12 MB</span>
-                      <span>&bull;</span>
-                      <span>32 Halaman</span>
-                      <span>&bull;</span>
-                      <span class="text-emerald-400 font-medium">Tersinkron</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-800/80 text-[11px]">
-                <button onclick="openDocPreview(event, 3)" class="text-slate-400 hover:text-white flex items-center space-x-1">
-                  <span>Pratinjau Teks</span>
-                </button>
-                <button onclick="downloadFileToDevice(event, 'Modul_Praktikum_Cloud_ULBI.docx', 1.12)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium flex items-center space-x-1 transition">
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                  <span>Ambil ke HP</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Item 4: Code File -->
-            <div id="doc-item-4" onclick="selectDocument(4)" class="p-3 rounded-2xl bg-slate-800/40 border border-slate-800 cursor-pointer hover:bg-slate-800/80 transition-all-300 group">
-              <div class="flex items-start justify-between">
-                <div class="flex items-center space-x-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold text-xs shrink-0">
-                    JS
-                  </div>
-                  <div>
-                    <h4 class="font-semibold text-xs text-white leading-snug group-hover:text-indigo-300 transition">llmRouterService.js</h4>
-                    <div class="flex items-center space-x-2 text-[11px] text-slate-400 mt-0.5">
-                      <span>8.4 KB</span>
-                      <span>&bull;</span>
-                      <span>Node.js Code</span>
-                      <span>&bull;</span>
-                      <span class="text-emerald-400 font-medium">Tersinkron</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-800/80 text-[11px]">
-                <button onclick="openDocPreview(event, 4)" class="text-slate-400 hover:text-white flex items-center space-x-1">
-                  <span>Pratinjau Teks</span>
-                </button>
-                <button onclick="downloadFileToDevice(event, 'llmRouterService.js', 0.01)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium flex items-center space-x-1 transition">
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                  <span>Ambil ke HP</span>
-                </button>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Bottom Download Manager Status (Izat TC-08) -->
-          <div id="download-progress-box" class="hidden p-3 border-t border-slate-800 bg-slate-950/90">
-            <div class="flex items-center justify-between text-xs mb-1.5">
-              <span id="download-status-filename" class="font-semibold text-white truncate max-w-[180px]">Mengunduh file...</span>
-              <span id="download-status-percent" class="font-mono text-indigo-400">45%</span>
-            </div>
-            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-              <div id="download-bar" class="bg-indigo-500 h-full w-[45%] transition-all duration-200"></div>
-            </div>
-            <div class="text-[10px] text-slate-400 mt-1 flex justify-between">
-              <span>Menyimpan ke folder Downloads HP</span>
-              <span id="download-size-indicator">1.05 / 2.34 MB</span>
-            </div>
-          </div>
-        </aside>
-
-        <!-- COLUMN 2: NOTEBOOKLM-STYLE DOCUMENT CHAT (Core AI Agent) -->
-        <section class="flex-1 flex flex-col bg-slate-950 overflow-hidden relative">
-
-          <!-- Active Context Pill Bar -->
-          <div class="px-4 py-2 bg-slate-900/40 border-b border-slate-800 flex items-center justify-between text-xs">
-            <div class="flex items-center space-x-2 text-slate-400 truncate">
-              <span class="text-indigo-400 font-semibold">Grounded Context:</span>
-              <span class="bg-slate-800 text-slate-200 px-2 py-0.5 rounded-md font-mono text-[11px] truncate">Slide_Bab3_Distributed_Systems.pdf</span>
-              <span class="text-[11px] text-slate-500 hidden sm:inline">(Halaman 1 s/d 18 terekstraksi)</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <button onclick="clearChatHistory()" class="text-slate-500 hover:text-slate-300 text-xs">Bersihkan Chat</button>
-            </div>
-          </div>
-
-          <!-- Chat Conversation Scroll Area -->
-          <div id="chat-messages" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
-
-            <!-- Assistant Welcome Bubble -->
-            <div class="flex items-start space-x-3 max-w-3xl">
-              <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md">
-                NR
-              </div>
-              <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl rounded-tl-sm text-xs sm:text-sm text-slate-200 leading-relaxed shadow-sm">
-                <p>Halo! Saya asisten cerdas <strong>NoteRoute</strong>. Saya telah membaca dokumen <code>Slide_Bab3_Distributed_Systems.pdf</code> dari laptop Anda.</p>
-                <p class="mt-2 text-slate-400">Silakan ajukan pertanyaan seputar dokumen ini, atau pilih tombol cepat di bawah untuk memulai analisis instan:</p>
+              <!-- Bottom Tools Row Inside the Box (Persis Gambar) -->
+              <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[var(--border-subtle)]">
                 
-                <!-- Quick Prompt Suggestions -->
-                <div class="mt-3 flex flex-wrap gap-2">
-                  <button onclick="sendQuickPrompt('Jelaskan kesimpulan inti Teorema CAP pada bab ini')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-indigo-500/20 text-xs transition">
-                    💡 Kesimpulan Teorema CAP
+                <!-- Left Action Pills -->
+                <div class="flex items-center space-x-2">
+                  <!-- Attachment Clip: Ambil Dokumen Laptop -->
+                  <button onclick="toggleDocSelectorModal()" class="w-8 h-8 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-main)] transition" title="Pilih Dokumen Laptop">
+                    <i class="fa-solid fa-paperclip text-xs"></i>
                   </button>
-                  <button onclick="sendQuickPrompt('Apa perbedaan Consistency dan Availability menurut dokumen?')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-violet-300 border border-violet-500/20 text-xs transition">
-                    ⚖️ Consistency vs Availability
+
+                  <!-- Tool Pill 1: Reasoning -->
+                  <button onclick="addPromptTag('Reasoning')" class="px-2.5 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-indigo-500/10 text-[var(--text-muted)] hover:text-indigo-500 text-[11px] font-medium flex items-center space-x-1.5 transition">
+                    <i class="fa-solid fa-lightbulb text-[10px]"></i>
+                    <span>Reasoning</span>
                   </button>
-                  <button onclick="sendQuickPrompt('Buatkan rangkuman 3 poin penting untuk bahan kuis besok')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs transition">
-                    📝 Rangkuman Bahan Kuis
+
+                  <!-- Tool Pill 2: Document Grounding -->
+                  <button onclick="addPromptTag('Slide Bab 3')" class="px-2.5 py-1.5 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[11px] font-semibold flex items-center space-x-1.5 transition border border-indigo-500/20">
+                    <i class="fa-solid fa-file-pdf text-[10px]"></i>
+                    <span>Slide Bab 3.pdf</span>
+                  </button>
+
+                  <!-- Tool Pill 3: Deep Research -->
+                  <button onclick="addPromptTag('Deep Research')" class="px-2.5 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-indigo-500/10 text-[var(--text-muted)] hover:text-indigo-500 text-[11px] font-medium flex items-center space-x-1.5 transition">
+                    <i class="fa-solid fa-compass text-[10px]"></i>
+                    <span>Deep Research</span>
                   </button>
                 </div>
+
+                <!-- Right Action: Cost Counter Pill & Send Arrow -->
+                <div class="flex items-center space-x-2">
+                  <span class="text-[10px] font-mono font-bold px-2 py-1 rounded-lg bg-indigo-500/10 text-indigo-500">
+                    $0.00 Free
+                  </span>
+                  <button onclick="submitPrompt()" class="w-8 h-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center transition shadow-sm shadow-indigo-600/30">
+                    <i class="fa-solid fa-arrow-up text-xs"></i>
+                  </button>
+                </div>
+
               </div>
+
             </div>
 
-            <!-- User Question Bubble Example -->
+            <!-- Quick Starter Prompts -->
+            <div class="mt-6 flex flex-wrap justify-center gap-2 text-xs">
+              <button onclick="setPromptAndSend('Apa kesimpulan inti Teorema CAP pada Slide Bab 3?')" class="px-3 py-1.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] shadow-2xs transition">
+                💡 Kesimpulan Teorema CAP
+              </button>
+              <button onclick="setPromptAndSend('Bandingkan efisiensi token Gemini vs Groq Cloud')" class="px-3 py-1.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] shadow-2xs transition">
+                ⚡ Bandingkan Gemini vs Groq
+              </button>
+              <button onclick="setPromptAndSend('Ambilkan dokumen materi kuliah untuk diunduh ke HP')" class="px-3 py-1.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] shadow-2xs transition">
+                📁 Unduh File Laptop ke HP
+              </button>
+            </div>
+
+          </div>
+
+          <!-- VIEW 2: ACTIVE CONVERSATION STATE (NotebookLM-Style) -->
+          <div id="active-chat-view" class="w-full max-w-3xl hidden flex-col space-y-6 pb-24">
+            
+            <!-- User Message -->
             <div class="flex items-start justify-end space-x-3">
-              <div class="bg-indigo-600 text-white p-3.5 sm:p-4 rounded-2xl rounded-tr-sm max-w-2xl text-xs sm:text-sm leading-relaxed shadow-md">
-                Apa kesimpulan bab 3 mengenai konsistensi data terdistribusi dan apa dampaknya jika terjadi partisi jaringan?
+              <div class="bg-indigo-600 text-white px-4 py-3 rounded-2xl rounded-tr-sm text-xs sm:text-sm leading-relaxed shadow-sm max-w-xl">
+                <span id="chat-user-text">Apa kesimpulan bab 3 mengenai konsistensi data terdistribusi dan apa dampaknya jika terjadi partisi jaringan?</span>
               </div>
-              <div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 font-bold text-xs shrink-0">
-                You
+              <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-600 to-indigo-500 text-white flex items-center justify-center text-xs font-bold shrink-0">
+                AZ
               </div>
             </div>
 
-            <!-- Assistant Answer Bubble with Citation Badges (NotebookLM-Style) -->
-            <div class="flex items-start space-x-3 max-w-3xl">
-              <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md">
+            <!-- Assistant Answer with Grounded Citations -->
+            <div class="flex items-start space-x-3">
+              <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center text-xs font-bold shrink-0 shadow-sm">
                 NR
               </div>
-              <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl rounded-tl-sm text-xs sm:text-sm text-slate-200 leading-relaxed shadow-sm">
-                <p>Berdasarkan pembahasan pada <strong>Slide Bab 3</strong>, kesimpulan utamanya adalah:</p>
-                <ol class="list-decimal ml-4 mt-2 space-y-1.5 text-slate-300">
-                  <li><strong>Teorema CAP (Brewer's Theorem):</strong> Dalam sistem terdistribusi, sebuah sistem hanya dapat menjamin secara simultan maksimal <strong>dua dari tiga sifat</strong>: <em>Consistency</em>, <em>Availability</em>, dan <em>Partition Tolerance</em>.</li>
-                  <li><strong>Konsekuensi Partisi Jaringan:</strong> Karena partisi jaringan (koneksi putus/terpisah) adalah keniscayaan fisik pada jaringan terdistribusi, sistem terpaksa memilih antara konsistensi ketat (CP) atau ketersediaan tinggi (AP).</li>
-                </ol>
+              <div class="frosted-card rounded-2xl rounded-tl-sm p-5 text-xs sm:text-sm text-[var(--text-main)] leading-relaxed shadow-sm flex-1">
+                <p class="font-semibold text-indigo-500 mb-2">Berdasarkan dokumen Slide_Bab3_Distributed_Systems.pdf:</p>
+                <p class="mb-3 text-[var(--text-muted)]">
+                  Teorema CAP (Brewer's Theorem) membuktikan bahwa dalam sistem terdistribusi, kita hanya dapat menjamin secara simultan maksimal <strong>dua dari tiga sifat</strong> berikut:
+                </p>
+                <ul class="list-disc ml-5 space-y-1.5 text-[var(--text-main)] mb-4">
+                  <li><strong>Consistency (Konsistensi):</strong> Setiap pembacaan menerima data tulis terbaru atau galat.</li>
+                  <li><strong>Availability (Ketersediaan):</strong> Setiap permintaan menerima respons non-galat tanpa jaminan data terbaru.</li>
+                  <li><strong>Partition Tolerance:</strong> Sistem tetap beroperasi meski pesan antar-node jaringan hilang.</li>
+                </ul>
 
                 <!-- CITATION BADGES (CLICKABLE TO OPEN SOURCE PREVIEW) -->
-                <div class="mt-4 pt-3 border-t border-slate-800/80">
-                  <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
-                    <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div class="p-3 rounded-xl bg-black/5 dark:bg-white/5 border border-[var(--border-subtle)] mb-3">
+                  <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-subtle)] mb-2 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-quote-left text-indigo-500"></i>
                     <span>Rujukan Sumber Terverifikasi (Citation Badges):</span>
                   </div>
                   
                   <div class="flex flex-wrap gap-2">
-                    <!-- Citation Badge 1 -->
-                    <button onclick="openCitationInspector('Slide_Bab3_Distributed_Systems.pdf', 14, 'Teorema CAP membuktikan ketidakmungkinan matematis mencapai konsistensi kuat secara bersamaan dengan ketersediaan penuh ketika terjadi partisi jaringan.')" 
-                            class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-medium transition group">
-                      <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
-                      <span class="font-bold">Slide Bab 3 &bull; Hal. 14</span>
-                      <span class="text-indigo-400 opacity-60 group-hover:opacity-100">↗</span>
+                    <button onclick="inspectCitation('Slide Bab 3', 14, 'Teorema CAP membuktikan ketidakmungkinan matematis mencapai konsistensi kuat secara bersamaan dengan ketersediaan penuh ketika terjadi partisi jaringan.')" 
+                            class="px-2.5 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 text-xs font-semibold flex items-center space-x-1.5 transition">
+                      <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                      <span>Slide Bab 3 &bull; Hal. 14</span>
+                      <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
                     </button>
 
-                    <!-- Citation Badge 2 -->
-                    <button onclick="openCitationInspector('Slide_Bab3_Distributed_Systems.pdf', 16, 'Sistem seperti Spanner dan MongoDB dengan replikasi mayoritas memilih model CP dengan mengorbankan sebagian ketersediaan saat split-brain.')" 
-                            class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/30 text-violet-300 text-xs font-medium transition group">
-                      <span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span>
-                      <span class="font-bold">Slide Bab 3 &bull; Hal. 16</span>
-                      <span class="text-violet-400 opacity-60 group-hover:opacity-100">↗</span>
+                    <button onclick="inspectCitation('Slide Bab 3', 16, 'Sistem seperti Spanner dan MongoDB dengan replikasi mayoritas memilih model CP dengan mengorbankan sebagian ketersediaan saat split-brain.')" 
+                            class="px-2.5 py-1.5 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 text-violet-600 dark:text-violet-400 border border-violet-500/20 text-xs font-semibold flex items-center space-x-1.5 transition">
+                      <span class="w-1.5 h-1.5 rounded-full bg-violet-500"></span>
+                      <span>Slide Bab 3 &bull; Hal. 16</span>
+                      <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
                     </button>
                   </div>
                 </div>
 
-                <!-- Response Meta Footer -->
-                <div class="mt-3 flex items-center justify-between text-[11px] text-slate-500">
-                  <div class="flex items-center space-x-2">
-                    <span class="text-slate-400">Model: <strong class="text-slate-300">Gemini 1.5 Flash</strong></span>
-                    <span>&bull;</span>
-                    <span>Latensi: <strong class="text-slate-300">482 ms</strong></span>
-                  </div>
-                  <span class="text-emerald-400">Grounded 100%</span>
+                <!-- Footer Metrik Inferensi -->
+                <div class="flex items-center justify-between text-[11px] text-[var(--text-subtle)] pt-2 border-t border-[var(--border-subtle)]">
+                  <span>Model: <strong>Gemini 1.5 Flash (Free Tier)</strong> &bull; Latensi: <strong>380 ms</strong></span>
+                  <span class="text-emerald-500 font-semibold"><i class="fa-solid fa-circle-check text-[10px]"></i> 100% Grounded</span>
                 </div>
               </div>
             </div>
 
           </div>
 
-          <!-- Bottom Chat Input Bar -->
-          <div class="p-3 sm:p-4 bg-slate-900/90 border-t border-slate-800">
-            <form onsubmit="handleChatSubmit(event)" class="relative flex items-center">
-              <input id="chat-input" type="text" placeholder="Tanyakan isi dokumen laptop ini..." 
-                     class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-2xl pl-4 pr-24 py-3.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none transition shadow-inner">
-              
-              <div class="absolute right-2 flex items-center space-x-1">
-                <button type="submit" class="w-9 h-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center transition shadow-md shadow-indigo-600/30">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                </button>
+          <!-- VIEW 3: FILE EXPLORER ("Ambil File Laptop" - Modul Izat TC-07 & TC-08) -->
+          <div id="explorer-view" class="w-full max-w-4xl hidden flex-col pb-24">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h3 class="text-xl font-bold text-[var(--text-main)]">Mobile File Explorer & Downloader</h3>
+                <p class="text-xs text-[var(--text-muted)]">Ambil berkas dari laptop langsung tersimpan ke folder Downloads HP.</p>
               </div>
-            </form>
-            <div class="mt-2 flex items-center justify-between text-[11px] text-slate-500 px-1">
-              <span>Enter untuk mengirim &bull; Jawaban otomatis merujuk kutipan dokumen</span>
-              <span class="hidden sm:inline">Model aktif: <strong id="input-model-label" class="text-slate-400">Gemini 1.5 Flash (Gratis)</strong></span>
-            </div>
-          </div>
-        </section>
-
-        <!-- COLUMN 3: CITATION & IN-APP PREVIEW DRAWER (Inspector) -->
-        <aside id="col-citation-drawer" class="w-80 border-l border-slate-800 bg-slate-900/90 flex flex-col shrink-0 transition-all-300">
-          
-          <!-- Drawer Header -->
-          <div class="p-3.5 border-b border-slate-800 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-              <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-              <span class="font-bold text-xs uppercase tracking-wider text-slate-300">Citation Inspector</span>
-            </div>
-            <span id="citation-page-badge" class="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[11px] font-mono">Halaman 14</span>
-          </div>
-
-          <!-- Drawer Content -->
-          <div class="p-4 flex-1 overflow-y-auto space-y-4">
-            <div>
-              <div class="text-[11px] text-slate-400 uppercase font-semibold">Dokumen Sumber:</div>
-              <div id="citation-doc-title" class="font-bold text-xs text-white mt-0.5">Slide_Bab3_Distributed_Systems.pdf</div>
-            </div>
-
-            <!-- Snippet Card with Highlight -->
-            <div class="p-3.5 rounded-2xl bg-slate-950 border border-indigo-500/30 text-xs leading-relaxed text-slate-200">
-              <div class="text-[10px] uppercase font-bold text-indigo-400 tracking-wider mb-1.5 flex items-center justify-between">
-                <span>Cuplikan Teks Asli Laptop</span>
-                <span>Grounding Match 98%</span>
-              </div>
-              <blockquote id="citation-snippet-text" class="italic border-l-2 border-indigo-500 pl-2.5 my-2 text-indigo-100">
-                "Teorema CAP membuktikan ketidakmungkinan matematis mencapai konsistensi kuat secara bersamaan dengan ketersediaan penuh ketika terjadi partisi jaringan."
-              </blockquote>
-              <p class="text-[11px] text-slate-400 mt-2">
-                Potongan teks ini diambil langsung dari ekstraksi parser backend NoteRoute (`documentParser.js`) dan disuntikkan ke prompt Gemini untuk menjamin akurasi tanpa halusinasi.
-              </p>
-            </div>
-
-            <!-- Quick In-App Full Viewer Launcher -->
-            <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 text-xs">
-              <div class="font-semibold text-slate-200 mb-1">In-App Document Viewer</div>
-              <p class="text-[11px] text-slate-400 mb-2.5">Buka pembaca dokumen ringkas bawaan tanpa perlu aplikasi lain.</p>
-              <button onclick="openFullInAppReader()" class="w-full py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-medium text-xs transition flex items-center justify-center space-x-1.5">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                <span>Buka Pembaca Dokumen</span>
+              <button onclick="simulateSyncLaptop()" class="px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-semibold flex items-center space-x-1.5 shadow-sm">
+                <i id="sync-spinner" class="fa-solid fa-rotate text-xs"></i>
+                <span>Sinkron Laptop</span>
               </button>
             </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              
+              <!-- File 1: PDF -->
+              <div class="p-4 rounded-2xl frosted-card border border-[var(--border-card)] flex flex-col justify-between hover:border-indigo-500/40 transition">
+                <div class="flex items-start space-x-3">
+                  <div class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center font-bold text-xs shrink-0 border border-red-500/20">
+                    PDF
+                  </div>
+                  <div class="truncate flex-1">
+                    <h4 class="font-bold text-xs text-[var(--text-main)] truncate">Slide_Bab3_Distributed_Systems.pdf</h4>
+                    <div class="flex items-center space-x-2 text-[10px] text-[var(--text-subtle)] mt-0.5">
+                      <span>2.34 MB</span> &bull; <span>18 Halaman</span> &bull; <span class="text-emerald-500 font-semibold">Tersinkron</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs">
+                  <button onclick="showToast('Pratinjau Teks', 'Membuka 18 halaman teks terekstraksi.')" class="text-[var(--text-muted)] hover:text-[var(--text-main)] font-medium">Pratinjau Teks</button>
+                  <button onclick="triggerFileDownload('Slide_Bab3_Distributed_Systems.pdf', 2.34)" class="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold text-xs flex items-center space-x-1.5 hover:bg-indigo-500 transition shadow-xs">
+                    <i class="fa-solid fa-download text-[11px]"></i>
+                    <span>Ambil ke HP</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- File 2: Markdown -->
+              <div class="p-4 rounded-2xl frosted-card border border-[var(--border-card)] flex flex-col justify-between hover:border-indigo-500/40 transition">
+                <div class="flex items-start space-x-3">
+                  <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold text-xs shrink-0 border border-blue-500/20">
+                    MD
+                  </div>
+                  <div class="truncate flex-1">
+                    <h4 class="font-bold text-xs text-[var(--text-main)] truncate">Catatan_Riset_Multi_LLM.md</h4>
+                    <div class="flex items-center space-x-2 text-[10px] text-[var(--text-subtle)] mt-0.5">
+                      <span>15.1 KB</span> &bull; <span>420 Baris</span> &bull; <span class="text-emerald-500 font-semibold">Tersinkron</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs">
+                  <button onclick="showToast('Pratinjau Teks', 'Membuka teks markdown.')" class="text-[var(--text-muted)] hover:text-[var(--text-main)] font-medium">Pratinjau Teks</button>
+                  <button onclick="triggerFileDownload('Catatan_Riset_Multi_LLM.md', 0.02)" class="px-3 py-1.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-[var(--text-main)] font-semibold text-xs flex items-center space-x-1.5 transition">
+                    <i class="fa-solid fa-download text-[11px]"></i>
+                    <span>Ambil ke HP</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- File 3: DOCX -->
+              <div class="p-4 rounded-2xl frosted-card border border-[var(--border-card)] flex flex-col justify-between hover:border-indigo-500/40 transition">
+                <div class="flex items-start space-x-3">
+                  <div class="w-10 h-10 rounded-xl bg-violet-500/10 text-violet-500 flex items-center justify-center font-bold text-xs shrink-0 border border-violet-500/20">
+                    DOC
+                  </div>
+                  <div class="truncate flex-1">
+                    <h4 class="font-bold text-xs text-[var(--text-main)] truncate">Modul_Praktikum_Cloud_ULBI.docx</h4>
+                    <div class="flex items-center space-x-2 text-[10px] text-[var(--text-subtle)] mt-0.5">
+                      <span>1.12 MB</span> &bull; <span>32 Halaman</span> &bull; <span class="text-emerald-500 font-semibold">Tersinkron</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs">
+                  <button onclick="showToast('Pratinjau Teks', 'Membuka teks Word.')" class="text-[var(--text-muted)] hover:text-[var(--text-main)] font-medium">Pratinjau Teks</button>
+                  <button onclick="triggerFileDownload('Modul_Praktikum_Cloud_ULBI.docx', 1.12)" class="px-3 py-1.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-[var(--text-main)] font-semibold text-xs flex items-center space-x-1.5 transition">
+                    <i class="fa-solid fa-download text-[11px]"></i>
+                    <span>Ambil ke HP</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- File 4: JS Node Code -->
+              <div class="p-4 rounded-2xl frosted-card border border-[var(--border-card)] flex flex-col justify-between hover:border-indigo-500/40 transition">
+                <div class="flex items-start space-x-3">
+                  <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold text-xs shrink-0 border border-amber-500/20">
+                    JS
+                  </div>
+                  <div class="truncate flex-1">
+                    <h4 class="font-bold text-xs text-[var(--text-main)] truncate">llmRouterService.js</h4>
+                    <div class="flex items-center space-x-2 text-[10px] text-[var(--text-subtle)] mt-0.5">
+                      <span>8.4 KB</span> &bull; <span>Backend Logic</span> &bull; <span class="text-emerald-500 font-semibold">Tersinkron</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs">
+                  <button onclick="showToast('Pratinjau Teks', 'Membuka kode JavaScript.')" class="text-[var(--text-muted)] hover:text-[var(--text-main)] font-medium">Pratinjau Teks</button>
+                  <button onclick="triggerFileDownload('llmRouterService.js', 0.01)" class="px-3 py-1.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-[var(--text-main)] font-semibold text-xs flex items-center space-x-1.5 transition">
+                    <i class="fa-solid fa-download text-[11px]"></i>
+                    <span>Ambil ke HP</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
           </div>
-        </aside>
 
-      </div>
+        </div>
 
-      <!-- MOBILE BOTTOM NAVIGATION (Only shows on mobile viewport simulation) -->
-      <nav id="mobile-bottom-nav" class="hidden h-16 border-t border-slate-800 bg-slate-900/95 backdrop-blur-md px-4 flex items-center justify-around z-30">
-        <button onclick="mobileSwitchTab('explorer')" id="m-nav-explorer" class="flex flex-col items-center justify-center space-y-1 text-slate-400 hover:text-white">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
-          <span class="text-[10px] font-medium">File Laptop</span>
+        <!-- STICKY BOTTOM INPUT WHEN CHAT ACTIVE -->
+        <div id="sticky-bottom-bar" class="hidden absolute bottom-0 left-0 right-0 p-4 bg-[var(--bg-window)] border-t border-[var(--border-subtle)] backdrop-blur-md z-20">
+          <div class="max-w-3xl mx-auto flex items-center space-x-2">
+            <input id="secondary-input" type="text" placeholder="Tanyakan kembali seputar dokumen ini..." 
+                   class="flex-1 bg-[var(--bg-card)] border border-[var(--border-card)] rounded-2xl px-4 py-2.5 text-xs text-[var(--text-main)] placeholder-[var(--text-subtle)] focus:outline-none focus:border-indigo-500 transition shadow-inner">
+            <button onclick="submitSecondaryPrompt()" class="w-9 h-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center transition shadow-xs">
+              <i class="fa-solid fa-paper-plane text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- RIGHT CITATION DRAWER (NOTEBOOKLM STYLE)   -->
+      <!-- ========================================== -->
+      <aside id="citation-drawer" class="w-80 border-l border-[var(--border-subtle)] bg-[var(--bg-sidebar)] hidden flex-col justify-between shrink-0 p-4 z-20 smooth-transition">
+        <div>
+          <div class="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)] mb-4">
+            <div class="flex items-center space-x-2">
+              <i class="fa-solid fa-file-lines text-indigo-500 text-xs"></i>
+              <span class="font-bold text-xs uppercase tracking-wider text-[var(--text-main)]">Citation Inspector</span>
+            </div>
+            <button onclick="closeCitationDrawer()" class="text-[var(--text-subtle)] hover:text-[var(--text-main)] text-xs">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="space-y-4 text-xs">
+            <div>
+              <div class="text-[10px] text-[var(--text-subtle)] uppercase font-bold">Sumber Dokumen:</div>
+              <div id="drawer-doc-name" class="font-bold text-xs text-[var(--text-main)] mt-0.5">Slide_Bab3_Distributed_Systems.pdf</div>
+              <span id="drawer-page-badge" class="inline-block mt-1 text-[10px] bg-indigo-500/10 text-indigo-500 px-2 py-0.5 rounded-full font-mono font-semibold">Halaman 14</span>
+            </div>
+
+            <!-- Snippet Card -->
+            <div class="p-3.5 rounded-2xl bg-[var(--bg-card)] border border-indigo-500/30 text-xs leading-relaxed text-[var(--text-main)] shadow-sm">
+              <div class="text-[10px] font-bold uppercase text-indigo-500 tracking-wider mb-1 flex items-center justify-between">
+                <span>Cuplikan Teks Laptop</span>
+                <span>Match 98%</span>
+              </div>
+              <blockquote id="drawer-snippet-text" class="italic border-l-2 border-indigo-500 pl-2.5 my-2 text-[var(--text-muted)]">
+                "Teorema CAP membuktikan ketidakmungkinan matematis mencapai konsistensi kuat secara bersamaan dengan ketersediaan penuh ketika terjadi partisi jaringan."
+              </blockquote>
+            </div>
+
+            <p class="text-[11px] text-[var(--text-subtle)]">
+              Cuplikan ini diekstrak otomatis oleh Document Parser backend Zakky dan disuntikkan ke konteks Gemini untuk menjamin validitas jawaban.
+            </p>
+          </div>
+        </div>
+
+        <button onclick="showToast('In-App Reader', 'Membuka pembaca dokumen penuh.')" class="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-xs transition">
+          Buka Pembaca Dokumen Lengkap
         </button>
-
-        <button onclick="mobileSwitchTab('chat')" id="m-nav-chat" class="flex flex-col items-center justify-center space-y-1 text-indigo-400 font-bold">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-          <span class="text-[10px]">AI Chat</span>
-        </button>
-
-        <button onclick="mobileSwitchTab('citations')" id="m-nav-citations" class="flex flex-col items-center justify-center space-y-1 text-slate-400 hover:text-white">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-          <span class="text-[10px] font-medium">Sitasi</span>
-        </button>
-
-        <button onclick="toggleModelMenu()" class="flex flex-col items-center justify-center space-y-1 text-slate-400 hover:text-white">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-          <span class="text-[10px] font-medium">Model</span>
-        </button>
-      </nav>
+      </aside>
 
     </div>
+
+    <!-- 3. MOBILE BOTTOM NAVIGATION (Khusus Tampilan Mobile HP) -->
+    <nav id="mobile-nav-bar" class="hidden h-14 border-t border-[var(--border-subtle)] bg-[var(--bg-sidebar)] px-6 items-center justify-around z-30 select-none">
+      <button onclick="showView('home')" id="m-btn-home" class="flex flex-col items-center justify-center space-y-0.5 text-indigo-500 font-bold">
+        <i class="fa-solid fa-house text-sm"></i>
+        <span class="text-[9px]">Home</span>
+      </button>
+      <button onclick="showView('explorer')" id="m-btn-explorer" class="flex flex-col items-center justify-center space-y-0.5 text-[var(--text-subtle)] hover:text-[var(--text-main)] font-medium">
+        <i class="fa-solid fa-folder-open text-sm"></i>
+        <span class="text-[9px]">File Laptop</span>
+      </button>
+      <button onclick="showView('chat')" id="m-btn-chat" class="flex flex-col items-center justify-center space-y-0.5 text-[var(--text-subtle)] hover:text-[var(--text-main)] font-medium">
+        <i class="fa-solid fa-comments text-sm"></i>
+        <span class="text-[9px]">AI Chat</span>
+      </button>
+      <button onclick="toggleModelDropdown()" class="flex flex-col items-center justify-center space-y-0.5 text-[var(--text-subtle)] hover:text-[var(--text-main)] font-medium">
+        <i class="fa-solid fa-sliders text-sm"></i>
+        <span class="text-[9px]">Router</span>
+      </button>
+    </nav>
+
+    <!-- DOWNLOAD PROGRESS OVERLAY TOAST -->
+    <div id="download-toast" class="hidden absolute bottom-6 right-6 p-4 rounded-2xl frosted-card border border-indigo-500/30 z-50 shadow-2xl w-80 smooth-transition">
+      <div class="flex items-center justify-between text-xs font-bold mb-1.5">
+        <span id="dl-filename" class="text-[var(--text-main)] truncate max-w-[190px]">Mengunduh...</span>
+        <span id="dl-percent" class="text-indigo-500 font-mono">0%</span>
+      </div>
+      <div class="w-full bg-black/10 dark:bg-white/10 h-1.5 rounded-full overflow-hidden">
+        <div id="dl-bar" class="bg-indigo-600 h-full w-0 transition-all duration-150"></div>
+      </div>
+      <div class="text-[10px] text-[var(--text-subtle)] mt-1.5 flex justify-between">
+        <span>Menyimpan ke memori HP...</span>
+        <span id="dl-size">0 MB</span>
+      </div>
+    </div>
+
   </main>
 
-  <!-- NOTIFICATION TOAST (Interactive Feedback) -->
-  <div id="toast-notification" class="fixed bottom-6 right-6 z-50 bg-slate-900 border border-slate-700 p-4 rounded-2xl shadow-2xl flex items-center space-x-3 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
-    <div id="toast-icon-box" class="w-8 h-8 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center shrink-0">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-    </div>
-    <div>
-      <div id="toast-title" class="font-bold text-xs text-white">Notifikasi</div>
-      <div id="toast-msg" class="text-xs text-slate-400">Pesan keterangan</div>
-    </div>
+  <!-- FLOATING TOAST NOTIFICATION -->
+  <div id="app-toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-[var(--bg-card)] border border-[var(--border-card)] px-4 py-2.5 rounded-2xl shadow-xl flex items-center space-x-2.5 text-xs text-[var(--text-main)] opacity-0 pointer-events-none transition-all duration-300 translate-y-8">
+    <i class="fa-solid fa-circle-check text-indigo-500 text-sm"></i>
+    <span id="app-toast-text" class="font-medium">Pesan notifikasi</span>
   </div>
 
-  <!-- JAVASCRIPT LOGIC UNIFIED UX INTERACTION -->
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT LOGIC & THEME SWITCHER          -->
+  <!-- ========================================== -->
   <script>
-    let currentViewport = 'desktop';
-    let currentModel = 'gemini';
+    let isDark = false;
+    let currentVp = 'desktop';
 
-    // 1. VIEWPORT SWITCHER LOGIC (Desktop, Tablet/Web, Mobile HP)
-    function setViewport(mode) {
-      currentViewport = mode;
-      const frame = document.getElementById('viewport-frame');
-      const btnDesk = document.getElementById('btn-view-desktop');
-      const btnTab = document.getElementById('btn-view-tablet');
-      const btnMob = document.getElementById('btn-view-mobile');
-      const colExplorer = document.getElementById('col-explorer');
-      const colDrawer = document.getElementById('col-citation-drawer');
-      const mobNav = document.getElementById('mobile-bottom-nav');
+    // 1. THEME TOGGLE: GELAP & TERANG
+    function toggleTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById('theme-icon');
+      const label = document.getElementById('theme-label');
 
-      // Reset button styles
-      [btnDesk, btnTab, btnMob].forEach(b => {
-        b.className = "px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition-all-300 flex items-center space-x-1.5";
-      });
-
-      if (mode === 'desktop') {
-        btnDesk.className = "px-3 py-1.5 rounded-lg font-semibold bg-indigo-600 text-white transition-all-300 flex items-center space-x-1.5 shadow-sm";
-        frame.style.maxWidth = "1280px";
-        frame.style.height = "840px";
-        colExplorer.classList.remove('hidden');
-        colExplorer.style.width = "320px";
-        colDrawer.classList.remove('hidden');
-        colDrawer.style.width = "320px";
-        mobNav.classList.add('hidden');
-      } else if (mode === 'tablet') {
-        btnTab.className = "px-3 py-1.5 rounded-lg font-semibold bg-indigo-600 text-white transition-all-300 flex items-center space-x-1.5 shadow-sm";
-        frame.style.maxWidth = "860px";
-        frame.style.height = "800px";
-        colExplorer.classList.remove('hidden');
-        colExplorer.style.width = "260px";
-        colDrawer.classList.add('hidden'); // Drawer collapsed on tablet
-        mobNav.classList.add('hidden');
-      } else if (mode === 'mobile') {
-        btnMob.className = "px-3 py-1.5 rounded-lg font-semibold bg-indigo-600 text-white transition-all-300 flex items-center space-x-1.5 shadow-sm";
-        frame.style.maxWidth = "410px";
-        frame.style.height = "760px";
-        colExplorer.classList.add('hidden'); // Tab driven on mobile
-        colDrawer.classList.add('hidden');
-        mobNav.classList.remove('hidden');
-        showToast("Mode Mobile Aktif", "Navigasi bawah diaktifkan sesuai standar Android Kotlin.");
+      isDark = !isDark;
+      if (isDark) {
+        html.classList.remove('light');
+        html.classList.add('dark');
+        icon.innerHTML = '<i class="fa-solid fa-sun text-amber-400"></i>';
+        label.textContent = "Mode Terang";
+        showToast("Mode Gelap Aktif", "Tema obsidian titanium diaktifkan.");
+      } else {
+        html.classList.remove('dark');
+        html.classList.add('light');
+        icon.innerHTML = '<i class="fa-solid fa-moon text-indigo-500"></i>';
+        label.textContent = "Mode Gelap";
+        showToast("Mode Terang Aktif", "Tema pearlescent clean diaktifkan.");
       }
     }
 
-    // 2. MOBILE BOTTOM NAVIGATION TAB SWITCHING
-    function mobileSwitchTab(tabName) {
-      const colExplorer = document.getElementById('col-explorer');
-      const colDrawer = document.getElementById('col-citation-drawer');
-      const chatSec = document.querySelector('section');
+    // 2. VIEWPORT ADAPTATION (DESKTOP, TABLET, MOBILE HP)
+    function switchViewport(mode) {
+      currentVp = mode;
+      const frame = document.getElementById('app-wrapper');
+      const sidebar = document.getElementById('app-sidebar');
+      const mobileNav = document.getElementById('mobile-nav-bar');
+      const btnDesk = document.getElementById('btn-vp-desktop');
+      const btnTab = document.getElementById('btn-vp-tablet');
+      const btnMob = document.getElementById('btn-vp-mobile');
 
-      // Reset
-      colExplorer.classList.add('hidden');
-      colDrawer.classList.add('hidden');
-      chatSec.classList.remove('hidden');
+      // Reset button styles
+      [btnDesk, btnTab, btnMob].forEach(b => {
+        b.className = "px-2.5 py-1 rounded-lg font-medium text-[var(--text-muted)] hover:text-[var(--text-main)] smooth-transition flex items-center space-x-1.5";
+      });
 
-      if (tabName === 'explorer') {
-        colExplorer.classList.remove('hidden');
-        colExplorer.style.width = "100%";
-        chatSec.classList.add('hidden');
-      } else if (tabName === 'citations') {
-        colDrawer.classList.remove('hidden');
-        colDrawer.style.width = "100%";
-        chatSec.classList.add('hidden');
+      if (mode === 'desktop') {
+        btnDesk.className = "px-2.5 py-1 rounded-lg font-semibold bg-indigo-600 text-white shadow-xs smooth-transition flex items-center space-x-1.5";
+        frame.style.maxWidth = "1280px";
+        frame.style.height = "860px";
+        sidebar.classList.remove('hidden');
+        sidebar.style.width = "256px";
+        mobileNav.classList.add('hidden');
+        mobileNav.classList.remove('flex');
+      } else if (mode === 'tablet') {
+        btnTab.className = "px-2.5 py-1 rounded-lg font-semibold bg-indigo-600 text-white shadow-xs smooth-transition flex items-center space-x-1.5";
+        frame.style.maxWidth = "880px";
+        frame.style.height = "820px";
+        sidebar.classList.remove('hidden');
+        sidebar.style.width = "220px";
+        mobileNav.classList.add('hidden');
+        mobileNav.classList.remove('flex');
+      } else if (mode === 'mobile') {
+        btnMob.className = "px-2.5 py-1 rounded-lg font-semibold bg-indigo-600 text-white shadow-xs smooth-transition flex items-center space-x-1.5";
+        frame.style.maxWidth = "410px";
+        frame.style.height = "780px";
+        sidebar.classList.add('hidden');
+        mobileNav.classList.remove('hidden');
+        mobileNav.classList.add('flex');
+        showToast("Mode Mobile HP Aktif", "Navigasi bawah khas Android diaktifkan.");
       }
     }
 
     // 3. MODEL SWITCHER
-    function toggleModelMenu() {
-      const dropdown = document.getElementById('model-dropdown');
-      dropdown.classList.toggle('hidden');
+    function toggleModelDropdown() {
+      const menu = document.getElementById('model-dropdown-menu');
+      menu.classList.toggle('hidden');
     }
 
-    function selectModel(id, name, desc, colorDot) {
-      currentModel = id;
-      document.getElementById('active-model-name').textContent = name;
-      document.getElementById('input-model-label').textContent = `${name} (${desc})`;
-      document.getElementById('model-badge-dot').className = `w-2 h-2 rounded-full ${colorDot} animate-pulse`;
-      toggleModelMenu();
-      showToast("Model Berhasil Diganti", `Target router diarahkan ke ${name}.`);
+    function pickModel(name, badge, desc) {
+      document.getElementById('current-model-display').textContent = name;
+      toggleModelDropdown();
+      showToast("Router AI Berpindah", `Kueri berikutnya diarahkan ke ${name} (${desc}).`);
     }
 
-    // 4. CITATION INSPECTOR LAUNCHER
-    function openCitationInspector(docName, page, snippet) {
-      document.getElementById('citation-doc-title').textContent = docName;
-      document.getElementById('citation-page-badge').textContent = `Halaman ${page}`;
-      document.getElementById('citation-snippet-text').textContent = `"${snippet}"`;
+    // 4. VIEW SWITCHING (Home, Explorer, Chat)
+    function showView(viewName) {
+      const heroView = document.getElementById('hero-initial-view');
+      const chatView = document.getElementById('active-chat-view');
+      const explorerView = document.getElementById('explorer-view');
+      const stickyBar = document.getElementById('sticky-bottom-bar');
 
-      // If mobile or drawer collapsed, open drawer
-      const drawer = document.getElementById('col-citation-drawer');
-      drawer.classList.remove('hidden');
-      if (currentViewport === 'tablet') {
-        drawer.style.width = "280px";
+      heroView.classList.add('hidden');
+      chatView.classList.add('hidden');
+      chatView.classList.remove('flex');
+      explorerView.classList.add('hidden');
+      explorerView.classList.remove('flex');
+      stickyBar.classList.add('hidden');
+
+      if (viewName === 'home') {
+        heroView.classList.remove('hidden');
+      } else if (viewName === 'chat') {
+        chatView.classList.remove('hidden');
+        chatView.classList.add('flex');
+        stickyBar.classList.remove('hidden');
+      } else if (viewName === 'explorer') {
+        explorerView.classList.remove('hidden');
+        explorerView.classList.add('flex');
       }
-
-      showToast("Kutipan Terverifikasi", `Membuka referensi Halaman ${page} pada ${docName}.`);
     }
 
-    // 5. DOWNLOAD MANAGER SIMULATION (Izat TC-08)
-    function downloadFileToDevice(event, filename, sizeMB) {
-      event.stopPropagation();
-      const progressBox = document.getElementById('download-progress-box');
-      const progressBar = document.getElementById('download-bar');
-      const title = document.getElementById('download-status-filename');
-      const percent = document.getElementById('download-status-percent');
-      const sizeInd = document.getElementById('download-size-indicator');
+    function startNewChat() {
+      showView('home');
+      document.getElementById('prompt-input').value = '';
+      closeCitationDrawer();
+      showToast("Chat Baru", "Konteks telah disiapkan untuk analisis baru.");
+    }
 
-      progressBox.classList.remove('hidden');
-      title.textContent = filename;
+    function setPromptAndSend(text) {
+      document.getElementById('prompt-input').value = text;
+      submitPrompt();
+    }
+
+    function submitPrompt() {
+      const input = document.getElementById('prompt-input');
+      const query = input.value.trim();
+      if (!query) return;
+
+      document.getElementById('chat-user-text').textContent = query;
+      showView('chat');
+      showToast("Inferensi AI Berjalan", "Memanggil Google Gemini 1.5 Flash via Alwaysdata HTTPS...");
+    }
+
+    function submitSecondaryPrompt() {
+      const input = document.getElementById('secondary-input');
+      const query = input.value.trim();
+      if (!query) return;
+
+      document.getElementById('chat-user-text').textContent = query;
+      input.value = '';
+      showToast("Pertanyaan Terkirim", "Mengirim kueri grounding ke backend.");
+    }
+
+    function addPromptTag(tag) {
+      const input = document.getElementById('prompt-input');
+      input.value = `[${tag}] ` + input.value;
+      input.focus();
+    }
+
+    function loadRecentThread(title) {
+      document.getElementById('chat-user-text').textContent = title;
+      showView('chat');
+    }
+
+    // 5. CITATION INSPECTOR DRAWER
+    function inspectCitation(docName, page, snippet) {
+      const drawer = document.getElementById('citation-drawer');
+      document.getElementById('drawer-doc-name').textContent = docName;
+      document.getElementById('drawer-page-badge').textContent = `Halaman ${page}`;
+      document.getElementById('drawer-snippet-text').textContent = `"${snippet}"`;
+
+      drawer.classList.remove('hidden');
+      drawer.classList.add('flex');
+      showToast("Rujukan Diverifikasi", `Membuka kutipan halaman ${page} dari ${docName}.`);
+    }
+
+    function closeCitationDrawer() {
+      const drawer = document.getElementById('citation-drawer');
+      drawer.classList.add('hidden');
+      drawer.classList.remove('flex');
+    }
+
+    // 6. DOWNLOAD MANAGER SIMULATION (Izat TC-08)
+    function triggerFileDownload(filename, sizeMB) {
+      const toast = document.getElementById('download-toast');
+      const bar = document.getElementById('dl-bar');
+      const fn = document.getElementById('dl-filename');
+      const pc = document.getElementById('dl-percent');
+      const sz = document.getElementById('dl-size');
+
+      fn.textContent = filename;
+      toast.classList.remove('hidden');
 
       let p = 0;
-      const interval = setInterval(() => {
-        p += 15;
+      const timer = setInterval(() => {
+        p += 20;
         if (p > 100) p = 100;
-        progressBar.style.width = p + '%';
-        percent.textContent = p + '%';
-        sizeInd.textContent = `${((sizeMB * p) / 100).toFixed(2)} / ${sizeMB} MB`;
+        bar.style.width = p + '%';
+        pc.textContent = p + '%';
+        sz.textContent = `${((sizeMB * p) / 100).toFixed(2)} / ${sizeMB} MB`;
 
         if (p >= 100) {
-          clearInterval(interval);
+          clearInterval(timer);
           setTimeout(() => {
-            showToast("Unduhan Selesai!", `${filename} berhasil disimpan ke folder Downloads HP.`);
-          }, 300);
+            toast.classList.add('hidden');
+            showToast("Unduhan Selesai!", `${filename} tersimpan di folder Downloads HP.`);
+          }, 400);
         }
-      }, 150);
+      }, 180);
     }
 
-    // 6. DOCUMENT SELECTION
-    function selectDocument(id) {
-      [1, 2, 3, 4].forEach(i => {
-        const item = document.getElementById(`doc-item-${i}`);
-        if (item) {
-          item.className = "p-3 rounded-2xl bg-slate-800/40 border border-slate-800 cursor-pointer hover:bg-slate-800/80 transition-all-300 group";
-        }
-      });
-      const selected = document.getElementById(`doc-item-${id}`);
-      if (selected) {
-        selected.className = "p-3 rounded-2xl bg-indigo-600/15 border border-indigo-500/40 cursor-pointer hover:bg-indigo-600/20 transition-all-300 group";
-      }
-    }
-
-    // 7. CHAT SUBMISSION
-    function handleChatSubmit(event) {
-      event.preventDefault();
-      const input = document.getElementById('chat-input');
-      const text = input.value.trim();
-      if (!text) return;
-
-      sendUserMessage(text);
-      input.value = '';
-    }
-
-    function sendQuickPrompt(promptText) {
-      sendUserMessage(promptText);
-    }
-
-    function sendUserMessage(text) {
-      const chatArea = document.getElementById('chat-messages');
-
-      // Append User Bubble
-      const userBubble = document.createElement('div');
-      userBubble.className = "flex items-start justify-end space-x-3";
-      userBubble.innerHTML = `
-        <div class="bg-indigo-600 text-white p-3.5 sm:p-4 rounded-2xl rounded-tr-sm max-w-2xl text-xs sm:text-sm leading-relaxed shadow-md">
-          ${text}
-        </div>
-        <div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 font-bold text-xs shrink-0">
-          You
-        </div>
-      `;
-      chatArea.appendChild(userBubble);
-      chatArea.scrollTop = chatArea.scrollHeight;
-
-      // Simulate Assistant Response with Citations
+    function simulateSyncLaptop() {
+      const spinner = document.getElementById('sync-spinner');
+      spinner.classList.add('fa-spin');
       setTimeout(() => {
-        const aiBubble = document.createElement('div');
-        aiBubble.className = "flex items-start space-x-3 max-w-3xl";
-        aiBubble.innerHTML = `
-          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md">
-            NR
-          </div>
-          <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl rounded-tl-sm text-xs sm:text-sm text-slate-200 leading-relaxed shadow-sm">
-            <p>Berdasarkan analisis dokumen laptop yang dipilih, berikut rincian mengenai <strong>"${text}"</strong>:</p>
-            <p class="mt-2 text-slate-300">Sistem mengonfirmasi bahwa seluruh parameter relevan telah diindeks ke dalam memori inferensi. Tidak ditemukan anomali atau kontradiksi data antar bab.</p>
-            
-            <div class="mt-3 pt-3 border-t border-slate-800 flex items-center space-x-2">
-              <button onclick="openCitationInspector('Slide_Bab3_Distributed_Systems.pdf', 8, 'Analisis perbandingan menunjukkan peningkatan efisiensi kueri sebesar 42% ketika indexing teks diterapkan.')"
-                      class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs">
-                <span>Slide Bab 3 &bull; Hal. 8</span> ↗
-              </button>
-            </div>
-            <div class="mt-2 text-[10px] text-slate-500">
-              Inferensi via ${currentModel.toUpperCase()} &bull; Latensi: 340 ms &bull; Free Quota
-            </div>
-          </div>
-        `;
-        chatArea.appendChild(aiBubble);
-        chatArea.scrollTop = chatArea.scrollHeight;
-      }, 600);
-    }
-
-    // 8. TOAST NOTIFICATION HELPER
-    function showToast(title, msg) {
-      const toast = document.getElementById('toast-notification');
-      document.getElementById('toast-title').textContent = title;
-      document.getElementById('toast-msg').textContent = msg;
-
-      toast.classList.remove('translate-y-24', 'opacity-0');
-      toast.classList.add('translate-y-0', 'opacity-100');
-
-      setTimeout(() => {
-        toast.classList.remove('translate-y-0', 'opacity-100');
-        toast.classList.add('translate-y-24', 'opacity-0');
-      }, 3000);
-    }
-
-    function simulateSync() {
-      const icon = document.getElementById('sync-icon');
-      icon.classList.add('animate-spin');
-      setTimeout(() => {
-        icon.classList.remove('animate-spin');
-        showToast("Sinkronisasi Selesai", "4 file dokumen laptop terverifikasi dengan MongoDB Atlas.");
+        spinner.classList.remove('fa-spin');
+        showToast("Sinkron Berhasil", "Metadata laptop terupdate dengan MongoDB Atlas.");
       }, 1000);
     }
 
-    function openDocPreview(event, id) {
-      event.stopPropagation();
-      showToast("In-App Previewer", "Membuka tampilan teks ringkas dokumen.");
+    // 7. TOAST NOTIFICATION HELPER
+    function showToast(title, desc) {
+      const toast = document.getElementById('app-toast');
+      const text = document.getElementById('app-toast-text');
+      text.innerHTML = `<strong>${title}:</strong> ${desc}`;
+
+      toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-8');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-8');
+      }, 2800);
     }
 
-    function openFullInAppReader() {
-      showToast("Reader Aktif", "Membuka pembaca dokumen mode penuh.");
-    }
-
-    function clearChatHistory() {
-      showToast("Chat Dibersihkan", "Riwayat percakapan telah direset.");
-    }
-
-    // Close model dropdown on outside click
+    // Close model dropdown on click outside
     window.addEventListener('click', (e) => {
-      const dropdown = document.getElementById('model-dropdown');
-      if (!dropdown.contains(e.target) && !e.target.closest('button[onclick="toggleModelMenu()"]')) {
-        dropdown.classList.add('hidden');
+      const menu = document.getElementById('model-dropdown-menu');
+      if (!menu.contains(e.target) && !e.target.closest('button[onclick="toggleModelDropdown()"]')) {
+        menu.classList.add('hidden');
       }
     });
   </script>
