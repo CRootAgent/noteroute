@@ -1,231 +1,1195 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NoteRoute - Cross-Device Knowledge Agent & Multi-LLM Gateway</title>
-  <meta name="description" content="Aplikasi asisten dokumen lintas perangkat berbasis Native Android Kotlin dan Smart Multi-LLM Router.">
+  <title>NoteRoute - Beranda Notebook</title>
+  <meta name="description" content="NoteRoute - Platform asisten dokumen cerdas berbasis Grounded Multi-LLM Router.">
+  
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome 6 CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Fonts: Plus Jakarta Sans & Google Sans styled -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            nlm: {
+              blue: '#1a73e8',
+              blueHover: '#1557b0',
+              blueDark: '#8ab4f8',
+              cardDark: '#181a1f',
+              cardDarkHover: '#22252c',
+              borderDark: '#282b33',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .glass-card {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(226, 232, 240, 0.8);
+    /* CSS Variables untuk Tema Terang dan Gelap yang Konsisten dengan Workspace NoteRoute */
+    :root.light, html.light {
+      --nlm-bg: #f8fafc;
+      --nlm-surface: #ffffff;
+      --nlm-surface-variant: #f1f5f9;
+      --nlm-surface-hover: #e2e8f0;
+      --nlm-border: #e2e8f0;
+      --nlm-border-subtle: #edf2f7;
+      --nlm-text-primary: #0f172a;
+      --nlm-text-secondary: #475569;
+      --nlm-text-tertiary: #94a3b8;
+      --nlm-card-bg: #ffffff;
+      --nlm-card-border: #e2e8f0;
+      --nlm-card-hover-border: #cbd5e1;
+      --nlm-btn-primary: #1a73e8;
+      --nlm-btn-primary-hover: #1557b0;
+      --nlm-search-bg: #f1f5f9;
+      --nlm-search-border: #e2e8f0;
+    }
+
+    :root.dark, html.dark {
+      --nlm-bg: #0e1015;
+      --nlm-surface: #14171d;
+      --nlm-surface-variant: #1a1e26;
+      --nlm-surface-hover: #222733;
+      --nlm-border: #242936;
+      --nlm-border-subtle: #191d26;
+      --nlm-text-primary: #f8fafc;
+      --nlm-text-secondary: #94a3b8;
+      --nlm-text-tertiary: #64748b;
+      --nlm-card-bg: #15181f;
+      --nlm-card-border: #232834;
+      --nlm-card-hover-border: #3b4457;
+      --nlm-btn-primary: #1a73e8;
+      --nlm-btn-primary-hover: #1b66c9;
+      --nlm-search-bg: #14171d;
+      --nlm-search-border: #262c3a;
+    }
+
+    body {
+      background-color: var(--nlm-bg);
+      color: var(--nlm-text-primary);
+      transition: background-color 0.25s ease, color 0.25s ease;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Scrollbar minimalis khas Google */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.25);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.45);
+    }
+
+    /* Card Aspect Ratio & Subtle Shadows */
+    .notebook-card {
+      transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), 
+                  box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), 
+                  border-color 0.18s ease;
+    }
+    .notebook-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.3);
+    }
+    html.light .notebook-card:hover {
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col antialiased select-none">
 
-  <!-- NAVBAR -->
-  <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
-    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-md shadow-indigo-200">
-          <i class="fa-solid fa-route text-lg"></i>
+  <!-- ======================================================== -->
+  <!-- 1. TOP APP BAR (NOTEBOOKLM AUTHENTIC CLEAN HEADER)       -->
+  <!-- ======================================================== -->
+  <header class="h-16 border-b border-[var(--nlm-border)] bg-[var(--nlm-surface)]/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 shrink-0">
+    
+    <!-- Left: Brand Logo & Navigation Pills (Semua, Temukan, Koleksi) -->
+    <div class="flex items-center space-x-3 sm:space-x-6">
+      
+      <!-- Brand Logo NoteRoute -->
+      <a href="index.html" class="flex items-center space-x-2.5 group">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-route"></i>
         </div>
-        <div>
-          <span class="font-extrabold text-xl tracking-tight text-slate-900">Note<span class="text-indigo-600">Route</span></span>
-          <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">Proyek 2</span>
+        <div class="flex items-baseline space-x-1.5">
+          <span class="font-bold text-base sm:text-lg text-[var(--nlm-text-primary)] tracking-tight">NoteRoute</span>
+          <span class="text-xs text-[var(--nlm-text-tertiary)] font-medium hidden md:inline">Notebook</span>
+        </div>
+      </a>
+
+      <!-- Filter Pills: Semua, Temukan, Koleksi (Sesuai Screenshot NotebookLM) -->
+      <nav class="hidden sm:flex items-center space-x-1">
+        <button id="pill-all" onclick="setFilter('all')" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-primary)] border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-1.5">
+          <span>Semua</span>
+        </button>
+        <button id="pill-discover" onclick="setFilter('discover')" class="px-3.5 py-1.5 rounded-full text-xs font-medium text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-1.5">
+          <i class="fa-regular fa-compass text-[11px]"></i>
+          <span>Temukan</span>
+        </button>
+        <button id="pill-collections" onclick="setFilter('collections')" class="px-3.5 py-1.5 rounded-full text-xs font-medium text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-1.5">
+          <i class="fa-regular fa-bookmark text-[11px]"></i>
+          <span>Koleksi</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Right: Search Bar, View Mode, Settings, 9-Dots Apps, Profile Avatar -->
+    <div class="flex items-center space-x-2 sm:space-x-3">
+      
+      <!-- Search Input Pill (Q Telusuri notebook) -->
+      <div class="relative w-40 sm:w-64 lg:w-80">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-[var(--nlm-text-tertiary)]"></i>
+        <input id="notebook-search-input" type="text" placeholder="Telusuri notebook" oninput="handleSearchNotebook(this.value)"
+               class="w-full pl-9 pr-8 py-1.5 text-xs sm:text-sm rounded-full bg-[var(--nlm-search-bg)] border border-[var(--nlm-search-border)] text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition">
+        <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)]">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- View Switcher (Grid vs List View Icons) -->
+      <div class="flex items-center p-0.5 rounded-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)]">
+        <button id="btn-view-grid" onclick="setViewMode('grid')" class="w-7 h-7 rounded-full bg-[var(--nlm-surface)] text-[var(--nlm-text-primary)] shadow-xs flex items-center justify-center text-xs transition" title="Tampilan Grid">
+          <i class="fa-solid fa-table-cells-large text-[11px]"></i>
+        </button>
+        <button id="btn-view-list" onclick="setViewMode('list')" class="w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center text-xs transition" title="Tampilan Daftar">
+          <i class="fa-solid fa-list text-[11px]"></i>
+        </button>
+      </div>
+
+      <!-- Theme Switch Shortcut (Matahari / Bulan) -->
+      <button onclick="toggleQuickTheme()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center transition" title="Ganti Tema">
+        <i id="quick-theme-icon" class="fa-solid fa-moon text-xs"></i>
+      </button>
+
+      <!-- Settings Gear Icon -->
+      <button onclick="openSettingsModal('appearance')" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center transition" title="Pengaturan">
+        <i class="fa-solid fa-gear text-xs"></i>
+      </button>
+
+      <!-- Google / NoteRoute 9-Dots App Launcher -->
+      <div class="relative">
+        <button onclick="toggleAppsMenu()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center transition" title="Aplikasi &amp; Layanan NoteRoute">
+          <i class="fa-solid fa-grip text-sm"></i>
+        </button>
+
+        <!-- 9-Dots Apps Dropdown -->
+        <div id="apps-dropdown-menu" class="hidden absolute right-0 mt-2 w-72 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl p-3 z-50">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-2 mb-2">Ekosistem NoteRoute</div>
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <a href="../docs/ui-prototype.html" class="p-2.5 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group">
+              <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-base group-hover:scale-110 transition-transform">
+                <i class="fa-solid fa-book-open"></i>
+              </div>
+              <span class="text-[11px] font-medium text-[var(--nlm-text-primary)]">Workspace</span>
+            </a>
+            <a href="../android/README.md" class="p-2.5 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group">
+              <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-base group-hover:scale-110 transition-transform">
+                <i class="fa-brands fa-android"></i>
+              </div>
+              <span class="text-[11px] font-medium text-[var(--nlm-text-primary)]">Android APK</span>
+            </a>
+            <a href="../docs/API_CONTRACT.md" class="p-2.5 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group">
+              <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center text-base group-hover:scale-110 transition-transform">
+                <i class="fa-solid fa-network-wired"></i>
+              </div>
+              <span class="text-[11px] font-medium text-[var(--nlm-text-primary)]">REST API</span>
+            </a>
+          </div>
+          <div class="mt-2 pt-2 border-t border-[var(--nlm-border-subtle)] text-center">
+            <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Proyek 2 &bull; Kelompok 12 D4 TI ULBI</span>
+          </div>
         </div>
       </div>
-      <div class="flex items-center space-x-4">
-        <a href="#fitur" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition">Fitur</a>
-        <a href="#panduan" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition">Panduan</a>
-        <a href="https://github.com/CRootAgent/noteroute" target="_blank" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition flex items-center space-x-1.5">
-          <i class="fa-brands fa-github text-base"></i>
-          <span>GitHub</span>
-        </a>
+
+      <!-- User Profile Avatar -->
+      <div class="relative">
+        <button onclick="toggleProfileMenu()" class="w-8 h-8 rounded-full bg-gradient-to-tr from-pink-500 to-rose-400 text-white font-bold text-xs flex items-center justify-center ring-2 ring-transparent hover:ring-blue-500 transition shadow-xs overflow-hidden" title="Akun Anda">
+          <span id="user-avatar-initials">AZ</span>
+          <img id="user-avatar-image" src="" alt="Avatar" class="w-full h-full object-cover hidden">
+        </button>
+
+        <!-- Profile Dropdown Menu -->
+        <div id="profile-dropdown-menu" class="hidden absolute right-0 mt-2 w-64 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-xl p-2 z-50">
+          <div class="p-3 border-b border-[var(--nlm-border-subtle)] flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-pink-500 to-rose-400 text-white font-bold text-xs flex items-center justify-center shrink-0">
+              <span>AZ</span>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">Ahmad Zakky</div>
+              <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">ahmadzakky@ulbi.ac.id</div>
+            </div>
+          </div>
+          <div class="py-1">
+            <button onclick="openSettingsModal('profile')" class="w-full px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] text-left text-xs text-[var(--nlm-text-primary)] flex items-center space-x-2 transition">
+              <i class="fa-regular fa-user text-[11px] w-4 text-[var(--nlm-text-tertiary)]"></i>
+              <span>Profil Pengguna</span>
+            </button>
+            <button onclick="openSettingsModal('appearance')" class="w-full px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] text-left text-xs text-[var(--nlm-text-primary)] flex items-center space-x-2 transition">
+              <i class="fa-solid fa-palette text-[11px] w-4 text-[var(--nlm-text-tertiary)]"></i>
+              <span>Tampilan &amp; Tema</span>
+            </button>
+            <button onclick="openSettingsModal('api')" class="w-full px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] text-left text-xs text-[var(--nlm-text-primary)] flex items-center space-x-2 transition">
+              <i class="fa-solid fa-key text-[11px] w-4 text-[var(--nlm-text-tertiary)]"></i>
+              <span>Kunci API &amp; Router</span>
+            </button>
+          </div>
+          <div class="pt-1 border-t border-[var(--nlm-border-subtle)]">
+            <button onclick="showToast('Sesi Akun', 'Anda berhasil keluar dari sesi lokal.')" class="w-full px-3 py-2 rounded-xl hover:bg-rose-500/10 text-left text-xs text-rose-500 flex items-center space-x-2 transition">
+              <i class="fa-solid fa-arrow-right-from-bracket text-[11px] w-4"></i>
+              <span>Keluar Akun</span>
+            </button>
+          </div>
+        </div>
       </div>
+
     </div>
   </header>
 
-  <!-- HERO SECTION -->
-  <section class="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28">
-    <div class="max-w-5xl mx-auto px-4 text-center">
+  <!-- ======================================================== -->
+  <!-- 2. MAIN CONTAINER: NOTEBOOK TERBARU GRID / LIST          -->
+  <!-- (TIDAK PERLU NOTEBOOK UNGGULAN - SESUAI INSTRUKSI USER)   -->
+  <!-- ======================================================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+
+    <!-- Section Header: [Notebook terbaru ☰] & [+ Notebook baru] -->
+    <div class="flex items-center justify-between mb-6 sm:mb-8">
       
-      <!-- JSCroot Badge -->
-      <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-violet-50 border border-violet-200 text-violet-800 text-xs font-medium mb-6">
-        <span class="w-2 h-2 rounded-full bg-violet-600 animate-pulse"></span>
-        <span>Powered by <strong>JSCroot (CRootJS)</strong> &bull; Zero-Build Micro-Framework</span>
-      </div>
+      <!-- Left: Title with Sort Dropdown Trigger -->
+      <div class="flex items-center space-x-3">
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-[var(--nlm-text-primary)]">
+          Notebook terbaru
+        </h1>
+        
+        <!-- Sort Dropdown Trigger -->
+        <div class="relative">
+          <button onclick="toggleSortMenu()" class="p-1.5 rounded-lg hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] transition flex items-center space-x-1" title="Urutkan notebook">
+            <i class="fa-solid fa-bars-staggered text-sm"></i>
+          </button>
 
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight mb-6">
-        Akses Dokumen Laptop dari HP & Diskusi dengan <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Multi-LLM Cerdas</span>
-      </h1>
-
-      <p class="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed mb-10">
-        Perpaduan <strong>Grounded Document Agent ala NotebookLM</strong> dengan kebebasan <strong>Smart Multi-LLM Router</strong> (Gemini 1.5 Flash 1M Context, Groq Kilat, DeepSeek, & 9Router). Dilengkapi fitur ambil berkas laptop langsung ke memori ponsel.
-      </p>
-
-      <!-- CTA DOWNLOAD AREA (DIKONTROL SECARA DINAMIS OLEH CROOTJS) -->
-      <div class="glass-card max-w-md mx-auto p-6 rounded-2xl shadow-xl shadow-slate-200/50 mb-8">
-        <a id="btn-download-apk" href="https://github.com/CRootAgent/noteroute/releases" target="_blank"
-           class="w-full inline-flex items-center justify-center space-x-3 px-6 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base shadow-lg shadow-indigo-300 hover:from-indigo-700 hover:to-violet-700 transition transform hover:-translate-y-0.5">
-          <i class="fa-solid fa-download text-lg"></i>
-          <span>Unduh NoteRoute APK</span>
-        </a>
-
-        <!-- Dynamic metadata render by CRootJS -->
-        <div class="mt-4 flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-100">
-          <span id="release-version" class="font-medium text-slate-700">Memeriksa rilis terbaru...</span>
-          <span id="release-size" class="font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-600">Native Android</span>
-          <span id="release-date" class="text-slate-400">GitHub Releases</span>
+          <!-- Sort Menu Dropdown -->
+          <div id="sort-dropdown-menu" class="hidden absolute left-0 mt-2 w-44 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-xl p-1.5 z-30">
+            <button onclick="setSortOrder('recent')" class="w-full px-3 py-1.5 rounded-xl text-left text-xs font-semibold text-blue-500 bg-blue-500/10 flex items-center justify-between">
+              <span>Terakhir diedit</span>
+              <i class="fa-solid fa-check text-[10px]"></i>
+            </button>
+            <button onclick="setSortOrder('alpha')" class="w-full px-3 py-1.5 rounded-xl text-left text-xs text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] hover:text-[var(--nlm-text-primary)] transition">
+              <span>Nama (A &ndash; Z)</span>
+            </button>
+            <button onclick="setSortOrder('sources')" class="w-full px-3 py-1.5 rounded-xl text-left text-xs text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] hover:text-[var(--nlm-text-primary)] transition">
+              <span>Jumlah sumber terbanyak</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center justify-center gap-6 text-xs text-slate-500">
-        <span class="flex items-center space-x-1.5">
-          <i class="fa-solid fa-check text-emerald-500"></i>
-          <span>100% Gratis & Open Source</span>
-        </span>
-        <span class="flex items-center space-x-1.5">
-          <i class="fa-solid fa-check text-emerald-500"></i>
-          <span>1 Juta Token Context Gemini</span>
-        </span>
-        <span class="flex items-center space-x-1.5">
-          <i class="fa-solid fa-check text-emerald-500"></i>
-          <span>Failover Otomatis HTTP 429</span>
-        </span>
+      <!-- Right: + Notebook baru (Primary Pill Button Khas NotebookLM) -->
+      <div>
+        <button onclick="openNewNotebookModal()" class="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-[var(--nlm-btn-primary)] hover:bg-[var(--nlm-btn-primary-hover)] text-white font-semibold text-xs sm:text-sm flex items-center space-x-2 shadow-sm shadow-blue-500/20 active:scale-95 transition-all">
+          <i class="fa-solid fa-plus text-xs"></i>
+          <span>Notebook baru</span>
+        </button>
       </div>
 
     </div>
-  </section>
 
-  <!-- LIVE METRICS & HEALTH (POWERED BY CROOTJS) -->
-  <section class="max-w-5xl mx-auto px-4 pb-16">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div class="glass-card p-5 rounded-2xl border border-slate-200 text-center">
-        <div class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-1">Status Server Alwaysdata</div>
-        <div id="metric-server-status" class="text-xl font-extrabold text-emerald-600 flex items-center justify-center space-x-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>ONLINE (HTTPS)</span>
-        </div>
+    <!-- Empty Search State Container (Tersembunyi bila ada hasil) -->
+    <div id="empty-search-state" class="hidden text-center py-16">
+      <div class="w-12 h-12 rounded-2xl bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-tertiary)] flex items-center justify-center text-xl mx-auto mb-3">
+        <i class="fa-solid fa-folder-open"></i>
       </div>
-      <div class="glass-card p-5 rounded-2xl border border-slate-200 text-center">
-        <div class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-1">Kapasitas Konteks Dokumen</div>
-        <div class="text-xl font-extrabold text-indigo-600">1.000.000 Token</div>
-        <div class="text-xs text-slate-500 mt-0.5">Google Gemini 1.5 Flash Free Tier</div>
-      </div>
-      <div class="glass-card p-5 rounded-2xl border border-slate-200 text-center">
-        <div class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-1">Latensi Alih Kueri (Failover)</div>
-        <div class="text-xl font-extrabold text-violet-600">&lt; 500 ms</div>
-        <div class="text-xs text-slate-500 mt-0.5">Smart Heuristic Router</div>
-      </div>
+      <h3 class="text-sm font-bold text-[var(--nlm-text-primary)]">Tidak ada notebook yang cocok</h3>
+      <p class="text-xs text-[var(--nlm-text-tertiary)] mt-1">Coba kata kunci lain atau buat notebook baru.</p>
+      <button onclick="clearSearch()" class="mt-4 px-3.5 py-1.5 rounded-full text-xs font-semibold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 transition">
+        Reset Pencarian
+      </button>
     </div>
-  </section>
 
-  <!-- FITUR UTAMA -->
-  <section id="fitur" class="py-16 bg-white border-y border-slate-200">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="text-center max-w-2xl mx-auto mb-12">
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">4 Keunggulan NoteRoute</h2>
-        <p class="text-slate-600 mt-2 text-sm sm:text-base">Dirancang khusus untuk memecahkan problem harian mahasiswa dan akademisi dengan biaya Rp 0.</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Fitur 1 -->
-        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-indigo-300 transition">
-          <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl mb-4">
+    <!-- ====================================================== -->
+    <!-- VIEW MODE A: GRID VIEW (DEFAULT - PERSIS SCREENSHOT)   -->
+    <!-- ====================================================== -->
+    <div id="notebooks-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      
+      <!-- Notebook Card 1: Materi Kuliah Semester 5 (Terhubung langsung ke UI Prototype) -->
+      <div onclick="navigateToNotebook('Materi Kuliah Semester 5 • Sistem Terdistribusi')" class="notebook-card p-4 rounded-3xl bg-[var(--nlm-card-bg)] border border-[var(--nlm-card-border)] hover:border-[var(--nlm-card-hover-border)] cursor-pointer flex flex-col justify-between h-44 sm:h-48 group relative">
+        <!-- Top: Folder Icon & 3-Dots Menu -->
+        <div class="flex items-start justify-between">
+          <div class="w-9 h-9 rounded-2xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-base shadow-xs">
             <i class="fa-solid fa-folder-open"></i>
           </div>
-          <h3 class="font-bold text-slate-900 text-base mb-2">Ambil File dari Laptop</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Menelusuri direktori laptop dari HP dan mengunduh berkas fisik (PDF, DOCX, TXT, MD) langsung ke folder <code>Downloads</code> ponsel secara asinkron.
-          </p>
+          
+          <button onclick="openCardContextMenu(event, 'Materi Kuliah Semester 5 • Sistem Terdistribusi')" class="w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center transition" title="Opsi lainnya">
+            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+          </button>
         </div>
 
-        <!-- Fitur 2 -->
-        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-indigo-300 transition">
-          <div class="w-12 h-12 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center text-xl mb-4">
-            <i class="fa-solid fa-comments"></i>
+        <!-- Bottom: Title & Metadata Row -->
+        <div class="space-y-1">
+          <h3 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)] line-clamp-2 leading-snug group-hover:text-blue-500 transition-colors">
+            Materi Kuliah Semester 5 &bull; Sistem Terdistribusi
+          </h3>
+          <div class="flex items-center space-x-1.5 text-[11px] text-[var(--nlm-text-tertiary)] font-medium">
+            <span>8 Nov 2026</span>
+            <span>&bull;</span>
+            <span class="text-blue-500 dark:text-blue-400 font-semibold">4 sumber</span>
           </div>
-          <h3 class="font-bold text-slate-900 text-base mb-2">Document Chat & Sitasi</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Tanya-jawab isi berkas ala NotebookLM dengan <strong>Citation Badges</strong> transparan yang menunjukkan nomor halaman dan cuplikan teks rujukan.
-          </p>
         </div>
+      </div>
 
-        <!-- Fitur 3 -->
-        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-indigo-300 transition">
-          <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl mb-4">
+      <!-- Notebook Card 2: Riset Multi-LLM Routing & Heuristic Failover -->
+      <div onclick="navigateToNotebook('Riset Multi-LLM Routing & Heuristic Failover')" class="notebook-card p-4 rounded-3xl bg-[var(--nlm-card-bg)] border border-[var(--nlm-card-border)] hover:border-[var(--nlm-card-hover-border)] cursor-pointer flex flex-col justify-between h-44 sm:h-48 group relative">
+        <div class="flex items-start justify-between">
+          <div class="w-9 h-9 rounded-2xl bg-indigo-500/15 text-indigo-500 flex items-center justify-center text-base shadow-xs">
             <i class="fa-solid fa-brain"></i>
           </div>
-          <h3 class="font-bold text-slate-900 text-base mb-2">Multi-LLM Switcher</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Bebas berganti otak AI: Gemini 1.5 Flash (Konteks 1M), Groq Llama 3.3 (Kilat 300 token/s), DeepSeek R1/V3, atau bridge 9Router lokal.
-          </p>
+          
+          <button onclick="openCardContextMenu(event, 'Riset Multi-LLM Routing & Heuristic Failover')" class="w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center transition" title="Opsi lainnya">
+            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+          </button>
         </div>
 
-        <!-- Fitur 4 -->
-        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-indigo-300 transition">
-          <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl mb-4">
-            <i class="fa-solid fa-shield-halved"></i>
+        <div class="space-y-1">
+          <h3 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)] line-clamp-2 leading-snug group-hover:text-blue-500 transition-colors">
+            Riset Multi-LLM Routing &amp; Heuristic Failover
+          </h3>
+          <div class="flex items-center space-x-1.5 text-[11px] text-[var(--nlm-text-tertiary)] font-medium">
+            <span>5 Nov 2026</span>
+            <span>&bull;</span>
+            <span>3 sumber</span>
           </div>
-          <h3 class="font-bold text-slate-900 text-base mb-2">Smart Failover (HTTP 429)</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Otomatis mendeteksi limit kuota API dan mengalihkan ke model cadangan secara transparan tanpa menginterupsi sesi obrolan pengguna.
-          </p>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- PANDUAN SETUP INTERAKTIF DENGAN CROOTJS -->
-  <section id="panduan" class="py-16 max-w-4xl mx-auto px-4">
-    <div class="text-center mb-8">
-      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Panduan Cepat Setup NoteRoute</h2>
-      <p class="text-slate-600 text-sm mt-1">Pilih topik panduan di bawah untuk melihat langkah konfigurasi interaktif:</p>
-    </div>
-
-    <!-- Tab Buttons (CRootJS Controlled) -->
-    <div class="flex items-center justify-center space-x-2 mb-6">
-      <button id="tab-btn-laptop" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 text-white shadow-sm transition">
-        1. Setup Agen Laptop
-      </button>
-      <button id="tab-btn-apikey" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition">
-        2. Dapatkan API Key Gratis
-      </button>
-      <button id="tab-btn-9router" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition">
-        3. Hubungkan ke 9Router
-      </button>
-    </div>
-
-    <!-- Content Card (CRootJS Controlled) -->
-    <div class="glass-card p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
-      <div id="guide-box">
-        <h3 class="font-bold text-slate-900 text-lg mb-3">Langkah 1: Setup Agen Sinkronisasi Dokumen di Laptop</h3>
-        <p class="text-sm text-slate-600 mb-4 leading-relaxed">
-          Agen laptop bertugas membaca folder materi kuliah dan menyinkronkan berkas ke cloud backend NoteRoute agar bisa diakses dari HP Android Anda.
-        </p>
-        <div class="bg-slate-900 text-slate-200 p-4 rounded-xl text-xs font-mono overflow-x-auto mb-4">
-          <code># 1. Masuk ke direktori proyek server NoteRoute<br>cd noteroute/server<br><br># 2. Pasang dependensi dan jalankan server<br>npm install<br>npm start</code>
+      <!-- Notebook Card 3: Modul Praktikum Cloud Computing ULBI -->
+      <div onclick="navigateToNotebook('Modul Praktikum Cloud Computing ULBI')" class="notebook-card p-4 rounded-3xl bg-[var(--nlm-card-bg)] border border-[var(--nlm-card-border)] hover:border-[var(--nlm-card-hover-border)] cursor-pointer flex flex-col justify-between h-44 sm:h-48 group relative">
+        <div class="flex items-start justify-between">
+          <div class="w-9 h-9 rounded-2xl bg-sky-500/15 text-sky-500 flex items-center justify-center text-base shadow-xs">
+            <i class="fa-solid fa-cloud"></i>
+          </div>
+          
+          <button onclick="openCardContextMenu(event, 'Modul Praktikum Cloud Computing ULBI')" class="w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center transition" title="Opsi lainnya">
+            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+          </button>
         </div>
-        <p class="text-xs text-slate-500">
-          Folder dokumen Anda otomatis terindeks dan dapat ditelusuri langsung melalui layar File Explorer di HP Android.
-        </p>
+
+        <div class="space-y-1">
+          <h3 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)] line-clamp-2 leading-snug group-hover:text-blue-500 transition-colors">
+            Modul Praktikum Cloud Computing ULBI
+          </h3>
+          <div class="flex items-center space-x-1.5 text-[11px] text-[var(--nlm-text-tertiary)] font-medium">
+            <span>28 Okt 2026</span>
+            <span>&bull;</span>
+            <span>2 sumber</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notebook Card 4: Panduan Skripsi & Jurnal Ilmiah Sinta 2 -->
+      <div onclick="navigateToNotebook('Panduan Skripsi & Jurnal Ilmiah Sinta 2')" class="notebook-card p-4 rounded-3xl bg-[var(--nlm-card-bg)] border border-[var(--nlm-card-border)] hover:border-[var(--nlm-card-hover-border)] cursor-pointer flex flex-col justify-between h-44 sm:h-48 group relative">
+        <div class="flex items-start justify-between">
+          <div class="w-9 h-9 rounded-2xl bg-purple-500/15 text-purple-500 flex items-center justify-center text-base shadow-xs">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          
+          <button onclick="openCardContextMenu(event, 'Panduan Skripsi & Jurnal Ilmiah Sinta 2')" class="w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center transition" title="Opsi lainnya">
+            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+          </button>
+        </div>
+
+        <div class="space-y-1">
+          <h3 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)] line-clamp-2 leading-snug group-hover:text-blue-500 transition-colors">
+            Panduan Skripsi &amp; Jurnal Ilmiah Sinta 2
+          </h3>
+          <div class="flex items-center space-x-1.5 text-[11px] text-[var(--nlm-text-tertiary)] font-medium">
+            <span>15 Okt 2026</span>
+            <span>&bull;</span>
+            <span>6 sumber</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notebook Card 5: NoteRoute Backend API & CRootJS Architecture -->
+      <div onclick="navigateToNotebook('NoteRoute Backend API & CRootJS Architecture')" class="notebook-card p-4 rounded-3xl bg-[var(--nlm-card-bg)] border border-[var(--nlm-card-border)] hover:border-[var(--nlm-card-hover-border)] cursor-pointer flex flex-col justify-between h-44 sm:h-48 group relative">
+        <div class="flex items-start justify-between">
+          <div class="w-9 h-9 rounded-2xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center text-base shadow-xs">
+            <i class="fa-solid fa-code"></i>
+          </div>
+          
+          <button onclick="openCardContextMenu(event, 'NoteRoute Backend API & CRootJS Architecture')" class="w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center transition" title="Opsi lainnya">
+            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+          </button>
+        </div>
+
+        <div class="space-y-1">
+          <h3 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)] line-clamp-2 leading-snug group-hover:text-blue-500 transition-colors">
+            NoteRoute Backend API &amp; CRootJS Architecture
+          </h3>
+          <div class="flex items-center space-x-1.5 text-[11px] text-[var(--nlm-text-tertiary)] font-medium">
+            <span>10 Okt 2026</span>
+            <span>&bull;</span>
+            <span>1 sumber</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notebook Card 6: Notebook tanpa judul (PERSIS SEPERTI DI SCREENSHOT) -->
+      <div onclick="navigateToNotebook('Notebook tanpa judul')" class="notebook-card p-4 rounded-3xl bg-[var(--nlm-card-bg)] border border-[var(--nlm-card-border)] hover:border-[var(--nlm-card-hover-border)] cursor-pointer flex flex-col justify-between h-44 sm:h-48 group relative">
+        <div class="flex items-start justify-between">
+          <!-- Folder Icon Kuning Khas Screenshot -->
+          <div class="w-9 h-9 rounded-2xl bg-amber-500/20 text-amber-500 flex items-center justify-center text-base shadow-xs">
+            <i class="fa-solid fa-folder"></i>
+          </div>
+          
+          <button onclick="openCardContextMenu(event, 'Notebook tanpa judul')" class="w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center transition" title="Opsi lainnya">
+            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+          </button>
+        </div>
+
+        <div class="space-y-1">
+          <h3 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)] line-clamp-2 leading-snug group-hover:text-blue-500 transition-colors">
+            Notebook tanpa judul
+          </h3>
+          <div class="flex items-center space-x-1.5 text-[11px] text-[var(--nlm-text-tertiary)] font-medium">
+            <span>1 Okt 2026</span>
+            <span>&bull;</span>
+            <span>0 sumber</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- VIEW MODE B: LIST VIEW (GOOGLE DRIVE / NOTEBOOKLM STYLE) -->
+    <!-- ====================================================== -->
+    <div id="notebooks-list-container" class="hidden overflow-hidden rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)]">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="border-b border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-tertiary)] font-semibold uppercase tracking-wider">
+            <tr>
+              <th scope="col" class="py-3 px-4">Nama Notebook</th>
+              <th scope="col" class="py-3 px-4 hidden sm:table-cell">Terakhir Diedit</th>
+              <th scope="col" class="py-3 px-4">Sumber</th>
+              <th scope="col" class="py-3 px-4 text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="notebooks-list-tbody" class="divide-y divide-[var(--nlm-border-subtle)] text-[var(--nlm-text-primary)]">
+            <!-- Dynamic rows populated via JS -->
+          </tbody>
+        </table>
       </div>
     </div>
-  </section>
 
-  <!-- FOOTER -->
-  <footer class="bg-slate-900 text-slate-400 py-10 border-t border-slate-800 text-xs">
-    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div>
-        <span class="font-bold text-white text-sm">NoteRoute</span> &bull; Proyek 2 (CRUD & Code Coverage)
-        <div class="mt-1">D4 Teknik Informatika &bull; Universitas Logistik dan Bisnis Internasional (ULBI)</div>
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- 3. MODAL BUAT NOTEBOOK BARU                              -->
+  <!-- ======================================================== -->
+  <div id="new-notebook-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-3xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] shadow-2xl p-6 space-y-5 animate-scale-up">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm font-bold">
+            <i class="fa-solid fa-plus"></i>
+          </div>
+          <h3 class="font-bold text-base text-[var(--nlm-text-primary)]">Buat Notebook Baru</h3>
+        </div>
+        <button onclick="closeNewNotebookModal()" class="w-7 h-7 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
       </div>
-      <div class="text-center sm:text-right">
-        <div><strong>Kelompok 12:</strong> Ahmad Zakky Nurfauzan (714250028) &amp; Izat Ibrahimovic Irawan (714250024)</div>
-        <div class="mt-1">Dosen Pembimbing: <strong>Rolly Maulana Awangga, S.T., M.T., CAIP.</strong></div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-[var(--nlm-text-secondary)] mb-1">Judul Notebook</label>
+          <input id="new-notebook-title" type="text" placeholder="Misal: Catatan Kecerdasan Buatan Semester 5" 
+                 class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs sm:text-sm text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-[var(--nlm-text-secondary)] mb-1.5">Pilih Kategori / Ikon</label>
+          <div class="grid grid-cols-4 gap-2">
+            <label class="p-2 rounded-xl border border-blue-500 bg-blue-500/10 text-center cursor-pointer flex flex-col items-center space-y-1">
+              <input type="radio" name="nb-icon" value="folder" checked class="hidden">
+              <i class="fa-solid fa-folder text-amber-500 text-sm"></i>
+              <span class="text-[10px] font-medium text-[var(--nlm-text-primary)]">Kuliah</span>
+            </label>
+            <label class="p-2 rounded-xl border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-center cursor-pointer flex flex-col items-center space-y-1">
+              <input type="radio" name="nb-icon" value="brain" class="hidden">
+              <i class="fa-solid fa-brain text-indigo-500 text-sm"></i>
+              <span class="text-[10px] font-medium text-[var(--nlm-text-primary)]">Riset AI</span>
+            </label>
+            <label class="p-2 rounded-xl border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-center cursor-pointer flex flex-col items-center space-y-1">
+              <input type="radio" name="nb-icon" value="code" class="hidden">
+              <i class="fa-solid fa-code text-emerald-500 text-sm"></i>
+              <span class="text-[10px] font-medium text-[var(--nlm-text-primary)]">Koding</span>
+            </label>
+            <label class="p-2 rounded-xl border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-center cursor-pointer flex flex-col items-center space-y-1">
+              <input type="radio" name="nb-icon" value="cloud" class="hidden">
+              <i class="fa-solid fa-cloud text-sky-500 text-sm"></i>
+              <span class="text-[10px] font-medium text-[var(--nlm-text-primary)]">Cloud</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-2.5 pt-2 border-t border-[var(--nlm-border-subtle)]">
+        <button onclick="closeNewNotebookModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition">
+          Batal
+        </button>
+        <button onclick="submitCreateNotebook()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition">
+          Buat &amp; Buka
+        </button>
       </div>
     </div>
-  </footer>
+  </div>
 
-  <!-- CROOTJS (JSCROOT) INTERACTION SCRIPT -->
-  <script type="module" src="./js/main.js"></script>
+  <!-- ======================================================== -->
+  <!-- 4. MODAL PENGATURAN (TAMPILAN, PROFIL, API KEYS)         -->
+  <!-- ======================================================== -->
+  <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl rounded-3xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
+      
+      <!-- Settings Header -->
+      <div class="p-4 sm:p-5 border-b border-[var(--nlm-border)] flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm font-bold">
+            <i class="fa-solid fa-sliders"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm sm:text-base text-[var(--nlm-text-primary)]">Pengaturan NoteRoute</h3>
+            <p class="text-[11px] text-[var(--nlm-text-tertiary)]">Sesuaikan tampilan tema, profil, dan konfigurasi multi-LLM.</p>
+          </div>
+        </div>
+        <button onclick="closeSettingsModal()" class="w-7 h-7 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Settings Body with Tabs -->
+      <div class="flex-1 flex flex-col sm:flex-row overflow-hidden">
+        
+        <!-- Left Tab Nav -->
+        <div class="w-full sm:w-48 border-b sm:border-b-0 sm:border-r border-[var(--nlm-border)] p-2 sm:p-3 space-y-1 shrink-0 bg-[var(--nlm-surface-variant)]/50">
+          <button id="stab-appearance" onclick="switchSettingsTab('appearance')" class="w-full px-3 py-2 rounded-xl text-left text-xs font-semibold bg-blue-600 text-white transition flex items-center space-x-2">
+            <i class="fa-solid fa-palette text-[11px] w-4"></i>
+            <span>Tampilan &amp; Tema</span>
+          </button>
+          <button id="stab-profile" onclick="switchSettingsTab('profile')" class="w-full px-3 py-2 rounded-xl text-left text-xs font-medium text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
+            <i class="fa-regular fa-user text-[11px] w-4"></i>
+            <span>Profil Pengguna</span>
+          </button>
+          <button id="stab-api" onclick="switchSettingsTab('api')" class="w-full px-3 py-2 rounded-xl text-left text-xs font-medium text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
+            <i class="fa-solid fa-key text-[11px] w-4"></i>
+            <span>Kunci API Gratis</span>
+          </button>
+        </div>
+
+        <!-- Right Tab Content -->
+        <div class="flex-1 p-4 sm:p-6 overflow-y-auto">
+          
+          <!-- TAB 1: TAMPILAN & TEMA -->
+          <div id="scontent-appearance" class="space-y-4">
+            <div>
+              <h4 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)]">Preferensi Tema Antarmuka</h4>
+              <p class="text-[11px] text-[var(--nlm-text-tertiary)]">Pilih tema terang, gelap, atau biarkan sinkron otomatis dengan OS perangkat Anda.</p>
+            </div>
+
+            <!-- 3 Opsi Kartu Tema -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div onclick="setThemePreference('light')" class="p-3.5 rounded-2xl border border-[var(--nlm-border)] hover:border-blue-500 bg-[var(--nlm-surface)] cursor-pointer transition flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                  <i class="fa-solid fa-sun text-amber-500 text-base"></i>
+                  <div id="radio-light" class="w-3.5 h-3.5 rounded-full border border-slate-400"></div>
+                </div>
+                <div>
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Tema Terang</div>
+                  <div class="text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">Kontras bersih siang hari</div>
+                </div>
+              </div>
+
+              <div onclick="setThemePreference('dark')" class="p-3.5 rounded-2xl border border-[var(--nlm-border)] hover:border-blue-500 bg-[var(--nlm-surface)] cursor-pointer transition flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                  <i class="fa-solid fa-moon text-blue-400 text-base"></i>
+                  <div id="radio-dark" class="w-3.5 h-3.5 rounded-full border border-slate-400"></div>
+                </div>
+                <div>
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Tema Gelap</div>
+                  <div class="text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">Obsidian charcoal ramah mata</div>
+                </div>
+              </div>
+
+              <div onclick="setThemePreference('system')" class="p-3.5 rounded-2xl border border-[var(--nlm-border)] hover:border-blue-500 bg-[var(--nlm-surface)] cursor-pointer transition flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                  <i class="fa-solid fa-desktop text-purple-400 text-base"></i>
+                  <div id="radio-system" class="w-3.5 h-3.5 rounded-full border border-slate-400"></div>
+                </div>
+                <div>
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Ikuti Sistem</div>
+                  <div class="text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">Adaptif macOS/Windows/Android</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Info Catatan Sinkronisasi -->
+            <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-600 dark:text-blue-400 flex items-start space-x-2">
+              <i class="fa-solid fa-circle-info text-xs mt-0.5"></i>
+              <span class="text-[11px] leading-relaxed">Pengaturan tema ini tersinkronisasi otomatis dengan ruang kerja dokumen (*Workspace UI*) NoteRoute.</span>
+            </div>
+          </div>
+
+          <!-- TAB 2: PROFIL PENGGUNA -->
+          <div id="scontent-profile" class="hidden space-y-4">
+            <h4 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)]">Profil Pengguna</h4>
+            <div class="flex items-center space-x-3.5 p-3 rounded-2xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)]">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-pink-500 to-rose-400 text-white font-bold text-sm flex items-center justify-center">
+                AZ
+              </div>
+              <div>
+                <div class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)]">Ahmad Zakky Nurfauzan</div>
+                <div class="text-[11px] text-[var(--nlm-text-tertiary)]">ahmadzakky@ulbi.ac.id &bull; Ketua Tim (Modul A)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: KUNCI API GRATIS -->
+          <div id="scontent-api" class="hidden space-y-4">
+            <h4 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)]">Provider AI Gratis NoteRoute</h4>
+            <div class="space-y-2 text-xs">
+              <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                  <i class="fa-brands fa-google text-blue-500"></i>
+                  <span class="font-semibold text-[var(--nlm-text-primary)]">Google Gemini (1.5 Flash Free Ready)</span>
+                </div>
+                <span class="text-emerald-500 font-bold text-[10px]">Aktif</span>
+              </div>
+              <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                  <i class="fa-solid fa-ghost text-purple-500"></i>
+                  <span class="font-semibold text-[var(--nlm-text-primary)]">Kiro AI (Free Tier Connected)</span>
+                </div>
+                <span class="text-emerald-500 font-bold text-[10px]">Aktif</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 5. CONTEXT MENU KARTU NOTEBOOK (TITIK TIGA ⋮)            -->
+  <!-- ======================================================== -->
+  <div id="card-context-menu" class="hidden fixed bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl p-1.5 z-50 w-44 text-xs animate-scale-up">
+    <button onclick="contextAction('rename')" class="w-full px-3 py-1.5 rounded-xl hover:bg-[var(--nlm-surface-hover)] text-left text-[var(--nlm-text-primary)] flex items-center space-x-2 transition">
+      <i class="fa-solid fa-pen text-[10px] w-3.5 text-[var(--nlm-text-tertiary)]"></i>
+      <span>Ubah nama</span>
+    </button>
+    <button onclick="contextAction('duplicate')" class="w-full px-3 py-1.5 rounded-xl hover:bg-[var(--nlm-surface-hover)] text-left text-[var(--nlm-text-primary)] flex items-center space-x-2 transition">
+      <i class="fa-regular fa-copy text-[10px] w-3.5 text-[var(--nlm-text-tertiary)]"></i>
+      <span>Duplikat</span>
+    </button>
+    <button onclick="contextAction('pin')" class="w-full px-3 py-1.5 rounded-xl hover:bg-[var(--nlm-surface-hover)] text-left text-[var(--nlm-text-primary)] flex items-center space-x-2 transition">
+      <i class="fa-solid fa-thumbtack text-[10px] w-3.5 text-[var(--nlm-text-tertiary)]"></i>
+      <span>Sematkan ke atas</span>
+    </button>
+    <div class="my-1 border-t border-[var(--nlm-border-subtle)]"></div>
+    <button onclick="contextAction('delete')" class="w-full px-3 py-1.5 rounded-xl hover:bg-rose-500/10 text-left text-rose-500 flex items-center space-x-2 transition">
+      <i class="fa-regular fa-trash-can text-[10px] w-3.5"></i>
+      <span>Hapus notebook</span>
+    </button>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 6. TOAST NOTIFICATION                                    -->
+  <!-- ======================================================== -->
+  <div id="toast-notif" class="fixed bottom-5 right-5 z-50 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] shadow-2xl rounded-2xl p-3.5 max-w-sm flex items-center space-x-3 transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
+    <div id="toast-icon-box" class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm font-bold shrink-0">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <div class="min-w-0 flex-1">
+      <div id="toast-title" class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">Notifikasi</div>
+      <div id="toast-msg" class="text-[11px] text-[var(--nlm-text-tertiary)] truncate">Keterangan aksi sistem</div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // State Aplikasi
+    let currentFilter = 'all';
+    let currentViewMode = 'grid';
+    let currentThemePref = localStorage.getItem('noteroute-theme-pref') || 'system';
+    let activeCardTitle = '';
+
+    // Data Notebooks
+    let notebooksData = [
+      {
+        id: 'nb-1',
+        title: 'Materi Kuliah Semester 5 • Sistem Terdistribusi',
+        date: '8 Nov 2026',
+        sourcesCount: 4,
+        icon: 'folder',
+        iconColor: 'amber',
+        category: 'academic',
+        targetUrl: '../docs/ui-prototype.html'
+      },
+      {
+        id: 'nb-2',
+        title: 'Riset Multi-LLM Routing & Heuristic Failover',
+        date: '5 Nov 2026',
+        sourcesCount: 3,
+        icon: 'brain',
+        iconColor: 'indigo',
+        category: 'research',
+        targetUrl: '../docs/ui-prototype.html?id=2'
+      },
+      {
+        id: 'nb-3',
+        title: 'Modul Praktikum Cloud Computing ULBI',
+        date: '28 Okt 2026',
+        sourcesCount: 2,
+        icon: 'cloud',
+        iconColor: 'sky',
+        category: 'practical',
+        targetUrl: '../docs/ui-prototype.html?id=3'
+      },
+      {
+        id: 'nb-4',
+        title: 'Panduan Skripsi & Jurnal Ilmiah Sinta 2',
+        date: '15 Okt 2026',
+        sourcesCount: 6,
+        icon: 'graduation-cap',
+        iconColor: 'purple',
+        category: 'thesis',
+        targetUrl: '../docs/ui-prototype.html?id=4'
+      },
+      {
+        id: 'nb-5',
+        title: 'NoteRoute Backend API & CRootJS Architecture',
+        date: '10 Okt 2026',
+        sourcesCount: 1,
+        icon: 'code',
+        iconColor: 'emerald',
+        category: 'code',
+        targetUrl: '../docs/ui-prototype.html?id=5'
+      },
+      {
+        id: 'nb-6',
+        title: 'Notebook tanpa judul',
+        date: '1 Okt 2026',
+        sourcesCount: 0,
+        icon: 'folder',
+        iconColor: 'amber',
+        category: 'notes',
+        targetUrl: '../docs/ui-prototype.html?id=6'
+      }
+    ];
+
+    // 1. Inisialisasi Tema
+    function initTheme() {
+      applyThemePreference(currentThemePref);
+      
+      // Listener OS pref change
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (currentThemePref === 'system') {
+          applyThemePreference('system');
+        }
+      });
+    }
+
+    function setThemePreference(pref) {
+      currentThemePref = pref;
+      localStorage.setItem('noteroute-theme-pref', pref);
+      applyThemePreference(pref);
+      updateSettingsThemeRadio();
+      showToast("Tema Diperbarui", `Mode tema diubah ke: ${pref.toUpperCase()}`);
+    }
+
+    function applyThemePreference(pref) {
+      const html = document.documentElement;
+      let isDark = false;
+
+      if (pref === 'system') {
+        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      } else {
+        isDark = (pref === 'dark');
+      }
+
+      if (isDark) {
+        html.classList.add('dark');
+        html.classList.remove('light');
+        document.getElementById('quick-theme-icon').className = 'fa-solid fa-sun text-xs text-amber-400';
+      } else {
+        html.classList.remove('dark');
+        html.classList.add('light');
+        document.getElementById('quick-theme-icon').className = 'fa-solid fa-moon text-xs';
+      }
+    }
+
+    function toggleQuickTheme() {
+      const isCurrentlyDark = document.documentElement.classList.contains('dark');
+      setThemePreference(isCurrentlyDark ? 'light' : 'dark');
+    }
+
+    function updateSettingsThemeRadio() {
+      ['light', 'dark', 'system'].forEach(p => {
+        const el = document.getElementById(`radio-${p}`);
+        if (el) {
+          if (p === currentThemePref) {
+            el.className = 'w-3.5 h-3.5 rounded-full bg-blue-600 border-2 border-white ring-2 ring-blue-500';
+          } else {
+            el.className = 'w-3.5 h-3.5 rounded-full border border-slate-400';
+          }
+        }
+      });
+    }
+
+    // 2. Navigasi ke Workspace
+    function navigateToNotebook(title) {
+      showToast("Membuka Notebook", title);
+      setTimeout(() => {
+        window.location.href = '../docs/ui-prototype.html';
+      }, 350);
+    }
+
+    // 3. Filter Pills
+    function setFilter(filter) {
+      currentFilter = filter;
+      const pills = ['all', 'discover', 'collections'];
+      
+      pills.forEach(p => {
+        const btn = document.getElementById(`pill-${p}`);
+        if (btn) {
+          if (p === filter) {
+            btn.className = "px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-primary)] border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-1.5 shadow-xs";
+          } else {
+            btn.className = "px-3.5 py-1.5 rounded-full text-xs font-medium text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-1.5";
+          }
+        }
+      });
+
+      renderNotebooks();
+    }
+
+    // 4. View Switcher (Grid vs List)
+    function setViewMode(mode) {
+      currentViewMode = mode;
+      const btnGrid = document.getElementById('btn-view-grid');
+      const btnList = document.getElementById('btn-view-list');
+      const gridContainer = document.getElementById('notebooks-grid-container');
+      const listContainer = document.getElementById('notebooks-list-container');
+
+      if (mode === 'grid') {
+        btnGrid.className = "w-7 h-7 rounded-full bg-[var(--nlm-surface)] text-[var(--nlm-text-primary)] shadow-xs flex items-center justify-center text-xs transition";
+        btnList.className = "w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center text-xs transition";
+        gridContainer.classList.remove('hidden');
+        listContainer.classList.add('hidden');
+      } else {
+        btnList.className = "w-7 h-7 rounded-full bg-[var(--nlm-surface)] text-[var(--nlm-text-primary)] shadow-xs flex items-center justify-center text-xs transition";
+        btnGrid.className = "w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center text-xs transition";
+        gridContainer.classList.add('hidden');
+        listContainer.classList.remove('hidden');
+        renderListView();
+      }
+    }
+
+    // 5. Render Notebooks (Filtering & Search)
+    function renderNotebooks() {
+      const query = (document.getElementById('notebook-search-input').value || '').toLowerCase().trim();
+      const gridContainer = document.getElementById('notebooks-grid-container');
+      const emptyState = document.getElementById('empty-search-state');
+
+      let filtered = notebooksData.filter(nb => {
+        const matchesQuery = nb.title.toLowerCase().includes(query);
+        if (currentFilter === 'collections') return matchesQuery && nb.sourcesCount > 2;
+        if (currentFilter === 'discover') return matchesQuery && nb.category === 'research';
+        return matchesQuery;
+      });
+
+      if (filtered.length === 0) {
+        gridContainer.innerHTML = '';
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+        gridContainer.innerHTML = filtered.map(nb => `
+          <div onclick="navigateToNotebook('${nb.title}')" class="notebook-card p-4 rounded-3xl bg-[var(--nlm-card-bg)] border border-[var(--nlm-card-border)] hover:border-[var(--nlm-card-hover-border)] cursor-pointer flex flex-col justify-between h-44 sm:h-48 group relative">
+            <div class="flex items-start justify-between">
+              <div class="w-9 h-9 rounded-2xl bg-${nb.iconColor}-500/15 text-${nb.iconColor}-500 flex items-center justify-center text-base shadow-xs">
+                <i class="fa-solid fa-${nb.icon}"></i>
+              </div>
+              <button onclick="openCardContextMenu(event, '${nb.title}')" class="w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center transition" title="Opsi lainnya">
+                <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+              </button>
+            </div>
+            <div class="space-y-1">
+              <h3 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)] line-clamp-2 leading-snug group-hover:text-blue-500 transition-colors">
+                ${nb.title}
+              </h3>
+              <div class="flex items-center space-x-1.5 text-[11px] text-[var(--nlm-text-tertiary)] font-medium">
+                <span>${nb.date}</span>
+                <span>&bull;</span>
+                <span class="${nb.sourcesCount > 0 ? 'text-blue-500 dark:text-blue-400 font-semibold' : ''}">${nb.sourcesCount} sumber</span>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      if (currentViewMode === 'list') {
+        renderListView(filtered);
+      }
+    }
+
+    function renderListView(items = null) {
+      const data = items || notebooksData;
+      const tbody = document.getElementById('notebooks-list-tbody');
+      if (!tbody) return;
+
+      tbody.innerHTML = data.map(nb => `
+        <tr onclick="navigateToNotebook('${nb.title}')" class="hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition">
+          <td class="py-3 px-4 font-semibold text-xs flex items-center space-x-3">
+            <div class="w-6 h-6 rounded-lg bg-${nb.iconColor}-500/15 text-${nb.iconColor}-500 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-${nb.icon}"></i>
+            </div>
+            <span class="truncate max-w-xs sm:max-w-md">${nb.title}</span>
+          </td>
+          <td class="py-3 px-4 text-[var(--nlm-text-tertiary)] text-[11px] hidden sm:table-cell">${nb.date}</td>
+          <td class="py-3 px-4 text-[11px] font-medium text-blue-500">${nb.sourcesCount} sumber</td>
+          <td class="py-3 px-4 text-right">
+            <button onclick="openCardContextMenu(event, '${nb.title}')" class="w-6 h-6 rounded-md hover:bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-tertiary)] inline-flex items-center justify-center">
+              <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // 6. Search Handler
+    function handleSearchNotebook(val) {
+      const clearBtn = document.getElementById('clear-search-btn');
+      if (val.trim().length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+      renderNotebooks();
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('notebook-search-input');
+      input.value = '';
+      document.getElementById('clear-search-btn').classList.add('hidden');
+      renderNotebooks();
+      input.focus();
+    }
+
+    // 7. Sort Menu
+    function toggleSortMenu() {
+      const menu = document.getElementById('sort-dropdown-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    function setSortOrder(order) {
+      if (order === 'alpha') {
+        notebooksData.sort((a, b) => a.title.localeCompare(b.title));
+        showToast("Urutan Diubah", "Diurutkan berdasarkan Abjad (A - Z)");
+      } else if (order === 'sources') {
+        notebooksData.sort((a, b) => b.sourcesCount - a.sourcesCount);
+        showToast("Urutan Diubah", "Diurutkan berdasarkan Sumber Terbanyak");
+      } else {
+        showToast("Urutan Diubah", "Diurutkan berdasarkan Terakhir Diedit");
+      }
+      document.getElementById('sort-dropdown-menu').classList.add('hidden');
+      renderNotebooks();
+    }
+
+    // 8. New Notebook Modal
+    function openNewNotebookModal() {
+      document.getElementById('new-notebook-modal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('new-notebook-title').focus(), 100);
+    }
+
+    function closeNewNotebookModal() {
+      document.getElementById('new-notebook-modal').classList.add('hidden');
+      document.getElementById('new-notebook-title').value = '';
+    }
+
+    function submitCreateNotebook() {
+      const titleInput = document.getElementById('new-notebook-title');
+      const title = titleInput.value.trim() || 'Notebook Baru Tanpa Judul';
+
+      const selectedIcon = document.querySelector('input[name="nb-icon"]:checked')?.value || 'folder';
+      let iconColor = 'amber';
+      if (selectedIcon === 'brain') iconColor = 'indigo';
+      if (selectedIcon === 'code') iconColor = 'emerald';
+      if (selectedIcon === 'cloud') iconColor = 'sky';
+
+      const newNb = {
+        id: 'nb-' + (Date.now()),
+        title: title,
+        date: 'Hari ini',
+        sourcesCount: 0,
+        icon: selectedIcon,
+        iconColor: iconColor,
+        category: 'custom',
+        targetUrl: '../docs/ui-prototype.html'
+      };
+
+      notebooksData.unshift(newNb);
+      closeNewNotebookModal();
+      renderNotebooks();
+      showToast("Notebook Dibuat", `"${title}" berhasil ditambahkan.`);
+      
+      // Buka langsung setelah dibuat
+      setTimeout(() => navigateToNotebook(title), 500);
+    }
+
+    // 9. Context Menu (⋮)
+    function openCardContextMenu(e, title) {
+      e.stopPropagation();
+      activeCardTitle = title;
+      const menu = document.getElementById('card-context-menu');
+      
+      // Posisi klik
+      menu.style.left = `${Math.min(e.clientX, window.innerWidth - 190)}px`;
+      menu.style.top = `${e.clientY + 8}px`;
+      menu.classList.remove('hidden');
+    }
+
+    function contextAction(action) {
+      document.getElementById('card-context-menu').classList.add('hidden');
+      
+      if (action === 'rename') {
+        const newTitle = prompt("Ubah nama notebook:", activeCardTitle);
+        if (newTitle && newTitle.trim()) {
+          const item = notebooksData.find(n => n.title === activeCardTitle);
+          if (item) {
+            item.title = newTitle.trim();
+            renderNotebooks();
+            showToast("Nama Diubah", `Menjadi "${item.title}"`);
+          }
+        }
+      } else if (action === 'duplicate') {
+        const item = notebooksData.find(n => n.title === activeCardTitle);
+        if (item) {
+          const dup = { ...item, id: 'nb-' + Date.now(), title: item.title + ' (Salinan)' };
+          notebooksData.unshift(dup);
+          renderNotebooks();
+          showToast("Notebook Digandakan", dup.title);
+        }
+      } else if (action === 'pin') {
+        const itemIndex = notebooksData.findIndex(n => n.title === activeCardTitle);
+        if (itemIndex > -1) {
+          const item = notebooksData.splice(itemIndex, 1)[0];
+          notebooksData.unshift(item);
+          renderNotebooks();
+          showToast("Disematkan", `"${item.title}" berada di posisi teratas.`);
+        }
+      } else if (action === 'delete') {
+        if (confirm(`Yakin ingin menghapus notebook "${activeCardTitle}"?`)) {
+          notebooksData = notebooksData.filter(n => n.title !== activeCardTitle);
+          renderNotebooks();
+          showToast("Notebook Dihapus", `"${activeCardTitle}" telah dihapus.`);
+        }
+      }
+    }
+
+    // 10. Settings & Dropdowns
+    function toggleAppsMenu() {
+      document.getElementById('apps-dropdown-menu').classList.toggle('hidden');
+      document.getElementById('profile-dropdown-menu').classList.add('hidden');
+    }
+
+    function toggleProfileMenu() {
+      document.getElementById('profile-dropdown-menu').classList.toggle('hidden');
+      document.getElementById('apps-dropdown-menu').classList.add('hidden');
+    }
+
+    function openSettingsModal(tab = 'appearance') {
+      document.getElementById('profile-dropdown-menu').classList.add('hidden');
+      document.getElementById('settings-modal').classList.remove('hidden');
+      switchSettingsTab(tab);
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settings-modal').classList.add('hidden');
+    }
+
+    function switchSettingsTab(tab) {
+      ['appearance', 'profile', 'api'].forEach(t => {
+        const btn = document.getElementById(`stab-${t}`);
+        const content = document.getElementById(`scontent-${t}`);
+        if (btn && content) {
+          if (t === tab) {
+            btn.className = "w-full px-3 py-2 rounded-xl text-left text-xs font-semibold bg-blue-600 text-white transition flex items-center space-x-2";
+            content.classList.remove('hidden');
+          } else {
+            btn.className = "w-full px-3 py-2 rounded-xl text-left text-xs font-medium text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2";
+            content.classList.add('hidden');
+          }
+        }
+      });
+      updateSettingsThemeRadio();
+    }
+
+    // 11. Toast Utility
+    let toastTimeout;
+    function showToast(title, msg) {
+      const toast = document.getElementById('toast-notif');
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-msg').textContent = msg;
+
+      toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      }, 3000);
+    }
+
+    // Global Click Listener to Close Menus
+    window.addEventListener('click', (e) => {
+      if (!e.target.closest('#card-context-menu') && !e.target.closest('button[onclick*="openCardContextMenu"]')) {
+        document.getElementById('card-context-menu').classList.add('hidden');
+      }
+      if (!e.target.closest('#sort-dropdown-menu') && !e.target.closest('button[onclick*="toggleSortMenu"]')) {
+        document.getElementById('sort-dropdown-menu').classList.add('hidden');
+      }
+      if (!e.target.closest('#apps-dropdown-menu') && !e.target.closest('button[onclick*="toggleAppsMenu"]')) {
+        document.getElementById('apps-dropdown-menu').classList.add('hidden');
+      }
+      if (!e.target.closest('#profile-dropdown-menu') && !e.target.closest('button[onclick*="toggleProfileMenu"]')) {
+        document.getElementById('profile-dropdown-menu').classList.add('hidden');
+      }
+    });
+
+    // Jalankan Inisialisasi
+    window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderNotebooks();
+    });
+  </script>
+
 </body>
 </html>
