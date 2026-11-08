@@ -29,9 +29,10 @@
       --nlm-accent-bg: #e8f0fe;
       --nlm-citation-bg: #e0eafd;
       --nlm-citation-text: #0842a0;
-      --nlm-modal-overlay: rgba(0, 0, 0, 0.45);
+      --nlm-modal-overlay: rgba(0, 0, 0, 0.48);
       --nlm-dropzone-bg: #fbfcfe;
       --nlm-dropzone-border: #c4c7c5;
+      --nlm-card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
     }
 
     :root.dark {
@@ -48,9 +49,10 @@
       --nlm-accent-bg: #004a77;
       --nlm-citation-bg: #004a77;
       --nlm-citation-text: #d3e3fd;
-      --nlm-modal-overlay: rgba(0, 0, 0, 0.7);
+      --nlm-modal-overlay: rgba(0, 0, 0, 0.72);
       --nlm-dropzone-bg: #18191a;
       --nlm-dropzone-border: #444746;
+      --nlm-card-shadow: 0 1px 3px rgba(0,0,0,0.4);
     }
 
     body {
@@ -87,7 +89,6 @@
       transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, transform 0.25s ease;
     }
 
-    /* DRAG AND DROP ZONE HOVER */
     .dropzone-active {
       border-color: #0b57d0 !important;
       background-color: var(--nlm-accent-bg) !important;
@@ -107,30 +108,33 @@
   <!-- ======================================================== -->
   <header class="h-14 border-b border-[var(--nlm-border)] bg-[var(--nlm-surface)] px-4 flex items-center justify-between z-30 shrink-0">
     
-    <!-- Left: Navigation, Title & Sidebar Toggles -->
-    <div class="flex items-center space-x-2">
-      <!-- Toggle Left Sidebar Button -->
-      <button onclick="toggleLeftSidebar()" class="w-8 h-8 rounded-lg hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center text-[var(--nlm-text-secondary)] transition" title="Buka/Tutup Panel Sumber">
-        <i id="btn-icon-sources" class="fa-solid fa-bars text-sm"></i>
-      </button>
-
-      <div class="flex items-center space-x-2 ml-1">
-        <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-xs">
-          <i class="fa-solid fa-book-open"></i>
-        </div>
-        <div class="flex items-center space-x-2">
-          <span class="font-semibold text-sm sm:text-base text-[var(--nlm-text-primary)] tracking-tight">Materi Kuliah Semester 5 &bull; Sistem Terdistribusi</span>
-          <button class="text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] text-xs p-1" title="Edit Judul">
-            <i class="fa-solid fa-pen text-[10px]"></i>
-          </button>
-        </div>
+    <!-- Left: Logo & Project Title with Inline Renaming -->
+    <div class="flex items-center space-x-3">
+      <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-xs">
+        <i class="fa-solid fa-book-open"></i>
       </div>
+      
+      <!-- Editable Project Name Area -->
+      <div class="flex items-center space-x-2 group">
+        <span id="project-title-display" onclick="enableProjectRename()" 
+              class="font-semibold text-sm sm:text-base text-[var(--nlm-text-primary)] tracking-tight cursor-pointer hover:underline decoration-dotted" 
+              title="Klik untuk mengubah nama proyek">Materi Kuliah Semester 5 &bull; Sistem Terdistribusi</span>
+        
+        <input id="project-title-input" type="text" onblur="saveProjectRename()" onkeydown="handleProjectRenameKey(event)"
+               class="hidden bg-[var(--nlm-surface-variant)] border border-blue-500 rounded-lg px-2 py-0.5 text-sm font-semibold text-[var(--nlm-text-primary)] focus:outline-none">
+        
+        <button onclick="enableProjectRename()" class="text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] text-xs p-1" title="Ubah Nama Proyek">
+          <i class="fa-solid fa-pen text-[10px]"></i>
+        </button>
+      </div>
+
+      <span class="text-[11px] text-[var(--nlm-text-tertiary)] hidden md:inline">&bull; NoteRoute Workspace</span>
     </div>
 
-    <!-- Center/Right: General AI Mode Indicator, Theme Toggle, Studio Toggle & Profile -->
+    <!-- Center/Right: Mode Toggle, Theme Toggle, Share & Profile Avatar -->
     <div class="flex items-center space-x-2.5">
       
-      <!-- MODE BADGE / TOGGLE (DOKUMEN VS AI BEBAS) -->
+      <!-- MODE TOGGLE (DOKUMEN VS AI UMUM/BEBAS) -->
       <div class="flex items-center p-0.5 rounded-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs">
         <button id="btn-mode-doc" onclick="setAiMode('document')" class="px-3 py-1 rounded-full font-semibold bg-blue-600 text-white transition flex items-center space-x-1.5 shadow-xs">
           <i class="fa-solid fa-file-shield text-[10px]"></i>
@@ -148,19 +152,60 @@
       </button>
 
       <!-- SHARE BUTTON -->
-      <button onclick="showToast('Bagikan Catatan', 'Tautan proyek siap dibagikan.')" class="hidden sm:flex px-3 py-1 rounded-full bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-xs font-semibold text-[var(--nlm-text-primary)] items-center space-x-1.5 transition">
+      <button onclick="showToast('Bagikan Catatan', 'Tautan kolaborasi disalin ke clipboard.')" class="hidden sm:flex px-3 py-1 rounded-full bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-xs font-semibold text-[var(--nlm-text-primary)] items-center space-x-1.5 transition">
         <i class="fa-solid fa-arrow-up-from-bracket text-[10px]"></i>
         <span>Bagikan</span>
       </button>
 
-      <!-- Toggle Right Studio Sidebar Button -->
-      <button onclick="toggleRightSidebar()" class="w-8 h-8 rounded-lg hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center text-[var(--nlm-text-secondary)] transition" title="Buka/Tutup Studio">
-        <i id="btn-icon-studio" class="fa-solid fa-columns text-sm"></i>
-      </button>
+      <!-- USER PROFILE AVATAR (TRIGGER SETTINGS MODAL & MENU) -->
+      <div class="relative">
+        <button onclick="toggleProfileDropdown()" class="w-8 h-8 rounded-full bg-indigo-600 hover:ring-2 hover:ring-blue-500 text-white font-bold text-xs flex items-center justify-center transition shadow-xs" title="Menu Akun &amp; Pengaturan">
+          AZ
+        </button>
 
-      <!-- USER PROFILE -->
-      <div class="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center ring-1 ring-[var(--nlm-border)]">
-        AZ
+        <!-- PROFILE DROPDOWN MENU -->
+        <div id="profile-dropdown-menu" class="hidden absolute right-0 mt-2 w-72 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-xl p-2 z-50">
+          <div class="p-3 border-b border-[var(--nlm-border-subtle)] flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0">
+              AZ
+            </div>
+            <div class="truncate">
+              <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">Ahmad Zakky Nurfauzan</div>
+              <div class="text-[11px] text-[var(--nlm-text-tertiary)] truncate">ahmadzakky@ulbi.ac.id</div>
+              <div class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold mt-0.5">Ketua Tim &bull; NPM 714250028</div>
+            </div>
+          </div>
+
+          <div class="py-1 text-xs text-[var(--nlm-text-secondary)]">
+            <button onclick="openSettingsModal('profile')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
+              <i class="fa-regular fa-user text-[11px] w-4 text-[var(--nlm-text-tertiary)]"></i>
+              <span>Profil Pengguna</span>
+            </button>
+            <button onclick="openSettingsModal('security')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
+              <i class="fa-solid fa-shield-halved text-[11px] w-4 text-[var(--nlm-text-tertiary)]"></i>
+              <span>Keamanan Akun</span>
+            </button>
+            <button onclick="openSettingsModal('api')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
+              <i class="fa-solid fa-key text-[11px] w-4 text-amber-500"></i>
+              <span>Mengatur Kunci API (Keys)</span>
+            </button>
+            <button onclick="openSettingsModal('routing')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
+              <i class="fa-solid fa-route text-[11px] w-4 text-emerald-500"></i>
+              <span>Routing ke AI Mana Saja (Multi-LLM)</span>
+            </button>
+            <button onclick="openSettingsModal('general')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
+              <i class="fa-solid fa-gear text-[11px] w-4 text-[var(--nlm-text-tertiary)]"></i>
+              <span>Pengaturan Umum NoteRoute</span>
+            </button>
+          </div>
+
+          <div class="pt-1 border-t border-[var(--nlm-border-subtle)]">
+            <button onclick="showToast('Sesi Berakhir', 'Keluar dari sesi NoteRoute.'); toggleProfileDropdown();" class="w-full text-left px-3 py-2 rounded-xl hover:bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-semibold flex items-center space-x-2.5 transition">
+              <i class="fa-solid fa-arrow-right-from-bracket text-[11px] w-4"></i>
+              <span>Keluar Akun</span>
+            </button>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -174,11 +219,11 @@
     <!-- FLOATING TAB TO RE-OPEN SOURCES (WHEN COLLAPSED) -->
     <button id="reopen-sources-btn" onclick="toggleLeftSidebar()" class="hidden absolute top-3 left-3 z-20 px-3 py-1.5 rounded-full bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] shadow-md text-xs font-semibold text-[var(--nlm-text-primary)] items-center space-x-2 transition">
       <i class="fa-solid fa-folder-open text-blue-600"></i>
-      <span>Sumber (<span id="reopen-source-count">4</span>)</span>
+      <span>Sumber &amp; Catatan (<span id="reopen-source-count">4</span>)</span>
     </button>
 
     <!-- ====================================================== -->
-    <!-- PANEL 1: SUMBER (LEFT PANEL - COLLAPSIBLE - 310px)     -->
+    <!-- PANEL 1: SUMBER & CATATAN BUATAN SENDIRI (LEFT PANEL)  -->
     <!-- ====================================================== -->
     <aside id="sidebar-sources" class="w-80 border-r border-[var(--nlm-border)] bg-[var(--nlm-surface)] flex flex-col justify-between shrink-0 select-none smooth-panel z-10 overflow-hidden">
       
@@ -196,8 +241,8 @@
               <input type="checkbox" id="check-all-sources" checked onchange="toggleAllSources(this)" class="w-3.5 h-3.5 rounded accent-blue-600">
               <span class="text-[11px]">Semua</span>
             </label>
-            <!-- Collapse Button -->
-            <button onclick="toggleLeftSidebar()" class="w-6 h-6 rounded-md hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center transition" title="Tutup Sumber">
+            <!-- Collapse Button inside panel -->
+            <button onclick="toggleLeftSidebar()" class="w-6 h-6 rounded-md hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center transition" title="Tutup Panel Sumber">
               <i class="fa-solid fa-chevron-left text-[11px]"></i>
             </button>
           </div>
@@ -206,88 +251,138 @@
         <!-- PAIRED BUTTONS: [ + Tambahkan sumber ] & [ + Buat catatan ] -->
         <div class="grid grid-cols-2 gap-2">
           <!-- Button 1: Tambahkan sumber (Opens Drag and Drop Modal) -->
-          <button onclick="openAddSourceModal()" class="py-2 px-2.5 rounded-xl border border-[var(--nlm-border)] hover:border-blue-500 hover:bg-[var(--nlm-surface-variant)] text-xs font-semibold text-blue-600 dark:text-blue-400 flex items-center justify-center space-x-1.5 transition">
+          <button onclick="openAddSourceModal()" class="py-2 px-2 rounded-xl border border-[var(--nlm-border)] hover:border-blue-500 hover:bg-[var(--nlm-surface-variant)] text-xs font-semibold text-blue-600 dark:text-blue-400 flex items-center justify-center space-x-1.5 transition">
             <i class="fa-solid fa-plus text-[10px]"></i>
             <span class="truncate">Tambahkan sumber</span>
           </button>
 
-          <!-- Button 2: Buat catatan -->
-          <button onclick="createNewNoteInStudio()" class="py-2 px-2.5 rounded-xl border border-[var(--nlm-border)] hover:border-indigo-500 hover:bg-[var(--nlm-surface-variant)] text-xs font-semibold text-[var(--nlm-text-primary)] flex items-center justify-center space-x-1.5 transition">
+          <!-- Button 2: Buat catatan (Direct create in this panel) -->
+          <button onclick="openCreateNoteModal()" class="py-2 px-2 rounded-xl border border-[var(--nlm-border)] hover:border-indigo-500 hover:bg-[var(--nlm-surface-variant)] text-xs font-semibold text-[var(--nlm-text-primary)] flex items-center justify-center space-x-1.5 transition">
             <i class="fa-solid fa-pen-to-square text-[10px] text-indigo-500"></i>
             <span class="truncate">Buat catatan</span>
           </button>
         </div>
       </div>
 
-      <!-- Sources Scrollable List -->
-      <div id="sources-list-container" class="flex-1 overflow-y-auto p-3 space-y-2">
+      <!-- Sources & Notes Scrollable List -->
+      <div class="flex-1 overflow-y-auto p-3 space-y-4">
         
-        <!-- Source Card 1 (PDF) -->
-        <div id="src-1" onclick="previewSource(1, 'Slide_Bab3_Distributed_Systems.pdf', 14)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
-          <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
-          <div class="w-6 h-6 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
-            <i class="fa-solid fa-file-pdf text-[11px]"></i>
+        <!-- SECTION A: DOKUMEN LAPTOP -->
+        <div>
+          <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-1 mb-2 flex items-center justify-between">
+            <span>Berkas Dokumen Laptop</span>
+            <span class="font-mono text-[10px]">4 File</span>
           </div>
-          <div class="flex-1 min-w-0">
-            <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">Slide_Bab3_Distributed_Systems.pdf</h4>
-            <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
-              <span>18 halaman</span> &bull; <span>2.34 MB</span>
+
+          <div id="sources-list-container" class="space-y-1.5">
+            <!-- Source Card 1 (PDF) -->
+            <div id="src-1" onclick="previewSource(1, 'Slide_Bab3_Distributed_Systems.pdf', 14)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
+              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
+              <div class="w-6 h-6 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                <i class="fa-solid fa-file-pdf text-[11px]"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">Slide_Bab3_Distributed_Systems.pdf</h4>
+                <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
+                  <span>18 halaman</span> &bull; <span>2.34 MB</span>
+                </div>
+              </div>
+              <button onclick="downloadFile(event, 'Slide_Bab3_Distributed_Systems.pdf')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
+                <i class="fa-solid fa-download text-[11px]"></i>
+              </button>
+            </div>
+
+            <!-- Source Card 2 (Markdown) -->
+            <div id="src-2" onclick="previewSource(2, 'Catatan_Riset_Multi_LLM.md', 1)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
+              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
+              <div class="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                <i class="fa-solid fa-file-lines text-[11px]"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">Catatan_Riset_Multi_LLM.md</h4>
+                <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
+                  <span>420 baris</span> &bull; <span>15.1 KB</span>
+                </div>
+              </div>
+              <button onclick="downloadFile(event, 'Catatan_Riset_Multi_LLM.md')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
+                <i class="fa-solid fa-download text-[11px]"></i>
+              </button>
+            </div>
+
+            <!-- Source Card 3 (DOCX) -->
+            <div id="src-3" onclick="previewSource(3, 'Modul_Praktikum_Cloud_ULBI.docx', 1)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
+              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
+              <div class="w-6 h-6 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                <i class="fa-solid fa-file-word text-[11px]"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">Modul_Praktikum_Cloud_ULBI.docx</h4>
+                <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
+                  <span>32 halaman</span> &bull; <span>1.12 MB</span>
+                </div>
+              </div>
+              <button onclick="downloadFile(event, 'Modul_Praktikum_Cloud_ULBI.docx')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
+                <i class="fa-solid fa-download text-[11px]"></i>
+              </button>
+            </div>
+
+            <!-- Source Card 4 (JS Code) -->
+            <div id="src-4" onclick="previewSource(4, 'llmRouterService.js', 1)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
+              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
+              <div class="w-6 h-6 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                <i class="fa-solid fa-file-code text-[11px]"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">llmRouterService.js</h4>
+                <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
+                  <span>Backend Code</span> &bull; <span>8.4 KB</span>
+                </div>
+              </div>
+              <button onclick="downloadFile(event, 'llmRouterService.js')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
+                <i class="fa-solid fa-download text-[11px]"></i>
+              </button>
             </div>
           </div>
-          <button onclick="downloadFile(event, 'Slide_Bab3_Distributed_Systems.pdf')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
-            <i class="fa-solid fa-download text-[11px]"></i>
-          </button>
         </div>
 
-        <!-- Source Card 2 (Markdown) -->
-        <div id="src-2" onclick="previewSource(2, 'Catatan_Riset_Multi_LLM.md', 1)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
-          <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
-          <div class="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
-            <i class="fa-solid fa-file-lines text-[11px]"></i>
+        <!-- SECTION B: CATATAN BUATAN SENDIRI (DIPINDAHKAN KE SIDEBAR SUMBER SESUAI INSTRUKSI) -->
+        <div class="pt-2 border-t border-[var(--nlm-border-subtle)]">
+          <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-1 mb-2 flex items-center justify-between">
+            <span>Catatan Saya</span>
+            <span id="sidebar-notes-count" class="font-mono text-[10px]">2 Catatan</span>
           </div>
-          <div class="flex-1 min-w-0">
-            <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">Catatan_Riset_Multi_LLM.md</h4>
-            <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
-              <span>420 baris</span> &bull; <span>15.1 KB</span>
-            </div>
-          </div>
-          <button onclick="downloadFile(event, 'Catatan_Riset_Multi_LLM.md')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
-            <i class="fa-solid fa-download text-[11px]"></i>
-          </button>
-        </div>
 
-        <!-- Source Card 3 (DOCX) -->
-        <div id="src-3" onclick="previewSource(3, 'Modul_Praktikum_Cloud_ULBI.docx', 1)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
-          <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
-          <div class="w-6 h-6 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
-            <i class="fa-solid fa-file-word text-[11px]"></i>
-          </div>
-          <div class="flex-1 min-w-0">
-            <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">Modul_Praktikum_Cloud_ULBI.docx</h4>
-            <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
-              <span>32 halaman</span> &bull; <span>1.12 MB</span>
+          <div id="sidebar-notes-container" class="space-y-1.5">
+            <!-- User Note 1 -->
+            <div onclick="openViewNoteModal('Rangkuman Teorema CAP & Spanner', 'Spanner menggunakan atomic clock (TrueTime API) untuk menjamin konsistensi eksternal tingkat tinggi tanpa mengorbankan partisi data terdistribusi.', '08 Nov 2026 • Dari obrolan')" 
+                 class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition group">
+              <div class="flex items-center justify-between">
+                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition flex items-center space-x-1.5">
+                  <i class="fa-regular fa-note-sticky text-indigo-500 text-[11px]"></i>
+                  <span class="truncate">Teorema CAP &amp; Spanner</span>
+                </div>
+                <span class="text-[9px] text-[var(--nlm-text-tertiary)]">08 Nov</span>
+              </div>
+              <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 mt-1 leading-snug">
+                Spanner menggunakan atomic clock (TrueTime API) untuk menjamin konsistensi eksternal...
+              </p>
             </div>
-          </div>
-          <button onclick="downloadFile(event, 'Modul_Praktikum_Cloud_ULBI.docx')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
-            <i class="fa-solid fa-download text-[11px]"></i>
-          </button>
-        </div>
 
-        <!-- Source Card 4 (JS Code) -->
-        <div id="src-4" onclick="previewSource(4, 'llmRouterService.js', 1)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
-          <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
-          <div class="w-6 h-6 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
-            <i class="fa-solid fa-file-code text-[11px]"></i>
-          </div>
-          <div class="flex-1 min-w-0">
-            <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">llmRouterService.js</h4>
-            <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
-              <span>Backend Code</span> &bull; <span>8.4 KB</span>
+            <!-- User Note 2 -->
+            <div onclick="openViewNoteModal('Metrik Penghematan Multi-LLM', 'Biaya tersimpan kumulatif $12.85 dengan perutean prioritas Gemini 1.5 Flash 1M Context dan failover otomatis ke Groq Cloud.', '07 Nov 2026 • Manual')" 
+                 class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition group">
+              <div class="flex items-center justify-between">
+                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition flex items-center space-x-1.5">
+                  <i class="fa-regular fa-note-sticky text-indigo-500 text-[11px]"></i>
+                  <span class="truncate">Metrik Penghematan AI</span>
+                </div>
+                <span class="text-[9px] text-[var(--nlm-text-tertiary)]">07 Nov</span>
+              </div>
+              <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 mt-1 leading-snug">
+                Biaya tersimpan $12.85 dengan Gemini 1.5 Flash 1M Context...
+              </p>
             </div>
           </div>
-          <button onclick="downloadFile(event, 'llmRouterService.js')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
-            <i class="fa-solid fa-download text-[11px]"></i>
-          </button>
         </div>
 
       </div>
@@ -364,14 +459,36 @@
         <!-- ACTIVE CHAT CONVERSATION WRAPPER -->
         <div id="nlm-active-messages" class="max-w-2xl mx-auto space-y-6 hidden">
           
-          <!-- Sample User Turn -->
-          <div class="flex justify-end">
-            <div class="bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-primary)] border border-[var(--nlm-border)] px-4 py-3 rounded-2xl rounded-tr-sm text-xs sm:text-sm max-w-lg leading-relaxed shadow-2xs">
-              <span id="user-question-text">Apa kesimpulan inti Teorema CAP pada Slide Bab 3?</span>
+          <!-- Sample User Turn with EDIT PROMPT capability -->
+          <div class="flex justify-end group">
+            <div class="flex flex-col items-end space-y-1 max-w-lg">
+              
+              <!-- Display Bubble -->
+              <div id="user-bubble-box" class="bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-primary)] border border-[var(--nlm-border)] px-4 py-3 rounded-2xl rounded-tr-sm text-xs sm:text-sm leading-relaxed shadow-2xs w-full relative">
+                <span id="user-question-text">Apa kesimpulan inti Teorema CAP pada Slide Bab 3?</span>
+              </div>
+
+              <!-- Inline Edit Form (Hidden by default) -->
+              <div id="user-edit-form" class="hidden w-full bg-[var(--nlm-surface)] border border-blue-500 rounded-2xl p-3 shadow-md space-y-2">
+                <textarea id="user-edit-textarea" rows="2" class="w-full bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] focus:outline-none resize-none"></textarea>
+                <div class="flex justify-end space-x-2 text-xs">
+                  <button onclick="cancelPromptEdit()" class="px-2.5 py-1 rounded-lg hover:bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)]">Batal</button>
+                  <button onclick="saveAndResubmitPrompt()" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-medium">Simpan &amp; Kirim</button>
+                </div>
+              </div>
+
+              <!-- Action Bar (Edit Button) -->
+              <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] pr-1 opacity-0 group-hover:opacity-100 transition">
+                <button onclick="enablePromptEdit()" class="hover:text-blue-600 flex items-center space-x-1">
+                  <i class="fa-solid fa-pen text-[9px]"></i>
+                  <span>Edit Pertanyaan</span>
+                </button>
+              </div>
+
             </div>
           </div>
 
-          <!-- Sample Grounded AI Response -->
+          <!-- Sample Grounded AI Response with REGENERATE capability -->
           <div class="flex items-start space-x-3.5">
             <div class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
               <i class="fa-solid fa-wand-magic-sparkles text-[11px]"></i>
@@ -394,13 +511,18 @@
                 </p>
               </div>
 
-              <!-- Answer Actions Row -->
+              <!-- Answer Actions Row (Copy, Save Note, and REGENERATE ANSWER) -->
               <div class="pt-2 flex items-center justify-between border-t border-[var(--nlm-border-subtle)] text-xs text-[var(--nlm-text-tertiary)]">
                 <div class="flex items-center space-x-1">
+                  <!-- Regenerate Button -->
+                  <button onclick="regenerateAiResponse()" class="p-1.5 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-blue-600 transition flex items-center space-x-1.5 text-[11px] font-medium" title="Hasilkan Ulang Jawaban">
+                    <i id="regen-icon" class="fa-solid fa-arrows-rotate text-xs"></i>
+                    <span>Hasilkan Ulang</span>
+                  </button>
                   <button onclick="copyAnswerText()" class="p-1.5 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-[var(--nlm-text-primary)] transition" title="Salin Jawaban">
                     <i class="fa-regular fa-copy text-xs"></i>
                   </button>
-                  <button onclick="saveAnswerAsNote()" class="px-2.5 py-1 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-blue-600 transition flex items-center space-x-1.5 text-[11px] font-medium" title="Simpan ke Studio">
+                  <button onclick="saveAnswerAsNote()" class="px-2.5 py-1 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-blue-600 transition flex items-center space-x-1.5 text-[11px] font-medium" title="Simpan ke Catatan">
                     <i class="fa-regular fa-bookmark text-xs"></i>
                     <span>Simpan ke Catatan</span>
                   </button>
@@ -419,8 +541,8 @@
 
       </div>
 
-      <!-- FLOATING PILL CHAT INPUT BAR -->
-      <div class="p-4 sm:p-5 bg-transparent">
+      <!-- FLOATING PILL CHAT INPUT BAR WITH PERSISTENT AI DISCLAIMER -->
+      <div class="p-3 sm:p-4 bg-transparent shrink-0">
         <div class="max-w-2xl mx-auto">
           
           <div class="relative bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-full p-2 pl-4 pr-3 shadow-[var(--nlm-card-shadow)] flex items-center space-x-2.5 focus-within:border-blue-600 transition">
@@ -439,9 +561,10 @@
             </button>
           </div>
 
-          <!-- Bottom Micro Notice -->
-          <div class="mt-2 text-center text-[10px] text-[var(--nlm-text-tertiary)]">
-            <span id="bottom-notice-text">Mode Dokumen Aktif: Jawaban dibumikan dengan sitasi rujukan dokumen laptop.</span>
+          <!-- KETERANGAN AI DAPAT MEMBUAT KESALAHAN (SESUAI PERMINTAAN USER) -->
+          <div class="mt-2 text-center text-[11px] text-[var(--nlm-text-tertiary)] font-normal flex items-center justify-center space-x-1">
+            <i class="fa-solid fa-circle-info text-[10px] opacity-75"></i>
+            <span>NoteRoute dapat membuat kesalahan. Harap periksa kembali informasi penting dan rujukan dokumen aslinya.</span>
           </div>
 
         </div>
@@ -452,11 +575,11 @@
     <!-- FLOATING TAB TO RE-OPEN STUDIO (WHEN COLLAPSED) -->
     <button id="reopen-studio-btn" onclick="toggleRightSidebar()" class="hidden absolute top-3 right-3 z-20 px-3 py-1.5 rounded-full bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] shadow-md text-xs font-semibold text-[var(--nlm-text-primary)] items-center space-x-2 transition">
       <i class="fa-solid fa-headphones text-purple-600"></i>
-      <span>Studio (<span id="reopen-studio-count">2</span>)</span>
+      <span>Studio &bull; Alat</span>
     </button>
 
     <!-- ====================================================== -->
-    <!-- PANEL 3: STUDIO & CATATAN (RIGHT PANEL - SLIMMER 280px)-->
+    <!-- PANEL 3: STUDIO & ALAT (RIGHT PANEL - SLIMMER 280px)   -->
     <!-- ====================================================== -->
     <aside id="sidebar-studio" class="w-72 border-l border-[var(--nlm-border)] bg-[var(--nlm-surface)] flex flex-col justify-between shrink-0 select-none smooth-panel z-10 overflow-hidden">
       
@@ -464,18 +587,13 @@
       <div class="p-3.5 border-b border-[var(--nlm-border-subtle)] flex items-center justify-between">
         <div class="flex items-center space-x-2">
           <h2 class="font-bold text-sm text-[var(--nlm-text-primary)]">Studio</h2>
-          <span class="text-xs text-[var(--nlm-text-tertiary)]">&bull; Catatan</span>
+          <span class="text-xs text-[var(--nlm-text-tertiary)]">&bull; Alat Bantu</span>
         </div>
         
-        <div class="flex items-center space-x-1">
-          <button onclick="createNewNoteInStudio()" class="p-1.5 rounded-lg hover:bg-[var(--nlm-surface-hover)] text-xs font-semibold text-blue-600 transition" title="Catatan Baru">
-            <i class="fa-solid fa-plus"></i>
-          </button>
-          <!-- Collapse Button -->
-          <button onclick="toggleRightSidebar()" class="w-6 h-6 rounded-md hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center transition" title="Tutup Studio">
-            <i class="fa-solid fa-chevron-right text-[11px]"></i>
-          </button>
-        </div>
+        <!-- Collapse Button inside Studio -->
+        <button onclick="toggleRightSidebar()" class="w-6 h-6 rounded-md hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center transition" title="Tutup Studio">
+          <i class="fa-solid fa-chevron-right text-[11px]"></i>
+        </button>
       </div>
 
       <!-- Studio Content (Slimmer & Clean) -->
@@ -504,59 +622,30 @@
         </div>
 
         <!-- QUICK TEMPLATES BUTTONS ROW -->
-        <div class="grid grid-cols-2 gap-1.5 text-xs">
-          <button onclick="createStudyTool('Panduan Belajar')" class="p-2 rounded-lg border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
-            <div class="text-blue-600 text-[11px]"><i class="fa-solid fa-graduation-cap"></i></div>
-            <div class="font-medium text-[11px] text-[var(--nlm-text-primary)] truncate">Panduan Belajar</div>
-          </button>
-
-          <button onclick="createStudyTool('Briefing Doc')" class="p-2 rounded-lg border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
-            <div class="text-emerald-600 text-[11px]"><i class="fa-solid fa-file-contract"></i></div>
-            <div class="font-medium text-[11px] text-[var(--nlm-text-primary)] truncate">Briefing Doc</div>
-          </button>
-
-          <button onclick="createStudyTool('Tanya Jawab (FAQ)')" class="p-2 rounded-lg border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
-            <div class="text-amber-600 text-[11px]"><i class="fa-solid fa-circle-question"></i></div>
-            <div class="font-medium text-[11px] text-[var(--nlm-text-primary)] truncate">FAQ</div>
-          </button>
-
-          <button onclick="createStudyTool('Linimasa')" class="p-2 rounded-lg border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
-            <div class="text-indigo-600 text-[11px]"><i class="fa-solid fa-timeline"></i></div>
-            <div class="font-medium text-[11px] text-[var(--nlm-text-primary)] truncate">Linimasa</div>
-          </button>
-        </div>
-
-        <!-- SAVED NOTES LIST -->
         <div>
-          <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-1 mb-1.5 flex items-center justify-between">
-            <span>Catatan Tersimpan</span>
-            <span id="saved-note-count" class="font-mono text-[10px]">2</span>
+          <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-1 mb-2">
+            Panduan &amp; Generator
           </div>
+          <div class="grid grid-cols-2 gap-1.5 text-xs">
+            <button onclick="createStudyTool('Panduan Belajar')" class="p-2 rounded-lg border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
+              <div class="text-blue-600 text-[11px]"><i class="fa-solid fa-graduation-cap"></i></div>
+              <div class="font-medium text-[11px] text-[var(--nlm-text-primary)] truncate">Panduan Belajar</div>
+            </button>
 
-          <div id="notes-container" class="space-y-1.5">
-            <!-- Note 1 -->
-            <div class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer">
-              <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate mb-0.5">Rangkuman Teorema CAP &amp; Spanner</div>
-              <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-snug">
-                Spanner menggunakan atomic clock (TrueTime API) untuk menjamin konsistensi...
-              </p>
-              <div class="mt-1.5 text-[9px] text-[var(--nlm-text-tertiary)] flex justify-between">
-                <span>Dari obrolan</span>
-                <span>08 Nov</span>
-              </div>
-            </div>
+            <button onclick="createStudyTool('Briefing Doc')" class="p-2 rounded-lg border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
+              <div class="text-emerald-600 text-[11px]"><i class="fa-solid fa-file-contract"></i></div>
+              <div class="font-medium text-[11px] text-[var(--nlm-text-primary)] truncate">Briefing Doc</div>
+            </button>
 
-            <!-- Note 2 -->
-            <div class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer">
-              <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate mb-0.5">Metrik Penghematan Multi-LLM</div>
-              <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-snug">
-                Biaya tersimpan $12.85 dengan Gemini 1.5 Flash 1M Context...
-              </p>
-              <div class="mt-1.5 text-[9px] text-[var(--nlm-text-tertiary)] flex justify-between">
-                <span>Manual</span>
-                <span>07 Nov</span>
-              </div>
-            </div>
+            <button onclick="createStudyTool('Tanya Jawab (FAQ)')" class="p-2 rounded-lg border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
+              <div class="text-amber-600 text-[11px]"><i class="fa-solid fa-circle-question"></i></div>
+              <div class="font-medium text-[11px] text-[var(--nlm-text-primary)] truncate">FAQ</div>
+            </button>
+
+            <button onclick="createStudyTool('Linimasa')" class="p-2 rounded-lg border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
+              <div class="text-indigo-600 text-[11px]"><i class="fa-solid fa-timeline"></i></div>
+              <div class="font-medium text-[11px] text-[var(--nlm-text-primary)] truncate">Linimasa</div>
+            </button>
           </div>
         </div>
 
@@ -574,12 +663,11 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 3. POPUP MODAL: "TAMBAHKAN SUMBER" (PERSIS REFERENSI GAMBAR)-->
+  <!-- 3. POPUP MODAL: "TAMBAHKAN SUMBER" (DRAG & DROP)         -->
   <!-- ======================================================== -->
   <div id="add-source-modal" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="w-full max-w-xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-up">
+    <div class="w-full max-w-xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
       
-      <!-- Modal Header (Persis Style Gambar) -->
       <div class="p-5 border-b border-[var(--nlm-border-subtle)] flex items-center justify-between">
         <div>
           <h3 class="text-base font-bold text-[var(--nlm-text-primary)]">Tambahkan Sumber</h3>
@@ -592,10 +680,7 @@
         </button>
       </div>
 
-      <!-- Modal Body: DRAG & DROP BOX (PERSIS BOX DI GAMBAR REFERENSI) -->
       <div class="p-6">
-        
-        <!-- Hidden Real File Input -->
         <input type="file" id="real-file-input" multiple onchange="handleFileSelect(event)" class="hidden" accept=".pdf,.docx,.doc,.txt,.md,.js,.py,.png,.jpg,.jpeg">
 
         <!-- Authentic Dashed Dropzone -->
@@ -603,7 +688,6 @@
              ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"
              class="border-2 border-dashed border-[var(--nlm-dropzone-border)] hover:border-blue-500 bg-[var(--nlm-dropzone-bg)] hover:bg-[var(--nlm-surface-hover)] rounded-2xl p-8 sm:p-10 text-center cursor-pointer transition flex flex-col items-center justify-center space-y-3 group">
           
-          <!-- Upload Arrow Icon from Tray (Persis Gambar) -->
           <div class="w-12 h-12 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl group-hover:scale-110 transition">
             <i class="fa-solid fa-arrow-up-from-bracket"></i>
           </div>
@@ -622,7 +706,6 @@
           </div>
         </div>
 
-        <!-- Simulated Upload Progress Bar -->
         <div id="upload-progress-box" class="hidden mt-4 p-3 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)]">
           <div class="flex items-center justify-between text-xs font-semibold mb-1">
             <span id="uploading-filename" class="text-[var(--nlm-text-primary)] truncate max-w-[280px]">Mengunggah berkas...</span>
@@ -635,10 +718,8 @@
             Mengekstrak representasi teks dokumen untuk konteks AI...
           </div>
         </div>
-
       </div>
 
-      <!-- Modal Footer -->
       <div class="p-3.5 bg-[var(--nlm-surface-variant)] border-t border-[var(--nlm-border)] flex items-center justify-between text-xs text-[var(--nlm-text-tertiary)]">
         <span>Batas ukuran per berkas: hingga 200 MB</span>
         <button onclick="closeAddSourceModal()" class="px-4 py-1.5 rounded-xl bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-[var(--nlm-text-primary)] font-medium transition">
@@ -650,7 +731,235 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 4. MODAL: CITATION PREVIEW / DOCUMENT HIGHLIGHT          -->
+  <!-- 4. MODAL: NOTE VIEWER & EDITOR (MELIHAT ISI CATATAN)     -->
+  <!-- ======================================================== -->
+  <div id="note-viewer-modal" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+      
+      <!-- Modal Header -->
+      <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-sm font-bold">
+            <i class="fa-regular fa-note-sticky"></i>
+          </div>
+          <div>
+            <input id="note-modal-title" type="text" class="font-bold text-sm text-[var(--nlm-text-primary)] bg-transparent focus:outline-none border-b border-transparent focus:border-blue-500" value="Judul Catatan">
+            <div id="note-modal-meta" class="text-xs text-[var(--nlm-text-tertiary)]">08 Nov 2026 &bull; Tersinkron</div>
+          </div>
+        </div>
+        <button onclick="closeNoteModal()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto space-y-4">
+        <textarea id="note-modal-body" rows="9" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-4 text-xs sm:text-sm text-[var(--nlm-text-primary)] leading-relaxed focus:outline-none focus:border-blue-500 font-sans"></textarea>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-3.5 bg-[var(--nlm-surface-variant)] border-t border-[var(--nlm-border)] flex items-center justify-between text-xs">
+        <button onclick="deleteCurrentNote()" class="text-red-600 hover:text-red-700 font-medium flex items-center space-x-1.5">
+          <i class="fa-regular fa-trash-can"></i>
+          <span>Hapus Catatan</span>
+        </button>
+
+        <div class="flex items-center space-x-2">
+          <button onclick="copyNoteModalText()" class="px-3 py-1.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-primary)] font-medium">
+            Salin Teks
+          </button>
+          <button onclick="saveNoteModalChanges()" class="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+            Simpan Perubahan
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 5. MODAL: PROFILE & COMPLETE SETTINGS                    -->
+  <!-- ======================================================== -->
+  <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-3xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      
+      <!-- Settings Header -->
+      <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
+            <i class="fa-solid fa-sliders"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-[var(--nlm-text-primary)]">Pengaturan &amp; Konfigurasi NoteRoute</h3>
+            <span class="text-xs text-[var(--nlm-text-tertiary)]">Kelola akun, kunci API, dan perutean gateway multi-LLM</span>
+          </div>
+        </div>
+        <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Settings Layout (Tabs on Left, Content on Right) -->
+      <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Tab Navigation -->
+        <div class="w-56 border-r border-[var(--nlm-border)] p-3 space-y-1 bg-[var(--nlm-surface-variant)] text-xs font-medium">
+          <button onclick="switchSettingsTab('profile')" id="stab-profile" class="w-full text-left px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold transition flex items-center space-x-2">
+            <i class="fa-regular fa-user text-xs w-4"></i>
+            <span>Profil Pengguna</span>
+          </button>
+          <button onclick="switchSettingsTab('security')" id="stab-security" class="w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
+            <i class="fa-solid fa-shield-halved text-xs w-4"></i>
+            <span>Keamanan Akun</span>
+          </button>
+          <button onclick="switchSettingsTab('api')" id="stab-api" class="w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
+            <i class="fa-solid fa-key text-xs w-4 text-amber-500"></i>
+            <span>Mengatur Kunci API</span>
+          </button>
+          <button onclick="switchSettingsTab('routing')" id="stab-routing" class="w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
+            <i class="fa-solid fa-route text-xs w-4 text-emerald-500"></i>
+            <span>Routing ke AI Mana Saja</span>
+          </button>
+          <button onclick="switchSettingsTab('general')" id="stab-general" class="w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
+            <i class="fa-solid fa-gear text-xs w-4"></i>
+            <span>Pengaturan Umum</span>
+          </button>
+        </div>
+
+        <!-- Tab Contents Area -->
+        <div class="flex-1 overflow-y-auto p-6 text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+          
+          <!-- TAB 1: PROFIL -->
+          <div id="scontent-profile" class="space-y-4">
+            <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Profil Pengembang &amp; Tim</h4>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Nama Lengkap</label>
+                <input type="text" value="Ahmad Zakky Nurfauzan" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)]">
+              </div>
+              <div>
+                <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">NPM</label>
+                <input type="text" value="714250028" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)]">
+              </div>
+              <div>
+                <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Peran dalam Tim</label>
+                <input type="text" value="Ketua Tim (Modul A: Backend &amp; Cloud)" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)]" disabled>
+              </div>
+              <div>
+                <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Rekan Modul B</label>
+                <input type="text" value="Izat Ibrahimovic Irawan (714250024)" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)]" disabled>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: KEAMANAN -->
+          <div id="scontent-security" class="hidden space-y-4">
+            <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Keamanan Akun &amp; Sesi Perangkat</h4>
+            <div class="space-y-3">
+              <div class="p-3.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
+                <div>
+                  <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">Laptop Zakky (MacBook Pro)</div>
+                  <div class="text-[11px] text-[var(--nlm-text-tertiary)]">Sesi Aktif &bull; Sinkronisasi Dokumen Selalu Aktif</div>
+                </div>
+                <span class="text-emerald-600 font-bold text-[11px]">Terhubung</span>
+              </div>
+              <div class="p-3.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
+                <div>
+                  <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">HP Android Izat (Client Mobile)</div>
+                  <div class="text-[11px] text-[var(--nlm-text-tertiary)]">Terotentikasi via Retrofit Token</div>
+                </div>
+                <span class="text-emerald-600 font-bold text-[11px]">Terhubung</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: MENGATUR KUNCI API -->
+          <div id="scontent-api" class="hidden space-y-4">
+            <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Manajemen Kunci API (Bring Your Own Key)</h4>
+            <div class="space-y-3">
+              <div>
+                <label class="block font-medium text-[var(--nlm-text-primary)] mb-1">Google Gemini API Key (1.5 Flash)</label>
+                <input type="password" value="AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs font-mono text-[var(--nlm-text-primary)]">
+                <span class="text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5 block">Kapasitas: 1.500 req/hari &bull; 1.000.000 token context gratis</span>
+              </div>
+              <div>
+                <label class="block font-medium text-[var(--nlm-text-primary)] mb-1">Groq Cloud API Key (Llama 3.3 70B)</label>
+                <input type="password" value="gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs font-mono text-[var(--nlm-text-primary)]">
+                <span class="text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5 block">Kecepatan: 300+ token/s &bull; Digunakan saat failover 429</span>
+              </div>
+              <div>
+                <label class="block font-medium text-[var(--nlm-text-primary)] mb-1">DeepSeek API Key (R1 / V3)</label>
+                <input type="password" value="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs font-mono text-[var(--nlm-text-primary)]">
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: ROUTING KE AI MANA SAJA -->
+          <div id="scontent-routing" class="hidden space-y-4">
+            <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Konfigurasi Perutean AI (Multi-LLM Gateway)</h4>
+            <p class="text-[11px] text-[var(--nlm-text-tertiary)]">
+              Tentukan urutan prioritas AI dan aturan failover otomatis jika model utama mengalami batasan kuota HTTP 429.
+            </p>
+
+            <div class="space-y-2">
+              <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">1. Google Gemini 1.5 Flash (Prioritas Utama)</div>
+                  <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Konteks 1M Token &bull; Ekstraksi dokumen tebal gratis</div>
+                </div>
+                <span class="text-xs bg-blue-500/10 text-blue-600 font-bold px-2 py-0.5 rounded">Prioritas 1</span>
+              </div>
+
+              <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">2. Groq Cloud Llama 3.3 70B (Failover Cadangan)</div>
+                  <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Otomatis aktif dalam &lt; 500ms jika Gemini 429</div>
+                </div>
+                <span class="text-xs bg-violet-500/10 text-violet-600 font-bold px-2 py-0.5 rounded">Prioritas 2</span>
+              </div>
+
+              <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">3. 9Router / OmniRoute Local Daemon</div>
+                  <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Bridge lokal laptop port 20128/v1</div>
+                </div>
+                <span class="text-xs bg-emerald-500/10 text-emerald-600 font-bold px-2 py-0.5 rounded">Prioritas 3</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 5: PENGATURAN UMUM -->
+          <div id="scontent-general" class="hidden space-y-4">
+            <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Pengaturan Umum Aplikasi NoteRoute</h4>
+            <div class="space-y-3">
+              <div>
+                <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Server Cloud Backend</label>
+                <input type="text" value="https://noteroute.alwaysdata.net/api" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-mono" disabled>
+              </div>
+              <div>
+                <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Database Cluster</label>
+                <input type="text" value="MongoDB Atlas Cloud (Workspaces, Documents, Citations)" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)]" disabled>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Settings Footer -->
+      <div class="p-3.5 bg-[var(--nlm-surface-variant)] border-t border-[var(--nlm-border)] flex items-center justify-between text-xs">
+        <span class="text-[var(--nlm-text-tertiary)]">NoteRoute v1.0.0 &bull; Proyek 2 ULBI</span>
+        <button onclick="saveAllSettings()" class="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+          Simpan Pengaturan
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 6. MODAL: CITATION PREVIEW                               -->
   <!-- ======================================================== -->
   <div id="citation-source-modal" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
     <div class="w-full max-w-2xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
@@ -707,13 +1016,12 @@
     let isDarkTheme = false;
     let isLeftOpen = true;
     let isRightOpen = true;
-    let currentMode = 'document'; // 'document' or 'general'
+    let currentMode = 'document';
 
-    // 1. COLLAPSIBLE SIDEBARS (BUKA TUTUP SUMBER & STUDIO)
+    // 1. COLLAPSIBLE SIDEBARS
     function toggleLeftSidebar() {
       const sidebar = document.getElementById('sidebar-sources');
       const reopenBtn = document.getElementById('reopen-sources-btn');
-      const icon = document.getElementById('btn-icon-sources');
 
       isLeftOpen = !isLeftOpen;
       if (isLeftOpen) {
@@ -721,38 +1029,119 @@
         sidebar.classList.remove('opacity-0', 'pointer-events-none');
         reopenBtn.classList.add('hidden');
         reopenBtn.classList.remove('flex');
-        icon.className = "fa-solid fa-bars text-sm";
       } else {
         sidebar.style.width = '0px';
         sidebar.classList.add('opacity-0', 'pointer-events-none');
         reopenBtn.classList.remove('hidden');
         reopenBtn.classList.add('flex');
-        icon.className = "fa-solid fa-bars-staggered text-sm";
       }
     }
 
     function toggleRightSidebar() {
       const sidebar = document.getElementById('sidebar-studio');
       const reopenBtn = document.getElementById('reopen-studio-btn');
-      const icon = document.getElementById('btn-icon-studio');
 
       isRightOpen = !isRightOpen;
       if (isRightOpen) {
-        sidebar.style.width = '288px'; // 72 = 288px
+        sidebar.style.width = '288px';
         sidebar.classList.remove('opacity-0', 'pointer-events-none');
         reopenBtn.classList.add('hidden');
         reopenBtn.classList.remove('flex');
-        icon.className = "fa-solid fa-columns text-sm";
       } else {
         sidebar.style.width = '0px';
         sidebar.classList.add('opacity-0', 'pointer-events-none');
         reopenBtn.classList.remove('hidden');
         reopenBtn.classList.add('flex');
-        icon.className = "fa-solid fa-table-columns text-sm";
       }
     }
 
-    // 2. THEME SWITCHER (GELAP & TERANG)
+    // 2. PROJECT NAME INLINE EDITING (FUNGSI GANTI NAMA PROJEK)
+    function enableProjectRename() {
+      const display = document.getElementById('project-title-display');
+      const input = document.getElementById('project-title-input');
+      input.value = display.textContent;
+      display.classList.add('hidden');
+      input.classList.remove('hidden');
+      input.focus();
+      input.select();
+    }
+
+    function saveProjectRename() {
+      const display = document.getElementById('project-title-display');
+      const input = document.getElementById('project-title-input');
+      const heroTitle = document.getElementById('hero-title');
+      const newTitle = input.value.trim();
+
+      if (newTitle) {
+        display.textContent = newTitle;
+        if (heroTitle) heroTitle.textContent = newTitle;
+        showToast("Nama Proyek Diperbarui", `Disimpan sebagai "${newTitle}".`);
+      }
+      input.classList.add('hidden');
+      display.classList.remove('hidden');
+    }
+
+    function handleProjectRenameKey(e) {
+      if (e.key === 'Enter') saveProjectRename();
+      if (e.key === 'Escape') {
+        document.getElementById('project-title-input').classList.add('hidden');
+        document.getElementById('project-title-display').classList.remove('hidden');
+      }
+    }
+
+    // 3. EDIT USER PROMPTS & REGENERATE
+    function enablePromptEdit() {
+      const bubble = document.getElementById('user-bubble-box');
+      const form = document.getElementById('user-edit-form');
+      const textarea = document.getElementById('user-edit-textarea');
+      const text = document.getElementById('user-question-text').textContent;
+
+      textarea.value = text;
+      bubble.classList.add('hidden');
+      form.classList.remove('hidden');
+      textarea.focus();
+    }
+
+    function cancelPromptEdit() {
+      document.getElementById('user-edit-form').classList.add('hidden');
+      document.getElementById('user-bubble-box').classList.remove('hidden');
+    }
+
+    function saveAndResubmitPrompt() {
+      const textarea = document.getElementById('user-edit-textarea');
+      const newText = textarea.value.trim();
+      if (!newText) return;
+
+      document.getElementById('user-question-text').textContent = newText;
+      cancelPromptEdit();
+      showToast("Pertanyaan Diperbarui", "Menghasilkan ulang jawaban berdasarkan pertanyaan baru...");
+      regenerateAiResponse();
+    }
+
+    function regenerateAiResponse() {
+      const icon = document.getElementById('regen-icon');
+      const container = document.getElementById('ai-response-container');
+      
+      icon.classList.add('fa-spin');
+      showToast("Menghasilkan Ulang", "Menganalisis kembali dokumen laptop...");
+
+      setTimeout(() => {
+        icon.classList.remove('fa-spin');
+        container.innerHTML = `
+          <p><strong>[Jawaban Diperbarui]</strong> Berdasarkan analisis ulang komprehensif pada dokumen:</p>
+          <p class="text-[var(--nlm-text-secondary)] my-2">
+            Teorema CAP mengonfirmasi bahwa saat partisi jaringan terjadi di sistem terdistribusi, pengorbanan antara konsistensi kuat vs responsivitas tinggi bersifat mutlak <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>.
+          </p>
+          <ul class="list-disc ml-5 space-y-1 text-[var(--nlm-text-secondary)]">
+            <li>Sistem CP: Menolak kueri split-brain demi mencegah inkonsistensi <span class="nlm-citation" onclick="openSourceCitation(1, 16)">2</span>.</li>
+            <li>Sistem AP: Tetap melayani kueri walau berpotensi stale read.</li>
+          </ul>
+        `;
+        showToast("Jawaban Diperbarui", "Selesai menghasilkan ulang dari awal.");
+      }, 700);
+    }
+
+    // 4. THEME SWITCHER
     function toggleNotebookTheme() {
       const html = document.documentElement;
       const icon = document.getElementById('theme-btn-icon');
@@ -771,7 +1160,73 @@
       }
     }
 
-    // 3. AI MODE SWITCHER (MODE DOKUMEN VS AI BEBAS/UMUM)
+    // 5. PROFILE & SETTINGS DROPDOWN & MODAL
+    function toggleProfileDropdown() {
+      const menu = document.getElementById('profile-dropdown-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    function openSettingsModal(targetTab) {
+      document.getElementById('profile-dropdown-menu').classList.add('hidden');
+      document.getElementById('settings-modal').classList.remove('hidden');
+      if (targetTab) switchSettingsTab(targetTab);
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settings-modal').classList.add('hidden');
+    }
+
+    function switchSettingsTab(tabName) {
+      ['profile', 'security', 'api', 'routing', 'general'].forEach(t => {
+        const btn = document.getElementById(`stab-${t}`);
+        const content = document.getElementById(`scontent-${t}`);
+        if (t === tabName) {
+          btn.className = "w-full text-left px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold transition flex items-center space-x-2";
+          content.classList.remove('hidden');
+        } else {
+          btn.className = "w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2";
+          content.classList.add('hidden');
+        }
+      });
+    }
+
+    function saveAllSettings() {
+      closeSettingsModal();
+      showToast("Pengaturan Disimpan", "Kunci API, rute provider, dan profil berhasil diperbarui.");
+    }
+
+    // 6. NOTE VIEWER & EDITOR MODAL (MELIHAT ISI CATATAN)
+    function openViewNoteModal(title, body, meta) {
+      document.getElementById('note-modal-title').value = title;
+      document.getElementById('note-modal-body').value = body;
+      document.getElementById('note-modal-meta').textContent = meta || "08 Nov 2026 • Tersimpan";
+      document.getElementById('note-viewer-modal').classList.remove('hidden');
+    }
+
+    function closeNoteModal() {
+      document.getElementById('note-viewer-modal').classList.add('hidden');
+    }
+
+    function saveNoteModalChanges() {
+      const title = document.getElementById('note-modal-title').value;
+      closeNoteModal();
+      showToast("Perubahan Disimpan", `Catatan "${title}" berhasil diperbarui.`);
+    }
+
+    function deleteCurrentNote() {
+      closeNoteModal();
+      showToast("Catatan Dihapus", "Catatan telah dihapus dari daftar.");
+    }
+
+    function copyNoteModalText() {
+      showToast("Teks Disalin", "Isi catatan disalin ke papan klip.");
+    }
+
+    function openCreateNoteModal() {
+      openViewNoteModal("Catatan Baru", "Tulis ide, rangkuman, atau poin penting materi kuliah di sini...", "Baru Dibuat");
+    }
+
+    // 7. AI MODE SWITCHER
     function setAiMode(mode) {
       currentMode = mode;
       const btnDoc = document.getElementById('btn-mode-doc');
@@ -779,7 +1234,6 @@
       const input = document.getElementById('nlm-chat-input');
       const modeText = document.getElementById('input-mode-text');
       const modeIcon = document.getElementById('input-mode-icon');
-      const notice = document.getElementById('bottom-notice-text');
       const heroSub = document.getElementById('hero-subtitle');
 
       if (mode === 'document') {
@@ -788,18 +1242,16 @@
         input.placeholder = "Tanyakan seputar 4 dokumen laptop...";
         modeText.textContent = "4 Dokumen";
         modeIcon.innerHTML = '<i class="fa-solid fa-file-shield text-blue-600"></i>';
-        notice.textContent = "Mode Dokumen Aktif: Jawaban dibumikan dengan sitasi rujukan dokumen laptop.";
         heroSub.textContent = "NoteRoute membumikan analisis ke dalam berkas dokumen yang Anda pilih. Dapatkan jawaban terverifikasi dengan rujukan sitasi akurat.";
-        showToast("Mode Dokumen Aktif", "Jawaban AI difokuskan pada isi berkas yang diunggah.");
+        showToast("Mode Dokumen", "Jawaban difokuskan pada isi dokumen laptop.");
       } else {
         btnGen.className = "px-3 py-1 rounded-full font-semibold bg-emerald-600 text-white transition flex items-center space-x-1.5 shadow-xs";
         btnDoc.className = "px-3 py-1 rounded-full font-medium text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] transition flex items-center space-x-1.5";
         input.placeholder = "Tanyakan apa saja kepada AI (Mode Bebas & Terbuka)...";
         modeText.textContent = "AI Bebas";
         modeIcon.innerHTML = '<i class="fa-solid fa-globe text-emerald-600"></i>';
-        notice.textContent = "Mode AI Bebas Aktif: Pertanyaan terbuka untuk coding, ide, essay, dan topik apa saja.";
-        heroSub.textContent = "Gunakan NoteRoute sebagai asisten AI umum serbaguna tanpa batasan file yang diunggah.";
-        showToast("Mode AI Umum Aktif", "Anda sekarang bebas menanyakan topik apa pun di luar dokumen.");
+        heroSub.textContent = "Gunakan NoteRoute sebagai asisten AI umum serbaguna tanpa batasan berkas yang diunggah.";
+        showToast("Mode AI Bebas", "Anda bebas menanyakan topik apa saja di luar dokumen.");
       }
     }
 
@@ -807,7 +1259,7 @@
       setAiMode(currentMode === 'document' ? 'general' : 'document');
     }
 
-    // 4. POPUP MODAL: "TAMBAHKAN SUMBER" (DRAG & DROP)
+    // 8. ADD SOURCE MODAL (DRAG & DROP)
     function openAddSourceModal() {
       document.getElementById('add-source-modal').classList.remove('hidden');
     }
@@ -864,7 +1316,7 @@
           setTimeout(() => {
             closeAddSourceModal();
             addNewSourceCard(filename, sizeMB);
-            showToast("Sumber Ditambahkan", `${filename} berhasil diunggah dan diindeks.`);
+            showToast("Sumber Ditambahkan", `${filename} berhasil diunggah.`);
           }, 350);
         }
       }, 150);
@@ -898,7 +1350,7 @@
       updateSourceCount();
     }
 
-    // 5. SOURCES LOGIC
+    // 9. SOURCES SELECTION & CITATION
     function updateSourceCount() {
       const chks = document.querySelectorAll('.source-chk');
       const count = Array.from(chks).filter(c => c.checked).length;
@@ -911,7 +1363,6 @@
       const chks = document.querySelectorAll('.source-chk');
       chks.forEach(c => c.checked = master.checked);
       updateSourceCount();
-      showToast("Konteks Sumber", master.checked ? "Semua berkas aktif." : "Semua berkas dinonaktifkan.");
     }
 
     function previewSource(id, name, page) {
@@ -928,7 +1379,7 @@
       document.getElementById('citation-source-modal').classList.add('hidden');
     }
 
-    // 6. CHAT & SUBMISSION
+    // 10. CHAT INPUT
     function sendPrompt(text) {
       document.getElementById('nlm-chat-input').value = text;
       submitNlmPrompt();
@@ -947,16 +1398,12 @@
       const groundingTag = document.getElementById('response-grounding-tag');
 
       if (currentMode === 'general') {
-        groundingTag.textContent = "Mode AI Umum (Tanpa Dokumen)";
+        groundingTag.textContent = "AI Umum (Tanpa Dokumen)";
         responseContainer.innerHTML = `
-          <p>Tentu! Berikut analisis menyeluruh mengenai <strong>"${text}"</strong>:</p>
+          <p>Tentu! Berikut jawaban analitis mengenai <strong>"${text}"</strong>:</p>
           <p class="text-[var(--nlm-text-secondary)] my-2">
-            Sebagai asisten AI cerdas NoteRoute, saya dapat membantu Anda memecahkan masalah pemrograman, penyusunan algoritma, perancangan basis data, maupun penulisan karya ilmiah tanpa terbatas pada berkas dokumen yang diunggah.
+            Sebagai asisten AI umum NoteRoute, saya dapat memecahkan masalah coding, desain arsitektur, dan penjelasan teori tanpa terbatas pada dokumen laptop.
           </p>
-          <div class="p-3 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs font-mono">
-            // Rekomendasi Solusi Teknis:<br>
-            const engine = new NoteRouteRouter({ failover: true, timeout: 500 });
-          </div>
         `;
       } else {
         groundingTag.textContent = "2 rujukan terverifikasi";
@@ -971,44 +1418,39 @@
       }
 
       input.value = '';
-      showToast("Menghasilkan Jawaban", currentMode === 'general' ? "Memproses jawaban AI umum..." : "Membaca 4 berkas dokumen laptop...");
-      
+      showToast("Menjawab", "Memproses kueri...");
       const scroll = document.getElementById('nlm-chat-scroll');
       scroll.scrollTop = scroll.scrollHeight;
     }
 
     function copyAnswerText() {
-      showToast("Disalin", "Jawaban disalin ke clipboard.");
+      showToast("Teks Disalin", "Jawaban disalin ke clipboard.");
     }
 
     function saveAnswerAsNote() {
-      createNewNoteInStudio("Catatan dari Jawaban AI", "Poin kesimpulan yang disimpan langsung dari obrolan.");
+      addNoteToSidebar("Rangkuman dari Chat", "Poin kesimpulan yang disimpan langsung dari obrolan.");
+      showToast("Disimpan ke Catatan", "Tersimpan di panel Sumber.");
     }
 
-    function createNewNoteInStudio(customTitle, customBody) {
-      const container = document.getElementById('notes-container');
-      const note = document.createElement('div');
-      note.className = "p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer";
-      note.innerHTML = `
-        <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate mb-0.5">${customTitle || "Catatan Baru"}</div>
-        <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-snug">
-          ${customBody || "Ketik catatan Anda di sini..."}
-        </p>
-        <div class="mt-1.5 text-[9px] text-[var(--nlm-text-tertiary)] flex justify-between">
-          <span>Baru saja</span>
-          <span>Tersimpan</span>
+    function addNoteToSidebar(title, body) {
+      const container = document.getElementById('sidebar-notes-container');
+      const card = document.createElement('div');
+      card.className = "p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition group";
+      card.onclick = () => openViewNoteModal(title, body, "Baru saja • Dari obrolan");
+      card.innerHTML = `
+        <div class="flex items-center justify-between">
+          <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition flex items-center space-x-1.5">
+            <i class="fa-regular fa-note-sticky text-indigo-500 text-[11px]"></i>
+            <span class="truncate">${title}</span>
+          </div>
+          <span class="text-[9px] text-[var(--nlm-text-tertiary)]">Baru</span>
         </div>
+        <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 mt-1 leading-snug">
+          ${body}
+        </p>
       `;
-      container.prepend(note);
-      
-      const countEl = document.getElementById('saved-note-count');
-      const newCount = container.children.length;
-      countEl.textContent = newCount;
-      document.getElementById('reopen-studio-count').textContent = newCount;
-
-      // Ensure studio is open if closed
-      if (!isRightOpen) toggleRightSidebar();
-      showToast("Catatan Dibuat", "Catatan berhasil ditambahkan ke Studio.");
+      container.prepend(card);
+      document.getElementById('sidebar-notes-count').textContent = `${container.children.length} Catatan`;
     }
 
     function generateAudioOverview() {
@@ -1022,19 +1464,20 @@
         btn.classList.remove('opacity-75', 'bg-purple-600');
         btn.classList.add('bg-emerald-600');
         showToast("Audio Siap!", "Podcast diskusi 2 host AI selesai dibuat.");
-      }, 1200);
+      }, 1000);
     }
 
     function createStudyTool(name) {
-      createNewNoteInStudio(name, `Dihasilkan otomatis berdasarkan materi berkas laptop.`);
+      addNoteToSidebar(name, `Rangkuman otomatis dihasilkan berdasarkan 4 berkas laptop.`);
+      showToast(name, "Catatan ditambahkan ke panel Sumber.");
     }
 
     function downloadFile(event, filename) {
       event.stopPropagation();
-      showToast("Mengunduh Berkas", `Mengambil ${filename} dari server Alwaysdata...`);
+      showToast("Mengunduh", `Mengambil ${filename} dari server Alwaysdata...`);
     }
 
-    // 7. TOAST HELPER
+    // 11. TOAST HELPER
     function showToast(title, desc) {
       const toast = document.getElementById('nlm-toast');
       const text = document.getElementById('nlm-toast-text');
@@ -1049,12 +1492,12 @@
       }, 2500);
     }
 
-    // Close modals on outside click
+    // Close dropdowns on outside click
     window.addEventListener('click', (e) => {
-      const addModal = document.getElementById('add-source-modal');
-      const citModal = document.getElementById('citation-source-modal');
-      if (e.target === addModal) closeAddSourceModal();
-      if (e.target === citModal) closeCitationModal();
+      const pMenu = document.getElementById('profile-dropdown-menu');
+      if (pMenu && !pMenu.contains(e.target) && !e.target.closest('button[onclick="toggleProfileDropdown()"]')) {
+        pMenu.classList.add('hidden');
+      }
     });
   </script>
 </body>
