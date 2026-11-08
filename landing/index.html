@@ -10,7 +10,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome 6 CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Fonts: Plus Jakarta Sans & Google Sans styled -->
+  <!-- Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -28,9 +28,9 @@
               blue: '#1a73e8',
               blueHover: '#1557b0',
               blueDark: '#8ab4f8',
-              cardDark: '#181a1f',
-              cardDarkHover: '#22252c',
-              borderDark: '#282b33',
+              cardDark: '#14171d',
+              cardDarkHover: '#1c212a',
+              borderDark: '#232834',
             }
           }
         }
@@ -39,7 +39,7 @@
   </script>
 
   <style>
-    /* CSS Variables untuk Tema Terang dan Gelap yang Konsisten dengan Workspace NoteRoute */
+    /* CSS Variables untuk Tema Terang dan Gelap Konsisten dengan Ruang Kerja NoteRoute */
     :root.light, html.light {
       --nlm-bg: #f8fafc;
       --nlm-surface: #ffffff;
@@ -57,25 +57,31 @@
       --nlm-btn-primary-hover: #1557b0;
       --nlm-search-bg: #f1f5f9;
       --nlm-search-border: #e2e8f0;
+      --nlm-modal-overlay: rgba(15, 23, 42, 0.5);
+      --nlm-brand: #0b57d0;
+      --nlm-brand-light: #eff6ff;
     }
 
     :root.dark, html.dark {
-      --nlm-bg: #0e1015;
-      --nlm-surface: #14171d;
-      --nlm-surface-variant: #1a1e26;
-      --nlm-surface-hover: #222733;
-      --nlm-border: #242936;
-      --nlm-border-subtle: #191d26;
+      --nlm-bg: #0b0f14;
+      --nlm-surface: #121820;
+      --nlm-surface-variant: #1a222c;
+      --nlm-surface-hover: #222b37;
+      --nlm-border: #222d3b;
+      --nlm-border-subtle: #161e27;
       --nlm-text-primary: #f8fafc;
       --nlm-text-secondary: #94a3b8;
       --nlm-text-tertiary: #64748b;
-      --nlm-card-bg: #15181f;
-      --nlm-card-border: #232834;
-      --nlm-card-hover-border: #3b4457;
+      --nlm-card-bg: #141822;
+      --nlm-card-border: #232c3a;
+      --nlm-card-hover-border: #3b475c;
       --nlm-btn-primary: #1a73e8;
       --nlm-btn-primary-hover: #1b66c9;
-      --nlm-search-bg: #14171d;
-      --nlm-search-border: #262c3a;
+      --nlm-search-bg: #141822;
+      --nlm-search-border: #263040;
+      --nlm-modal-overlay: rgba(0, 0, 0, 0.75);
+      --nlm-brand: #3b82f6;
+      --nlm-brand-light: rgba(59, 130, 246, 0.14);
     }
 
     body {
@@ -85,7 +91,6 @@
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     }
 
-    /* Scrollbar minimalis khas Google */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -101,7 +106,6 @@
       background: rgba(148, 163, 184, 0.45);
     }
 
-    /* Card Aspect Ratio & Subtle Shadows */
     .notebook-card {
       transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), 
                   box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), 
@@ -109,10 +113,17 @@
     }
     .notebook-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.35);
     }
     html.light .notebook-card:hover {
       box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+    }
+
+    /* Drag and drop priority styles */
+    .priority-item.dragging {
+      opacity: 0.4;
+      transform: scale(0.98);
+      border-color: #3b82f6;
     }
   </style>
 </head>
@@ -123,41 +134,24 @@
   <!-- ======================================================== -->
   <header class="h-16 border-b border-[var(--nlm-border)] bg-[var(--nlm-surface)]/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 shrink-0">
     
-    <!-- Left: Brand Logo & Navigation Pills (Semua, Temukan, Koleksi) -->
-    <div class="flex items-center space-x-3 sm:space-x-6">
-      
-      <!-- Brand Logo NoteRoute -->
+    <!-- Left: Brand Logo NoteRoute dengan Ikon Buku/Notebook -->
+    <div class="flex items-center space-x-3">
       <a href="index.html" class="flex items-center space-x-2.5 group">
-        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-          <i class="fa-solid fa-route"></i>
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-slate-900 to-indigo-700 dark:from-zinc-100 dark:to-zinc-300 text-white dark:text-zinc-950 flex items-center justify-center text-sm font-bold shadow-md shadow-indigo-500/15 group-hover:scale-105 transition-transform ring-1 ring-black/5 dark:ring-white/10">
+          <i class="fa-solid fa-book-bookmark"></i>
         </div>
         <div class="flex items-baseline space-x-1.5">
           <span class="font-bold text-base sm:text-lg text-[var(--nlm-text-primary)] tracking-tight">NoteRoute</span>
-          <span class="text-xs text-[var(--nlm-text-tertiary)] font-medium hidden md:inline">Notebook</span>
+          <span class="text-xs text-[var(--nlm-text-tertiary)] font-medium hidden sm:inline">&bull; Notebook</span>
         </div>
       </a>
-
-      <!-- Filter Pills: Semua, Temukan, Koleksi (Sesuai Screenshot NotebookLM) -->
-      <nav class="hidden sm:flex items-center space-x-1">
-        <button id="pill-all" onclick="setFilter('all')" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-primary)] border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-1.5">
-          <span>Semua</span>
-        </button>
-        <button id="pill-discover" onclick="setFilter('discover')" class="px-3.5 py-1.5 rounded-full text-xs font-medium text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-1.5">
-          <i class="fa-regular fa-compass text-[11px]"></i>
-          <span>Temukan</span>
-        </button>
-        <button id="pill-collections" onclick="setFilter('collections')" class="px-3.5 py-1.5 rounded-full text-xs font-medium text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-1.5">
-          <i class="fa-regular fa-bookmark text-[11px]"></i>
-          <span>Koleksi</span>
-        </button>
-      </nav>
     </div>
 
-    <!-- Right: Search Bar, View Mode, Settings, 9-Dots Apps, Profile Avatar -->
-    <div class="flex items-center space-x-2 sm:space-x-3">
+    <!-- Right: Search Bar, View Mode, 9-Dots Apps, Profile Avatar (Tema & Pengaturan hanya via Profile) -->
+    <div class="flex items-center space-x-2.5 sm:space-x-3.5">
       
       <!-- Search Input Pill (Q Telusuri notebook) -->
-      <div class="relative w-40 sm:w-64 lg:w-80">
+      <div class="relative w-44 sm:w-64 lg:w-80">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-[var(--nlm-text-tertiary)]"></i>
         <input id="notebook-search-input" type="text" placeholder="Telusuri notebook" oninput="handleSearchNotebook(this.value)"
                class="w-full pl-9 pr-8 py-1.5 text-xs sm:text-sm rounded-full bg-[var(--nlm-search-bg)] border border-[var(--nlm-search-border)] text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition">
@@ -176,17 +170,7 @@
         </button>
       </div>
 
-      <!-- Theme Switch Shortcut (Matahari / Bulan) -->
-      <button onclick="toggleQuickTheme()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center transition" title="Ganti Tema">
-        <i id="quick-theme-icon" class="fa-solid fa-moon text-xs"></i>
-      </button>
-
-      <!-- Settings Gear Icon -->
-      <button onclick="openSettingsModal('appearance')" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center transition" title="Pengaturan">
-        <i class="fa-solid fa-gear text-xs"></i>
-      </button>
-
-      <!-- Google / NoteRoute 9-Dots App Launcher -->
+      <!-- NoteRoute 9-Dots App Launcher -->
       <div class="relative">
         <button onclick="toggleAppsMenu()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center transition" title="Aplikasi &amp; Layanan NoteRoute">
           <i class="fa-solid fa-grip text-sm"></i>
@@ -198,7 +182,7 @@
           <div class="grid grid-cols-3 gap-2 text-center text-xs">
             <a href="../docs/ui-prototype.html" class="p-2.5 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group">
               <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-base group-hover:scale-110 transition-transform">
-                <i class="fa-solid fa-book-open"></i>
+                <i class="fa-solid fa-book-bookmark"></i>
               </div>
               <span class="text-[11px] font-medium text-[var(--nlm-text-primary)]">Workspace</span>
             </a>
@@ -221,40 +205,59 @@
         </div>
       </div>
 
-      <!-- User Profile Avatar -->
+      <!-- USER PROFILE AVATAR (IDENTIK DENGAN WORKSPACE NOTEBOOK) -->
       <div class="relative">
-        <button onclick="toggleProfileMenu()" class="w-8 h-8 rounded-full bg-gradient-to-tr from-pink-500 to-rose-400 text-white font-bold text-xs flex items-center justify-center ring-2 ring-transparent hover:ring-blue-500 transition shadow-xs overflow-hidden" title="Akun Anda">
-          <span id="user-avatar-initials">AZ</span>
-          <img id="user-avatar-image" src="" alt="Avatar" class="w-full h-full object-cover hidden">
+        <button onclick="toggleProfileDropdown()" id="topbar-avatar-btn" class="w-8 h-8 rounded-full bg-indigo-600 hover:ring-2 hover:ring-blue-500 text-white font-bold text-xs flex items-center justify-center transition shadow-xs overflow-hidden" title="Menu Akun &amp; Pengaturan">
+          <span id="topbar-avatar-text">AZ</span>
+          <img id="topbar-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover hidden">
         </button>
 
-        <!-- Profile Dropdown Menu -->
-        <div id="profile-dropdown-menu" class="hidden absolute right-0 mt-2 w-64 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-xl p-2 z-50">
+        <!-- PROFILE DROPDOWN MENU (SAMA PERSIS DENGAN WORKSPACE NOTEBOOK) -->
+        <div id="profile-dropdown-menu" class="hidden absolute right-0 mt-2 w-72 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-xl p-2 z-50">
           <div class="p-3 border-b border-[var(--nlm-border-subtle)] flex items-center space-x-3">
-            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-pink-500 to-rose-400 text-white font-bold text-xs flex items-center justify-center shrink-0">
-              <span>AZ</span>
+            <div id="dropdown-avatar-box" class="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0 overflow-hidden">
+              <span id="dropdown-avatar-text">AZ</span>
+              <img id="dropdown-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover hidden">
             </div>
-            <div class="min-w-0 flex-1">
-              <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">Ahmad Zakky</div>
-              <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">ahmadzakky@ulbi.ac.id</div>
+            <div class="truncate">
+              <div id="topbar-user-name" class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">Ahmad Zakky Nurfauzan</div>
+              <div id="topbar-user-email" class="text-[11px] text-[var(--nlm-text-tertiary)] truncate">ahmadzakky@ulbi.ac.id</div>
+              <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5 flex items-center space-x-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span>Akun Cloud &bull; Aktif</span>
+              </div>
             </div>
           </div>
-          <div class="py-1">
-            <button onclick="openSettingsModal('profile')" class="w-full px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] text-left text-xs text-[var(--nlm-text-primary)] flex items-center space-x-2 transition">
+
+          <div class="py-1 text-xs text-[var(--nlm-text-secondary)]">
+            <button onclick="openSettingsModal('profile')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
               <i class="fa-regular fa-user text-[11px] w-4 text-[var(--nlm-text-tertiary)]"></i>
               <span>Profil Pengguna</span>
             </button>
-            <button onclick="openSettingsModal('appearance')" class="w-full px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] text-left text-xs text-[var(--nlm-text-primary)] flex items-center space-x-2 transition">
-              <i class="fa-solid fa-palette text-[11px] w-4 text-[var(--nlm-text-tertiary)]"></i>
+            <button onclick="openSettingsModal('appearance')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
+              <i class="fa-solid fa-palette text-[11px] w-4 text-blue-500"></i>
               <span>Tampilan &amp; Tema</span>
             </button>
-            <button onclick="openSettingsModal('api')" class="w-full px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] text-left text-xs text-[var(--nlm-text-primary)] flex items-center space-x-2 transition">
-              <i class="fa-solid fa-key text-[11px] w-4 text-[var(--nlm-text-tertiary)]"></i>
-              <span>Kunci API &amp; Router</span>
+            <button onclick="openSettingsModal('security')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
+              <i class="fa-solid fa-shield-halved text-[11px] w-4 text-purple-500"></i>
+              <span>Keamanan Akun</span>
+            </button>
+            <button onclick="openSettingsModal('api')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
+              <i class="fa-solid fa-key text-[11px] w-4 text-amber-500"></i>
+              <span>Mengatur Kunci API (Providers)</span>
+            </button>
+            <button onclick="openSettingsModal('routing')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
+              <i class="fa-solid fa-arrow-down-1-9 text-[11px] w-4 text-emerald-500"></i>
+              <span>Atur Prioritas AI (Routing)</span>
+            </button>
+            <button onclick="openSettingsModal('general')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
+              <i class="fa-solid fa-ellipsis text-[11px] w-4 text-[var(--nlm-text-tertiary)]"></i>
+              <span>Lainnya</span>
             </button>
           </div>
+
           <div class="pt-1 border-t border-[var(--nlm-border-subtle)]">
-            <button onclick="showToast('Sesi Akun', 'Anda berhasil keluar dari sesi lokal.')" class="w-full px-3 py-2 rounded-xl hover:bg-rose-500/10 text-left text-xs text-rose-500 flex items-center space-x-2 transition">
+            <button onclick="showToast('Sesi Berakhir', 'Keluar dari sesi NoteRoute.'); toggleProfileDropdown();" class="w-full text-left px-3 py-2 rounded-xl hover:bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-semibold flex items-center space-x-2.5 transition">
               <i class="fa-solid fa-arrow-right-from-bracket text-[11px] w-4"></i>
               <span>Keluar Akun</span>
             </button>
@@ -267,7 +270,6 @@
 
   <!-- ======================================================== -->
   <!-- 2. MAIN CONTAINER: NOTEBOOK TERBARU GRID / LIST          -->
-  <!-- (TIDAK PERLU NOTEBOOK UNGGULAN - SESUAI INSTRUKSI USER)   -->
   <!-- ======================================================== -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
 
@@ -312,7 +314,7 @@
 
     </div>
 
-    <!-- Empty Search State Container (Tersembunyi bila ada hasil) -->
+    <!-- Empty Search State Container -->
     <div id="empty-search-state" class="hidden text-center py-16">
       <div class="w-12 h-12 rounded-2xl bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-tertiary)] flex items-center justify-center text-xl mx-auto mb-3">
         <i class="fa-solid fa-folder-open"></i>
@@ -324,163 +326,12 @@
       </button>
     </div>
 
-    <!-- ====================================================== -->
-    <!-- VIEW MODE A: GRID VIEW (DEFAULT - PERSIS SCREENSHOT)   -->
-    <!-- ====================================================== -->
+    <!-- VIEW MODE A: GRID VIEW -->
     <div id="notebooks-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-      
-      <!-- Notebook Card 1: Materi Kuliah Semester 5 (Terhubung langsung ke UI Prototype) -->
-      <div onclick="navigateToNotebook('Materi Kuliah Semester 5 • Sistem Terdistribusi')" class="notebook-card p-4 rounded-3xl bg-[var(--nlm-card-bg)] border border-[var(--nlm-card-border)] hover:border-[var(--nlm-card-hover-border)] cursor-pointer flex flex-col justify-between h-44 sm:h-48 group relative">
-        <!-- Top: Folder Icon & 3-Dots Menu -->
-        <div class="flex items-start justify-between">
-          <div class="w-9 h-9 rounded-2xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-base shadow-xs">
-            <i class="fa-solid fa-folder-open"></i>
-          </div>
-          
-          <button onclick="openCardContextMenu(event, 'Materi Kuliah Semester 5 • Sistem Terdistribusi')" class="w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center transition" title="Opsi lainnya">
-            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
-          </button>
-        </div>
-
-        <!-- Bottom: Title & Metadata Row -->
-        <div class="space-y-1">
-          <h3 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)] line-clamp-2 leading-snug group-hover:text-blue-500 transition-colors">
-            Materi Kuliah Semester 5 &bull; Sistem Terdistribusi
-          </h3>
-          <div class="flex items-center space-x-1.5 text-[11px] text-[var(--nlm-text-tertiary)] font-medium">
-            <span>8 Nov 2026</span>
-            <span>&bull;</span>
-            <span class="text-blue-500 dark:text-blue-400 font-semibold">4 sumber</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Notebook Card 2: Riset Multi-LLM Routing & Heuristic Failover -->
-      <div onclick="navigateToNotebook('Riset Multi-LLM Routing & Heuristic Failover')" class="notebook-card p-4 rounded-3xl bg-[var(--nlm-card-bg)] border border-[var(--nlm-card-border)] hover:border-[var(--nlm-card-hover-border)] cursor-pointer flex flex-col justify-between h-44 sm:h-48 group relative">
-        <div class="flex items-start justify-between">
-          <div class="w-9 h-9 rounded-2xl bg-indigo-500/15 text-indigo-500 flex items-center justify-center text-base shadow-xs">
-            <i class="fa-solid fa-brain"></i>
-          </div>
-          
-          <button onclick="openCardContextMenu(event, 'Riset Multi-LLM Routing & Heuristic Failover')" class="w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center transition" title="Opsi lainnya">
-            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
-          </button>
-        </div>
-
-        <div class="space-y-1">
-          <h3 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)] line-clamp-2 leading-snug group-hover:text-blue-500 transition-colors">
-            Riset Multi-LLM Routing &amp; Heuristic Failover
-          </h3>
-          <div class="flex items-center space-x-1.5 text-[11px] text-[var(--nlm-text-tertiary)] font-medium">
-            <span>5 Nov 2026</span>
-            <span>&bull;</span>
-            <span>3 sumber</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Notebook Card 3: Modul Praktikum Cloud Computing ULBI -->
-      <div onclick="navigateToNotebook('Modul Praktikum Cloud Computing ULBI')" class="notebook-card p-4 rounded-3xl bg-[var(--nlm-card-bg)] border border-[var(--nlm-card-border)] hover:border-[var(--nlm-card-hover-border)] cursor-pointer flex flex-col justify-between h-44 sm:h-48 group relative">
-        <div class="flex items-start justify-between">
-          <div class="w-9 h-9 rounded-2xl bg-sky-500/15 text-sky-500 flex items-center justify-center text-base shadow-xs">
-            <i class="fa-solid fa-cloud"></i>
-          </div>
-          
-          <button onclick="openCardContextMenu(event, 'Modul Praktikum Cloud Computing ULBI')" class="w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center transition" title="Opsi lainnya">
-            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
-          </button>
-        </div>
-
-        <div class="space-y-1">
-          <h3 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)] line-clamp-2 leading-snug group-hover:text-blue-500 transition-colors">
-            Modul Praktikum Cloud Computing ULBI
-          </h3>
-          <div class="flex items-center space-x-1.5 text-[11px] text-[var(--nlm-text-tertiary)] font-medium">
-            <span>28 Okt 2026</span>
-            <span>&bull;</span>
-            <span>2 sumber</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Notebook Card 4: Panduan Skripsi & Jurnal Ilmiah Sinta 2 -->
-      <div onclick="navigateToNotebook('Panduan Skripsi & Jurnal Ilmiah Sinta 2')" class="notebook-card p-4 rounded-3xl bg-[var(--nlm-card-bg)] border border-[var(--nlm-card-border)] hover:border-[var(--nlm-card-hover-border)] cursor-pointer flex flex-col justify-between h-44 sm:h-48 group relative">
-        <div class="flex items-start justify-between">
-          <div class="w-9 h-9 rounded-2xl bg-purple-500/15 text-purple-500 flex items-center justify-center text-base shadow-xs">
-            <i class="fa-solid fa-graduation-cap"></i>
-          </div>
-          
-          <button onclick="openCardContextMenu(event, 'Panduan Skripsi & Jurnal Ilmiah Sinta 2')" class="w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center transition" title="Opsi lainnya">
-            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
-          </button>
-        </div>
-
-        <div class="space-y-1">
-          <h3 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)] line-clamp-2 leading-snug group-hover:text-blue-500 transition-colors">
-            Panduan Skripsi &amp; Jurnal Ilmiah Sinta 2
-          </h3>
-          <div class="flex items-center space-x-1.5 text-[11px] text-[var(--nlm-text-tertiary)] font-medium">
-            <span>15 Okt 2026</span>
-            <span>&bull;</span>
-            <span>6 sumber</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Notebook Card 5: NoteRoute Backend API & CRootJS Architecture -->
-      <div onclick="navigateToNotebook('NoteRoute Backend API & CRootJS Architecture')" class="notebook-card p-4 rounded-3xl bg-[var(--nlm-card-bg)] border border-[var(--nlm-card-border)] hover:border-[var(--nlm-card-hover-border)] cursor-pointer flex flex-col justify-between h-44 sm:h-48 group relative">
-        <div class="flex items-start justify-between">
-          <div class="w-9 h-9 rounded-2xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center text-base shadow-xs">
-            <i class="fa-solid fa-code"></i>
-          </div>
-          
-          <button onclick="openCardContextMenu(event, 'NoteRoute Backend API & CRootJS Architecture')" class="w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center transition" title="Opsi lainnya">
-            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
-          </button>
-        </div>
-
-        <div class="space-y-1">
-          <h3 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)] line-clamp-2 leading-snug group-hover:text-blue-500 transition-colors">
-            NoteRoute Backend API &amp; CRootJS Architecture
-          </h3>
-          <div class="flex items-center space-x-1.5 text-[11px] text-[var(--nlm-text-tertiary)] font-medium">
-            <span>10 Okt 2026</span>
-            <span>&bull;</span>
-            <span>1 sumber</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Notebook Card 6: Notebook tanpa judul (PERSIS SEPERTI DI SCREENSHOT) -->
-      <div onclick="navigateToNotebook('Notebook tanpa judul')" class="notebook-card p-4 rounded-3xl bg-[var(--nlm-card-bg)] border border-[var(--nlm-card-border)] hover:border-[var(--nlm-card-hover-border)] cursor-pointer flex flex-col justify-between h-44 sm:h-48 group relative">
-        <div class="flex items-start justify-between">
-          <!-- Folder Icon Kuning Khas Screenshot -->
-          <div class="w-9 h-9 rounded-2xl bg-amber-500/20 text-amber-500 flex items-center justify-center text-base shadow-xs">
-            <i class="fa-solid fa-folder"></i>
-          </div>
-          
-          <button onclick="openCardContextMenu(event, 'Notebook tanpa judul')" class="w-7 h-7 rounded-full text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center transition" title="Opsi lainnya">
-            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
-          </button>
-        </div>
-
-        <div class="space-y-1">
-          <h3 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)] line-clamp-2 leading-snug group-hover:text-blue-500 transition-colors">
-            Notebook tanpa judul
-          </h3>
-          <div class="flex items-center space-x-1.5 text-[11px] text-[var(--nlm-text-tertiary)] font-medium">
-            <span>1 Okt 2026</span>
-            <span>&bull;</span>
-            <span>0 sumber</span>
-          </div>
-        </div>
-      </div>
-
+      <!-- Notebook cards dynamically rendered via JS -->
     </div>
 
-    <!-- ====================================================== -->
-    <!-- VIEW MODE B: LIST VIEW (GOOGLE DRIVE / NOTEBOOKLM STYLE) -->
-    <!-- ====================================================== -->
+    <!-- VIEW MODE B: LIST VIEW -->
     <div id="notebooks-list-container" class="hidden overflow-hidden rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)]">
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs">
@@ -502,9 +353,9 @@
   </main>
 
   <!-- ======================================================== -->
-  <!-- 3. MODAL BUAT NOTEBOOK BARU                              -->
+  <!-- 3. MODAL BUAT NOTEBOOK BARU (KATEGORI INTERAKTIF BERFUNGSI) -->
   <!-- ======================================================== -->
-  <div id="new-notebook-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+  <div id="new-notebook-modal" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
     <div class="w-full max-w-md rounded-3xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] shadow-2xl p-6 space-y-5 animate-scale-up">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-2.5">
@@ -518,7 +369,7 @@
         </button>
       </div>
 
-      <div class="space-y-3">
+      <div class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-[var(--nlm-text-secondary)] mb-1">Judul Notebook</label>
           <input id="new-notebook-title" type="text" placeholder="Misal: Catatan Kecerdasan Buatan Semester 5" 
@@ -526,28 +377,45 @@
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-[var(--nlm-text-secondary)] mb-1.5">Pilih Kategori / Ikon</label>
-          <div class="grid grid-cols-4 gap-2">
-            <label class="p-2 rounded-xl border border-blue-500 bg-blue-500/10 text-center cursor-pointer flex flex-col items-center space-y-1">
-              <input type="radio" name="nb-icon" value="folder" checked class="hidden">
-              <i class="fa-solid fa-folder text-amber-500 text-sm"></i>
-              <span class="text-[10px] font-medium text-[var(--nlm-text-primary)]">Kuliah</span>
-            </label>
-            <label class="p-2 rounded-xl border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-center cursor-pointer flex flex-col items-center space-y-1">
-              <input type="radio" name="nb-icon" value="brain" class="hidden">
-              <i class="fa-solid fa-brain text-indigo-500 text-sm"></i>
-              <span class="text-[10px] font-medium text-[var(--nlm-text-primary)]">Riset AI</span>
-            </label>
-            <label class="p-2 rounded-xl border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-center cursor-pointer flex flex-col items-center space-y-1">
-              <input type="radio" name="nb-icon" value="code" class="hidden">
-              <i class="fa-solid fa-code text-emerald-500 text-sm"></i>
-              <span class="text-[10px] font-medium text-[var(--nlm-text-primary)]">Koding</span>
-            </label>
-            <label class="p-2 rounded-xl border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-center cursor-pointer flex flex-col items-center space-y-1">
-              <input type="radio" name="nb-icon" value="cloud" class="hidden">
-              <i class="fa-solid fa-cloud text-sky-500 text-sm"></i>
-              <span class="text-[10px] font-medium text-[var(--nlm-text-primary)]">Cloud</span>
-            </label>
+          <label class="block text-xs font-semibold text-[var(--nlm-text-secondary)] mb-2">Pilih Kategori / Ikon Notebook</label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            
+            <!-- Opsi 1: Kuliah (Default Selected) -->
+            <button type="button" onclick="selectNotebookCategory('folder', 'amber', 'Kuliah', this)" 
+                    class="cat-choice-btn p-2.5 rounded-2xl border-2 border-blue-600 bg-blue-500/10 ring-2 ring-blue-500/20 text-center cursor-pointer flex flex-col items-center space-y-1 transition">
+              <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-folder-open"></i>
+              </div>
+              <span class="text-xs font-semibold text-[var(--nlm-text-primary)]">Kuliah</span>
+            </button>
+
+            <!-- Opsi 2: Riset AI -->
+            <button type="button" onclick="selectNotebookCategory('brain', 'indigo', 'Riset AI', this)" 
+                    class="cat-choice-btn p-2.5 rounded-2xl border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-center cursor-pointer flex flex-col items-center space-y-1 transition">
+              <div class="w-8 h-8 rounded-xl bg-indigo-500/15 text-indigo-500 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-brain"></i>
+              </div>
+              <span class="text-xs font-semibold text-[var(--nlm-text-primary)]">Riset AI</span>
+            </button>
+
+            <!-- Opsi 3: Koding & API -->
+            <button type="button" onclick="selectNotebookCategory('code', 'emerald', 'Koding', this)" 
+                    class="cat-choice-btn p-2.5 rounded-2xl border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-center cursor-pointer flex flex-col items-center space-y-1 transition">
+              <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-code"></i>
+              </div>
+              <span class="text-xs font-semibold text-[var(--nlm-text-primary)]">Koding</span>
+            </button>
+
+            <!-- Opsi 4: Cloud -->
+            <button type="button" onclick="selectNotebookCategory('cloud', 'sky', 'Cloud', this)" 
+                    class="cat-choice-btn p-2.5 rounded-2xl border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-center cursor-pointer flex flex-col items-center space-y-1 transition">
+              <div class="w-8 h-8 rounded-xl bg-sky-500/15 text-sky-500 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-cloud"></i>
+              </div>
+              <span class="text-xs font-semibold text-[var(--nlm-text-primary)]">Cloud</span>
+            </button>
+
           </div>
         </div>
       </div>
@@ -564,132 +432,619 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 4. MODAL PENGATURAN (TAMPILAN, PROFIL, API KEYS)         -->
+  <!-- 4. MODAL PENGATURAN & KONFIGURASI (IDENTIK DENGAN NOTEBOOK)-->
   <!-- ======================================================== -->
-  <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="w-full max-w-2xl rounded-3xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
+  <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-4xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
       
       <!-- Settings Header -->
-      <div class="p-4 sm:p-5 border-b border-[var(--nlm-border)] flex items-center justify-between">
+      <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
         <div class="flex items-center space-x-2.5">
-          <div class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm font-bold">
+          <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
             <i class="fa-solid fa-sliders"></i>
           </div>
           <div>
-            <h3 class="font-bold text-sm sm:text-base text-[var(--nlm-text-primary)]">Pengaturan NoteRoute</h3>
-            <p class="text-[11px] text-[var(--nlm-text-tertiary)]">Sesuaikan tampilan tema, profil, dan konfigurasi multi-LLM.</p>
+            <h3 class="font-bold text-sm text-[var(--nlm-text-primary)]">Pengaturan &amp; Konfigurasi NoteRoute</h3>
+            <span class="text-xs text-[var(--nlm-text-tertiary)]">Kelola akun, kunci API gratis (Providers), prioritas AI, dan sistem</span>
           </div>
         </div>
-        <button onclick="closeSettingsModal()" class="w-7 h-7 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] flex items-center justify-center transition">
+        <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] flex items-center justify-center transition">
           <i class="fa-solid fa-xmark text-sm"></i>
         </button>
       </div>
 
-      <!-- Settings Body with Tabs -->
-      <div class="flex-1 flex flex-col sm:flex-row overflow-hidden">
+      <!-- Settings Layout (Tabs on Left, Content on Right) -->
+      <div class="flex-1 flex overflow-hidden">
         
-        <!-- Left Tab Nav -->
-        <div class="w-full sm:w-48 border-b sm:border-b-0 sm:border-r border-[var(--nlm-border)] p-2 sm:p-3 space-y-1 shrink-0 bg-[var(--nlm-surface-variant)]/50">
-          <button id="stab-appearance" onclick="switchSettingsTab('appearance')" class="w-full px-3 py-2 rounded-xl text-left text-xs font-semibold bg-blue-600 text-white transition flex items-center space-x-2">
-            <i class="fa-solid fa-palette text-[11px] w-4"></i>
-            <span>Tampilan &amp; Tema</span>
-          </button>
-          <button id="stab-profile" onclick="switchSettingsTab('profile')" class="w-full px-3 py-2 rounded-xl text-left text-xs font-medium text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
-            <i class="fa-regular fa-user text-[11px] w-4"></i>
+        <!-- Tab Navigation (6 Tab Lengkap Sesuai Ruang Kerja Notebook) -->
+        <div class="w-56 border-r border-[var(--nlm-border)] p-3 space-y-1 bg-[var(--nlm-surface-variant)] text-xs font-medium shrink-0">
+          <button onclick="switchSettingsTab('profile')" id="stab-profile" class="w-full text-left px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold transition flex items-center space-x-2">
+            <i class="fa-regular fa-user text-xs w-4"></i>
             <span>Profil Pengguna</span>
           </button>
-          <button id="stab-api" onclick="switchSettingsTab('api')" class="w-full px-3 py-2 rounded-xl text-left text-xs font-medium text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
-            <i class="fa-solid fa-key text-[11px] w-4"></i>
-            <span>Kunci API Gratis</span>
+          <button onclick="switchSettingsTab('appearance')" id="stab-appearance" class="w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
+            <i class="fa-solid fa-palette text-xs w-4 text-blue-500"></i>
+            <span>Tampilan &amp; Tema</span>
+          </button>
+          <button onclick="switchSettingsTab('security')" id="stab-security" class="w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
+            <i class="fa-solid fa-shield-halved text-xs w-4 text-purple-500"></i>
+            <span>Keamanan Akun</span>
+          </button>
+          <button onclick="switchSettingsTab('api')" id="stab-api" class="w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
+            <i class="fa-solid fa-key text-xs w-4 text-amber-500"></i>
+            <span>Mengatur Kunci API</span>
+          </button>
+          <button onclick="switchSettingsTab('routing')" id="stab-routing" class="w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
+            <i class="fa-solid fa-arrow-down-1-9 text-xs w-4 text-emerald-500"></i>
+            <span>Atur Prioritas AI</span>
+          </button>
+          <button onclick="switchSettingsTab('general')" id="stab-general" class="w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
+            <i class="fa-solid fa-ellipsis text-xs w-4 text-[var(--nlm-text-tertiary)]"></i>
+            <span>Lainnya</span>
           </button>
         </div>
 
-        <!-- Right Tab Content -->
-        <div class="flex-1 p-4 sm:p-6 overflow-y-auto">
+        <!-- Tab Contents Area -->
+        <div class="flex-1 overflow-y-auto p-5 text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
           
-          <!-- TAB 1: TAMPILAN & TEMA -->
-          <div id="scontent-appearance" class="space-y-4">
+          <!-- TAB 1: PROFIL PENGGUNA -->
+          <div id="scontent-profile" class="space-y-4">
             <div>
-              <h4 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)]">Preferensi Tema Antarmuka</h4>
-              <p class="text-[11px] text-[var(--nlm-text-tertiary)]">Pilih tema terang, gelap, atau biarkan sinkron otomatis dengan OS perangkat Anda.</p>
+              <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Profil Pengguna</h4>
+              <p class="text-[11px] text-[var(--nlm-text-tertiary)]">Atur identitas akun, foto profil, nama panggilan otomatis, dan kata sandi Anda.</p>
             </div>
 
-            <!-- 3 Opsi Kartu Tema -->
+            <!-- FOTO PROFIL SECTION -->
+            <div class="p-4 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
+              <div class="relative">
+                <div id="settings-avatar-box" class="w-16 h-16 rounded-full bg-indigo-600 text-white font-bold text-xl flex items-center justify-center shadow-md overflow-hidden ring-2 ring-[var(--nlm-border)]">
+                  <span id="settings-avatar-text">AZ</span>
+                  <img id="settings-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover hidden">
+                </div>
+              </div>
+              <div class="space-y-1 text-center sm:text-left flex-1">
+                <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Foto Profil Akun</div>
+                <div class="text-[11px] text-[var(--nlm-text-tertiary)]">Format PNG, JPG, atau WebP maksimal 2 MB. Tersinkron ke desktop dan mobile.</div>
+                
+                <input type="file" id="profile-photo-input" accept="image/*" class="hidden" onchange="handleProfilePhotoUpload(event)">
+                
+                <div class="flex items-center justify-center sm:justify-start space-x-2 pt-1">
+                  <button onclick="document.getElementById('profile-photo-input').click()" class="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-semibold transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-upload text-[10px]"></i>
+                    <span>Ganti Foto</span>
+                  </button>
+                  <button onclick="removeProfilePhoto()" class="px-2.5 py-1 rounded-lg border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-secondary)] text-[11px] font-medium transition">
+                    Hapus
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- NAMA & NAMA PANGGILAN OTOMATIS -->
+            <div class="space-y-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Nama Depan</label>
+                  <input type="text" id="prof-first-name" value="Ahmad" oninput="onFirstNameChange(this.value)" placeholder="Nama depan Anda" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-medium focus:border-blue-500 focus:outline-none transition">
+                </div>
+                <div>
+                  <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Nama Belakang</label>
+                  <input type="text" id="prof-last-name" value="Zakky Nurfauzan" oninput="onLastNameChange(this.value)" placeholder="Nama belakang Anda" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-medium focus:border-blue-500 focus:outline-none transition">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="block font-medium text-[var(--nlm-text-tertiary)]">Nama Panggilan</label>
+                    <span class="text-[9px] text-blue-600 dark:text-blue-400 font-semibold bg-blue-500/10 px-1.5 py-0.5 rounded">Otomatis dari Nama Depan</span>
+                  </div>
+                  <input type="text" id="prof-nickname" value="Ahmad" readonly class="w-full bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-bold cursor-not-allowed opacity-90">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)] mt-1 block">Otomatis digunakan untuk sapaan AI dan sistem.</span>
+                </div>
+                <div>
+                  <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Alamat Email</label>
+                  <input type="email" id="prof-email" value="ahmadzakky@ulbi.ac.id" oninput="onEmailChange(this.value)" placeholder="nama@email.com" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-medium focus:border-blue-500 focus:outline-none transition">
+                </div>
+              </div>
+            </div>
+
+            <!-- GANTI KATA SANDI (PASSWORD) -->
+            <div class="p-3.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <i class="fa-solid fa-lock text-amber-500 text-xs"></i>
+                  <span class="font-bold text-xs text-[var(--nlm-text-primary)]">Ganti Kata Sandi (Password)</span>
+                </div>
+                <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Minimal 8 karakter</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <div>
+                  <label class="block text-[10px] font-medium text-[var(--nlm-text-tertiary)] mb-1">Kata Sandi Saat Ini</label>
+                  <input type="password" id="prof-pass-current" placeholder="••••••••" class="w-full bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] focus:border-blue-500 focus:outline-none font-mono">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-medium text-[var(--nlm-text-tertiary)] mb-1">Kata Sandi Baru</label>
+                  <input type="password" id="prof-pass-new" placeholder="••••••••" class="w-full bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] focus:border-blue-500 focus:outline-none font-mono">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-medium text-[var(--nlm-text-tertiary)] mb-1">Konfirmasi Kata Sandi</label>
+                  <input type="password" id="prof-pass-confirm" placeholder="••••••••" class="w-full bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] focus:border-blue-500 focus:outline-none font-mono">
+                </div>
+              </div>
+
+              <div class="flex justify-end pt-1">
+                <button onclick="changePasswordSubmit()" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition flex items-center space-x-1.5">
+                  <i class="fa-solid fa-key text-[10px]"></i>
+                  <span>Perbarui Kata Sandi</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- PENJELASAN SINKRONISASI AKUN & FILE CLOUD -->
+            <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs">
+              <div class="font-bold text-blue-600 dark:text-blue-400 mb-1 flex items-center space-x-1.5">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Jaminan Sinkronisasi Berkas &amp; Kunci API</span>
+              </div>
+              <p class="text-[var(--nlm-text-secondary)] leading-relaxed">
+                Akun Anda terhubung dengan basis data cloud <strong>MongoDB Atlas</strong> dan server Alwaysdata. Seluruh berkas laptop yang Anda unggah serta kunci API yang disimpan akan <strong>tetap ada dan tersambung otomatis</strong> saat Anda berpindah antar-laptop atau membukanya dari aplikasi HP Android Izat.
+              </p>
+            </div>
+          </div>
+
+          <!-- TAB 2: TAMPILAN & TEMA (3 KARTU: TERANG, GELAP, MENGIKUTI SISTEM) -->
+          <div id="scontent-appearance" class="hidden space-y-5">
+            <div>
+              <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Tampilan &amp; Tema NoteRoute</h4>
+              <p class="text-[11px] text-[var(--nlm-text-tertiary)]">Sesuaikan tema visual antarmuka atau biarkan otomatis mengikuti sistem operasi perangkat Anda.</p>
+            </div>
+
+            <!-- 3 KARTU OPSI TEMA -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div onclick="setThemePreference('light')" class="p-3.5 rounded-2xl border border-[var(--nlm-border)] hover:border-blue-500 bg-[var(--nlm-surface)] cursor-pointer transition flex flex-col justify-between">
-                <div class="flex items-center justify-between mb-2">
-                  <i class="fa-solid fa-sun text-amber-500 text-base"></i>
-                  <div id="radio-light" class="w-3.5 h-3.5 rounded-full border border-slate-400"></div>
+              
+              <!-- OPSI 1: TEMA TERANG -->
+              <div id="theme-card-light" onclick="setThemePreference('light')" class="theme-card p-3.5 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition relative flex flex-col justify-between group">
+                <div class="space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-sm font-bold">
+                      <i class="fa-solid fa-sun"></i>
+                    </div>
+                    <span id="theme-radio-light"><div class="w-4 h-4 rounded-full border border-[var(--nlm-border)] bg-[var(--nlm-surface)]"></div></span>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Tema Terang</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] leading-snug mt-0.5">Kontras bersih dan jernih, nyaman untuk siang hari.</div>
+                  </div>
                 </div>
-                <div>
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Tema Terang</div>
-                  <div class="text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">Kontras bersih siang hari</div>
+
+                <div class="mt-3 p-2 rounded-xl bg-[#f8fafd] border border-[#e2e8f0] space-y-1.5 shadow-xs">
+                  <div class="flex items-center space-x-1.5">
+                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <div class="h-1.5 w-12 rounded bg-slate-300"></div>
+                  </div>
+                  <div class="h-6 rounded-lg bg-white border border-slate-200 p-1 flex items-center">
+                    <div class="h-1.5 w-16 rounded bg-slate-200"></div>
+                  </div>
                 </div>
               </div>
 
-              <div onclick="setThemePreference('dark')" class="p-3.5 rounded-2xl border border-[var(--nlm-border)] hover:border-blue-500 bg-[var(--nlm-surface)] cursor-pointer transition flex flex-col justify-between">
-                <div class="flex items-center justify-between mb-2">
-                  <i class="fa-solid fa-moon text-blue-400 text-base"></i>
-                  <div id="radio-dark" class="w-3.5 h-3.5 rounded-full border border-slate-400"></div>
+              <!-- OPSI 2: TEMA GELAP -->
+              <div id="theme-card-dark" onclick="setThemePreference('dark')" class="theme-card p-3.5 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition relative flex flex-col justify-between group">
+                <div class="space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <div class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-sm font-bold">
+                      <i class="fa-solid fa-moon"></i>
+                    </div>
+                    <span id="theme-radio-dark"><div class="w-4 h-4 rounded-full border border-[var(--nlm-border)] bg-[var(--nlm-surface)]"></div></span>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Tema Gelap</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] leading-snug mt-0.5">Latar obsidian hitam bertekstur, nyaman dan ramah di mata.</div>
+                  </div>
                 </div>
-                <div>
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Tema Gelap</div>
-                  <div class="text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">Obsidian charcoal ramah mata</div>
+
+                <div class="mt-3 p-2 rounded-xl bg-[#0e1319] border border-[#232d3b] space-y-1.5 shadow-xs">
+                  <div class="flex items-center space-x-1.5">
+                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <div class="h-1.5 w-12 rounded bg-slate-700"></div>
+                  </div>
+                  <div class="h-6 rounded-lg bg-[#141822] border border-[#232c3a] p-1 flex items-center">
+                    <div class="h-1.5 w-16 rounded bg-slate-800"></div>
+                  </div>
                 </div>
               </div>
 
-              <div onclick="setThemePreference('system')" class="p-3.5 rounded-2xl border border-[var(--nlm-border)] hover:border-blue-500 bg-[var(--nlm-surface)] cursor-pointer transition flex flex-col justify-between">
-                <div class="flex items-center justify-between mb-2">
-                  <i class="fa-solid fa-desktop text-purple-400 text-base"></i>
-                  <div id="radio-system" class="w-3.5 h-3.5 rounded-full border border-slate-400"></div>
+              <!-- OPSI 3: MENGIKUTI SISTEM -->
+              <div id="theme-card-system" onclick="setThemePreference('system')" class="theme-card p-3.5 rounded-2xl border-2 border-blue-600 bg-blue-500/10 cursor-pointer transition relative flex flex-col justify-between group">
+                <div class="space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <div class="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center text-sm font-bold">
+                      <i class="fa-solid fa-desktop"></i>
+                    </div>
+                    <span id="theme-radio-system"><i class="fa-solid fa-circle-check text-sm text-blue-600"></i></span>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Mengikuti Sistem</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)] leading-snug mt-0.5">Otomatis beralih mengikuti setelan macOS / Windows / Android.</div>
+                  </div>
                 </div>
-                <div>
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Ikuti Sistem</div>
-                  <div class="text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">Adaptif macOS/Windows/Android</div>
+
+                <div class="mt-3 p-2 rounded-xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-secondary)] font-medium">Status OS:</span>
+                  <span id="system-theme-badge" class="text-[9px] font-bold text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded">Sistem: Terdeteksi</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- KETERANGAN AKSEN WARNA & MODE KERJA -->
+            <div class="p-4 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] space-y-3">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-blue-500 text-xs"></i>
+                <h5 class="font-bold text-xs text-[var(--nlm-text-primary)]">Aksen Warna &amp; Mode Kerja NoteRoute</h5>
+              </div>
+              <p class="text-[11px] text-[var(--nlm-text-secondary)] leading-relaxed">
+                Antarmuka dirancang dengan latar netral yang elegan dan nyaman di mata, dengan aksen interaktif yang menyesuaikan mode kerja:
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                <div class="p-3 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-1">
+                  <div class="font-bold text-blue-600 dark:text-blue-400 flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span>Mode Dokumen (Royal Blue)</span>
+                  </div>
+                  <p class="text-[10px] text-[var(--nlm-text-secondary)] leading-relaxed">
+                    Aksen biru khas NotebookLM untuk sitasi dan kontrol analisis berkas dengan latar netral obsidian slate.
+                  </p>
+                </div>
+                <div class="p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 space-y-1">
+                  <div class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Mode AI Umum (Emerald Green)</span>
+                  </div>
+                  <p class="text-[10px] text-[var(--nlm-text-secondary)] leading-relaxed">
+                    Aksen hijau emerald elegan pada tombol aksi &amp; status penalaran bebas dengan latar netral charcoal bersih.
+                  </p>
                 </div>
               </div>
             </div>
 
-            <!-- Info Catatan Sinkronisasi -->
-            <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-600 dark:text-blue-400 flex items-start space-x-2">
-              <i class="fa-solid fa-circle-info text-xs mt-0.5"></i>
-              <span class="text-[11px] leading-relaxed">Pengaturan tema ini tersinkronisasi otomatis dengan ruang kerja dokumen (*Workspace UI*) NoteRoute.</span>
+          </div>
+
+          <!-- TAB 3: KEAMANAN AKUN -->
+          <div id="scontent-security" class="hidden space-y-4">
+            <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Keamanan Akun &amp; Sesi Perangkat</h4>
+            
+            <div class="p-3.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] space-y-2">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">Enkripsi Kunci API: AES-256-GCM</div>
+                  <div class="text-[11px] text-[var(--nlm-text-tertiary)]">Seluruh kunci API dienkripsi di sisi server database cloud</div>
+                </div>
+                <span class="text-xs bg-emerald-500/10 text-emerald-600 font-bold px-2 py-0.5 rounded">Aktif &bull; Aman</span>
+              </div>
+            </div>
+
+            <div class="space-y-2 pt-2">
+              <h5 class="font-bold text-xs text-[var(--nlm-text-primary)]">Perangkat Terkoneksi (Cross-Device Session):</h5>
+              
+              <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                  <i class="fa-solid fa-laptop text-blue-600 text-sm"></i>
+                  <div>
+                    <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">MacBook Pro Zakky (Desktop Client)</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Aktif sekarang &bull; Bandung, Indonesia</div>
+                  </div>
+                </div>
+                <span class="text-emerald-600 font-bold text-[10px]">Perangkat Ini</span>
+              </div>
+
+              <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                  <i class="fa-solid fa-mobile-screen text-indigo-600 text-sm"></i>
+                  <div>
+                    <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">HP Android Izat (Mobile Client)</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Terotentikasi via Retrofit Token &bull; Selalu Sinkron</div>
+                  </div>
+                </div>
+                <span class="text-emerald-600 font-bold text-[10px]">Tersinkron</span>
+              </div>
             </div>
           </div>
 
-          <!-- TAB 2: PROFIL PENGGUNA -->
-          <div id="scontent-profile" class="hidden space-y-4">
-            <h4 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)]">Profil Pengguna</h4>
-            <div class="flex items-center space-x-3.5 p-3 rounded-2xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)]">
-              <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-pink-500 to-rose-400 text-white font-bold text-sm flex items-center justify-center">
-                AZ
-              </div>
-              <div>
-                <div class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)]">Ahmad Zakky Nurfauzan</div>
-                <div class="text-[11px] text-[var(--nlm-text-tertiary)]">ahmadzakky@ulbi.ac.id &bull; Ketua Tim (Modul A)</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- TAB 3: KUNCI API GRATIS -->
+          <!-- TAB 4: MENGATUR KUNCI API (PERSIS DENGAN WORKSPACE NOTEBOOK) -->
           <div id="scontent-api" class="hidden space-y-4">
-            <h4 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)]">Provider AI Gratis NoteRoute</h4>
-            <div class="space-y-2 text-xs">
-              <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
-                <div class="flex items-center space-x-2.5">
-                  <i class="fa-brands fa-google text-blue-500"></i>
-                  <span class="font-semibold text-[var(--nlm-text-primary)]">Google Gemini (1.5 Flash Free Ready)</span>
-                </div>
-                <span class="text-emerald-500 font-bold text-[10px]">Aktif</span>
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Penyedia AI Gratis (Free Tier Providers)</h4>
+                <p class="text-[11px] text-[var(--nlm-text-tertiary)]">Pilih dan konfigurasikan model AI yang dapat tersambung gratis untuk NoteRoute.</p>
               </div>
-              <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
-                <div class="flex items-center space-x-2.5">
-                  <i class="fa-solid fa-ghost text-purple-500"></i>
-                  <span class="font-semibold text-[var(--nlm-text-primary)]">Kiro AI (Free Tier Connected)</span>
+              <button onclick="showToast('Uji Koneksi', 'Memeriksa status semua provider AI gratis...')" class="px-3 py-1.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-xs font-semibold text-blue-600 flex items-center space-x-1.5 transition">
+                <i class="fa-solid fa-play text-[9px]"></i>
+                <span>Test All Free</span>
+              </button>
+            </div>
+
+            <!-- PROVIDERS GRID -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              
+              <!-- Card 1: Google Gemini -->
+              <div onclick="openConfigureApiKey('Google Gemini', 'AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', '1.500 req/hari &bull; 1M Context Free')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-brands fa-google"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Gemini AI</div>
+                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span>1M Free Ready</span>
+                    </div>
+                  </div>
                 </div>
-                <span class="text-emerald-500 font-bold text-[10px]">Aktif</span>
+                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Free Tier</span>
+                  <button onclick="openApiTutorial('gemini', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Tutorial API</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card 2: Groq Cloud -->
+              <div onclick="openConfigureApiKey('Groq Cloud', 'gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'Ultra-fast 300+ t/s &bull; Free Tier')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-bolt"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Groq Llama 3.3</div>
+                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span>300 t/s Kilat</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Ultra-fast</span>
+                  <button onclick="openApiTutorial('groq', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-orange-600 dark:text-orange-400 bg-orange-500/10 hover:bg-orange-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Tutorial API</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card 3: Kiiro / Kiro AI -->
+              <div onclick="openConfigureApiKey('Kiro AI', 'kiro_free_auth_key', 'Free Tier Connected')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-ghost"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Kiro AI</div>
+                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span>1 Connected</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Free Token</span>
+                  <button onclick="openApiTutorial('kiro', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-purple-600 dark:text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Tutorial API</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card 4: DeepSeek -->
+              <div onclick="openConfigureApiKey('DeepSeek', 'sk_deepseek_xxxxxxxxxxxxxxxx', 'Reasoning Murah / Free Credits')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-brain"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">DeepSeek R1/V3</div>
+                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span>Aktif</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Reasoning</span>
+                  <button onclick="openApiTutorial('deepseek', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Tutorial API</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card 5: OpenRouter Free -->
+              <div onclick="openConfigureApiKey('OpenRouter', 'sk-or-v1-xxxxxxxxxxxxxxxx', 'Multi-model free tier (:free)')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-shuffle"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">OpenRouter</div>
+                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span>Free Models Ready</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]">Multi-Model</span>
+                  <button onclick="openApiTutorial('openrouter', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Tutorial API</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card 6: 9Router Local Daemon -->
+              <div onclick="openConfigureApiKey('9Router Local', 'http://localhost:20128/v1', 'Lokal Daemon Laptop / LAN')" class="p-3 rounded-xl border-2 border-emerald-500/40 bg-emerald-500/5 hover:border-emerald-500 cursor-pointer transition flex flex-col justify-between group">
+                <div class="flex items-start space-x-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-network-wired"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-emerald-600 truncate">9Router Daemon</div>
+                    <div class="text-[10px] text-emerald-600 font-bold flex items-center space-x-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <span>Offline Port 20128</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                  <span class="text-[9px] text-emerald-700 dark:text-emerald-300 font-bold">1 Jaringan LAN</span>
+                  <button onclick="openApiTutorial('9router', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 flex items-center space-x-1 transition" title="Tutorial &amp; Syarat 9Router">
+                    <i class="fa-solid fa-circle-question text-[9px]"></i>
+                    <span>Info 9Router</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- TAB 5: ATUR PRIORITAS AI (ROUTING DENGAN DRAG & DROP) -->
+          <div id="scontent-routing" class="hidden space-y-4">
+            <div>
+              <div class="flex items-center justify-between">
+                <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Prioritas Routing AI (Drag &amp; Drop)</h4>
+                <span class="text-[10px] text-blue-600 bg-blue-500/10 font-bold px-2 py-0.5 rounded">Tarik Kartu Ke Atas/Bawah</span>
+              </div>
+              <p class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">NoteRoute akan memprioritaskan provider urutan #1. Jika kuota habis atau error 429, otomatis failover ke urutan berikutnya.</p>
+            </div>
+
+            <!-- DRAGGABLE PRIORITY LIST -->
+            <div id="priority-list" class="space-y-2">
+              
+              <!-- Item 1: Gemini -->
+              <div class="priority-item p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:border-blue-500 flex items-center justify-between cursor-grab active:cursor-grabbing transition" 
+                   draggable="true" ondragstart="onPriorityDragStart(event)" ondragover="onPriorityDragOver(event)" ondrop="onPriorityDrop(event)" ondragend="onPriorityDragEnd(event)">
+                <div class="flex items-center space-x-3">
+                  <div class="text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] p-1">
+                    <i class="fa-solid fa-grip-vertical"></i>
+                  </div>
+                  <div class="priority-rank-badge w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">1</div>
+                  <div class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-xs">
+                    <i class="fa-brands fa-google"></i>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Google Gemini 1.5 Flash</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Kuota: 1.500 req/hari &bull; 1M Context Window</div>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="priority-status-badge text-[10px] font-bold text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded">Utama</span>
+                  <div class="flex flex-col space-y-0.5">
+                    <button onclick="movePriority(this, -1, event)" class="p-1 hover:text-blue-500 text-[10px] leading-none" title="Pindah ke Atas"><i class="fa-solid fa-chevron-up"></i></button>
+                    <button onclick="movePriority(this, 1, event)" class="p-1 hover:text-blue-500 text-[10px] leading-none" title="Pindah ke Bawah"><i class="fa-solid fa-chevron-down"></i></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Item 2: Groq -->
+              <div class="priority-item p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:border-blue-500 flex items-center justify-between cursor-grab active:cursor-grabbing transition" 
+                   draggable="true" ondragstart="onPriorityDragStart(event)" ondragover="onPriorityDragOver(event)" ondrop="onPriorityDrop(event)" ondragend="onPriorityDragEnd(event)">
+                <div class="flex items-center space-x-3">
+                  <div class="text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] p-1">
+                    <i class="fa-solid fa-grip-vertical"></i>
+                  </div>
+                  <div class="priority-rank-badge w-6 h-6 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center shrink-0">2</div>
+                  <div class="w-7 h-7 rounded-lg bg-orange-500/10 text-orange-600 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-bolt"></i>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Groq Cloud (Llama 3.3 70B)</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Kecepatan: 300+ token/detik</div>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="priority-status-badge text-[10px] font-bold text-[var(--nlm-text-secondary)] bg-[var(--nlm-surface-hover)] px-2 py-0.5 rounded">Failover #1</span>
+                  <div class="flex flex-col space-y-0.5">
+                    <button onclick="movePriority(this, -1, event)" class="p-1 hover:text-blue-500 text-[10px] leading-none" title="Pindah ke Atas"><i class="fa-solid fa-chevron-up"></i></button>
+                    <button onclick="movePriority(this, 1, event)" class="p-1 hover:text-blue-500 text-[10px] leading-none" title="Pindah ke Bawah"><i class="fa-solid fa-chevron-down"></i></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Item 3: 9Router -->
+              <div class="priority-item p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:border-blue-500 flex items-center justify-between cursor-grab active:cursor-grabbing transition" 
+                   draggable="true" ondragstart="onPriorityDragStart(event)" ondragover="onPriorityDragOver(event)" ondrop="onPriorityDrop(event)" ondragend="onPriorityDragEnd(event)">
+                <div class="flex items-center space-x-3">
+                  <div class="text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] p-1">
+                    <i class="fa-solid fa-grip-vertical"></i>
+                  </div>
+                  <div class="priority-rank-badge w-6 h-6 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center shrink-0">3</div>
+                  <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-network-wired"></i>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">9Router Local Daemon</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">100% Offline di Port 20128 &bull; 1 Jaringan LAN</div>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="priority-status-badge text-[10px] font-bold text-[var(--nlm-text-secondary)] bg-[var(--nlm-surface-hover)] px-2 py-0.5 rounded">Failover #2</span>
+                  <div class="flex flex-col space-y-0.5">
+                    <button onclick="movePriority(this, -1, event)" class="p-1 hover:text-blue-500 text-[10px] leading-none" title="Pindah ke Atas"><i class="fa-solid fa-chevron-up"></i></button>
+                    <button onclick="movePriority(this, 1, event)" class="p-1 hover:text-blue-500 text-[10px] leading-none" title="Pindah ke Bawah"><i class="fa-solid fa-chevron-down"></i></button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- TAB 6: LAINNYA (COPYRIGHT, RESET ALL API, HAPUS AKUN) -->
+          <div id="scontent-general" class="hidden space-y-4">
+            <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Pengaturan Lainnya &amp; Hak Cipta</h4>
+            
+            <!-- INFORMASI COPYRIGHT -->
+            <div class="p-4 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] space-y-2">
+              <div class="flex items-center space-x-2">
+                <i class="fa-regular fa-copyright text-blue-500 text-sm"></i>
+                <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Hak Cipta &bull; NoteRoute v1.0.0</div>
+              </div>
+              <p class="text-[11px] text-[var(--nlm-text-secondary)] leading-relaxed">
+                Dikembangkan oleh <strong>Kelompok 12 D4 Teknik Informatika</strong>, Universitas Logistik dan Bisnis Internasional (ULBI) &bull; 2026.<br>
+                Dibimbing oleh: <strong>Rolly Maulana Awangga, S.T., M.T., CAIP.</strong>
+              </p>
+            </div>
+
+            <!-- DANGER ZONE: RESET ALL API & HAPUS AKUN -->
+            <div class="p-4 rounded-xl border border-red-500/20 bg-red-500/5 space-y-3">
+              <div class="font-bold text-xs text-red-600 dark:text-red-400 flex items-center space-x-1.5">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Tindakan Sensitif Akun &amp; Kunci API</span>
+              </div>
+              
+              <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-1 border-t border-red-500/10">
+                <div>
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Reset Semua Kunci API</div>
+                  <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Menghapus seluruh kunci API yang tersimpan di cloud &amp; lokal.</div>
+                </div>
+                <button onclick="resetAllApiKeys()" class="px-3 py-1.5 rounded-xl border border-red-500/30 hover:bg-red-500/10 text-red-600 font-semibold text-xs transition">
+                  Reset Kunci API
+                </button>
+              </div>
+
+              <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2 border-t border-red-500/10">
+                <div>
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Hapus Akun NoteRoute</div>
+                  <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Menghapus akun permanen beserta seluruh berkas dan catatan Anda.</div>
+                </div>
+                <button onclick="deleteAccountAndData()" class="px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-xs transition shadow-xs">
+                  Hapus Akun
+                </button>
               </div>
             </div>
+
           </div>
 
         </div>
@@ -700,7 +1055,70 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 5. CONTEXT MENU KARTU NOTEBOOK (TITIK TIGA ⋮)            -->
+  <!-- 5. MODAL: TUTORIAL CARA MENDAPATKAN API KEY PROVIDER     -->
+  <!-- ======================================================== -->
+  <div id="modal-api-tutorial" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      
+      <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div id="tut-icon-box" class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm font-bold shrink-0">
+            <i id="tut-icon" class="fa-brands fa-google"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h3 id="tut-title" class="font-bold text-sm text-[var(--nlm-text-primary)]">Tutorial API: Google Gemini</h3>
+              <span id="tut-badge" class="text-[9px] font-bold text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded">100% Gratis</span>
+            </div>
+            <span id="tut-quota" class="text-xs text-[var(--nlm-text-tertiary)]">1.500 req/hari &bull; 1.000.000 Token Context Free</span>
+          </div>
+        </div>
+        <button onclick="closeApiTutorialModal()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="p-5 overflow-y-auto space-y-4 text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+        <div id="tut-9router-banner" class="hidden p-3.5 rounded-xl border-2 border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 space-y-1.5">
+          <div class="font-bold text-xs flex items-center space-x-1.5">
+            <i class="fa-solid fa-network-wired"></i>
+            <span>SYARAT KHUSUS 9ROUTER (DAEMON LOKAL LAPTOP)</span>
+          </div>
+          <p class="text-[11px] leading-relaxed">
+            HANYA TERSEDIA jika aplikasi 9Router di laptop Anda aktif (Port 20128) dan seluruh perangkat (laptop &amp; HP Android Izat) berada dalam <strong>SATU JARINGAN WIFI / HOTSPOT YANG SAMA</strong>.
+          </p>
+        </div>
+
+        <div>
+          <h5 class="font-bold text-xs text-[var(--nlm-text-primary)] mb-2">Langkah-Langkah Mendapatkan Kunci:</h5>
+          <ol id="tut-steps-list" class="space-y-2 list-decimal list-inside text-[var(--nlm-text-secondary)] pl-1">
+            <!-- Populated via JS -->
+          </ol>
+        </div>
+
+        <div class="p-3 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] space-y-1">
+          <div class="font-bold text-[11px] text-[var(--nlm-text-tertiary)] uppercase tracking-wider">Format Kunci API:</div>
+          <div id="tut-format-sample" class="font-mono text-xs text-[var(--nlm-text-primary)] select-all break-all">
+            AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 border-t border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)]/60 flex items-center justify-between">
+        <a id="tut-direct-link" href="https://aistudio.google.com/app/apikey" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition flex items-center space-x-1.5">
+          <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          <span>Buka Portal Pengembang</span>
+        </a>
+        <button onclick="closeApiTutorialModal()" class="px-3 py-1.5 rounded-xl border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-xs font-semibold text-[var(--nlm-text-primary)] transition">
+          Tutup
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 6. CONTEXT MENU KARTU NOTEBOOK (TITIK TIGA ⋮)            -->
   <!-- ======================================================== -->
   <div id="card-context-menu" class="hidden fixed bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl p-1.5 z-50 w-44 text-xs animate-scale-up">
     <button onclick="contextAction('rename')" class="w-full px-3 py-1.5 rounded-xl hover:bg-[var(--nlm-surface-hover)] text-left text-[var(--nlm-text-primary)] flex items-center space-x-2 transition">
@@ -723,7 +1141,7 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 6. TOAST NOTIFICATION                                    -->
+  <!-- 7. TOAST NOTIFICATION                                    -->
   <!-- ======================================================== -->
   <div id="toast-notif" class="fixed bottom-5 right-5 z-50 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] shadow-2xl rounded-2xl p-3.5 max-w-sm flex items-center space-x-3 transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
     <div id="toast-icon-box" class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm font-bold shrink-0">
@@ -738,21 +1156,26 @@
   <!-- JAVASCRIPT LOGIC -->
   <script>
     // State Aplikasi
-    let currentFilter = 'all';
     let currentViewMode = 'grid';
     let currentThemePref = localStorage.getItem('noteroute-theme-pref') || 'system';
     let activeCardTitle = '';
 
-    // Data Notebooks
+    // State Kategori Baru
+    let currentSelectedCategory = {
+      icon: 'folder',
+      color: 'amber',
+      label: 'Kuliah'
+    };
+
+    // Data Notebooks Awal
     let notebooksData = [
       {
         id: 'nb-1',
         title: 'Materi Kuliah Semester 5 • Sistem Terdistribusi',
         date: '8 Nov 2026',
         sourcesCount: 4,
-        icon: 'folder',
+        icon: 'folder-open',
         iconColor: 'amber',
-        category: 'academic',
         targetUrl: '../docs/ui-prototype.html'
       },
       {
@@ -762,7 +1185,6 @@
         sourcesCount: 3,
         icon: 'brain',
         iconColor: 'indigo',
-        category: 'research',
         targetUrl: '../docs/ui-prototype.html?id=2'
       },
       {
@@ -772,7 +1194,6 @@
         sourcesCount: 2,
         icon: 'cloud',
         iconColor: 'sky',
-        category: 'practical',
         targetUrl: '../docs/ui-prototype.html?id=3'
       },
       {
@@ -782,7 +1203,6 @@
         sourcesCount: 6,
         icon: 'graduation-cap',
         iconColor: 'purple',
-        category: 'thesis',
         targetUrl: '../docs/ui-prototype.html?id=4'
       },
       {
@@ -792,7 +1212,6 @@
         sourcesCount: 1,
         icon: 'code',
         iconColor: 'emerald',
-        category: 'code',
         targetUrl: '../docs/ui-prototype.html?id=5'
       },
       {
@@ -802,16 +1221,20 @@
         sourcesCount: 0,
         icon: 'folder',
         iconColor: 'amber',
-        category: 'notes',
         targetUrl: '../docs/ui-prototype.html?id=6'
       }
     ];
 
-    // 1. Inisialisasi Tema
+    // 1. Inisialisasi Tema & Profil
+    function initApp() {
+      initTheme();
+      loadStoredProfile();
+      renderNotebooks();
+    }
+
     function initTheme() {
       applyThemePreference(currentThemePref);
       
-      // Listener OS pref change
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
         if (currentThemePref === 'system') {
           applyThemePreference('system');
@@ -823,7 +1246,7 @@
       currentThemePref = pref;
       localStorage.setItem('noteroute-theme-pref', pref);
       applyThemePreference(pref);
-      updateSettingsThemeRadio();
+      updateThemeSettingsUi();
       showToast("Tema Diperbarui", `Mode tema diubah ke: ${pref.toUpperCase()}`);
     }
 
@@ -840,27 +1263,38 @@
       if (isDark) {
         html.classList.add('dark');
         html.classList.remove('light');
-        document.getElementById('quick-theme-icon').className = 'fa-solid fa-sun text-xs text-amber-400';
       } else {
         html.classList.remove('dark');
         html.classList.add('light');
-        document.getElementById('quick-theme-icon').className = 'fa-solid fa-moon text-xs';
+      }
+
+      const sysBadge = document.getElementById('system-theme-badge');
+      if (sysBadge) {
+        const osDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        sysBadge.textContent = `Sistem: ${osDark ? 'Gelap' : 'Terang'}`;
       }
     }
 
-    function toggleQuickTheme() {
-      const isCurrentlyDark = document.documentElement.classList.contains('dark');
-      setThemePreference(isCurrentlyDark ? 'light' : 'dark');
-    }
+    function updateThemeSettingsUi() {
+      const cards = {
+        light: document.getElementById('theme-card-light'),
+        dark: document.getElementById('theme-card-dark'),
+        system: document.getElementById('theme-card-system')
+      };
+      const radios = {
+        light: document.getElementById('theme-radio-light'),
+        dark: document.getElementById('theme-radio-dark'),
+        system: document.getElementById('theme-radio-system')
+      };
 
-    function updateSettingsThemeRadio() {
       ['light', 'dark', 'system'].forEach(p => {
-        const el = document.getElementById(`radio-${p}`);
-        if (el) {
+        if (cards[p]) {
           if (p === currentThemePref) {
-            el.className = 'w-3.5 h-3.5 rounded-full bg-blue-600 border-2 border-white ring-2 ring-blue-500';
+            cards[p].className = "theme-card p-3.5 rounded-2xl border-2 border-blue-600 bg-blue-500/10 cursor-pointer transition relative flex flex-col justify-between group";
+            radios[p].innerHTML = '<i class="fa-solid fa-circle-check text-sm text-blue-600"></i>';
           } else {
-            el.className = 'w-3.5 h-3.5 rounded-full border border-slate-400';
+            cards[p].className = "theme-card p-3.5 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition relative flex flex-col justify-between group";
+            radios[p].innerHTML = '<div class="w-4 h-4 rounded-full border border-[var(--nlm-border)] bg-[var(--nlm-surface)]"></div>';
           }
         }
       });
@@ -874,26 +1308,7 @@
       }, 350);
     }
 
-    // 3. Filter Pills
-    function setFilter(filter) {
-      currentFilter = filter;
-      const pills = ['all', 'discover', 'collections'];
-      
-      pills.forEach(p => {
-        const btn = document.getElementById(`pill-${p}`);
-        if (btn) {
-          if (p === filter) {
-            btn.className = "px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-primary)] border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-1.5 shadow-xs";
-          } else {
-            btn.className = "px-3.5 py-1.5 rounded-full text-xs font-medium text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-1.5";
-          }
-        }
-      });
-
-      renderNotebooks();
-    }
-
-    // 4. View Switcher (Grid vs List)
+    // 3. View Switcher (Grid vs List)
     function setViewMode(mode) {
       currentViewMode = mode;
       const btnGrid = document.getElementById('btn-view-grid');
@@ -915,18 +1330,13 @@
       }
     }
 
-    // 5. Render Notebooks (Filtering & Search)
+    // 4. Render Notebooks
     function renderNotebooks() {
       const query = (document.getElementById('notebook-search-input').value || '').toLowerCase().trim();
       const gridContainer = document.getElementById('notebooks-grid-container');
       const emptyState = document.getElementById('empty-search-state');
 
-      let filtered = notebooksData.filter(nb => {
-        const matchesQuery = nb.title.toLowerCase().includes(query);
-        if (currentFilter === 'collections') return matchesQuery && nb.sourcesCount > 2;
-        if (currentFilter === 'discover') return matchesQuery && nb.category === 'research';
-        return matchesQuery;
-      });
+      let filtered = notebooksData.filter(nb => nb.title.toLowerCase().includes(query));
 
       if (filtered.length === 0) {
         gridContainer.innerHTML = '';
@@ -986,7 +1396,7 @@
       `).join('');
     }
 
-    // 6. Search Handler
+    // 5. Search Handlers
     function handleSearchNotebook(val) {
       const clearBtn = document.getElementById('clear-search-btn');
       if (val.trim().length > 0) {
@@ -1005,7 +1415,7 @@
       input.focus();
     }
 
-    // 7. Sort Menu
+    // 6. Sort Menu
     function toggleSortMenu() {
       const menu = document.getElementById('sort-dropdown-menu');
       menu.classList.toggle('hidden');
@@ -1025,7 +1435,7 @@
       renderNotebooks();
     }
 
-    // 8. New Notebook Modal
+    // 7. New Notebook Modal (Pilih Kategori Interaktif)
     function openNewNotebookModal() {
       document.getElementById('new-notebook-modal').classList.remove('hidden');
       setTimeout(() => document.getElementById('new-notebook-title').focus(), 100);
@@ -1036,43 +1446,42 @@
       document.getElementById('new-notebook-title').value = '';
     }
 
+    function selectNotebookCategory(icon, color, label, btnEl) {
+      currentSelectedCategory = { icon, color, label };
+      document.querySelectorAll('.cat-choice-btn').forEach(btn => {
+        btn.className = "cat-choice-btn p-2.5 rounded-2xl border border-[var(--nlm-border)] hover:bg-[var(--nlm-surface-hover)] text-center cursor-pointer flex flex-col items-center space-y-1 transition";
+      });
+      btnEl.className = "cat-choice-btn p-2.5 rounded-2xl border-2 border-blue-600 bg-blue-500/10 ring-2 ring-blue-500/20 text-center cursor-pointer flex flex-col items-center space-y-1 transition";
+      showToast("Kategori Dipilih", label);
+    }
+
     function submitCreateNotebook() {
       const titleInput = document.getElementById('new-notebook-title');
       const title = titleInput.value.trim() || 'Notebook Baru Tanpa Judul';
 
-      const selectedIcon = document.querySelector('input[name="nb-icon"]:checked')?.value || 'folder';
-      let iconColor = 'amber';
-      if (selectedIcon === 'brain') iconColor = 'indigo';
-      if (selectedIcon === 'code') iconColor = 'emerald';
-      if (selectedIcon === 'cloud') iconColor = 'sky';
-
       const newNb = {
-        id: 'nb-' + (Date.now()),
+        id: 'nb-' + Date.now(),
         title: title,
         date: 'Hari ini',
         sourcesCount: 0,
-        icon: selectedIcon,
-        iconColor: iconColor,
-        category: 'custom',
+        icon: currentSelectedCategory.icon,
+        iconColor: currentSelectedCategory.color,
         targetUrl: '../docs/ui-prototype.html'
       };
 
       notebooksData.unshift(newNb);
       closeNewNotebookModal();
       renderNotebooks();
-      showToast("Notebook Dibuat", `"${title}" berhasil ditambahkan.`);
+      showToast("Notebook Dibuat", `"${title}" (${currentSelectedCategory.label}) berhasil ditambahkan.`);
       
-      // Buka langsung setelah dibuat
       setTimeout(() => navigateToNotebook(title), 500);
     }
 
-    // 9. Context Menu (⋮)
+    // 8. Card Context Menu (⋮)
     function openCardContextMenu(e, title) {
       e.stopPropagation();
       activeCardTitle = title;
       const menu = document.getElementById('card-context-menu');
-      
-      // Posisi klik
       menu.style.left = `${Math.min(e.clientX, window.innerWidth - 190)}px`;
       menu.style.top = `${e.clientY + 8}px`;
       menu.classList.remove('hidden');
@@ -1116,18 +1525,18 @@
       }
     }
 
-    // 10. Settings & Dropdowns
+    // 9. Profile & Settings Sync
     function toggleAppsMenu() {
       document.getElementById('apps-dropdown-menu').classList.toggle('hidden');
       document.getElementById('profile-dropdown-menu').classList.add('hidden');
     }
 
-    function toggleProfileMenu() {
+    function toggleProfileDropdown() {
       document.getElementById('profile-dropdown-menu').classList.toggle('hidden');
       document.getElementById('apps-dropdown-menu').classList.add('hidden');
     }
 
-    function openSettingsModal(tab = 'appearance') {
+    function openSettingsModal(tab = 'profile') {
       document.getElementById('profile-dropdown-menu').classList.add('hidden');
       document.getElementById('settings-modal').classList.remove('hidden');
       switchSettingsTab(tab);
@@ -1138,23 +1547,382 @@
     }
 
     function switchSettingsTab(tab) {
-      ['appearance', 'profile', 'api'].forEach(t => {
+      const tabs = ['profile', 'appearance', 'security', 'api', 'routing', 'general'];
+      tabs.forEach(t => {
         const btn = document.getElementById(`stab-${t}`);
         const content = document.getElementById(`scontent-${t}`);
         if (btn && content) {
           if (t === tab) {
-            btn.className = "w-full px-3 py-2 rounded-xl text-left text-xs font-semibold bg-blue-600 text-white transition flex items-center space-x-2";
+            btn.className = "w-full text-left px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold transition flex items-center space-x-2";
             content.classList.remove('hidden');
           } else {
-            btn.className = "w-full px-3 py-2 rounded-xl text-left text-xs font-medium text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2";
+            btn.className = "w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2";
             content.classList.add('hidden');
           }
         }
       });
-      updateSettingsThemeRadio();
+      if (tab === 'appearance') {
+        updateThemeSettingsUi();
+      }
     }
 
-    // 11. Toast Utility
+    // Profile handlers & localStorage sync
+    function loadStoredProfile() {
+      try {
+        const stored = localStorage.getItem('noteroute-user-profile');
+        if (stored) {
+          const p = JSON.parse(stored);
+          if (p.firstName) document.getElementById('prof-first-name').value = p.firstName;
+          if (p.lastName) document.getElementById('prof-last-name').value = p.lastName;
+          if (p.nickname) document.getElementById('prof-nickname').value = p.nickname;
+          if (p.email) {
+            document.getElementById('prof-email').value = p.email;
+            document.getElementById('topbar-user-email').textContent = p.email;
+          }
+          if (p.avatarDataUrl) {
+            applyAvatarImage(p.avatarDataUrl);
+          } else {
+            updateHeaderUserIdentity();
+          }
+        } else {
+          updateHeaderUserIdentity();
+        }
+      } catch (e) {
+        updateHeaderUserIdentity();
+      }
+    }
+
+    function saveProfileToStorage() {
+      const p = {
+        firstName: document.getElementById('prof-first-name').value.trim(),
+        lastName: document.getElementById('prof-last-name').value.trim(),
+        nickname: document.getElementById('prof-nickname').value.trim(),
+        email: document.getElementById('prof-email').value.trim(),
+        avatarDataUrl: document.getElementById('topbar-avatar-img').src || ''
+      };
+      localStorage.setItem('noteroute-user-profile', JSON.stringify(p));
+    }
+
+    function onFirstNameChange(val) {
+      const trimmed = val.trim();
+      const nickname = trimmed || 'Pengguna';
+      document.getElementById('prof-nickname').value = nickname;
+      updateHeaderUserIdentity();
+      saveProfileToStorage();
+    }
+
+    function onLastNameChange(val) {
+      updateHeaderUserIdentity();
+      saveProfileToStorage();
+    }
+
+    function onEmailChange(val) {
+      const email = val.trim() || 'user@noteroute.app';
+      document.getElementById('topbar-user-email').textContent = email;
+      saveProfileToStorage();
+    }
+
+    function updateHeaderUserIdentity() {
+      const fn = document.getElementById('prof-first-name').value.trim();
+      const ln = document.getElementById('prof-last-name').value.trim();
+      const fullName = (fn + ' ' + ln).trim() || 'Ahmad Zakky Nurfauzan';
+      document.getElementById('topbar-user-name').textContent = fullName;
+      
+      let initials = 'U';
+      if (fn && ln) {
+        initials = (fn[0] + ln[0]).toUpperCase();
+      } else if (fn) {
+        initials = fn.substring(0, 2).toUpperCase();
+      }
+      document.getElementById('topbar-avatar-text').textContent = initials;
+      document.getElementById('dropdown-avatar-text').textContent = initials;
+      document.getElementById('settings-avatar-text').textContent = initials;
+    }
+
+    function applyAvatarImage(dataUrl) {
+      ['settings-avatar', 'topbar-avatar', 'dropdown-avatar'].forEach(id => {
+        const img = document.getElementById(id + '-img');
+        const txt = document.getElementById(id + '-text');
+        if (img && txt) {
+          img.src = dataUrl;
+          img.classList.remove('hidden');
+          txt.classList.add('hidden');
+        }
+      });
+    }
+
+    function handleProfilePhotoUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const dataUrl = evt.target.result;
+          applyAvatarImage(dataUrl);
+          saveProfileToStorage();
+          showToast("Foto Profil Diperbarui", "Foto berhasil disimpan ke akun cloud.");
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function removeProfilePhoto() {
+      document.getElementById('profile-photo-input').value = '';
+      ['settings-avatar', 'topbar-avatar', 'dropdown-avatar'].forEach(id => {
+        const img = document.getElementById(id + '-img');
+        const txt = document.getElementById(id + '-text');
+        if (img && txt) {
+          img.src = '';
+          img.classList.add('hidden');
+          txt.classList.remove('hidden');
+        }
+      });
+      updateHeaderUserIdentity();
+      saveProfileToStorage();
+      showToast("Foto Profil Dihapus", "Foto dikembalikan ke inisial nama.");
+    }
+
+    function changePasswordSubmit() {
+      const cur = document.getElementById('prof-pass-current').value;
+      const pNew = document.getElementById('prof-pass-new').value;
+      const pConf = document.getElementById('prof-pass-confirm').value;
+
+      if (!cur) {
+        showToast("Peringatan", "Silakan masukkan kata sandi saat ini.");
+        return;
+      }
+      if (pNew.length < 8) {
+        showToast("Peringatan", "Kata sandi baru minimal 8 karakter.");
+        return;
+      }
+      if (pNew !== pConf) {
+        showToast("Gagal", "Konfirmasi kata sandi tidak cocok.");
+        return;
+      }
+
+      document.getElementById('prof-pass-current').value = '';
+      document.getElementById('prof-pass-new').value = '';
+      document.getElementById('prof-pass-confirm').value = '';
+      showToast("Berhasil", "Kata sandi akun Anda telah diperbarui.");
+    }
+
+    function resetAllApiKeys() {
+      if (confirm("Reset seluruh kunci API ke konfigurasi awal?")) {
+        showToast("Kunci API Direset", "Semua token telah dikembalikan ke kondisi awal.");
+      }
+    }
+
+    function deleteAccountAndData() {
+      if (confirm("PERINGATAN: Seluruh berkas laptop di MongoDB Atlas dan akun NoteRoute Anda akan dihapus permanen. Lanjutkan?")) {
+        showToast("Akun Dihapus", "Akun dan berkas Anda telah dibersihkan.");
+        closeSettingsModal();
+      }
+    }
+
+    // Drag and Drop Priority AI
+    let draggedPriorityItem = null;
+
+    function onPriorityDragStart(e) {
+      draggedPriorityItem = e.currentTarget;
+      e.dataTransfer.effectAllowed = 'move';
+      e.currentTarget.classList.add('opacity-40', 'scale-[0.98]', 'border-blue-500');
+    }
+
+    function onPriorityDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    }
+
+    function onPriorityDrop(e) {
+      e.preventDefault();
+      const target = e.currentTarget;
+      if (draggedPriorityItem && target && draggedPriorityItem !== target) {
+        const list = document.getElementById('priority-list');
+        const items = Array.from(list.querySelectorAll('.priority-item'));
+        const srcIndex = items.indexOf(draggedPriorityItem);
+        const tgtIndex = items.indexOf(target);
+
+        if (srcIndex < tgtIndex) {
+          list.insertBefore(draggedPriorityItem, target.nextSibling);
+        } else {
+          list.insertBefore(draggedPriorityItem, target);
+        }
+        reindexPriorityList();
+      }
+    }
+
+    function onPriorityDragEnd(e) {
+      e.currentTarget.classList.remove('opacity-40', 'scale-[0.98]', 'border-blue-500');
+      draggedPriorityItem = null;
+    }
+
+    function movePriority(btn, direction, e) {
+      if (e) e.stopPropagation();
+      const item = btn.closest('.priority-item');
+      const list = document.getElementById('priority-list');
+      if (direction === -1 && item.previousElementSibling) {
+        list.insertBefore(item, item.previousElementSibling);
+        reindexPriorityList();
+      } else if (direction === 1 && item.nextElementSibling) {
+        list.insertBefore(item.nextElementSibling, item);
+        reindexPriorityList();
+      }
+    }
+
+    function reindexPriorityList() {
+      const list = document.getElementById('priority-list');
+      const items = list.querySelectorAll('.priority-item');
+      items.forEach((item, index) => {
+        const rank = index + 1;
+        const rankBadge = item.querySelector('.priority-rank-badge');
+        const statusBadge = item.querySelector('.priority-status-badge');
+        
+        rankBadge.textContent = rank;
+        if (rank === 1) {
+          rankBadge.className = "priority-rank-badge w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0";
+          statusBadge.className = "priority-status-badge text-[10px] font-bold text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded";
+          statusBadge.textContent = "Utama";
+        } else {
+          rankBadge.className = "priority-rank-badge w-6 h-6 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center shrink-0";
+          statusBadge.className = "priority-status-badge text-[10px] font-bold text-[var(--nlm-text-secondary)] bg-[var(--nlm-surface-hover)] px-2 py-0.5 rounded";
+          statusBadge.textContent = `Failover #${rank - 1}`;
+        }
+      });
+      const topName = items[0].querySelector('.font-bold.text-xs').textContent;
+      showToast("Prioritas Diperbarui", `${topName} kini urutan #1.`);
+    }
+
+    // Tutorial API Modal
+    const tutorialData = {
+      gemini: {
+        name: "Google Gemini AI",
+        icon: "fa-brands fa-google text-blue-600",
+        badge: "100% Gratis",
+        quota: "1.500 req/hari • 1.000.000 Token Context Free",
+        sample: "AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://aistudio.google.com/app/apikey",
+        is9Router: false,
+        steps: [
+          "Buka Google AI Studio di aistudio.google.com/app/apikey.",
+          "Masuk menggunakan akun Google Anda.",
+          "Klik tombol biru 'Create API Key'.",
+          "Pilih project Google Cloud default atau 'Create key in new project'.",
+          "Salin kunci berawalan 'AIzaSy...' dan tempelkan ke form NoteRoute."
+        ]
+      },
+      groq: {
+        name: "Groq Cloud (Llama 3.3 70B)",
+        icon: "fa-solid fa-bolt text-orange-500",
+        badge: "Ultra-Fast Free Tier",
+        quota: "Inference 300+ token/detik • Kuota gratis harian",
+        sample: "gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://console.groq.com/keys",
+        is9Router: false,
+        steps: [
+          "Buka Groq Console di console.groq.com/keys.",
+          "Daftar atau login dengan Google / GitHub.",
+          "Klik menu 'API Keys' di navigasi kiri.",
+          "Klik 'Create API Key', beri nama (contoh: 'NoteRoute').",
+          "Salin kunci berawalan 'gsk_...' dan masukkan ke NoteRoute."
+        ]
+      },
+      kiro: {
+        name: "Kiro AI (Kiiro Gateway)",
+        icon: "fa-solid fa-ghost text-purple-600",
+        badge: "Free Connected",
+        quota: "Free Tier Auth Key • Multimodal & Reasoning",
+        sample: "kiro_free_auth_key_xxxxxxxx",
+        link: "https://kiro.ai",
+        is9Router: false,
+        steps: [
+          "Kunjungi portal pengembang Kiro AI di kiro.ai.",
+          "Daftarkan akun developer gratis.",
+          "Buka menu Developer Settings -> API Tokens.",
+          "Buat token baru dan salin kunci 'kiro_...' ke NoteRoute."
+        ]
+      },
+      deepseek: {
+        name: "DeepSeek R1 / V3",
+        icon: "fa-solid fa-brain text-blue-600",
+        badge: "Free Credits",
+        quota: "Reasoning canggih • Saldo gratis awal untuk pengguna baru",
+        sample: "sk-deepseek_xxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://platform.deepseek.com/api_keys",
+        is9Router: false,
+        steps: [
+          "Buka platform resmi di platform.deepseek.com/api_keys.",
+          "Daftar dengan alamat email Anda.",
+          "Pilih 'API Keys' pada menu navigasi.",
+          "Klik 'Create API Key' dan salin kuncinya.",
+          "Tempelkan ke form pengaturan NoteRoute."
+        ]
+      },
+      '9router': {
+        name: "9Router Local Daemon",
+        icon: "fa-solid fa-network-wired text-emerald-600",
+        badge: "100% Offline & Gratis",
+        quota: "Bridge Port 20128 • Tanpa Internet & Tanpa Kartu Kredit",
+        sample: "http://localhost:20128/v1 (atau IP LAN laptop: http://192.168.1.x:20128/v1)",
+        link: "http://localhost:20128",
+        is9Router: true,
+        steps: [
+          "Pastikan aplikasi 9Router di laptop Anda sudah berjalan (status aktif di port 20128).",
+          "Cek status daemon dengan membuka http://localhost:20128 di browser laptop.",
+          "SYARAT UTAMA: Jika NoteRoute dibuka dari HP Android Izat atau perangkat lain, seluruh perangkat HARUS BERADA DALAM 1 JARINGAN (WiFi / Hotspot yang sama).",
+          "Gunakan IP LAN laptop Anda (contoh: http://192.168.1.50:20128/v1) sebagai target endpoint di NoteRoute."
+        ]
+      },
+      openrouter: {
+        name: "OpenRouter (Free Tier)",
+        icon: "fa-solid fa-shuffle text-cyan-600",
+        badge: "Free Models",
+        quota: "Model gratis: Llama 3.1 8B, Gemma 2 9B, Mistral 7B",
+        sample: "sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://openrouter.ai/keys",
+        is9Router: false,
+        steps: [
+          "Buka openrouter.ai/keys dan login dengan Google atau GitHub.",
+          "Klik tombol 'Create Key'.",
+          "Beri nama kunci 'NoteRoute'. Batas kredit $0 tetap dapat mengakses model berlabel :free.",
+          "Salin string kunci yang diawali 'sk-or-v1-...' ke NoteRoute."
+        ]
+      }
+    };
+
+    function openApiTutorial(providerId, event) {
+      if (event) event.stopPropagation();
+      const data = tutorialData[providerId] || tutorialData.gemini;
+      
+      document.getElementById('tut-title').textContent = `Tutorial API: ${data.name}`;
+      document.getElementById('tut-badge').textContent = data.badge;
+      document.getElementById('tut-quota').textContent = data.quota;
+      document.getElementById('tut-format-sample').textContent = data.sample;
+      document.getElementById('tut-direct-link').href = data.link;
+
+      const stepsList = document.getElementById('tut-steps-list');
+      stepsList.innerHTML = data.steps.map(s => `<li>${s}</li>`).join('');
+
+      const banner9r = document.getElementById('tut-9router-banner');
+      if (data.is9Router) {
+        banner9r.classList.remove('hidden');
+      } else {
+        banner9r.classList.add('hidden');
+      }
+
+      document.getElementById('modal-api-tutorial').classList.remove('hidden');
+    }
+
+    function closeApiTutorialModal() {
+      document.getElementById('modal-api-tutorial').classList.add('hidden');
+    }
+
+    function openConfigureApiKey(name, placeholder, desc) {
+      const key = prompt(`Masukkan API Key untuk ${name}:\n(${desc})`, '');
+      if (key !== null && key.trim() !== '') {
+        showToast("API Key Disimpan", `${name} berhasil dikonfigurasikan.`);
+      }
+    }
+
+    // Toast Utility
     let toastTimeout;
     function showToast(title, msg) {
       const toast = document.getElementById('toast-notif');
@@ -1168,7 +1936,7 @@
       }, 3000);
     }
 
-    // Global Click Listener to Close Menus
+    // Global Click Listener
     window.addEventListener('click', (e) => {
       if (!e.target.closest('#card-context-menu') && !e.target.closest('button[onclick*="openCardContextMenu"]')) {
         document.getElementById('card-context-menu').classList.add('hidden');
@@ -1179,15 +1947,14 @@
       if (!e.target.closest('#apps-dropdown-menu') && !e.target.closest('button[onclick*="toggleAppsMenu"]')) {
         document.getElementById('apps-dropdown-menu').classList.add('hidden');
       }
-      if (!e.target.closest('#profile-dropdown-menu') && !e.target.closest('button[onclick*="toggleProfileMenu"]')) {
+      if (!e.target.closest('#profile-dropdown-menu') && !e.target.closest('button[onclick*="toggleProfileDropdown"]')) {
         document.getElementById('profile-dropdown-menu').classList.add('hidden');
       }
     });
 
-    // Jalankan Inisialisasi
+    // Inisialisasi saat DOM siap
     window.addEventListener('DOMContentLoaded', () => {
-      initTheme();
-      renderNotebooks();
+      initApp();
     });
   </script>
 
