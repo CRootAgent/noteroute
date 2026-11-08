@@ -372,8 +372,12 @@
             </button>
           </div>
 
-          <div class="pt-1 border-t border-[var(--nlm-border-subtle)]">
-            <button onclick="showToast('Sesi Berakhir', 'Keluar dari sesi NoteRoute.'); toggleProfileDropdown();" class="w-full text-left px-3 py-2 rounded-xl hover:bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-semibold flex items-center space-x-2.5 transition">
+          <div class="pt-1 border-t border-[var(--nlm-border-subtle)] space-y-0.5">
+            <a href="../index.html?auth=signin" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] text-xs text-[var(--nlm-text-secondary)] flex items-center space-x-2.5 transition">
+              <i class="fa-solid fa-user-plus text-[11px] w-4 text-blue-500"></i>
+              <span>Ganti / Masuk Akun Lain</span>
+            </a>
+            <button onclick="handleLogout()" class="w-full text-left px-3 py-2 rounded-xl hover:bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-semibold flex items-center space-x-2.5 transition">
               <i class="fa-solid fa-arrow-right-from-bracket text-[11px] w-4"></i>
               <span>Keluar Akun</span>
             </button>
@@ -2730,6 +2734,12 @@
     function loadStoredProfile() {
       try {
         const stored = localStorage.getItem('noteroute-user-profile');
+        const authRaw = localStorage.getItem('noteroute_auth_user');
+        let authUser = null;
+        if (authRaw) {
+          try { authUser = JSON.parse(authRaw); } catch(e){}
+        }
+
         if (stored) {
           const p = JSON.parse(stored);
           if (p.firstName) document.getElementById('prof-first-name').value = p.firstName;
@@ -2741,6 +2751,24 @@
           }
           if (p.avatarDataUrl) {
             applyAvatarImage(p.avatarDataUrl);
+          } else if (authUser && authUser.avatar) {
+            applyAvatarImage(authUser.avatar);
+          } else {
+            updateHeaderUserIdentity();
+          }
+        } else if (authUser && authUser.isLoggedIn) {
+          const parts = (authUser.name || 'Pengguna').split(' ');
+          const fn = parts[0] || 'Pengguna';
+          const ln = parts.slice(1).join(' ') || '';
+          document.getElementById('prof-first-name').value = fn;
+          document.getElementById('prof-last-name').value = ln;
+          document.getElementById('prof-nickname').value = fn;
+          if (authUser.email) {
+            document.getElementById('prof-email').value = authUser.email;
+            document.getElementById('topbar-user-email').textContent = authUser.email;
+          }
+          if (authUser.avatar) {
+            applyAvatarImage(authUser.avatar);
           } else {
             updateHeaderUserIdentity();
           }
@@ -2753,14 +2781,39 @@
     }
 
     function saveProfileToStorage() {
+      const fn = document.getElementById('prof-first-name').value.trim();
+      const ln = document.getElementById('prof-last-name').value.trim();
+      const email = document.getElementById('prof-email').value.trim();
+      const avatarUrl = document.getElementById('topbar-avatar-img').src || '';
       const p = {
-        firstName: document.getElementById('prof-first-name').value.trim(),
-        lastName: document.getElementById('prof-last-name').value.trim(),
+        firstName: fn,
+        lastName: ln,
         nickname: document.getElementById('prof-nickname').value.trim(),
-        email: document.getElementById('prof-email').value.trim(),
-        avatarDataUrl: document.getElementById('topbar-avatar-img').src || ''
+        email: email,
+        avatarDataUrl: avatarUrl
       };
       localStorage.setItem('noteroute-user-profile', JSON.stringify(p));
+
+      // Sync active auth user session
+      try {
+        const authRaw = localStorage.getItem('noteroute_auth_user');
+        if (authRaw) {
+          const a = JSON.parse(authRaw);
+          a.name = (fn + ' ' + ln).trim();
+          a.email = email;
+          if (avatarUrl) a.avatar = avatarUrl;
+          localStorage.setItem('noteroute_auth_user', JSON.stringify(a));
+        }
+      } catch (e) {}
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('noteroute_auth_user');
+      showToast('Sesi Berakhir', 'Anda telah keluar dari akun NoteRoute.');
+      toggleProfileDropdown();
+      setTimeout(() => {
+        window.location.href = '../index.html';
+      }, 700);
     }
 
     function applyAvatarImage(dataUrl) {

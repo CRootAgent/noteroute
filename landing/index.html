@@ -181,7 +181,7 @@
     
     <!-- Left: Brand Logo NoteRoute dengan Ikon Buku/Notebook -->
     <div class="flex items-center space-x-3">
-      <a href="index.html" class="flex items-center space-x-2.5 group">
+      <a href="../index.html" class="flex items-center space-x-2.5 group" title="Kembali ke Beranda NoteRoute">
         <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-slate-900 to-indigo-700 dark:from-zinc-100 dark:to-zinc-300 text-white dark:text-zinc-950 flex items-center justify-center text-sm font-bold shadow-md shadow-indigo-500/15 group-hover:scale-105 transition-transform ring-1 ring-black/5 dark:ring-white/10">
           <i class="fa-solid fa-book-bookmark"></i>
         </div>
@@ -224,18 +224,24 @@
         <!-- 9-Dots Apps Dropdown -->
         <div id="apps-dropdown-menu" class="hidden absolute right-0 mt-2 w-72 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl p-3 z-50 animate-dropdown">
           <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-2 mb-2">Ekosistem NoteRoute</div>
-          <div class="grid grid-cols-2 gap-2 text-center text-xs">
-            <a href="../docs/ui-prototype.html" class="p-2.5 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group">
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <a href="../index.html" class="p-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group">
+              <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center text-base group-hover:scale-110 transition-transform">
+                <i class="fa-solid fa-compass"></i>
+              </div>
+              <span class="text-[11px] font-medium text-[var(--nlm-text-primary)]">Beranda</span>
+            </a>
+            <a href="../docs/ui-prototype.html" class="p-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group">
               <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-base group-hover:scale-110 transition-transform">
                 <i class="fa-solid fa-book-bookmark"></i>
               </div>
               <span class="text-[11px] font-medium text-[var(--nlm-text-primary)]">Workspace</span>
             </a>
-            <a href="../android/README.md" class="p-2.5 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group">
+            <a href="../android/README.md" class="p-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group">
               <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-base group-hover:scale-110 transition-transform">
                 <i class="fa-brands fa-android"></i>
               </div>
-              <span class="text-[11px] font-medium text-[var(--nlm-text-primary)]">Android APK</span>
+              <span class="text-[11px] font-medium text-[var(--nlm-text-primary)]">Android</span>
             </a>
           </div>
           <div class="mt-2 pt-2 border-t border-[var(--nlm-border-subtle)] text-center">
@@ -295,8 +301,12 @@
             </button>
           </div>
 
-          <div class="pt-1 border-t border-[var(--nlm-border-subtle)]">
-            <button onclick="showToast('Sesi Berakhir', 'Keluar dari sesi NoteRoute.'); toggleProfileDropdown();" class="w-full text-left px-3 py-2 rounded-xl hover:bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-semibold flex items-center space-x-2.5 transition">
+          <div class="pt-1 border-t border-[var(--nlm-border-subtle)] space-y-0.5">
+            <a href="../index.html?auth=signin" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] text-xs text-[var(--nlm-text-secondary)] flex items-center space-x-2.5 transition">
+              <i class="fa-solid fa-user-plus text-[11px] w-4 text-blue-500"></i>
+              <span>Ganti / Masuk Akun Lain</span>
+            </a>
+            <button onclick="handleLogout()" class="w-full text-left px-3 py-2 rounded-xl hover:bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-semibold flex items-center space-x-2.5 transition">
               <i class="fa-solid fa-arrow-right-from-bracket text-[11px] w-4"></i>
               <span>Keluar Akun</span>
             </button>
@@ -2184,6 +2194,12 @@
     function loadStoredProfile() {
       try {
         const stored = localStorage.getItem('noteroute-user-profile');
+        const authRaw = localStorage.getItem('noteroute_auth_user');
+        let authUser = null;
+        if (authRaw) {
+          try { authUser = JSON.parse(authRaw); } catch(e){}
+        }
+
         if (stored) {
           const p = JSON.parse(stored);
           if (p.firstName) document.getElementById('prof-first-name').value = p.firstName;
@@ -2195,6 +2211,24 @@
           }
           if (p.avatarDataUrl) {
             applyAvatarImage(p.avatarDataUrl);
+          } else if (authUser && authUser.avatar) {
+            applyAvatarImage(authUser.avatar);
+          } else {
+            updateHeaderUserIdentity();
+          }
+        } else if (authUser && authUser.isLoggedIn) {
+          const parts = (authUser.name || 'Pengguna').split(' ');
+          const fn = parts[0] || 'Pengguna';
+          const ln = parts.slice(1).join(' ') || '';
+          document.getElementById('prof-first-name').value = fn;
+          document.getElementById('prof-last-name').value = ln;
+          document.getElementById('prof-nickname').value = fn;
+          if (authUser.email) {
+            document.getElementById('prof-email').value = authUser.email;
+            document.getElementById('topbar-user-email').textContent = authUser.email;
+          }
+          if (authUser.avatar) {
+            applyAvatarImage(authUser.avatar);
           } else {
             updateHeaderUserIdentity();
           }
@@ -2207,14 +2241,39 @@
     }
 
     function saveProfileToStorage() {
+      const fn = document.getElementById('prof-first-name').value.trim();
+      const ln = document.getElementById('prof-last-name').value.trim();
+      const email = document.getElementById('prof-email').value.trim();
+      const avatarUrl = document.getElementById('topbar-avatar-img').src || '';
       const p = {
-        firstName: document.getElementById('prof-first-name').value.trim(),
-        lastName: document.getElementById('prof-last-name').value.trim(),
+        firstName: fn,
+        lastName: ln,
         nickname: document.getElementById('prof-nickname').value.trim(),
-        email: document.getElementById('prof-email').value.trim(),
-        avatarDataUrl: document.getElementById('topbar-avatar-img').src || ''
+        email: email,
+        avatarDataUrl: avatarUrl
       };
       localStorage.setItem('noteroute-user-profile', JSON.stringify(p));
+
+      // Sync active auth user session
+      try {
+        const authRaw = localStorage.getItem('noteroute_auth_user');
+        if (authRaw) {
+          const a = JSON.parse(authRaw);
+          a.name = (fn + ' ' + ln).trim();
+          a.email = email;
+          if (avatarUrl) a.avatar = avatarUrl;
+          localStorage.setItem('noteroute_auth_user', JSON.stringify(a));
+        }
+      } catch (e) {}
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('noteroute_auth_user');
+      showToast('Sesi Berakhir', 'Anda telah keluar dari akun NoteRoute.');
+      toggleProfileDropdown();
+      setTimeout(() => {
+        window.location.href = '../index.html';
+      }, 700);
     }
 
     function onFirstNameChange(val) {
