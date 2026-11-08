@@ -1458,13 +1458,9 @@
                 <p class="text-[11px] text-[var(--nlm-text-tertiary)]">Pilih model AI gratis dari kurasi GitHub free-ai-apis atau tambahkan endpoint kustom sendiri.</p>
               </div>
               <div class="flex items-center space-x-1.5">
-                <button onclick="openCustomApiModal('anthropic')" class="px-2.5 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold flex items-center space-x-1.5 transition shadow-xs">
-                  <i class="fa-solid fa-plus text-[10px]"></i>
-                  <span>Add Anthropic Compatible</span>
-                </button>
-                <button onclick="openCustomApiModal('openai')" class="px-2.5 py-1.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-primary)] text-xs font-semibold flex items-center space-x-1.5 transition">
-                  <i class="fa-solid fa-plus text-[10px]"></i>
-                  <span>Add OpenAI Compatible</span>
+                <button onclick="openCustomApiModal()" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center space-x-1.5 transition shadow-xs">
+                  <i class="fa-solid fa-plus text-xs"></i>
+                  <span>Tambah API Kustom (BYOK)</span>
                 </button>
               </div>
             </div>
@@ -2230,14 +2226,18 @@
         <!-- Protocol Selector -->
         <div>
           <label class="block font-semibold text-[var(--nlm-text-primary)] mb-1.5">Tipe Protokol API</label>
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" id="btn-proto-openai" onclick="setCustomApiProto('openai')" class="p-2.5 rounded-xl border border-blue-500 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold flex items-center justify-center space-x-2 transition">
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" id="btn-proto-openai" onclick="setCustomApiProto('openai')" class="p-2.5 rounded-xl border border-blue-500 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-1.5 transition text-center">
               <i class="fa-solid fa-bolt"></i>
-              <span>OpenAI Compatible</span>
+              <span>OpenAI</span>
             </button>
-            <button type="button" id="btn-proto-anthropic" onclick="setCustomApiProto('anthropic')" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] font-medium flex items-center justify-center space-x-2 transition">
+            <button type="button" id="btn-proto-anthropic" onclick="setCustomApiProto('anthropic')" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] font-medium flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-1.5 transition text-center">
               <i class="fa-solid fa-microchip"></i>
-              <span>Anthropic Compatible</span>
+              <span>Anthropic</span>
+            </button>
+            <button type="button" id="btn-proto-custom" onclick="setCustomApiProto('custom')" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] font-medium flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-1.5 transition text-center">
+              <i class="fa-solid fa-code"></i>
+              <span>Lainnya</span>
             </button>
           </div>
           <input type="hidden" id="custom-api-proto" value="openai">
@@ -2285,6 +2285,113 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 8b. MODAL: EDITOR FOTO PROFIL INTERAKTIF (CROP/ZOOM/PAN) -->
+  <!-- ======================================================== -->
+  <div id="modal-photo-editor" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-lg bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] modal-animate-in">
+      
+      <!-- Modal Header -->
+      <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm font-bold shrink-0">
+            <i class="fa-solid fa-crop-simple"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-[var(--nlm-text-primary)]">Sesuaikan &amp; Potong Foto Profil</h3>
+            <span class="text-[11px] text-[var(--nlm-text-tertiary)]">Geser posisi, atur zoom, rasio, dan rotasi foto</span>
+          </div>
+        </div>
+        <button onclick="closePhotoEditor()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-4">
+        
+        <!-- Interactive Crop Canvas Container -->
+        <div class="relative w-full flex flex-col items-center justify-center bg-black/40 rounded-2xl p-3 border border-[var(--nlm-border)] overflow-hidden select-none">
+          <div class="relative overflow-hidden flex items-center justify-center">
+            <canvas id="crop-canvas" width="340" height="340" class="cursor-grab active:cursor-grabbing rounded-xl bg-slate-900 shadow-inner touch-none"></canvas>
+            <div id="crop-overlay-guide" class="absolute pointer-events-none inset-0 border-2 border-dashed border-blue-400/80 rounded-full transition-all m-auto" style="width: 300px; height: 300px;"></div>
+          </div>
+          <div class="text-[10px] text-[var(--nlm-text-tertiary)] mt-2 flex items-center space-x-1.5">
+            <i class="fa-solid fa-hand-pointer text-blue-500"></i>
+            <span>Klik / sentuh &amp; geser foto di atas untuk memindahkan posisi</span>
+          </div>
+        </div>
+
+        <!-- Controls: Rasio Aspek -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-semibold text-[var(--nlm-text-primary)]">Bentuk &amp; Rasio Potongan</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" id="crop-ratio-circle" onclick="setCropRatio('circle')" class="p-2 rounded-xl border border-blue-500 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold text-xs flex items-center justify-center space-x-1.5 transition">
+              <i class="fa-regular fa-circle"></i>
+              <span>1:1 Lingkaran</span>
+            </button>
+            <button type="button" id="crop-ratio-square" onclick="setCropRatio('square')" class="p-2 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] font-medium text-xs flex items-center justify-center space-x-1.5 transition">
+              <i class="fa-regular fa-square"></i>
+              <span>1:1 Kotak</span>
+            </button>
+            <button type="button" id="crop-ratio-portrait" onclick="setCropRatio('portrait')" class="p-2 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] font-medium text-xs flex items-center justify-center space-x-1.5 transition">
+              <i class="fa-solid fa-mobile-screen"></i>
+              <span>4:3 Potret</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Controls: Zoom Slider -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-semibold text-[var(--nlm-text-primary)]">Perbesar / Perkecil (Zoom)</span>
+            <span id="crop-zoom-label" class="font-mono text-blue-600 font-bold text-[11px]">1.0x</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button type="button" onclick="stepZoom(-0.1)" class="w-7 h-7 rounded-lg border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center text-xs text-[var(--nlm-text-secondary)]"><i class="fa-solid fa-minus"></i></button>
+            <input type="range" id="crop-zoom-slider" min="0.5" max="3" step="0.05" value="1" oninput="onZoomSliderChange(this.value)" class="flex-1 accent-blue-600 h-1.5 bg-[var(--nlm-surface-variant)] rounded-lg cursor-pointer">
+            <button type="button" onclick="stepZoom(0.1)" class="w-7 h-7 rounded-lg border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center text-xs text-[var(--nlm-text-secondary)]"><i class="fa-solid fa-plus"></i></button>
+          </div>
+        </div>
+
+        <!-- Controls: Rotasi & Cermin & Reset -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+          <div class="flex items-center space-x-1.5">
+            <button type="button" onclick="rotatePhoto(-90)" class="px-2.5 py-1.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] text-[11px] font-semibold text-[var(--nlm-text-primary)] flex items-center space-x-1 transition" title="Putar 90° Kiri">
+              <i class="fa-solid fa-rotate-left text-xs"></i>
+              <span>-90°</span>
+            </button>
+            <button type="button" onclick="rotatePhoto(90)" class="px-2.5 py-1.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] text-[11px] font-semibold text-[var(--nlm-text-primary)] flex items-center space-x-1 transition" title="Putar 90° Kanan">
+              <i class="fa-solid fa-rotate-right text-xs"></i>
+              <span>+90°</span>
+            </button>
+            <button type="button" onclick="flipPhotoHorizontal()" class="px-2.5 py-1.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] text-[11px] font-semibold text-[var(--nlm-text-primary)] flex items-center space-x-1 transition" title="Cermin Horizontal">
+              <i class="fa-solid fa-arrows-left-right text-xs"></i>
+              <span>Cermin</span>
+            </button>
+          </div>
+          <button type="button" onclick="resetCropTransforms()" class="text-[11px] text-[var(--nlm-text-tertiary)] hover:text-red-500 font-medium transition flex items-center space-x-1">
+            <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
+            <span>Reset Posisi</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-end space-x-2">
+        <button type="button" onclick="closePhotoEditor()" class="px-4 py-2 rounded-xl border border-[var(--nlm-border)] text-xs font-semibold text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition">
+          Batal
+        </button>
+        <button type="button" onclick="applyCroppedPhoto()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center space-x-1.5 transition shadow-xs">
+          <i class="fa-solid fa-check text-xs"></i>
+          <span>Terapkan &amp; Simpan Foto</span>
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -2542,17 +2649,56 @@
       });
     }
 
+    function normalizeProviderKeyId(name) {
+      const lower = (name || '').toLowerCase();
+      if (lower.includes('gemini')) return 'gemini';
+      if (lower.includes('groq')) return 'groq';
+      if (lower.includes('9router')) return 'daemon_9router';
+      if (lower.includes('cerebras')) return 'cerebras';
+      if (lower.includes('deepseek')) return 'deepseek';
+      if (lower.includes('openrouter')) return 'openrouter';
+      if (lower.includes('mistral')) return 'mistral';
+      if (lower.includes('cohere')) return 'cohere';
+      if (lower.includes('together')) return 'together';
+      if (lower.includes('fireworks')) return 'fireworks';
+      if (lower.includes('nvidia')) return 'nvidia';
+      if (lower.includes('sambanova')) return 'sambanova';
+      if (lower.includes('cloudflare')) return 'cloudflare';
+      if (lower.includes('z.ai') || lower.includes('zhipu')) return 'zai';
+      if (lower.includes('ollama')) return 'ollama';
+      return lower.replace(/[^a-z0-9]/g, '_');
+    }
+
     function openConfigureApiKey(name, sampleKey, note) {
-      document.getElementById('provider-edit-name').textContent = `Konfigurasi Kunci API: ${name}`;
-      document.getElementById('provider-edit-note').textContent = note;
-      document.getElementById('provider-edit-input').value = sampleKey;
-      document.getElementById('provider-key-edit-box').scrollIntoView({ behavior: 'smooth' });
-      showToast("Pilih Provider", `Membuka pengaturan kunci untuk ${name}.`);
+      const id = normalizeProviderKeyId(name);
+      const box = document.getElementById('provider-key-edit-box');
+      if (box) {
+        box.dataset.providerId = id;
+        document.getElementById('provider-edit-name').textContent = `Konfigurasi Kunci API: ${name}`;
+        document.getElementById('provider-edit-note').textContent = note || 'Free Tier';
+        const existingKey = localStorage.getItem('noteroute_key_' + id) || '';
+        document.getElementById('provider-edit-input').value = existingKey || sampleKey || '';
+        box.scrollIntoView({ behavior: 'smooth' });
+        showToast("Pilih Provider", `Membuka pengaturan kunci untuk ${name}.`);
+      }
     }
 
     function saveProviderKey() {
-      const name = document.getElementById('provider-edit-name').textContent;
-      showToast("Kunci Disimpan", `${name} berhasil disimpan dan dienkripsi AES-256.`);
+      const box = document.getElementById('provider-key-edit-box');
+      if (!box) return;
+      const id = box.dataset.providerId || 'gemini';
+      const key = document.getElementById('provider-edit-input').value.trim();
+      const name = document.getElementById('provider-edit-name').textContent.replace('Konfigurasi Kunci API: ', '');
+
+      if (key) {
+        localStorage.setItem('noteroute_key_' + id, key);
+        showToast("Kunci Disimpan", `${name} berhasil dihubungkan & ditambahkan ke Prioritas AI.`);
+      } else {
+        localStorage.removeItem('noteroute_key_' + id);
+        showToast("Kunci Dihapus", `${name} dinonaktifkan dari Prioritas AI.`);
+      }
+
+      renderPriorityList();
     }
 
     function saveAllSettings() {
@@ -2562,6 +2708,13 @@
 
     function resetAllApiKeys() {
       if (confirm("Apakah Anda yakin ingin mereset seluruh kunci API ke setelan awal?")) {
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('noteroute_key_')) {
+            localStorage.removeItem(key);
+          }
+        });
+        localStorage.removeItem('noteroute_priority_order');
+        renderPriorityList();
         showToast("Reset Berhasil", "Seluruh kunci API telah direset ke default.");
       }
     }
@@ -2660,35 +2813,219 @@
     }
 
     function handleProfilePhotoUpload(e) {
-      const file = e.target.files[0];
+      const file = e.target.files && e.target.files[0];
       if (file) {
+        if (file.size > 10 * 1024 * 1024) {
+          showToast("Berkas Terlalu Besar", "Ukuran foto profil maksimal 10 MB.");
+          return;
+        }
         const reader = new FileReader();
         reader.onload = function(evt) {
-          const dataUrl = evt.target.result;
-          
-          // Preview in settings modal
-          const sImg = document.getElementById('settings-avatar-img');
-          sImg.src = dataUrl;
-          sImg.classList.remove('hidden');
-          document.getElementById('settings-avatar-text').classList.add('hidden');
-
-          // Preview in topbar button
-          const tImg = document.getElementById('topbar-avatar-img');
-          tImg.src = dataUrl;
-          tImg.classList.remove('hidden');
-          document.getElementById('topbar-avatar-text').classList.add('hidden');
-
-          // Preview in dropdown menu
-          const dImg = document.getElementById('dropdown-avatar-img');
-          dImg.src = dataUrl;
-          dImg.classList.remove('hidden');
-          document.getElementById('dropdown-avatar-text').classList.add('hidden');
-
-          saveProfileToStorage();
-          showToast("Foto Profil Diperbarui", "Foto berhasil disimpan ke akun cloud.");
+          openPhotoEditor(evt.target.result);
         };
         reader.readAsDataURL(file);
       }
+    }
+
+    // ========================================================
+    // PHOTO EDITOR CANVAS LOGIC (CROP, ZOOM, PAN, RATIO, ROTATE, FLIP)
+    // ========================================================
+    let editorImg = new Image();
+    let cropScale = 1.0;
+    let cropPanX = 0;
+    let cropPanY = 0;
+    let cropRotation = 0;
+    let cropFlipH = false;
+    let cropRatio = 'circle';
+    let isDraggingCanvas = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let initialPanX = 0;
+    let initialPanY = 0;
+    let photoEventsBound = false;
+
+    function initPhotoEditorEvents() {
+      if (photoEventsBound) return;
+      const canvas = document.getElementById('crop-canvas');
+      if (!canvas) return;
+
+      canvas.addEventListener('mousedown', (e) => {
+        isDraggingCanvas = true;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        initialPanX = cropPanX;
+        initialPanY = cropPanY;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDraggingCanvas) return;
+        cropPanX = initialPanX + (e.clientX - dragStartX);
+        cropPanY = initialPanY + (e.clientY - dragStartY);
+        drawCropCanvas();
+      });
+
+      window.addEventListener('mouseup', () => {
+        isDraggingCanvas = false;
+      });
+
+      canvas.addEventListener('touchstart', (e) => {
+        if (e.touches && e.touches.length === 1) {
+          isDraggingCanvas = true;
+          dragStartX = e.touches[0].clientX;
+          dragStartY = e.touches[0].clientY;
+          initialPanX = cropPanX;
+          initialPanY = cropPanY;
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (!isDraggingCanvas || !e.touches || e.touches.length !== 1) return;
+        cropPanX = initialPanX + (e.touches[0].clientX - dragStartX);
+        cropPanY = initialPanY + (e.touches[0].clientY - dragStartY);
+        drawCropCanvas();
+      }, { passive: true });
+
+      window.addEventListener('touchend', () => {
+        isDraggingCanvas = false;
+      });
+
+      photoEventsBound = true;
+    }
+
+    function openPhotoEditor(imageSrc) {
+      initPhotoEditorEvents();
+      editorImg = new Image();
+      editorImg.onload = () => {
+        resetCropTransforms();
+        document.getElementById('modal-photo-editor').classList.remove('hidden');
+        drawCropCanvas();
+      };
+      editorImg.src = imageSrc;
+    }
+
+    function closePhotoEditor() {
+      document.getElementById('modal-photo-editor').classList.add('hidden');
+      const input = document.getElementById('profile-photo-input');
+      if (input) input.value = '';
+    }
+
+    function resetCropTransforms() {
+      cropScale = 1.0;
+      cropPanX = 0;
+      cropPanY = 0;
+      cropRotation = 0;
+      cropFlipH = false;
+      const slider = document.getElementById('crop-zoom-slider');
+      if (slider) slider.value = 1;
+      const label = document.getElementById('crop-zoom-label');
+      if (label) label.textContent = '1.0x';
+      setCropRatio('circle');
+    }
+
+    function setCropRatio(ratio) {
+      cropRatio = ratio;
+      const btnCircle = document.getElementById('crop-ratio-circle');
+      const btnSquare = document.getElementById('crop-ratio-square');
+      const btnPortrait = document.getElementById('crop-ratio-portrait');
+      const guide = document.getElementById('crop-overlay-guide');
+
+      const actCls = 'p-2 rounded-xl border border-blue-500 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold text-xs flex items-center justify-center space-x-1.5 transition';
+      const inactCls = 'p-2 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] font-medium text-xs flex items-center justify-center space-x-1.5 transition';
+
+      if (btnCircle) btnCircle.className = ratio === 'circle' ? actCls : inactCls;
+      if (btnSquare) btnSquare.className = ratio === 'square' ? actCls : inactCls;
+      if (btnPortrait) btnPortrait.className = ratio === 'portrait' ? actCls : inactCls;
+
+      if (guide) {
+        if (ratio === 'circle') {
+          guide.style.borderRadius = '9999px';
+          guide.style.width = '300px';
+          guide.style.height = '300px';
+        } else if (ratio === 'square') {
+          guide.style.borderRadius = '24px';
+          guide.style.width = '300px';
+          guide.style.height = '300px';
+        } else if (ratio === 'portrait') {
+          guide.style.borderRadius = '18px';
+          guide.style.width = '255px';
+          guide.style.height = '320px';
+        }
+      }
+      drawCropCanvas();
+    }
+
+    function onZoomSliderChange(val) {
+      cropScale = parseFloat(val);
+      const label = document.getElementById('crop-zoom-label');
+      if (label) label.textContent = cropScale.toFixed(2) + 'x';
+      drawCropCanvas();
+    }
+
+    function stepZoom(delta) {
+      const slider = document.getElementById('crop-zoom-slider');
+      if (!slider) return;
+      let val = Math.max(0.5, Math.min(3.0, parseFloat(slider.value) + delta));
+      slider.value = val.toFixed(2);
+      onZoomSliderChange(val);
+    }
+
+    function rotatePhoto(deg) {
+      cropRotation = (cropRotation + deg + 360) % 360;
+      drawCropCanvas();
+    }
+
+    function flipPhotoHorizontal() {
+      cropFlipH = !cropFlipH;
+      drawCropCanvas();
+    }
+
+    function drawCropCanvas() {
+      const canvas = document.getElementById('crop-canvas');
+      if (!canvas || !editorImg.complete || !editorImg.naturalWidth) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.save();
+      ctx.translate(canvas.width / 2 + cropPanX, canvas.height / 2 + cropPanY);
+      ctx.rotate((cropRotation * Math.PI) / 180);
+      ctx.scale(cropScale * (cropFlipH ? -1 : 1), cropScale);
+
+      const baseScale = Math.max(canvas.width / editorImg.naturalWidth, canvas.height / editorImg.naturalHeight);
+      const dw = editorImg.naturalWidth * baseScale;
+      const dh = editorImg.naturalHeight * baseScale;
+      ctx.drawImage(editorImg, -dw / 2, -dh / 2, dw, dh);
+      ctx.restore();
+    }
+
+    function applyCroppedPhoto() {
+      const canvas = document.getElementById('crop-canvas');
+      if (!canvas) return;
+
+      const exportCanvas = document.createElement('canvas');
+      let outW = 512;
+      let outH = 512;
+      if (cropRatio === 'portrait') {
+        outW = 384;
+        outH = 512;
+      }
+      exportCanvas.width = outW;
+      exportCanvas.height = outH;
+      const ctx = exportCanvas.getContext('2d');
+
+      const guide = document.getElementById('crop-overlay-guide');
+      const guideW = guide ? parseFloat(guide.style.width) || 300 : 300;
+      const guideH = guide ? parseFloat(guide.style.height) || 300 : 300;
+
+      const guideX = (canvas.width - guideW) / 2;
+      const guideY = (canvas.height - guideH) / 2;
+
+      ctx.drawImage(canvas, guideX, guideY, guideW, guideH, 0, 0, outW, outH);
+
+      const dataUrl = exportCanvas.toDataURL('image/png', 0.95);
+      applyAvatarImage(dataUrl);
+      saveProfileToStorage();
+      closePhotoEditor();
+      showToast("Foto Profil Diperbarui", "Foto berhasil dipotong dan disinkronkan ke profil Anda.");
     }
 
     function removeProfilePhoto() {
@@ -2795,25 +3132,163 @@
 
     function reindexPriorityList() {
       const list = document.getElementById('priority-list');
+      if (!list) return;
       const items = list.querySelectorAll('.priority-item');
+      const order = [];
       items.forEach((item, index) => {
+        const id = item.dataset.id;
+        if (id) order.push(id);
         const rank = index + 1;
         const rankBadge = item.querySelector('.priority-rank-badge');
         const statusBadge = item.querySelector('.priority-status-badge');
         
-        rankBadge.textContent = rank;
-        if (rank === 1) {
-          rankBadge.className = "priority-rank-badge w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0";
-          statusBadge.className = "priority-status-badge text-[10px] font-bold text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded";
-          statusBadge.textContent = "Utama";
-        } else {
-          rankBadge.className = "priority-rank-badge w-6 h-6 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center shrink-0";
-          statusBadge.className = "priority-status-badge text-[10px] font-bold text-[var(--nlm-text-secondary)] bg-[var(--nlm-surface-hover)] px-2 py-0.5 rounded";
-          statusBadge.textContent = `Failover #${rank - 1}`;
+        if (rankBadge) rankBadge.textContent = rank;
+        if (statusBadge) {
+          if (rank === 1) {
+            if (rankBadge) rankBadge.className = "priority-rank-badge w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0";
+            statusBadge.className = "priority-status-badge text-[10px] font-bold text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded";
+            statusBadge.textContent = "Utama";
+          } else {
+            if (rankBadge) rankBadge.className = "priority-rank-badge w-6 h-6 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center shrink-0";
+            statusBadge.className = "priority-status-badge text-[10px] font-bold text-[var(--nlm-text-secondary)] bg-[var(--nlm-surface-hover)] px-2 py-0.5 rounded";
+            statusBadge.textContent = `Failover #${rank - 1}`;
+          }
         }
       });
-      const topName = items[0].querySelector('.font-bold.text-xs').textContent;
-      showToast("Prioritas Diperbarui", `${topName} kini urutan #1.`);
+      if (order.length > 0) {
+        localStorage.setItem('noteroute_priority_order', JSON.stringify(order));
+      }
+      if (items.length > 0) {
+        const topEl = items[0].querySelector('.font-bold.text-xs');
+        const topName = topEl ? topEl.textContent : 'AI';
+        showToast("Prioritas Diperbarui", `${topName} kini prioritas #1.`);
+      }
+    }
+
+    const BUILTIN_PROVIDERS_MAP = {
+      gemini: { id: 'gemini', name: 'Google Gemini 1.5 Flash', icon: 'fa-brands fa-google', iconColor: 'blue', desc: '1.500 req/hari • 1M Context Free', isDefaultReady: true },
+      groq: { id: 'groq', name: 'Groq Cloud (Llama 3.3 70B)', icon: 'fa-solid fa-bolt', iconColor: 'orange', desc: 'Inference ultra-cepat • 300+ token/detik', isDefaultReady: true },
+      daemon_9router: { id: 'daemon_9router', name: '9Router Local Daemon', icon: 'fa-solid fa-network-wired', iconColor: 'emerald', desc: '100% Offline di Port 20128 • 1 Jaringan LAN', isDefaultReady: true },
+      deepseek: { id: 'deepseek', name: 'DeepSeek V3 / R1', icon: 'fa-solid fa-brain', iconColor: 'indigo', desc: 'Reasoning Canggih • Free Credits', isDefaultReady: true },
+      cerebras: { id: 'cerebras', name: 'Cerebras', icon: 'fa-solid fa-microchip', iconColor: 'purple', desc: 'Inference wafer-scale ultra-cepat • 1.800+ t/s' },
+      openrouter: { id: 'openrouter', name: 'OpenRouter (Free)', icon: 'fa-solid fa-route', iconColor: 'sky', desc: 'Akses model Llama & Mistral Gratis (:free)' },
+      mistral: { id: 'mistral', name: 'Mistral AI', icon: 'fa-solid fa-wind', iconColor: 'amber', desc: 'Codestral & Mistral 7B • Free Tier' },
+      cohere: { id: 'cohere', name: 'Cohere', icon: 'fa-solid fa-cubes', iconColor: 'teal', desc: 'Command R / R+ • Trial 1.000 Call/Bulan' },
+      together: { id: 'together', name: 'Together AI', icon: 'fa-solid fa-layer-group', iconColor: 'pink', desc: '100+ Model Open Source • $5 Free' },
+      fireworks: { id: 'fireworks', name: 'Fireworks AI', icon: 'fa-solid fa-fire', iconColor: 'rose', desc: 'Fast Inference • $1 Free Credits' },
+      nvidia: { id: 'nvidia', name: 'NVIDIA NIM', icon: 'fa-solid fa-eye', iconColor: 'emerald', desc: 'Developer Prototyping • 405B Free' },
+      sambanova: { id: 'sambanova', name: 'SambaNova', icon: 'fa-solid fa-bolt-lightning', iconColor: 'amber', desc: 'Fast Inference • Llama 3.1 70B Free' },
+      cloudflare: { id: 'cloudflare', name: 'Cloudflare AI', icon: 'fa-solid fa-cloud', iconColor: 'orange', desc: '10.000 neurons/hari gratis edge' },
+      zai: { id: 'zai', name: 'Z.ai (Zhipu)', icon: 'fa-solid fa-atom', iconColor: 'blue', desc: 'GLM-4-Flash Free Tier' },
+      ollama: { id: 'ollama', name: 'Ollama Local Host', icon: 'fa-solid fa-laptop-code', iconColor: 'violet', desc: 'Model lokal offline tanpa internet' }
+    };
+
+    function getConnectedProviders() {
+      const connected = [];
+
+      // 1. Built-in default ready & built-in with saved key
+      Object.keys(BUILTIN_PROVIDERS_MAP).forEach(id => {
+        const item = BUILTIN_PROVIDERS_MAP[id];
+        const savedKey = localStorage.getItem('noteroute_key_' + id);
+        if (item.isDefaultReady || (savedKey && savedKey.trim())) {
+          connected.push({
+            ...item,
+            isConnected: true
+          });
+        }
+      });
+
+      // 2. Custom Providers (BYOK)
+      const customList = getCustomProviders();
+      customList.forEach(cp => {
+        connected.push({
+          id: 'custom_' + cp.id,
+          name: cp.name,
+          icon: 'fa-solid fa-server',
+          iconColor: 'blue',
+          desc: `${(cp.proto || 'OpenAI').toUpperCase()} • ${cp.model || 'Custom'} (${cp.baseUrl || ''})`,
+          isCustom: true,
+          isConnected: true
+        });
+      });
+
+      // 3. Sort by user saved priority order
+      let savedOrder = [];
+      try {
+        const raw = localStorage.getItem('noteroute_priority_order');
+        if (raw) savedOrder = JSON.parse(raw);
+      } catch (err) {}
+
+      if (Array.isArray(savedOrder) && savedOrder.length > 0) {
+        connected.sort((a, b) => {
+          const idxA = savedOrder.indexOf(a.id);
+          const idxB = savedOrder.indexOf(b.id);
+          if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+          if (idxA !== -1) return -1;
+          if (idxB !== -1) return 1;
+          return 0;
+        });
+      }
+
+      return connected;
+    }
+
+    function renderPriorityList() {
+      const container = document.getElementById('priority-list');
+      if (!container) return;
+
+      const items = getConnectedProviders();
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center text-xs text-[var(--nlm-text-tertiary)] border border-dashed border-[var(--nlm-border)] rounded-2xl">
+            <i class="fa-solid fa-circle-exclamation text-base text-amber-500 mb-2"></i>
+            <p>Belum ada AI yang terhubung. Buka tab <strong>Kunci API</strong> untuk mengonfigurasi provider atau menambahkan endpoint kustom.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items.map((item, index) => {
+        const rank = index + 1;
+        const isPrimary = (rank === 1);
+        return `
+          <div class="priority-item p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:border-blue-500 flex items-center justify-between cursor-grab active:cursor-grabbing transition" 
+               draggable="true" 
+               data-id="${item.id}"
+               ondragstart="onPriorityDragStart(event)" 
+               ondragover="onPriorityDragOver(event)" 
+               ondrop="onPriorityDrop(event)" 
+               ondragend="onPriorityDragEnd(event)">
+            <div class="flex items-center space-x-3 min-w-0 flex-1 mr-2">
+              <div class="text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] p-1 shrink-0">
+                <i class="fa-solid fa-grip-vertical"></i>
+              </div>
+              <div class="priority-rank-badge w-6 h-6 rounded-full ${isPrimary ? 'bg-blue-600' : 'bg-slate-600'} text-white font-bold text-xs flex items-center justify-center shrink-0">
+                ${rank}
+              </div>
+              <div class="w-7 h-7 rounded-lg bg-${item.iconColor}-500/10 text-${item.iconColor}-600 flex items-center justify-center text-xs shrink-0">
+                <i class="${item.icon}"></i>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="font-bold text-xs text-[var(--nlm-text-primary)] flex items-center space-x-1.5 truncate">
+                  <span class="truncate">${item.name}</span>
+                  ${item.isCustom ? '<span class="px-1.5 py-0.2 rounded text-[9px] bg-blue-500/15 text-blue-600 font-mono font-semibold shrink-0">BYOK</span>' : ''}
+                </div>
+                <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">${item.desc}</div>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 shrink-0">
+              <span class="priority-status-badge text-[10px] font-bold ${isPrimary ? 'text-blue-600 bg-blue-500/10' : 'text-[var(--nlm-text-secondary)] bg-[var(--nlm-surface-hover)]'} px-2 py-0.5 rounded">
+                ${isPrimary ? 'Utama' : 'Failover #' + (rank - 1)}
+              </span>
+              <div class="flex flex-col space-y-0.5">
+                <button onclick="movePriority(this, -1, event)" class="p-1 hover:text-blue-500 text-[10px] leading-none" title="Pindah ke Atas"><i class="fa-solid fa-chevron-up"></i></button>
+                <button onclick="movePriority(this, 1, event)" class="p-1 hover:text-blue-500 text-[10px] leading-none" title="Pindah ke Bawah"><i class="fa-solid fa-chevron-down"></i></button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     // API TUTORIAL MODAL DATA & HANDLERS
@@ -3107,7 +3582,7 @@
         if (item) {
           titleEl.textContent = 'Edit Provider API Kustom';
           idInput.value = item.id;
-          setCustomApiProto(item.proto);
+          setCustomApiProto(item.proto || 'openai');
           document.getElementById('custom-api-name').value = item.name;
           document.getElementById('custom-api-url').value = item.baseUrl;
           document.getElementById('custom-api-model').value = item.model;
@@ -3121,8 +3596,16 @@
       titleEl.textContent = 'Tambah Provider API Kustom';
       idInput.value = '';
       document.getElementById('custom-api-name').value = '';
-      document.getElementById('custom-api-url').value = proto === 'anthropic' ? 'https://api.anthropic.com/v1' : 'http://localhost:1234/v1';
-      document.getElementById('custom-api-model').value = proto === 'anthropic' ? 'claude-3-5-sonnet-20241022' : 'llama-3.3-70b-instruct';
+      if (proto === 'anthropic') {
+        document.getElementById('custom-api-url').value = 'https://api.anthropic.com/v1';
+        document.getElementById('custom-api-model').value = 'claude-3-5-sonnet-20241022';
+      } else if (proto === 'custom') {
+        document.getElementById('custom-api-url').value = 'http://localhost:8080/v1';
+        document.getElementById('custom-api-model').value = 'custom-model';
+      } else {
+        document.getElementById('custom-api-url').value = 'http://localhost:1234/v1';
+        document.getElementById('custom-api-model').value = 'llama-3.3-70b-instruct';
+      }
       document.getElementById('custom-api-key').value = '';
       document.getElementById('custom-api-notes').value = '';
       document.getElementById('modal-custom-api').classList.remove('hidden');
@@ -3137,16 +3620,30 @@
       document.getElementById('custom-api-proto').value = proto;
       const btnOpenai = document.getElementById('btn-proto-openai');
       const btnAnthropic = document.getElementById('btn-proto-anthropic');
+      const btnCustom = document.getElementById('btn-proto-custom');
       const hint = document.getElementById('custom-api-proto-hint');
+      const urlInput = document.getElementById('custom-api-url');
+      const modelInput = document.getElementById('custom-api-model');
+
+      const actCls = "p-2.5 rounded-xl border border-blue-500 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-1.5 transition text-center";
+      const inactCls = "p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] font-medium flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-1.5 transition text-center";
+
+      if (btnOpenai) btnOpenai.className = proto === 'openai' ? actCls : inactCls;
+      if (btnAnthropic) btnAnthropic.className = proto === 'anthropic' ? actCls : inactCls;
+      if (btnCustom) btnCustom.className = proto === 'custom' ? actCls : inactCls;
       
       if (proto === 'anthropic') {
-        if (btnAnthropic) btnAnthropic.className = "p-2.5 rounded-xl border border-orange-500 bg-orange-500/10 text-orange-600 dark:text-orange-400 font-bold flex items-center justify-center space-x-2 transition";
-        if (btnOpenai) btnOpenai.className = "p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] font-medium flex items-center justify-center space-x-2 transition";
         if (hint) hint.innerHTML = 'Menggunakan format Anthropic <code>/v1/messages</code> dengan header <code>x-api-key</code>.';
+        if (urlInput && !urlInput.value) urlInput.placeholder = 'https://api.anthropic.com/v1 atau http://localhost:8000/v1';
+        if (modelInput && !modelInput.value) modelInput.placeholder = 'Contoh: claude-3-5-sonnet-20241022';
+      } else if (proto === 'custom') {
+        if (hint) hint.innerHTML = 'Menggunakan endpoint mandiri / gateway REST API kustom (Raw payload).';
+        if (urlInput && !urlInput.value) urlInput.placeholder = 'http://localhost:8080/v1 atau https://my-llm.com/api';
+        if (modelInput && !modelInput.value) modelInput.placeholder = 'Contoh: custom-model, mistral-npu, deepseek-local';
       } else {
-        if (btnOpenai) btnOpenai.className = "p-2.5 rounded-xl border border-blue-500 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold flex items-center justify-center space-x-2 transition";
-        if (btnAnthropic) btnAnthropic.className = "p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] font-medium flex items-center justify-center space-x-2 transition";
         if (hint) hint.innerHTML = 'Menggunakan format standar <code>/v1/chat/completions</code> (cocok untuk vLLM, LM Studio, Ollama, Together, OpenRouter).';
+        if (urlInput && !urlInput.value) urlInput.placeholder = 'http://localhost:1234/v1 atau https://api.openai.com/v1';
+        if (modelInput && !modelInput.value) modelInput.placeholder = 'Contoh: llama-3.3-70b-instruct, qwen-2.5';
       }
     }
 
@@ -3162,6 +3659,7 @@
     function saveCustomProvidersList(list) {
       localStorage.setItem('noteroute_custom_providers', JSON.stringify(list));
       renderCustomProviders();
+      renderPriorityList();
     }
 
     function handleCustomApiSubmit(e) {
@@ -3184,7 +3682,7 @@
       } else {
         const newId = 'cust_' + Date.now();
         list.push({ id: newId, proto, name, baseUrl, model, apiKey, notes });
-        showToast("Provider Ditambahkan", `${name} siap digunakan di rantai routing NoteRoute.`);
+        showToast("Provider Ditambahkan", `${name} siap digunakan di rantai prioritas NoteRoute.`);
       }
       
       saveCustomProvidersList(list);
@@ -3211,25 +3709,27 @@
         container.innerHTML = `
           <div class="col-span-full py-4 px-3 rounded-xl border border-dashed border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-center text-xs text-[var(--nlm-text-tertiary)]">
             <i class="fa-solid fa-server text-base mb-1 block opacity-40"></i>
-            <span>No custom providers — gunakan tombol di atas untuk menambah endpoint lokal (LM Studio, vLLM, Ollama kustom) atau cloud endpoint sendiri (BYOK).</span>
+            <span>Belum ada provider kustom — gunakan tombol di atas untuk menambah endpoint lokal (LM Studio, vLLM, Ollama) atau endpoint sendiri (BYOK).</span>
           </div>
         `;
         return;
       }
       
       container.innerHTML = list.map(item => {
-        const isAnthropic = item.proto === 'anthropic';
-        const protoBadge = isAnthropic 
-          ? '<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400">Anthropic</span>'
-          : '<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400">OpenAI</span>';
+        let protoBadge = '<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400">OpenAI</span>';
+        if (item.proto === 'anthropic') {
+          protoBadge = '<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400">Anthropic</span>';
+        } else if (item.proto === 'custom') {
+          protoBadge = '<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400">Kustom</span>';
+        }
         
         return `
           <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 transition flex flex-col justify-between group">
             <div>
               <div class="flex items-start justify-between gap-1 mb-1.5">
                 <div class="flex items-center space-x-2 min-w-0">
-                  <div class="w-7 h-7 rounded-lg ${isAnthropic ? 'bg-orange-500/10 text-orange-600' : 'bg-blue-500/10 text-blue-600'} flex items-center justify-center text-xs shrink-0">
-                    <i class="fa-solid ${isAnthropic ? 'fa-microchip' : 'fa-server'}"></i>
+                  <div class="w-7 h-7 rounded-lg ${item.proto === 'anthropic' ? 'bg-orange-500/10 text-orange-600' : (item.proto === 'custom' ? 'bg-purple-500/10 text-purple-600' : 'bg-blue-500/10 text-blue-600')} flex items-center justify-center text-xs shrink-0">
+                    <i class="fa-solid ${item.proto === 'anthropic' ? 'fa-microchip' : (item.proto === 'custom' ? 'fa-code' : 'fa-server')}"></i>
                   </div>
                   <div class="min-w-0">
                     <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">${escapeHtml(item.name)}</div>
@@ -3246,7 +3746,7 @@
             <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between text-[11px]">
               <span class="text-[10px] text-emerald-600 font-semibold flex items-center space-x-1">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                <span>Tersambung</span>
+                <span>Tersambung (Prioritas Aktif)</span>
               </span>
               <div class="flex items-center space-x-1">
                 <button onclick="openCustomApiModal('${item.proto}', '${item.id}')" class="p-1 px-1.5 rounded text-[10px] font-semibold text-[var(--nlm-text-secondary)] hover:text-blue-600 hover:bg-[var(--nlm-surface-hover)] transition" title="Edit Provider">
@@ -3772,11 +4272,13 @@
       }
     });
 
-    // INITIALIZATION (THEME & SYSTEM LISTENER & PROFILE & CUSTOM APIS)
+    // INITIALIZATION (THEME & SYSTEM LISTENER & PROFILE & CUSTOM APIS & PRIORITY)
     const savedTheme = localStorage.getItem('noteroute-theme-pref') || 'system';
     setThemePreference(savedTheme, false);
     loadStoredProfile();
     renderCustomProviders();
+    renderPriorityList();
+    initPhotoEditorEvents();
   </script>
 </body>
 </html>
