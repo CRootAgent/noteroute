@@ -167,12 +167,99 @@
     }
 
     .smooth-panel {
-      transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, transform 0.25s ease;
+      transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, transform 0.25s ease;
     }
 
     .dropzone-active {
       border-color: #0b57d0 !important;
       background-color: var(--nlm-accent-bg) !important;
+    }
+
+    /* ======================================================== */
+    /* ANIMASI HALUS TRANSISI, MODAL & STATUS AI                */
+    /* ======================================================== */
+    @keyframes nlmModalFadeIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.96) translateY(8px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    .modal-animate-in, .animate-scale-up {
+      animation: nlmModalFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes nlmFadeSlideUp {
+      0% {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-up {
+      animation: nlmFadeSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes nlmFadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    .animate-fade-in {
+      animation: nlmFadeIn 0.2s ease-out forwards;
+    }
+
+    @keyframes nlmDropdownFade {
+      0% {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .animate-dropdown {
+      animation: nlmDropdownFade 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* 3-DOT JUMPING BOUNCE ANIMATION UNTUK AI SEDANG BERPIKIR */
+    @keyframes dotBounce {
+      0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 0.35;
+      }
+      40% {
+        transform: translateY(-5px);
+        opacity: 1;
+      }
+    }
+    .dot-bounce-1 { animation: dotBounce 1.2s infinite ease-in-out both; animation-delay: -0.32s; }
+    .dot-bounce-2 { animation: dotBounce 1.2s infinite ease-in-out both; animation-delay: -0.16s; }
+    .dot-bounce-3 { animation: dotBounce 1.2s infinite ease-in-out both; }
+
+    /* GENTLE BREATHING PULSE UNTUK STATUS */
+    @keyframes gentlePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(0.99); }
+    }
+    .animate-gentle-pulse {
+      animation: gentlePulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* GENTLE SHAKE ERROR ALERT */
+    @keyframes gentleShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
+    }
+    .animate-shake {
+      animation: gentleShake 0.4s ease-in-out;
     }
 
     /* SCROLLBAR */
@@ -242,7 +329,7 @@
         </button>
 
         <!-- PROFILE DROPDOWN MENU -->
-        <div id="profile-dropdown-menu" class="hidden absolute right-0 mt-2 w-72 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-xl p-2 z-50">
+        <div id="profile-dropdown-menu" class="hidden absolute right-0 mt-2 w-72 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-xl p-2 z-50 animate-dropdown">
           <div class="p-3 border-b border-[var(--nlm-border-subtle)] flex items-center space-x-3">
             <div id="dropdown-avatar-box" class="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0 overflow-hidden">
               <span id="dropdown-avatar-text">AZ</span>
@@ -545,8 +632,27 @@
         <!-- ACTIVE CHAT CONVERSATION WRAPPER -->
         <div id="nlm-active-messages" class="max-w-2xl mx-auto space-y-6 hidden">
           
+          <!-- Simulation Status Toolbar -->
+          <div class="flex items-center justify-between text-[11px] pb-2 border-b border-[var(--nlm-border-subtle)]">
+            <span class="text-[var(--nlm-text-tertiary)] flex items-center space-x-1.5 font-medium">
+              <i class="fa-solid fa-microchip text-[10px] text-[var(--nlm-brand)]"></i>
+              <span>Status &amp; Simulasi AI:</span>
+            </span>
+            <div class="flex items-center space-x-1.5">
+              <button onclick="simulateAiState('normal')" class="px-2 py-0.5 rounded-md bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-secondary)] border border-[var(--nlm-border)] text-[10px] transition font-medium" title="Uji Alur Normal AI">
+                <i class="fa-solid fa-check text-emerald-500 mr-1 text-[9px]"></i>Normal
+              </button>
+              <button onclick="simulateAiState('timeout')" class="px-2 py-0.5 rounded-md bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[10px] transition font-medium" title="Uji Simulasi Timeout / Jaringan Terputus">
+                <i class="fa-solid fa-clock text-amber-500 mr-1 text-[9px]"></i>Simulasi Timeout
+              </button>
+              <button onclick="simulateAiState('quota')" class="px-2 py-0.5 rounded-md bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 text-[10px] transition font-medium" title="Uji Simulasi Token / Kuota Habis (HTTP 429)">
+                <i class="fa-solid fa-bolt text-red-500 mr-1 text-[9px]"></i>Simulasi Kuota 429
+              </button>
+            </div>
+          </div>
+
           <!-- Sample User Turn with EDIT PROMPT capability -->
-          <div class="flex justify-end group">
+          <div id="user-turn-block" class="flex justify-end group animate-fade-up">
             <div class="flex flex-col items-end space-y-1 max-w-lg">
               
               <!-- Display Bubble -->
@@ -556,10 +662,13 @@
 
               <!-- Inline Edit Form -->
               <div id="user-edit-form" class="hidden w-full bg-[var(--nlm-surface)] border border-[var(--nlm-brand)] rounded-2xl p-3 shadow-md space-y-2">
-                <textarea id="user-edit-textarea" rows="2" class="w-full bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] focus:outline-none resize-none"></textarea>
-                <div class="flex justify-end space-x-2 text-xs">
-                  <button onclick="cancelPromptEdit()" class="px-2.5 py-1 rounded-lg hover:bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)]">Batal</button>
-                  <button onclick="saveAndResubmitPrompt()" class="px-3 py-1 rounded-lg bg-[var(--nlm-brand)] hover:bg-[var(--nlm-brand-hover)] text-white font-medium">Simpan &amp; Kirim</button>
+                <textarea id="user-edit-textarea" rows="2" onkeydown="handleEditPromptKeyDown(event)" class="w-full bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] focus:outline-none resize-none"></textarea>
+                <div class="flex items-center justify-between text-xs pt-1">
+                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]"><kbd class="px-1 py-0.5 rounded bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-[9px]">Enter</kbd> simpan &bull; <kbd class="px-1 py-0.5 rounded bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-[9px]">Shift+Enter</kbd> baris</span>
+                  <div class="flex space-x-2">
+                    <button onclick="cancelPromptEdit()" class="px-2.5 py-1 rounded-lg hover:bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)]">Batal</button>
+                    <button onclick="saveAndResubmitPrompt()" class="px-3 py-1 rounded-lg bg-[var(--nlm-brand)] hover:bg-[var(--nlm-brand-hover)] text-white font-medium">Simpan &amp; Kirim</button>
+                  </div>
                 </div>
               </div>
 
@@ -574,8 +683,88 @@
             </div>
           </div>
 
+          <!-- ANIMATED STATE 1: AI PERLU WAKTU / SEDANG BERPIKIR (THINKING STATE) -->
+          <div id="ai-thinking-state" class="hidden flex items-start space-x-3.5 animate-fade-up">
+            <div class="w-7 h-7 rounded-full bg-slate-900 text-white dark:bg-zinc-800 dark:text-zinc-100 border border-slate-700/20 dark:border-zinc-700 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-xs">
+              <i class="fa-solid fa-wand-magic-sparkles text-[11px] text-[var(--nlm-brand)] animate-spin" style="animation-duration: 3s;"></i>
+            </div>
+            <div class="flex-1 space-y-2 py-1">
+              <div class="flex items-center space-x-2.5 text-xs font-medium text-[var(--nlm-text-primary)]">
+                <span class="flex items-center space-x-1">
+                  <span class="w-2 h-2 rounded-full bg-[var(--nlm-brand)] dot-bounce-1"></span>
+                  <span class="w-2 h-2 rounded-full bg-[var(--nlm-brand)] dot-bounce-2"></span>
+                  <span class="w-2 h-2 rounded-full bg-[var(--nlm-brand)] dot-bounce-3"></span>
+                </span>
+                <span id="ai-thinking-status-text" class="text-xs text-[var(--nlm-text-secondary)]">Menganalisis 4 berkas laptop &amp; mencocokkan semantik sitasi...</span>
+              </div>
+              <div class="w-full max-w-sm h-1.5 bg-[var(--nlm-surface-variant)] rounded-full overflow-hidden">
+                <div class="h-full bg-[var(--nlm-brand)] rounded-full animate-pulse" style="width: 65%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ANIMATED STATE 2: JAGA-JAGA KONEKSI TERPUTUS / TIMEOUT -->
+          <div id="ai-timeout-card" class="hidden p-4 rounded-2xl border border-amber-500/40 bg-amber-500/5 dark:bg-amber-950/20 space-y-3 animate-fade-up animate-shake">
+            <div class="flex items-start space-x-3">
+              <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm shrink-0 border border-amber-500/30">
+                <i class="fa-solid fa-triangle-exclamation animate-gentle-pulse"></i>
+              </div>
+              <div class="flex-1 space-y-1">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-bold text-xs sm:text-sm text-amber-700 dark:text-amber-300 flex items-center space-x-1.5">
+                    <span>Koneksi AI Terputus / Jaringan Lambat</span>
+                  </h4>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 font-mono font-medium">HTTP 504 Timeout</span>
+                </div>
+                <p class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+                  Penyedia AI tidak merespons dalam batas waktu aman. Sesi pertanyaan Anda tidak hilang. Anda dapat mencoba menghubungi ulang atau mengalihkan ke model cadangan berkecepatan tinggi.
+                </p>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-amber-500/20 text-xs">
+              <button onclick="retryLastPrompt()" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold transition flex items-center space-x-1.5 shadow-xs">
+                <i class="fa-solid fa-rotate-right text-xs"></i>
+                <span>Coba Hubungkan Ulang</span>
+              </button>
+              <button onclick="failoverToFallbackProvider('Groq Llama 3 70B')" class="px-3 py-1.5 rounded-xl bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-[var(--nlm-text-primary)] font-medium transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-bolt text-amber-500 text-xs"></i>
+                <span>Alihkan ke Groq (Pencadangan Cepat)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ANIMATED STATE 3: JAGA-JAGA TOKEN / KUOTA HABIS (HTTP 429) -->
+          <div id="ai-quota-card" class="hidden p-4 rounded-2xl border border-red-500/40 bg-red-500/5 dark:bg-red-950/20 space-y-3 animate-fade-up animate-shake">
+            <div class="flex items-start space-x-3">
+              <div class="w-8 h-8 rounded-xl bg-red-500/15 text-red-600 dark:text-red-400 flex items-center justify-center text-sm shrink-0 border border-red-500/30">
+                <i class="fa-solid fa-gauge-simple-high animate-gentle-pulse"></i>
+              </div>
+              <div class="flex-1 space-y-1">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-bold text-xs sm:text-sm text-red-700 dark:text-red-300 flex items-center space-x-1.5">
+                    <span>Batas Kuota / Token Harian Tercapai</span>
+                  </h4>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-700 dark:text-red-300 font-mono font-medium">HTTP 429 Rate Limit</span>
+                </div>
+                <p class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+                  Kunci API saat ini telah mencapai batas permintaan rate limit (RPM/TPM). NoteRoute dapat mengalihkan rute ke penyedia gratis cadangan secara langsung.
+                </p>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-red-500/20 text-xs">
+              <button onclick="failoverToFallbackProvider('Kiro AI')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition flex items-center space-x-1.5 shadow-xs">
+                <i class="fa-solid fa-shuffle text-xs"></i>
+                <span>Alihkan ke Kiro AI (Aktif / Gratis)</span>
+              </button>
+              <button onclick="openSettingsModal('api')" class="px-3 py-1.5 rounded-xl bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-[var(--nlm-text-primary)] font-medium transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-key text-amber-500 text-xs"></i>
+                <span>Kelola Kunci API di Pengaturan</span>
+              </button>
+            </div>
+          </div>
+
           <!-- Sample Grounded AI Response with REGENERATE capability -->
-          <div class="flex items-start space-x-3.5">
+          <div id="ai-response-block" class="flex items-start space-x-3.5 animate-fade-up">
             <div class="w-7 h-7 rounded-full bg-slate-900 text-white dark:bg-zinc-800 dark:text-zinc-100 border border-slate-700/20 dark:border-zinc-700 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-xs">
               <i class="fa-solid fa-wand-magic-sparkles text-[11px] text-[var(--nlm-brand)]"></i>
             </div>
@@ -618,7 +807,7 @@
                   <span>&bull;</span>
                   <span class="font-medium text-[var(--nlm-text-secondary)] flex items-center space-x-1">
                     <span class="w-1.5 h-1.5 rounded-full bg-[var(--nlm-brand)]"></span>
-                    <span>Gemini 1.5 Flash</span>
+                    <span id="ai-provider-badge">Gemini 1.5 Flash</span>
                   </span>
                 </div>
               </div>
@@ -634,28 +823,41 @@
       <div class="p-3 sm:p-4 bg-transparent shrink-0">
         <div class="max-w-2xl mx-auto">
           
-          <div class="relative bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-full p-2 pl-4 pr-3 shadow-[var(--nlm-card-shadow)] flex items-center space-x-2.5 focus-within:border-[var(--nlm-brand)] transition">
+          <div class="relative bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl sm:rounded-3xl p-2 pl-3.5 pr-2.5 shadow-[var(--nlm-card-shadow)] flex items-end space-x-2.5 focus-within:border-[var(--nlm-brand)] transition">
             
             <!-- Context Mode Pill inside input -->
-            <button onclick="cycleMode()" class="px-2.5 py-1 rounded-full bg-[var(--nlm-surface-variant)] text-[11px] font-medium text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] flex items-center space-x-1 shrink-0 border border-[var(--nlm-border)]">
+            <button onclick="cycleMode()" class="px-2.5 py-1.5 mb-0.5 rounded-full bg-[var(--nlm-surface-variant)] text-[11px] font-medium text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] flex items-center space-x-1 shrink-0 border border-[var(--nlm-border)] transition" title="Ganti Mode (Dokumen / AI Bebas)">
               <span id="input-mode-icon"><i class="fa-solid fa-file-shield text-[var(--nlm-brand)]"></i></span>
               <span id="input-mode-text" class="hidden sm:inline">4 Dokumen</span>
             </button>
 
-            <input id="nlm-chat-input" type="text" placeholder="Tanyakan seputar 4 dokumen laptop..." 
-                   class="flex-1 bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none min-w-0">
+            <!-- Multi-line Textarea with Keyboard Input (Shift+Enter for newline, Enter to send) -->
+            <textarea id="nlm-chat-input" rows="1" placeholder="Tanyakan seputar 4 dokumen laptop..." 
+                      onkeydown="handleChatInputKeyDown(event)" 
+                      oninput="autoResizeChatInput(this)"
+                      class="flex-1 bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none min-w-0 resize-none max-h-36 leading-relaxed py-1.5"></textarea>
 
             <!-- SEND BUTTON (WARNA MENGIKUTI PALET BRAND SECARA DINAMIS) -->
             <button id="nlm-send-btn" onclick="submitNlmPrompt()" 
-                    class="w-8 h-8 rounded-full bg-[var(--nlm-brand)] hover:bg-[var(--nlm-brand-hover)] text-white flex items-center justify-center transition-all duration-300 shadow-xs shrink-0">
+                    class="w-8 h-8 mb-0.5 rounded-full bg-[var(--nlm-brand)] hover:bg-[var(--nlm-brand-hover)] text-white flex items-center justify-center transition-all duration-300 shadow-xs shrink-0" title="Kirim Pesan (Enter)">
               <i class="fa-solid fa-arrow-up text-xs"></i>
             </button>
           </div>
 
-          <!-- KETERANGAN AI DAPAT MEMBUAT KESALAHAN -->
-          <div class="mt-2 text-center text-[11px] text-[var(--nlm-text-tertiary)] font-normal flex items-center justify-center space-x-1">
-            <i class="fa-solid fa-circle-info text-[10px] opacity-75"></i>
-            <span>NoteRoute dapat membuat kesalahan. Harap periksa kembali informasi penting dan rujukan dokumen aslinya.</span>
+          <!-- KETERANGAN AI DAPAT MEMBUAT KESALAHAN & PINTASAN KEYBOARD -->
+          <div class="mt-2 text-center text-[11px] text-[var(--nlm-text-tertiary)] font-normal flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+            <span class="flex items-center space-x-1">
+              <i class="fa-solid fa-circle-info text-[10px] opacity-75"></i>
+              <span>NoteRoute dapat membuat kesalahan. Harap periksa kembali rujukan dokumen aslinya.</span>
+            </span>
+            <span class="opacity-50 hidden sm:inline">&bull;</span>
+            <span class="text-[10px] opacity-80 hidden sm:inline flex items-center space-x-1">
+              <kbd class="px-1.5 py-0.5 rounded bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] font-mono text-[9px] text-[var(--nlm-text-secondary)]">Enter</kbd>
+              <span>kirim</span>
+              <span class="mx-0.5">&bull;</span>
+              <kbd class="px-1.5 py-0.5 rounded bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] font-mono text-[9px] text-[var(--nlm-text-secondary)]">Shift + Enter</kbd>
+              <span>baris baru</span>
+            </span>
           </div>
 
         </div>
@@ -798,7 +1000,7 @@
   <!-- 3. POPUP MODAL: "TAMBAHKAN SUMBER" (DRAG & DROP)         -->
   <!-- ======================================================== -->
   <div id="add-source-modal" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="w-full max-w-xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+    <div class="w-full max-w-xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col modal-animate-in">
       
       <div class="p-5 border-b border-[var(--nlm-border-subtle)] flex items-center justify-between">
         <div>
@@ -866,7 +1068,7 @@
   <!-- 4. MODAL: NOTE VIEWER & EDITOR (MELIHAT ISI CATATAN)     -->
   <!-- ======================================================== -->
   <div id="note-viewer-modal" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="w-full max-w-2xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+    <div class="w-full max-w-2xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] modal-animate-in">
       
       <!-- Modal Header -->
       <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
@@ -913,12 +1115,12 @@
   <!-- 5. MODAL: PROFILE & COMPLETE SETTINGS                    -->
   <!-- ======================================================== -->
   <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="w-full max-w-4xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="w-full max-w-4xl h-[650px] max-h-[92vh] bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col modal-animate-in">
       
       <!-- Settings Header -->
-      <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
+      <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between shrink-0">
         <div class="flex items-center space-x-2.5">
-          <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
+          <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-xs">
             <i class="fa-solid fa-sliders"></i>
           </div>
           <div>
@@ -931,11 +1133,11 @@
         </button>
       </div>
 
-      <!-- Settings Layout (Tabs on Left, Content on Right) -->
-      <div class="flex-1 flex overflow-hidden">
+      <!-- Settings Layout (Tabs on Left, Content on Right) - FIXED IMMOVABLE CONTAINER -->
+      <div class="flex-1 min-h-0 flex overflow-hidden">
         
-        <!-- Tab Navigation -->
-        <div class="w-56 border-r border-[var(--nlm-border)] p-3 space-y-1 bg-[var(--nlm-surface-variant)] text-xs font-medium shrink-0">
+        <!-- Tab Navigation (Fixed Height Scrollable) -->
+        <div class="w-56 border-r border-[var(--nlm-border)] p-3 space-y-1 bg-[var(--nlm-surface-variant)] text-xs font-medium shrink-0 h-full overflow-y-auto">
           <button onclick="switchSettingsTab('profile')" id="stab-profile" class="w-full text-left px-3 py-2 rounded-xl bg-[var(--nlm-brand)] text-white font-semibold transition flex items-center space-x-2">
             <i class="fa-regular fa-user text-xs w-4"></i>
             <span>Profil Pengguna</span>
@@ -962,8 +1164,8 @@
           </button>
         </div>
 
-        <!-- Tab Contents Area -->
-        <div class="flex-1 overflow-y-auto p-5 text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+        <!-- Tab Contents Area (Fixed Height Scrollable) -->
+        <div id="docs-settings-tab-content" class="flex-1 h-full overflow-y-auto p-5 text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
           
           <!-- TAB 1: PROFIL -->
           <div id="scontent-profile" class="space-y-4">
@@ -1659,7 +1861,7 @@
   <!-- 6. MODAL: CITATION PREVIEW                               -->
   <!-- ======================================================== -->
   <div id="citation-source-modal" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="w-full max-w-2xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+    <div class="w-full max-w-2xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] modal-animate-in">
       
       <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
         <div class="flex items-center space-x-2.5">
@@ -1704,7 +1906,7 @@
   <!-- 7. MODAL: TUTORIAL CARA MENDAPATKAN API KEY PROVIDER     -->
   <!-- ======================================================== -->
   <div id="modal-api-tutorial" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="w-full max-w-xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="w-full max-w-xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] modal-animate-in">
       
       <!-- Tutorial Modal Header -->
       <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
@@ -1985,7 +2187,14 @@
 
     function openSettingsModal(targetTab) {
       document.getElementById('profile-dropdown-menu').classList.add('hidden');
-      document.getElementById('settings-modal').classList.remove('hidden');
+      const modal = document.getElementById('settings-modal');
+      modal.classList.remove('hidden');
+      const card = modal.querySelector('div');
+      if (card) {
+        card.classList.remove('modal-animate-in');
+        void card.offsetWidth;
+        card.classList.add('modal-animate-in');
+      }
       if (targetTab) switchSettingsTab(targetTab);
     }
 
@@ -2007,6 +2216,8 @@
           content.classList.add('hidden');
         }
       });
+      const scrollContainer = document.getElementById('docs-settings-tab-content');
+      if (scrollContainer) scrollContainer.scrollTop = 0;
       if (tabName === 'appearance') {
         updateThemeSettingsUi();
       }
@@ -2674,9 +2885,137 @@
       document.getElementById('citation-source-modal').classList.add('hidden');
     }
 
-    // 10. CHAT INPUT
+    // 10. CHAT INPUT & KEYBOARD SHORTCUTS
+    function handleChatInputKeyDown(e) {
+      if (e.key === 'Enter') {
+        if (e.shiftKey) {
+          // Shift+Enter: baris baru (multi-line) dengan auto-resize tinggi
+          setTimeout(() => autoResizeChatInput(e.target), 0);
+        } else {
+          // Enter: kirim pesan
+          e.preventDefault();
+          submitNlmPrompt();
+        }
+      }
+    }
+
+    function autoResizeChatInput(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+    }
+
+    function handleEditPromptKeyDown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        saveAndResubmitPrompt();
+      }
+    }
+
+    // SIMULASI STATUS AI: NORMAL, TIMEOUT/JARINGAN TERPUTUS, KUOTA/TOKEN HABIS
+    function simulateAiState(state) {
+      const thinking = document.getElementById('ai-thinking-state');
+      const timeoutCard = document.getElementById('ai-timeout-card');
+      const quotaCard = document.getElementById('ai-quota-card');
+      const responseBlock = document.getElementById('ai-response-block');
+      const thinkingText = document.getElementById('ai-thinking-status-text');
+
+      thinking.classList.add('hidden');
+      timeoutCard.classList.add('hidden');
+      quotaCard.classList.add('hidden');
+      responseBlock.classList.add('hidden');
+
+      if (state === 'normal') {
+        thinkingText.textContent = "Menganalisis 4 berkas laptop & mencocokkan semantik sitasi...";
+        thinking.classList.remove('hidden');
+        showToast("Simulasi AI", "Mengirim kueri ke penyedia utama...");
+        setTimeout(() => {
+          thinking.classList.add('hidden');
+          responseBlock.classList.remove('hidden');
+          responseBlock.classList.remove('animate-fade-up');
+          void responseBlock.offsetWidth;
+          responseBlock.classList.add('animate-fade-up');
+          showToast("Respon Berhasil", "Jawaban selesai digenerasi dengan rujukan terverifikasi.");
+          const scroll = document.getElementById('nlm-chat-scroll');
+          if (scroll) scroll.scrollTop = scroll.scrollHeight;
+        }, 750);
+      } else if (state === 'timeout') {
+        thinkingText.textContent = "Menghubungi endpoint AI (mendeteksi keterlambatan jaringan)...";
+        thinking.classList.remove('hidden');
+        showToast("Simulasi Timeout", "Menunggu respons dari gateway penyedia...");
+        setTimeout(() => {
+          thinking.classList.add('hidden');
+          timeoutCard.classList.remove('hidden');
+          showToast("Koneksi Terputus", "Server AI tidak merespons (HTTP 504 Gateway Timeout).");
+          const scroll = document.getElementById('nlm-chat-scroll');
+          if (scroll) scroll.scrollTop = scroll.scrollHeight;
+        }, 700);
+      } else if (state === 'quota') {
+        thinkingText.textContent = "Mengirim token prompt ke API penyedia...";
+        thinking.classList.remove('hidden');
+        showToast("Simulasi Kuota", "Memeriksa kuota token API...");
+        setTimeout(() => {
+          thinking.classList.add('hidden');
+          quotaCard.classList.remove('hidden');
+          showToast("Batas Kuota", "HTTP 429: Batas kuota harian/menit tercapai.");
+          const scroll = document.getElementById('nlm-chat-scroll');
+          if (scroll) scroll.scrollTop = scroll.scrollHeight;
+        }, 600);
+      }
+    }
+
+    function retryLastPrompt() {
+      const timeoutCard = document.getElementById('ai-timeout-card');
+      const thinking = document.getElementById('ai-thinking-state');
+      const thinkingText = document.getElementById('ai-thinking-status-text');
+      const responseBlock = document.getElementById('ai-response-block');
+
+      timeoutCard.classList.add('hidden');
+      thinkingText.textContent = "Mencoba menyambungkan kembali ke server AI...";
+      thinking.classList.remove('hidden');
+      showToast("Menyambung Ulang", "Membangun koneksi ulang ke gateway...");
+
+      setTimeout(() => {
+        thinking.classList.add('hidden');
+        responseBlock.classList.remove('hidden');
+        responseBlock.classList.remove('animate-fade-up');
+        void responseBlock.offsetWidth;
+        responseBlock.classList.add('animate-fade-up');
+        showToast("Koneksi Pulih", "Respons AI berhasil diterima setelah mencoba ulang.");
+        const scroll = document.getElementById('nlm-chat-scroll');
+        if (scroll) scroll.scrollTop = scroll.scrollHeight;
+      }, 850);
+    }
+
+    function failoverToFallbackProvider(providerName) {
+      const timeoutCard = document.getElementById('ai-timeout-card');
+      const quotaCard = document.getElementById('ai-quota-card');
+      const thinking = document.getElementById('ai-thinking-state');
+      const thinkingText = document.getElementById('ai-thinking-status-text');
+      const responseBlock = document.getElementById('ai-response-block');
+      const badge = document.getElementById('ai-provider-badge');
+
+      timeoutCard.classList.add('hidden');
+      quotaCard.classList.add('hidden');
+      thinkingText.textContent = `Mengalihkan rute cerdas (failover) ke ${providerName}...`;
+      thinking.classList.remove('hidden');
+      showToast("Failover Otomatis", `Mengalihkan permintaan ke ${providerName}...`);
+
+      setTimeout(() => {
+        thinking.classList.add('hidden');
+        if (badge) badge.textContent = providerName;
+        responseBlock.classList.remove('hidden');
+        responseBlock.classList.remove('animate-fade-up');
+        void responseBlock.offsetWidth;
+        responseBlock.classList.add('animate-fade-up');
+        showToast("Berhasil Dialihkan", `Kueri dijawab oleh ${providerName} tanpa kehilangan sesi.`);
+        const scroll = document.getElementById('nlm-chat-scroll');
+        if (scroll) scroll.scrollTop = scroll.scrollHeight;
+      }, 750);
+    }
+
     function sendPrompt(text) {
       document.getElementById('nlm-chat-input').value = text;
+      autoResizeChatInput(document.getElementById('nlm-chat-input'));
       submitNlmPrompt();
     }
 
@@ -2689,11 +3028,22 @@
       document.getElementById('nlm-welcome-hero').classList.add('hidden');
       document.getElementById('nlm-active-messages').classList.remove('hidden');
 
+      // Sembunyikan pesan kesalahan sebelumnya & tampilkan status berpikir
+      const timeoutCard = document.getElementById('ai-timeout-card');
+      const quotaCard = document.getElementById('ai-quota-card');
+      const responseBlock = document.getElementById('ai-response-block');
+      const thinking = document.getElementById('ai-thinking-state');
+      const thinkingText = document.getElementById('ai-thinking-status-text');
       const responseContainer = document.getElementById('ai-response-container');
       const groundingTag = document.getElementById('response-grounding-tag');
 
+      if (timeoutCard) timeoutCard.classList.add('hidden');
+      if (quotaCard) quotaCard.classList.add('hidden');
+      if (responseBlock) responseBlock.classList.add('hidden');
+
       if (currentMode === 'general') {
-        groundingTag.textContent = "AI Umum (Tanpa Dokumen)";
+        if (thinkingText) thinkingText.textContent = "Memproses kueri terbuka (Mode AI Bebas)...";
+        if (groundingTag) groundingTag.textContent = "AI Umum (Tanpa Dokumen)";
         responseContainer.innerHTML = `
           <p>Tentu! Berikut jawaban analitis mengenai <strong>"${text}"</strong>:</p>
           <p class="text-[var(--nlm-text-secondary)] my-2">
@@ -2701,7 +3051,8 @@
           </p>
         `;
       } else {
-        groundingTag.textContent = "2 rujukan terverifikasi";
+        if (thinkingText) thinkingText.textContent = "Menganalisis 4 dokumen laptop & mencari rujukan sitasi...";
+        if (groundingTag) groundingTag.textContent = "2 rujukan terverifikasi";
         responseContainer.innerHTML = `
           <p>Berdasarkan pembahasan pada <strong>Slide Bab 3: Sistem Terdistribusi</strong>, Teorema CAP menyatakan bahwa sistem data terdistribusi tidak dapat menjamin ketiga karakteristik secara bersamaan <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>:</p>
           <ul class="list-disc ml-5 space-y-1.5 text-[var(--nlm-text-secondary)] my-2">
@@ -2712,10 +3063,24 @@
         `;
       }
 
+      if (thinking) thinking.classList.remove('hidden');
       input.value = '';
+      input.style.height = 'auto'; // Reset textarea height
+
       showToast("Menjawab", "Memproses kueri...");
       const scroll = document.getElementById('nlm-chat-scroll');
-      scroll.scrollTop = scroll.scrollHeight;
+      if (scroll) scroll.scrollTop = scroll.scrollHeight;
+
+      setTimeout(() => {
+        if (thinking) thinking.classList.add('hidden');
+        if (responseBlock) {
+          responseBlock.classList.remove('hidden');
+          responseBlock.classList.remove('animate-fade-up');
+          void responseBlock.offsetWidth;
+          responseBlock.classList.add('animate-fade-up');
+        }
+        if (scroll) scroll.scrollTop = scroll.scrollHeight;
+      }, 700);
     }
 
     function copyAnswerText() {

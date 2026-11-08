@@ -125,6 +125,51 @@
       transform: scale(0.98);
       border-color: #3b82f6;
     }
+
+    /* ======================================================== */
+    /* ANIMASI HALUS TRANSISI, MODAL & DROPDOWN                 */
+    /* ======================================================== */
+    @keyframes nlmModalFadeIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.96) translateY(8px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    .modal-animate-in, .animate-scale-up {
+      animation: nlmModalFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes nlmDropdownFade {
+      0% {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .animate-dropdown {
+      animation: nlmDropdownFade 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes nlmFadeSlideUp {
+      0% {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-up {
+      animation: nlmFadeSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased select-none">
@@ -177,7 +222,7 @@
         </button>
 
         <!-- 9-Dots Apps Dropdown -->
-        <div id="apps-dropdown-menu" class="hidden absolute right-0 mt-2 w-72 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl p-3 z-50">
+        <div id="apps-dropdown-menu" class="hidden absolute right-0 mt-2 w-72 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl p-3 z-50 animate-dropdown">
           <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-2 mb-2">Ekosistem NoteRoute</div>
           <div class="grid grid-cols-3 gap-2 text-center text-xs">
             <a href="../docs/ui-prototype.html" class="p-2.5 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group">
@@ -213,7 +258,7 @@
         </button>
 
         <!-- PROFILE DROPDOWN MENU (SAMA PERSIS DENGAN WORKSPACE NOTEBOOK) -->
-        <div id="profile-dropdown-menu" class="hidden absolute right-0 mt-2 w-72 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-xl p-2 z-50">
+        <div id="profile-dropdown-menu" class="hidden absolute right-0 mt-2 w-72 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-xl p-2 z-50 animate-dropdown">
           <div class="p-3 border-b border-[var(--nlm-border-subtle)] flex items-center space-x-3">
             <div id="dropdown-avatar-box" class="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0 overflow-hidden">
               <span id="dropdown-avatar-text">AZ</span>
@@ -435,10 +480,10 @@
   <!-- 4. MODAL PENGATURAN & KONFIGURASI (IDENTIK DENGAN NOTEBOOK)-->
   <!-- ======================================================== -->
   <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="w-full max-w-4xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="w-full max-w-4xl h-[650px] max-h-[92vh] bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col modal-animate-in">
       
       <!-- Settings Header -->
-      <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
+      <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between shrink-0">
         <div class="flex items-center space-x-2.5">
           <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
             <i class="fa-solid fa-sliders"></i>
@@ -453,11 +498,11 @@
         </button>
       </div>
 
-      <!-- Settings Layout (Tabs on Left, Content on Right) -->
-      <div class="flex-1 flex overflow-hidden">
+      <!-- Settings Layout (Tabs on Left, Content on Right) - FIXED IMMOVABLE CONTAINER -->
+      <div class="flex-1 min-h-0 flex overflow-hidden">
         
-        <!-- Tab Navigation (6 Tab Lengkap Sesuai Ruang Kerja Notebook) -->
-        <div class="w-56 border-r border-[var(--nlm-border)] p-3 space-y-1 bg-[var(--nlm-surface-variant)] text-xs font-medium shrink-0">
+        <!-- Tab Navigation (Fixed Height Scrollable) -->
+        <div class="w-56 border-r border-[var(--nlm-border)] p-3 space-y-1 bg-[var(--nlm-surface-variant)] text-xs font-medium shrink-0 h-full overflow-y-auto">
           <button onclick="switchSettingsTab('profile')" id="stab-profile" class="w-full text-left px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold transition flex items-center space-x-2">
             <i class="fa-regular fa-user text-xs w-4"></i>
             <span>Profil Pengguna</span>
@@ -484,8 +529,8 @@
           </button>
         </div>
 
-        <!-- Tab Contents Area -->
-        <div class="flex-1 overflow-y-auto p-5 text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+        <!-- Tab Contents Area (Fixed Height Scrollable) -->
+        <div id="landing-settings-tab-content" class="flex-1 h-full overflow-y-auto p-5 text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
           
           <!-- TAB 1: PROFIL PENGGUNA -->
           <div id="scontent-profile" class="space-y-4">
@@ -1058,7 +1103,7 @@
   <!-- 5. MODAL: TUTORIAL CARA MENDAPATKAN API KEY PROVIDER     -->
   <!-- ======================================================== -->
   <div id="modal-api-tutorial" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="w-full max-w-xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="w-full max-w-xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] modal-animate-in">
       
       <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
         <div class="flex items-center space-x-2.5">
@@ -1538,7 +1583,14 @@
 
     function openSettingsModal(tab = 'profile') {
       document.getElementById('profile-dropdown-menu').classList.add('hidden');
-      document.getElementById('settings-modal').classList.remove('hidden');
+      const modal = document.getElementById('settings-modal');
+      modal.classList.remove('hidden');
+      const card = modal.querySelector('div');
+      if (card) {
+        card.classList.remove('modal-animate-in');
+        void card.offsetWidth;
+        card.classList.add('modal-animate-in');
+      }
       switchSettingsTab(tab);
     }
 
@@ -1561,6 +1613,8 @@
           }
         }
       });
+      const scrollEl = document.getElementById('landing-settings-tab-content');
+      if (scrollEl) scrollEl.scrollTop = 0;
       if (tab === 'appearance') {
         updateThemeSettingsUi();
       }
