@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NoteRoute - NotebookLM Desktop & Web Experience</title>
+  <title>NoteRoute - NotebookLM Desktop & Web Interface</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
@@ -14,7 +14,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* GOOGLE NOTEBOOKLM EXACT COLOR TOKENS */
+    /* NOTEBOOKLM THEME COLOR PALETTES */
     :root.light {
       --nlm-bg: #f8f9fa;
       --nlm-surface: #ffffff;
@@ -29,9 +29,9 @@
       --nlm-accent-bg: #e8f0fe;
       --nlm-citation-bg: #e0eafd;
       --nlm-citation-text: #0842a0;
-      --nlm-pill-bg: #ffffff;
-      --nlm-pill-border: #c4c7c5;
-      --nlm-card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --nlm-modal-overlay: rgba(0, 0, 0, 0.45);
+      --nlm-dropzone-bg: #fbfcfe;
+      --nlm-dropzone-border: #c4c7c5;
     }
 
     :root.dark {
@@ -48,9 +48,9 @@
       --nlm-accent-bg: #004a77;
       --nlm-citation-bg: #004a77;
       --nlm-citation-text: #d3e3fd;
-      --nlm-pill-bg: #1e1f20;
-      --nlm-pill-border: #444746;
-      --nlm-card-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      --nlm-modal-overlay: rgba(0, 0, 0, 0.7);
+      --nlm-dropzone-bg: #18191a;
+      --nlm-dropzone-border: #444746;
     }
 
     body {
@@ -58,15 +58,15 @@
       color: var(--nlm-text-primary);
     }
 
-    /* CITATION BADGE (NOTEBOOKLM SIGNATURE STYLE) */
+    /* CITATION BADGE */
     .nlm-citation {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 18px;
-      height: 18px;
-      padding: 0 5px;
-      font-size: 11px;
+      min-width: 17px;
+      height: 17px;
+      padding: 0 4px;
+      font-size: 10px;
       font-weight: 700;
       font-family: 'Roboto Mono', monospace;
       border-radius: 9999px;
@@ -83,121 +83,83 @@
       filter: brightness(1.1);
     }
 
-    /* CUSTOM SCROLLBAR */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    .smooth-panel {
+      transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, transform 0.25s ease;
+    }
+
+    /* DRAG AND DROP ZONE HOVER */
+    .dropzone-active {
+      border-color: #0b57d0 !important;
+      background-color: var(--nlm-accent-bg) !important;
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(140, 140, 140, 0.25); border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(140, 140, 140, 0.5); }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased select-none transition-colors duration-200">
+<body class="h-screen flex flex-col antialiased overflow-hidden select-none transition-colors duration-200">
 
   <!-- ======================================================== -->
-  <!-- 1. TOP APP BAR (NOTEBOOKLM AUTHENTIC HEADER)             -->
+  <!-- 1. TOP APP BAR (NOTEBOOKLM AUTHENTIC CLEAN HEADER)       -->
   <!-- ======================================================== -->
-  <header class="h-16 border-b border-[var(--nlm-border)] bg-[var(--nlm-surface)] px-4 flex items-center justify-between z-30 shrink-0">
+  <header class="h-14 border-b border-[var(--nlm-border)] bg-[var(--nlm-surface)] px-4 flex items-center justify-between z-30 shrink-0">
     
-    <!-- Left: Navigation, Title & Breadcrumb -->
-    <div class="flex items-center space-x-3">
-      <button class="w-9 h-9 rounded-full hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center text-[var(--nlm-text-secondary)] transition" title="Kembali ke Beranda">
-        <i class="fa-solid fa-arrow-left text-sm"></i>
+    <!-- Left: Navigation, Title & Sidebar Toggles -->
+    <div class="flex items-center space-x-2">
+      <!-- Toggle Left Sidebar Button -->
+      <button onclick="toggleLeftSidebar()" class="w-8 h-8 rounded-lg hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center text-[var(--nlm-text-secondary)] transition" title="Buka/Tutup Panel Sumber">
+        <i id="btn-icon-sources" class="fa-solid fa-bars text-sm"></i>
       </button>
 
-      <div class="flex items-center space-x-2">
-        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white text-sm font-bold shadow-xs">
+      <div class="flex items-center space-x-2 ml-1">
+        <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-xs">
           <i class="fa-solid fa-book-open"></i>
         </div>
-        <div>
-          <div class="flex items-center space-x-2">
-            <span class="font-semibold text-base text-[var(--nlm-text-primary)] tracking-tight">Materi Kuliah Semester 5 &bull; Sistem Terdistribusi</span>
-            <button class="text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] text-xs p-1" title="Edit Judul Catatan">
-              <i class="fa-solid fa-pen text-[11px]"></i>
-            </button>
-          </div>
-          <div class="flex items-center space-x-2 text-xs text-[var(--nlm-text-tertiary)]">
-            <span>NoteRoute Knowledge Agent</span>
-            <span>&bull;</span>
-            <span class="text-emerald-600 dark:text-emerald-400 font-medium">Tersinkron dengan Laptop Zakky</span>
-          </div>
+        <div class="flex items-center space-x-2">
+          <span class="font-semibold text-sm sm:text-base text-[var(--nlm-text-primary)] tracking-tight">Materi Kuliah Semester 5 &bull; Sistem Terdistribusi</span>
+          <button class="text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] text-xs p-1" title="Edit Judul">
+            <i class="fa-solid fa-pen text-[10px]"></i>
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Center/Right: Model Gateway Switcher, Theme & Actions -->
+    <!-- Center/Right: General AI Mode Indicator, Theme Toggle, Studio Toggle & Profile -->
     <div class="flex items-center space-x-2.5">
       
-      <!-- MODEL SWITCHER (GATEWAY ROUTER KHAS NOTEROUTE) -->
-      <div class="relative">
-        <button onclick="toggleModelDropdown()" class="flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-xs font-medium text-[var(--nlm-text-primary)] transition">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span id="active-model-name" class="font-semibold">Google Gemini 1.5 Flash</span>
-          <span class="text-[11px] text-[var(--nlm-text-tertiary)] font-mono hidden md:inline">(1M Free)</span>
-          <i class="fa-solid fa-chevron-down text-[10px] text-[var(--nlm-text-tertiary)] ml-1"></i>
+      <!-- MODE BADGE / TOGGLE (DOKUMEN VS AI BEBAS) -->
+      <div class="flex items-center p-0.5 rounded-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs">
+        <button id="btn-mode-doc" onclick="setAiMode('document')" class="px-3 py-1 rounded-full font-semibold bg-blue-600 text-white transition flex items-center space-x-1.5 shadow-xs">
+          <i class="fa-solid fa-file-shield text-[10px]"></i>
+          <span>Mode Dokumen</span>
         </button>
-
-        <!-- Model Dropdown Menu -->
-        <div id="model-dropdown-menu" class="hidden absolute right-0 mt-2 w-80 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-xl p-2 z-50">
-          <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-3 py-1.5">Pilih Router AI Inferensi</div>
-          
-          <button onclick="selectRouterModel('Google Gemini 1.5 Flash', '1M Context', 'bg-blue-500')" class="w-full text-left p-2.5 rounded-xl hover:bg-[var(--nlm-surface-variant)] transition flex items-center justify-between">
-            <div>
-              <div class="font-semibold text-xs text-[var(--nlm-text-primary)] flex items-center space-x-1.5">
-                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                <span>Google Gemini 1.5 Flash</span>
-              </div>
-              <div class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">Konteks 1 Juta Token &bull; Gratis 1.500 req/hari</div>
-            </div>
-            <span class="text-[10px] bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold px-1.5 py-0.5 rounded">Default</span>
-          </button>
-
-          <button onclick="selectRouterModel('Groq Cloud (Llama 3.3)', '300 t/s Kilat', 'bg-violet-500')" class="w-full text-left p-2.5 rounded-xl hover:bg-[var(--nlm-surface-variant)] transition flex items-center justify-between">
-            <div>
-              <div class="font-semibold text-xs text-[var(--nlm-text-primary)] flex items-center space-x-1.5">
-                <span class="w-2 h-2 rounded-full bg-violet-500"></span>
-                <span>Groq Cloud (Llama 3.3 70B)</span>
-              </div>
-              <div class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">Respon Kilat 300+ token/s &bull; Failover 429</div>
-            </div>
-            <span class="text-[10px] bg-violet-500/10 text-violet-600 dark:text-violet-400 font-bold px-1.5 py-0.5 rounded">Kilat</span>
-          </button>
-
-          <button onclick="selectRouterModel('DeepSeek R1 / V3', 'Reasoning', 'bg-emerald-500')" class="w-full text-left p-2.5 rounded-xl hover:bg-[var(--nlm-surface-variant)] transition flex items-center justify-between">
-            <div>
-              <div class="font-semibold text-xs text-[var(--nlm-text-primary)] flex items-center space-x-1.5">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span>DeepSeek R1 / V3</span>
-              </div>
-              <div class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">Penalaran logis mendalam berbiaya murah</div>
-            </div>
-            <span class="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-1.5 py-0.5 rounded">Hemat</span>
-          </button>
-
-          <button onclick="selectRouterModel('9Router Local Bridge', 'Port 20128', 'bg-amber-500')" class="w-full text-left p-2.5 rounded-xl hover:bg-[var(--nlm-surface-variant)] transition flex items-center justify-between">
-            <div>
-              <div class="font-semibold text-xs text-[var(--nlm-text-primary)] flex items-center space-x-1.5">
-                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                <span>9Router / OmniRoute Local</span>
-              </div>
-              <div class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">Bridge daemon lokal laptop (OpenAI API)</div>
-            </div>
-            <span class="text-[10px] bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold px-1.5 py-0.5 rounded">Local</span>
-          </button>
-        </div>
+        <button id="btn-mode-general" onclick="setAiMode('general')" class="px-3 py-1 rounded-full font-medium text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] transition flex items-center space-x-1.5">
+          <i class="fa-solid fa-globe text-[10px]"></i>
+          <span>AI Umum (Bebas)</span>
+        </button>
       </div>
 
-      <!-- THEME TOGGLE (GELAP / TERANG) -->
-      <button onclick="toggleNotebookTheme()" class="w-9 h-9 rounded-full hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center text-[var(--nlm-text-secondary)] transition" title="Ganti Tema">
+      <!-- THEME TOGGLE (GELAP & TERANG) -->
+      <button onclick="toggleNotebookTheme()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center text-[var(--nlm-text-secondary)] transition" title="Ganti Tema">
         <span id="theme-btn-icon"><i class="fa-solid fa-moon text-sm"></i></span>
       </button>
 
-      <!-- SHARE / EXPORT BUTTON -->
-      <button onclick="showToast('Bagikan Catatan', 'Tautan kolaborasi disalin ke papan klip.')" class="px-3.5 py-1.5 rounded-full bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-xs font-semibold text-[var(--nlm-text-primary)] flex items-center space-x-1.5 transition">
-        <i class="fa-solid fa-arrow-up-from-bracket text-[11px]"></i>
-        <span class="hidden sm:inline">Bagikan</span>
+      <!-- SHARE BUTTON -->
+      <button onclick="showToast('Bagikan Catatan', 'Tautan proyek siap dibagikan.')" class="hidden sm:flex px-3 py-1 rounded-full bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-xs font-semibold text-[var(--nlm-text-primary)] items-center space-x-1.5 transition">
+        <i class="fa-solid fa-arrow-up-from-bracket text-[10px]"></i>
+        <span>Bagikan</span>
       </button>
 
-      <!-- USER AVATAR PROFILE -->
-      <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center ring-2 ring-[var(--nlm-border)]">
+      <!-- Toggle Right Studio Sidebar Button -->
+      <button onclick="toggleRightSidebar()" class="w-8 h-8 rounded-lg hover:bg-[var(--nlm-surface-hover)] flex items-center justify-center text-[var(--nlm-text-secondary)] transition" title="Buka/Tutup Studio">
+        <i id="btn-icon-studio" class="fa-solid fa-columns text-sm"></i>
+      </button>
+
+      <!-- USER PROFILE -->
+      <div class="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center ring-1 ring-[var(--nlm-border)]">
         AZ
       </div>
 
@@ -205,172 +167,183 @@
   </header>
 
   <!-- ======================================================== -->
-  <!-- 2. THE 3-PANEL NOTEBOOKLM WORKSPACE LAYOUT               -->
+  <!-- 2. MAIN 3-PANEL NOTEBOOKLM WORKSPACE                     -->
   <!-- ======================================================== -->
-  <div class="flex-1 flex overflow-hidden">
+  <div class="flex-1 flex overflow-hidden relative">
+
+    <!-- FLOATING TAB TO RE-OPEN SOURCES (WHEN COLLAPSED) -->
+    <button id="reopen-sources-btn" onclick="toggleLeftSidebar()" class="hidden absolute top-3 left-3 z-20 px-3 py-1.5 rounded-full bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] shadow-md text-xs font-semibold text-[var(--nlm-text-primary)] items-center space-x-2 transition">
+      <i class="fa-solid fa-folder-open text-blue-600"></i>
+      <span>Sumber (<span id="reopen-source-count">4</span>)</span>
+    </button>
 
     <!-- ====================================================== -->
-    <!-- PANEL 1: SUMBER (SOURCES) - LEFT PANEL (320px)         -->
+    <!-- PANEL 1: SUMBER (LEFT PANEL - COLLAPSIBLE - 310px)     -->
     <!-- ====================================================== -->
-    <aside class="w-80 border-r border-[var(--nlm-border)] bg-[var(--nlm-surface)] flex flex-col justify-between shrink-0 select-none">
+    <aside id="sidebar-sources" class="w-80 border-r border-[var(--nlm-border)] bg-[var(--nlm-surface)] flex flex-col justify-between shrink-0 select-none smooth-panel z-10 overflow-hidden">
       
       <!-- Sources Header -->
-      <div class="p-4 border-b border-[var(--nlm-border-subtle)]">
+      <div class="p-3.5 border-b border-[var(--nlm-border-subtle)]">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center space-x-2">
             <h2 class="font-bold text-sm text-[var(--nlm-text-primary)]">Sumber</h2>
             <span id="source-selected-count" class="text-xs text-[var(--nlm-text-tertiary)]">(4 terpilih)</span>
           </div>
-          <!-- Select All Checkbox -->
-          <label class="flex items-center space-x-1.5 text-xs text-[var(--nlm-text-secondary)] cursor-pointer">
-            <input type="checkbox" id="check-all-sources" checked onchange="toggleAllSources(this)" class="w-3.5 h-3.5 rounded accent-blue-600">
-            <span>Pilih semua</span>
-          </label>
+
+          <div class="flex items-center space-x-2">
+            <!-- Select All Checkbox -->
+            <label class="flex items-center space-x-1.5 text-xs text-[var(--nlm-text-secondary)] cursor-pointer">
+              <input type="checkbox" id="check-all-sources" checked onchange="toggleAllSources(this)" class="w-3.5 h-3.5 rounded accent-blue-600">
+              <span class="text-[11px]">Semua</span>
+            </label>
+            <!-- Collapse Button -->
+            <button onclick="toggleLeftSidebar()" class="w-6 h-6 rounded-md hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center transition" title="Tutup Sumber">
+              <i class="fa-solid fa-chevron-left text-[11px]"></i>
+            </button>
+          </div>
         </div>
 
-        <!-- Add Source Button (Google NotebookLM Style) -->
-        <button onclick="openAddSourceModal()" class="w-full py-2.5 px-3 rounded-xl border border-dashed border-[var(--nlm-border)] hover:border-blue-500 hover:bg-[var(--nlm-surface-variant)] text-xs font-semibold text-[var(--nlm-accent)] flex items-center justify-center space-x-2 transition">
-          <i class="fa-solid fa-plus text-xs"></i>
-          <span>Tambahkan sumber dari laptop</span>
-        </button>
+        <!-- PAIRED BUTTONS: [ + Tambahkan sumber ] & [ + Buat catatan ] -->
+        <div class="grid grid-cols-2 gap-2">
+          <!-- Button 1: Tambahkan sumber (Opens Drag and Drop Modal) -->
+          <button onclick="openAddSourceModal()" class="py-2 px-2.5 rounded-xl border border-[var(--nlm-border)] hover:border-blue-500 hover:bg-[var(--nlm-surface-variant)] text-xs font-semibold text-blue-600 dark:text-blue-400 flex items-center justify-center space-x-1.5 transition">
+            <i class="fa-solid fa-plus text-[10px]"></i>
+            <span class="truncate">Tambahkan sumber</span>
+          </button>
+
+          <!-- Button 2: Buat catatan -->
+          <button onclick="createNewNoteInStudio()" class="py-2 px-2.5 rounded-xl border border-[var(--nlm-border)] hover:border-indigo-500 hover:bg-[var(--nlm-surface-variant)] text-xs font-semibold text-[var(--nlm-text-primary)] flex items-center justify-center space-x-1.5 transition">
+            <i class="fa-solid fa-pen-to-square text-[10px] text-indigo-500"></i>
+            <span class="truncate">Buat catatan</span>
+          </button>
+        </div>
       </div>
 
       <!-- Sources Scrollable List -->
-      <div class="flex-1 overflow-y-auto p-3 space-y-2">
+      <div id="sources-list-container" class="flex-1 overflow-y-auto p-3 space-y-2">
         
         <!-- Source Card 1 (PDF) -->
-        <div id="source-card-1" onclick="previewSource(1)" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
+        <div id="src-1" onclick="previewSource(1, 'Slide_Bab3_Distributed_Systems.pdf', 14)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
           <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
-          <div class="w-7 h-7 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
-            <i class="fa-solid fa-file-pdf"></i>
+          <div class="w-6 h-6 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
+            <i class="fa-solid fa-file-pdf text-[11px]"></i>
           </div>
           <div class="flex-1 min-w-0">
             <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">Slide_Bab3_Distributed_Systems.pdf</h4>
-            <div class="flex items-center space-x-2 text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">
-              <span>18 halaman</span>
-              <span>&bull;</span>
-              <span>2.34 MB</span>
+            <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
+              <span>18 halaman</span> &bull; <span>2.34 MB</span>
             </div>
           </div>
-          <button onclick="downloadSourceToHP(event, 'Slide_Bab3_Distributed_Systems.pdf')" class="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] transition" title="Ambil ke HP / Download">
-            <i class="fa-solid fa-download text-xs"></i>
+          <button onclick="downloadFile(event, 'Slide_Bab3_Distributed_Systems.pdf')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
+            <i class="fa-solid fa-download text-[11px]"></i>
           </button>
         </div>
 
         <!-- Source Card 2 (Markdown) -->
-        <div id="source-card-2" onclick="previewSource(2)" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
+        <div id="src-2" onclick="previewSource(2, 'Catatan_Riset_Multi_LLM.md', 1)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
           <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
-          <div class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
-            <i class="fa-solid fa-file-lines"></i>
+          <div class="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
+            <i class="fa-solid fa-file-lines text-[11px]"></i>
           </div>
           <div class="flex-1 min-w-0">
             <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">Catatan_Riset_Multi_LLM.md</h4>
-            <div class="flex items-center space-x-2 text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">
-              <span>420 baris</span>
-              <span>&bull;</span>
-              <span>15.1 KB</span>
+            <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
+              <span>420 baris</span> &bull; <span>15.1 KB</span>
             </div>
           </div>
-          <button onclick="downloadSourceToHP(event, 'Catatan_Riset_Multi_LLM.md')" class="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] transition" title="Ambil ke HP / Download">
-            <i class="fa-solid fa-download text-xs"></i>
+          <button onclick="downloadFile(event, 'Catatan_Riset_Multi_LLM.md')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
+            <i class="fa-solid fa-download text-[11px]"></i>
           </button>
         </div>
 
         <!-- Source Card 3 (DOCX) -->
-        <div id="source-card-3" onclick="previewSource(3)" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
+        <div id="src-3" onclick="previewSource(3, 'Modul_Praktikum_Cloud_ULBI.docx', 1)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
           <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
-          <div class="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
-            <i class="fa-solid fa-file-word"></i>
+          <div class="w-6 h-6 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
+            <i class="fa-solid fa-file-word text-[11px]"></i>
           </div>
           <div class="flex-1 min-w-0">
             <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">Modul_Praktikum_Cloud_ULBI.docx</h4>
-            <div class="flex items-center space-x-2 text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">
-              <span>32 halaman</span>
-              <span>&bull;</span>
-              <span>1.12 MB</span>
+            <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
+              <span>32 halaman</span> &bull; <span>1.12 MB</span>
             </div>
           </div>
-          <button onclick="downloadSourceToHP(event, 'Modul_Praktikum_Cloud_ULBI.docx')" class="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] transition" title="Ambil ke HP / Download">
-            <i class="fa-solid fa-download text-xs"></i>
+          <button onclick="downloadFile(event, 'Modul_Praktikum_Cloud_ULBI.docx')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
+            <i class="fa-solid fa-download text-[11px]"></i>
           </button>
         </div>
 
-        <!-- Source Card 4 (Code) -->
-        <div id="source-card-4" onclick="previewSource(4)" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
+        <!-- Source Card 4 (JS Code) -->
+        <div id="src-4" onclick="previewSource(4, 'llmRouterService.js', 1)" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
           <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
-          <div class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
-            <i class="fa-solid fa-file-code"></i>
+          <div class="w-6 h-6 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
+            <i class="fa-solid fa-file-code text-[11px]"></i>
           </div>
           <div class="flex-1 min-w-0">
             <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">llmRouterService.js</h4>
-            <div class="flex items-center space-x-2 text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">
-              <span>Node.js Logic</span>
-              <span>&bull;</span>
-              <span>8.4 KB</span>
+            <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
+              <span>Backend Code</span> &bull; <span>8.4 KB</span>
             </div>
           </div>
-          <button onclick="downloadSourceToHP(event, 'llmRouterService.js')" class="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)] transition" title="Ambil ke HP / Download">
-            <i class="fa-solid fa-download text-xs"></i>
+          <button onclick="downloadFile(event, 'llmRouterService.js')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
+            <i class="fa-solid fa-download text-[11px]"></i>
           </button>
         </div>
 
       </div>
 
-      <!-- Sources Footer / Token Capacity Bar (NotebookLM Exact Ratio) -->
-      <div class="p-3.5 border-t border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-xs">
-        <div class="flex items-center justify-between text-[11px] font-medium text-[var(--nlm-text-secondary)] mb-1">
-          <span>Kapasitas Konteks Sumber</span>
-          <span class="font-mono text-[var(--nlm-text-tertiary)]">14.200 / 1.000.000 kata</span>
+      <!-- Sources Footer -->
+      <div class="p-3 border-t border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[11px]">
+        <div class="flex items-center justify-between text-[var(--nlm-text-secondary)] font-medium mb-1">
+          <span>Kapasitas Konteks</span>
+          <span class="font-mono text-[var(--nlm-text-tertiary)]">14.2k / 1.0M kata</span>
         </div>
         <div class="w-full bg-[var(--nlm-border)] h-1 rounded-full overflow-hidden">
           <div class="bg-blue-600 h-full w-[2%]"></div>
-        </div>
-        <div class="mt-2 text-[10px] text-[var(--nlm-text-tertiary)] flex items-center justify-between">
-          <span>Google Gemini 1.5 Flash Free Tier</span>
-          <span class="text-emerald-600 dark:text-emerald-400 font-medium">98.5% Tersedia</span>
         </div>
       </div>
     </aside>
 
     <!-- ====================================================== -->
-    <!-- PANEL 2: OBROLAN / CHAT (NOTEBOOKLM CENTER STAGE)      -->
+    <!-- PANEL 2: OBROLAN / CHAT (CENTER STAGE)                 -->
     <!-- ====================================================== -->
     <main class="flex-1 flex flex-col bg-[var(--nlm-bg)] overflow-hidden relative">
 
       <!-- Conversation Scroll Container -->
       <div id="nlm-chat-scroll" class="flex-1 overflow-y-auto px-6 sm:px-12 py-8 space-y-6">
         
-        <!-- INITIAL EMPTY STATE / WELCOME (NOTEBOOKLM AUTHENTIC HERO) -->
+        <!-- INITIAL EMPTY STATE / HERO -->
         <div id="nlm-welcome-hero" class="max-w-2xl mx-auto text-center pt-8 pb-4">
-          <div class="w-12 h-12 rounded-2xl bg-blue-600/10 text-blue-600 flex items-center justify-center text-xl mx-auto mb-4">
+          <div class="w-12 h-12 rounded-2xl bg-blue-600/10 text-blue-600 flex items-center justify-center text-xl mx-auto mb-3">
             <i class="fa-solid fa-wand-magic-sparkles"></i>
           </div>
-          <h2 class="text-2xl font-bold text-[var(--nlm-text-primary)] tracking-tight mb-2">
+          
+          <h2 id="hero-title" class="text-xl sm:text-2xl font-bold text-[var(--nlm-text-primary)] tracking-tight mb-2">
             Materi Kuliah Semester 5 &bull; Sistem Terdistribusi
           </h2>
-          <p class="text-xs sm:text-sm text-[var(--nlm-text-secondary)] max-w-lg mx-auto leading-relaxed mb-8">
-            NoteRoute membumikan seluruh analisis ke dalam 4 berkas laptop yang Anda pilih. Dapatkan jawaban terverifikasi dengan rujukan sitasi akurat tanpa halusinasi.
+          <p id="hero-subtitle" class="text-xs sm:text-sm text-[var(--nlm-text-secondary)] max-w-lg mx-auto leading-relaxed mb-8">
+            NoteRoute membumikan analisis ke dalam berkas dokumen yang Anda pilih. Dapatkan jawaban terverifikasi dengan rujukan sitasi akurat.
           </p>
 
-          <!-- SUGGESTED PROMPT CHIPS (NOTEBOOKLM CHIPS) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left max-w-xl mx-auto">
-            <button onclick="triggerSuggestedPrompt('Apa kesimpulan inti Teorema CAP pada Slide Bab 3?')" class="p-3.5 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition shadow-xs flex items-start space-x-2.5 group">
+          <!-- SUGGESTED PROMPT CHIPS -->
+          <div id="hero-suggestions" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left max-w-xl mx-auto">
+            <button onclick="sendPrompt('Apa kesimpulan inti Teorema CAP pada Slide Bab 3?')" class="p-3 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition shadow-xs flex items-start space-x-2.5 group">
               <span class="text-blue-600 text-sm mt-0.5"><i class="fa-regular fa-lightbulb"></i></span>
               <div>
                 <div class="font-semibold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 transition">Kesimpulan Teorema CAP</div>
-                <div class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">Menganalisis consistency vs availability</div>
+                <div class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">Analisis consistency vs availability</div>
               </div>
             </button>
 
-            <button onclick="triggerSuggestedPrompt('Buatkan daftar 5 pertanyaan kuis penting dari materi ini')" class="p-3.5 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition shadow-xs flex items-start space-x-2.5 group">
+            <button onclick="sendPrompt('Buatkan daftar 5 pertanyaan kuis penting dari materi ini')" class="p-3 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition shadow-xs flex items-start space-x-2.5 group">
               <span class="text-indigo-600 text-sm mt-0.5"><i class="fa-solid fa-list-check"></i></span>
               <div>
                 <div class="font-semibold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 transition">Buat Pertanyaan Kuis</div>
-                <div class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">5 soal penting untuk persiapan ujian</div>
+                <div class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">5 soal penting untuk bahan ujian</div>
               </div>
             </button>
 
-            <button onclick="triggerSuggestedPrompt('Jelaskan cara kerja algoritma Heuristic Failover pada llmRouterService.js')" class="p-3.5 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition shadow-xs flex items-start space-x-2.5 group">
+            <button onclick="sendPrompt('Jelaskan cara kerja algoritma Heuristic Failover pada llmRouterService.js')" class="p-3 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition shadow-xs flex items-start space-x-2.5 group">
               <span class="text-emerald-600 text-sm mt-0.5"><i class="fa-solid fa-code"></i></span>
               <div>
                 <div class="font-semibold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 transition">Analisis Kode Router</div>
@@ -378,11 +351,11 @@
               </div>
             </button>
 
-            <button onclick="triggerSuggestedPrompt('Bandingkan arsitektur Spanner dan MongoDB dari materi')" class="p-3.5 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition shadow-xs flex items-start space-x-2.5 group">
-              <span class="text-amber-600 text-sm mt-0.5"><i class="fa-solid fa-scale-balanced"></i></span>
+            <button onclick="sendPrompt('Bantu rancang arsitektur backend REST API dengan Express.js')" class="p-3 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition shadow-xs flex items-start space-x-2.5 group">
+              <span class="text-amber-600 text-sm mt-0.5"><i class="fa-solid fa-laptop-code"></i></span>
               <div>
-                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 transition">Spanner vs MongoDB</div>
-                <div class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">Perbandingan replikasi mayoritas</div>
+                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 transition">Diskusi Bebas AI</div>
+                <div class="text-[11px] text-[var(--nlm-text-tertiary)] mt-0.5">Tanya ide pemrograman umum</div>
               </div>
             </button>
           </div>
@@ -398,46 +371,42 @@
             </div>
           </div>
 
-          <!-- Sample Grounded AI Response (NotebookLM Exact Citations) -->
+          <!-- Sample Grounded AI Response -->
           <div class="flex items-start space-x-3.5">
             <div class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
               <i class="fa-solid fa-wand-magic-sparkles text-[11px]"></i>
             </div>
             
             <div class="flex-1 space-y-3 text-xs sm:text-sm text-[var(--nlm-text-primary)] leading-relaxed">
-              <p>
-                Berdasarkan pembahasan pada <strong>Slide Bab 3: Sistem Terdistribusi</strong>, Teorema CAP (Brewer's Theorem) menyatakan bahwa sebuah sistem penyimpanan data terdistribusi secara matematis tidak dapat menjamin ketiga karakteristik berikut secara bersamaan <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>:
-              </p>
-              
-              <ul class="list-disc ml-5 space-y-1.5 text-[var(--nlm-text-secondary)]">
-                <li>
-                  <strong>Consistency (Konsistensi):</strong> Setiap operasi pembacaan akan menerima data tulis paling mutakhir atau menghasilkan status galat <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>.
-                </li>
-                <li>
-                  <strong>Availability (Ketersediaan):</strong> Setiap permintaan non-galat harus selalu menerima respons tanpa jaminan bahwa data tersebut adalah yang paling mutakhir.
-                </li>
-                <li>
-                  <strong>Partition Tolerance (Ketahanan Partisi):</strong> Sistem tetap beroperasi dan berfungsi meskipun terjadi pemutusan komunikasi fisik antar-node dalam jaringan <span class="nlm-citation" onclick="openSourceCitation(1, 16)">2</span>.
-                </li>
-              </ul>
+              <div id="ai-response-container">
+                <p>
+                  Berdasarkan pembahasan pada <strong>Slide Bab 3: Sistem Terdistribusi</strong>, Teorema CAP (Brewer's Theorem) menyatakan bahwa sistem data terdistribusi tidak dapat menjamin ketiga karakteristik berikut secara bersamaan <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>:
+                </p>
+                
+                <ul class="list-disc ml-5 space-y-1.5 text-[var(--nlm-text-secondary)] my-2">
+                  <li><strong>Consistency (Konsistensi):</strong> Setiap pembacaan menerima data tulis terbaru atau galat <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>.</li>
+                  <li><strong>Availability (Ketersediaan):</strong> Setiap permintaan non-galat menerima respons tanpa jaminan data terbaru.</li>
+                  <li><strong>Partition Tolerance:</strong> Sistem tetap beroperasi meski terjadi partisi jaringan fisik <span class="nlm-citation" onclick="openSourceCitation(1, 16)">2</span>.</li>
+                </ul>
 
-              <p class="text-[var(--nlm-text-secondary)]">
-                Karena partisi jaringan merupakan keniscayaan fisik pada infrastruktur terdistribusi modern, arsitektur sistem pada dasarnya dipaksa memilih antara konsistensi ketat (model CP seperti Spanner atau MongoDB dengan replikasi mayoritas) atau ketersediaan tinggi (model AP) saat terjadi kegagalan jaringan <span class="nlm-citation" onclick="openSourceCitation(1, 16)">2</span>.
-              </p>
+                <p class="text-[var(--nlm-text-secondary)]">
+                  Karena partisi jaringan tidak bisa dihindari, arsitektur sistem harus memilih antara konsistensi ketat (CP) atau ketersediaan tinggi (AP) saat terjadi pemisahan koneksi antar-node <span class="nlm-citation" onclick="openSourceCitation(1, 16)">2</span>.
+                </p>
+              </div>
 
-              <!-- NotebookLM Answer Actions Row (Copy, Save to Note) -->
+              <!-- Answer Actions Row -->
               <div class="pt-2 flex items-center justify-between border-t border-[var(--nlm-border-subtle)] text-xs text-[var(--nlm-text-tertiary)]">
                 <div class="flex items-center space-x-1">
                   <button onclick="copyAnswerText()" class="p-1.5 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-[var(--nlm-text-primary)] transition" title="Salin Jawaban">
                     <i class="fa-regular fa-copy text-xs"></i>
                   </button>
-                  <button onclick="saveAnswerAsNote()" class="px-2.5 py-1 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-blue-600 transition flex items-center space-x-1.5 text-[11px] font-medium" title="Simpan ke Catatan Studio">
+                  <button onclick="saveAnswerAsNote()" class="px-2.5 py-1 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-blue-600 transition flex items-center space-x-1.5 text-[11px] font-medium" title="Simpan ke Studio">
                     <i class="fa-regular fa-bookmark text-xs"></i>
                     <span>Simpan ke Catatan</span>
                   </button>
                 </div>
                 <div class="flex items-center space-x-2 text-[11px]">
-                  <span>2 rujukan diverifikasi</span>
+                  <span id="response-grounding-tag">2 rujukan terverifikasi</span>
                   <span>&bull;</span>
                   <span class="text-emerald-600 dark:text-emerald-400 font-medium">Gemini 1.5 Flash</span>
                 </div>
@@ -450,24 +419,29 @@
 
       </div>
 
-      <!-- FLOATING PILL CHAT INPUT BAR (NOTEBOOKLM EXACT BOTTOM CONSOLE) -->
-      <div class="p-4 sm:p-6 bg-transparent">
+      <!-- FLOATING PILL CHAT INPUT BAR -->
+      <div class="p-4 sm:p-5 bg-transparent">
         <div class="max-w-2xl mx-auto">
           
-          <div class="relative bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-full p-2 pl-5 pr-3 shadow-[var(--nlm-card-shadow)] flex items-center space-x-3 focus-within:border-blue-600 transition">
-            <input id="nlm-chat-input" type="text" placeholder="Tanyakan apa saja seputar 4 berkas laptop ini..." 
-                   class="flex-1 bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none">
+          <div class="relative bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-full p-2 pl-4 pr-3 shadow-[var(--nlm-card-shadow)] flex items-center space-x-2.5 focus-within:border-blue-600 transition">
+            
+            <!-- Context Mode Pill inside input -->
+            <button onclick="cycleMode()" class="px-2.5 py-1 rounded-full bg-[var(--nlm-surface-variant)] text-[11px] font-medium text-[var(--nlm-text-secondary)] hover:text-[var(--nlm-text-primary)] flex items-center space-x-1 shrink-0 border border-[var(--nlm-border)]">
+              <span id="input-mode-icon"><i class="fa-solid fa-file-shield text-blue-600"></i></span>
+              <span id="input-mode-text" class="hidden sm:inline">4 Dokumen</span>
+            </button>
 
-            <div class="flex items-center space-x-1.5 shrink-0">
-              <button onclick="submitNlmPrompt()" class="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition shadow-xs">
-                <i class="fa-solid fa-arrow-up text-xs"></i>
-              </button>
-            </div>
+            <input id="nlm-chat-input" type="text" placeholder="Tanyakan seputar 4 dokumen laptop..." 
+                   class="flex-1 bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none min-w-0">
+
+            <button onclick="submitNlmPrompt()" class="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition shadow-xs shrink-0">
+              <i class="fa-solid fa-arrow-up text-xs"></i>
+            </button>
           </div>
 
           <!-- Bottom Micro Notice -->
           <div class="mt-2 text-center text-[10px] text-[var(--nlm-text-tertiary)]">
-            NoteRoute dapat melakukan kesalahan. Pastikan memeriksa kutipan rujukan sumber asli laptop.
+            <span id="bottom-notice-text">Mode Dokumen Aktif: Jawaban dibumikan dengan sitasi rujukan dokumen laptop.</span>
           </div>
 
         </div>
@@ -475,110 +449,112 @@
 
     </main>
 
+    <!-- FLOATING TAB TO RE-OPEN STUDIO (WHEN COLLAPSED) -->
+    <button id="reopen-studio-btn" onclick="toggleRightSidebar()" class="hidden absolute top-3 right-3 z-20 px-3 py-1.5 rounded-full bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] shadow-md text-xs font-semibold text-[var(--nlm-text-primary)] items-center space-x-2 transition">
+      <i class="fa-solid fa-headphones text-purple-600"></i>
+      <span>Studio (<span id="reopen-studio-count">2</span>)</span>
+    </button>
+
     <!-- ====================================================== -->
-    <!-- PANEL 3: STUDIO & CATATAN (RIGHT PANEL - 340px)        -->
+    <!-- PANEL 3: STUDIO & CATATAN (RIGHT PANEL - SLIMMER 280px)-->
     <!-- ====================================================== -->
-    <aside class="w-84 border-l border-[var(--nlm-border)] bg-[var(--nlm-surface)] flex flex-col justify-between shrink-0 select-none">
+    <aside id="sidebar-studio" class="w-72 border-l border-[var(--nlm-border)] bg-[var(--nlm-surface)] flex flex-col justify-between shrink-0 select-none smooth-panel z-10 overflow-hidden">
       
       <!-- Studio Header -->
-      <div class="p-4 border-b border-[var(--nlm-border-subtle)] flex items-center justify-between">
+      <div class="p-3.5 border-b border-[var(--nlm-border-subtle)] flex items-center justify-between">
         <div class="flex items-center space-x-2">
           <h2 class="font-bold text-sm text-[var(--nlm-text-primary)]">Studio</h2>
-          <span class="text-xs text-[var(--nlm-text-tertiary)]">&bull; Catatan &amp; Alat</span>
+          <span class="text-xs text-[var(--nlm-text-tertiary)]">&bull; Catatan</span>
         </div>
-        <button onclick="createNewNoteModal()" class="px-2.5 py-1 rounded-lg hover:bg-[var(--nlm-surface-hover)] text-xs font-semibold text-blue-600 flex items-center space-x-1 transition">
-          <i class="fa-solid fa-plus text-[10px]"></i>
-          <span>Catatan Baru</span>
-        </button>
+        
+        <div class="flex items-center space-x-1">
+          <button onclick="createNewNoteInStudio()" class="p-1.5 rounded-lg hover:bg-[var(--nlm-surface-hover)] text-xs font-semibold text-blue-600 transition" title="Catatan Baru">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+          <!-- Collapse Button -->
+          <button onclick="toggleRightSidebar()" class="w-6 h-6 rounded-md hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center transition" title="Tutup Studio">
+            <i class="fa-solid fa-chevron-right text-[11px]"></i>
+          </button>
+        </div>
       </div>
 
-      <!-- Studio Tools & Saved Notes -->
-      <div class="flex-1 overflow-y-auto p-3.5 space-y-4">
+      <!-- Studio Content (Slimmer & Clean) -->
+      <div class="flex-1 overflow-y-auto p-3 space-y-3">
         
-        <!-- TOOL 1: AUDIO OVERVIEW / IKHTISAR AUDIO (NOTEBOOKLM HERO FEATURE) -->
-        <div class="p-4 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-xs space-y-3">
+        <!-- AUDIO OVERVIEW COMPACT CARD -->
+        <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-xs space-y-2">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
-              <span class="w-7 h-7 rounded-xl bg-purple-600/10 text-purple-600 flex items-center justify-center text-xs">
+              <span class="w-6 h-6 rounded-lg bg-purple-600/10 text-purple-600 flex items-center justify-center text-xs">
                 <i class="fa-solid fa-headphones"></i>
               </span>
-              <span class="font-bold text-xs text-[var(--nlm-text-primary)]">Ikhtisar Audio (Deep Dive)</span>
+              <span class="font-bold text-xs text-[var(--nlm-text-primary)]">Ikhtisar Audio</span>
             </div>
-            <span class="text-[10px] font-mono font-bold text-purple-600 bg-purple-500/10 px-1.5 py-0.5 rounded">AI Podcaster</span>
+            <span class="text-[9px] font-bold text-purple-600 bg-purple-500/10 px-1 py-0.5 rounded">Deep Dive</span>
           </div>
 
-          <p class="text-[11px] text-[var(--nlm-text-secondary)] leading-relaxed">
-            Dua pembawa acara AI berbincang mendalam dan membedah isi berkas laptop Anda dalam format podcast audio.
+          <p class="text-[11px] text-[var(--nlm-text-secondary)] leading-snug">
+            Percakapan 2 host AI membedah materi kuliah Anda.
           </p>
 
-          <button onclick="generateAudioOverview()" id="btn-audio-generate" class="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs flex items-center justify-center space-x-2 shadow-xs transition">
-            <i class="fa-solid fa-play text-[10px]"></i>
-            <span id="audio-btn-label">Buat Ikhtisar Audio</span>
+          <button onclick="generateAudioOverview()" id="btn-audio-generate" class="w-full py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold text-[11px] flex items-center justify-center space-x-1.5 transition">
+            <i class="fa-solid fa-play text-[9px]"></i>
+            <span id="audio-btn-label">Buat Audio</span>
           </button>
         </div>
 
-        <!-- TOOL 2: QUICK STUDY TEMPLATES (PANDUAN BELAJAR, FAQ, LINIMASA) -->
-        <div>
-          <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-1 mb-2">
-            Panduan &amp; Ringkasan Cepat
-          </div>
-          
-          <div class="grid grid-cols-2 gap-2 text-xs">
-            <button onclick="createStudyTool('Panduan Belajar')" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
-              <div class="text-blue-600 text-xs mb-1"><i class="fa-solid fa-graduation-cap"></i></div>
-              <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">Panduan Belajar</div>
-              <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Rangkuman silabus</div>
-            </button>
+        <!-- QUICK TEMPLATES BUTTONS ROW -->
+        <div class="grid grid-cols-2 gap-1.5 text-xs">
+          <button onclick="createStudyTool('Panduan Belajar')" class="p-2 rounded-lg border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
+            <div class="text-blue-600 text-[11px]"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="font-medium text-[11px] text-[var(--nlm-text-primary)] truncate">Panduan Belajar</div>
+          </button>
 
-            <button onclick="createStudyTool('Dokumen Pengarahan')" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
-              <div class="text-emerald-600 text-xs mb-1"><i class="fa-solid fa-file-contract"></i></div>
-              <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">Briefing Doc</div>
-              <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Poin eksekutif</div>
-            </button>
+          <button onclick="createStudyTool('Briefing Doc')" class="p-2 rounded-lg border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
+            <div class="text-emerald-600 text-[11px]"><i class="fa-solid fa-file-contract"></i></div>
+            <div class="font-medium text-[11px] text-[var(--nlm-text-primary)] truncate">Briefing Doc</div>
+          </button>
 
-            <button onclick="createStudyTool('Tanya Jawab (FAQ)')" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
-              <div class="text-amber-600 text-xs mb-1"><i class="fa-solid fa-circle-question"></i></div>
-              <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">Tanya Jawab (FAQ)</div>
-              <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Daftar pertanyaan</div>
-            </button>
+          <button onclick="createStudyTool('Tanya Jawab (FAQ)')" class="p-2 rounded-lg border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
+            <div class="text-amber-600 text-[11px]"><i class="fa-solid fa-circle-question"></i></div>
+            <div class="font-medium text-[11px] text-[var(--nlm-text-primary)] truncate">FAQ</div>
+          </button>
 
-            <button onclick="createStudyTool('Linimasa Materi')" class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
-              <div class="text-indigo-600 text-xs mb-1"><i class="fa-solid fa-timeline"></i></div>
-              <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">Linimasa</div>
-              <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Alur kronologis</div>
-            </button>
-          </div>
+          <button onclick="createStudyTool('Linimasa')" class="p-2 rounded-lg border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-left transition">
+            <div class="text-indigo-600 text-[11px]"><i class="fa-solid fa-timeline"></i></div>
+            <div class="font-medium text-[11px] text-[var(--nlm-text-primary)] truncate">Linimasa</div>
+          </button>
         </div>
 
         <!-- SAVED NOTES LIST -->
         <div>
-          <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-1 mb-2 flex items-center justify-between">
+          <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-1 mb-1.5 flex items-center justify-between">
             <span>Catatan Tersimpan</span>
-            <span id="saved-note-count" class="font-mono text-[10px]">2 Catatan</span>
+            <span id="saved-note-count" class="font-mono text-[10px]">2</span>
           </div>
 
-          <div id="notes-container" class="space-y-2">
+          <div id="notes-container" class="space-y-1.5">
             <!-- Note 1 -->
-            <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer">
-              <div class="font-bold text-xs text-[var(--nlm-text-primary)] mb-1">Rangkuman Teorema CAP &amp; Spanner</div>
-              <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-relaxed">
-                Spanner menggunakan atomic clock (TrueTime API) untuk menjamin konsistensi eksternal tingkat tinggi...
+            <div class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer">
+              <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate mb-0.5">Rangkuman Teorema CAP &amp; Spanner</div>
+              <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-snug">
+                Spanner menggunakan atomic clock (TrueTime API) untuk menjamin konsistensi...
               </p>
-              <div class="mt-2 text-[10px] text-[var(--nlm-text-tertiary)] flex justify-between">
-                <span>Disimpan dari chat</span>
-                <span>08 Nov 2026</span>
+              <div class="mt-1.5 text-[9px] text-[var(--nlm-text-tertiary)] flex justify-between">
+                <span>Dari obrolan</span>
+                <span>08 Nov</span>
               </div>
             </div>
 
             <!-- Note 2 -->
-            <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer">
-              <div class="font-bold text-xs text-[var(--nlm-text-primary)] mb-1">Metrik Penghematan Multi-LLM</div>
-              <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-relaxed">
-                Biaya tersimpan kumulatif $12.85 dengan perutean prioritas Gemini 1.5 Flash 1M Free Context...
+            <div class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer">
+              <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate mb-0.5">Metrik Penghematan Multi-LLM</div>
+              <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-snug">
+                Biaya tersimpan $12.85 dengan Gemini 1.5 Flash 1M Context...
               </p>
-              <div class="mt-2 text-[10px] text-[var(--nlm-text-tertiary)] flex justify-between">
-                <span>Catatan manual</span>
-                <span>07 Nov 2026</span>
+              <div class="mt-1.5 text-[9px] text-[var(--nlm-text-tertiary)] flex justify-between">
+                <span>Manual</span>
+                <span>07 Nov</span>
               </div>
             </div>
           </div>
@@ -586,15 +562,11 @@
 
       </div>
 
-      <!-- Studio Footer: Token & Cost Stats -->
-      <div class="p-3.5 border-t border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-xs">
-        <div class="flex items-center justify-between text-[11px] font-medium text-[var(--nlm-text-secondary)]">
-          <span>Efisiensi Biaya Token:</span>
-          <span class="font-bold text-emerald-600 dark:text-emerald-400 font-mono">Hemat $12.85 (Rp 208k)</span>
-        </div>
-        <div class="mt-1 text-[10px] text-[var(--nlm-text-tertiary)] flex items-center justify-between">
-          <span>Alwaysdata Public HTTPS</span>
-          <span>MongoDB Atlas Sync</span>
+      <!-- Studio Slim Footer -->
+      <div class="p-3 border-t border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[11px]">
+        <div class="flex items-center justify-between text-[var(--nlm-text-secondary)] font-medium">
+          <span>Efisiensi:</span>
+          <span class="font-bold text-emerald-600 dark:text-emerald-400 font-mono">Hemat $12.85</span>
         </div>
       </div>
     </aside>
@@ -602,12 +574,87 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 3. MODAL: PREVIEW SOURCE DOKUMEN / CITATION HIGHLIGHT    -->
+  <!-- 3. POPUP MODAL: "TAMBAHKAN SUMBER" (PERSIS REFERENSI GAMBAR)-->
   <!-- ======================================================== -->
-  <div id="citation-source-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+  <div id="add-source-modal" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-up">
+      
+      <!-- Modal Header (Persis Style Gambar) -->
+      <div class="p-5 border-b border-[var(--nlm-border-subtle)] flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold text-[var(--nlm-text-primary)]">Tambahkan Sumber</h3>
+          <p class="text-xs text-[var(--nlm-text-secondary)] mt-0.5">
+            Unggah dokumen untuk dijadikan konteks analisis cerdas NoteRoute.
+          </p>
+        </div>
+        <button onclick="closeAddSourceModal()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body: DRAG & DROP BOX (PERSIS BOX DI GAMBAR REFERENSI) -->
+      <div class="p-6">
+        
+        <!-- Hidden Real File Input -->
+        <input type="file" id="real-file-input" multiple onchange="handleFileSelect(event)" class="hidden" accept=".pdf,.docx,.doc,.txt,.md,.js,.py,.png,.jpg,.jpeg">
+
+        <!-- Authentic Dashed Dropzone -->
+        <div id="dropzone-box" onclick="document.getElementById('real-file-input').click()" 
+             ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"
+             class="border-2 border-dashed border-[var(--nlm-dropzone-border)] hover:border-blue-500 bg-[var(--nlm-dropzone-bg)] hover:bg-[var(--nlm-surface-hover)] rounded-2xl p-8 sm:p-10 text-center cursor-pointer transition flex flex-col items-center justify-center space-y-3 group">
+          
+          <!-- Upload Arrow Icon from Tray (Persis Gambar) -->
+          <div class="w-12 h-12 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl group-hover:scale-110 transition">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+          </div>
+
+          <div>
+            <div class="text-sm font-semibold text-[var(--nlm-text-primary)]">
+              Tarik lalu lepas file untuk menguploadnya
+            </div>
+            <div class="text-xs text-[var(--nlm-text-tertiary)] mt-1 max-w-sm mx-auto leading-relaxed">
+              atau <span class="text-blue-600 dark:text-blue-400 font-semibold underline">klik di sini untuk mencari manual</span> di laptop atau memori HP.
+            </div>
+          </div>
+
+          <div class="text-[11px] text-[var(--nlm-text-tertiary)] pt-2 border-t border-[var(--nlm-border-subtle)] w-full">
+            Jenis file yang didukung: <strong>pdf, markdown, word (docx), teks, code, audio, dan gambar</strong>.
+          </div>
+        </div>
+
+        <!-- Simulated Upload Progress Bar -->
+        <div id="upload-progress-box" class="hidden mt-4 p-3 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)]">
+          <div class="flex items-center justify-between text-xs font-semibold mb-1">
+            <span id="uploading-filename" class="text-[var(--nlm-text-primary)] truncate max-w-[280px]">Mengunggah berkas...</span>
+            <span id="uploading-pct" class="text-blue-600 font-mono">0%</span>
+          </div>
+          <div class="w-full bg-[var(--nlm-border)] h-1.5 rounded-full overflow-hidden">
+            <div id="upload-bar" class="bg-blue-600 h-full w-0 transition-all duration-150"></div>
+          </div>
+          <div class="text-[10px] text-[var(--nlm-text-tertiary)] mt-1">
+            Mengekstrak representasi teks dokumen untuk konteks AI...
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-3.5 bg-[var(--nlm-surface-variant)] border-t border-[var(--nlm-border)] flex items-center justify-between text-xs text-[var(--nlm-text-tertiary)]">
+        <span>Batas ukuran per berkas: hingga 200 MB</span>
+        <button onclick="closeAddSourceModal()" class="px-4 py-1.5 rounded-xl bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-[var(--nlm-text-primary)] font-medium transition">
+          Batal
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 4. MODAL: CITATION PREVIEW / DOCUMENT HIGHLIGHT          -->
+  <!-- ======================================================== -->
+  <div id="citation-source-modal" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
     <div class="w-full max-w-2xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
       
-      <!-- Modal Header -->
       <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
         <div class="flex items-center space-x-2.5">
           <div class="w-7 h-7 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-xs font-bold">
@@ -623,34 +670,24 @@
         </button>
       </div>
 
-      <!-- Modal Body (Original Document Text with Highlight) -->
       <div class="p-6 overflow-y-auto space-y-4 text-xs sm:text-sm text-[var(--nlm-text-secondary)] leading-relaxed">
         <div class="text-[11px] uppercase tracking-wider font-bold text-[var(--nlm-text-tertiary)]">
-          Teks Asli Hasil Ekstraksi Parser Backend (documentParser.js):
+          Kutipan Asli Berkas Laptop:
         </div>
 
         <div class="p-4 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] font-serif text-[var(--nlm-text-primary)] leading-relaxed">
           <p class="mb-3">
-            ...Pada sistem terdistribusi skala besar, latensi jaringan dan potensi partisi fisik tidak dapat dihilangkan sepenuhnya. Oleh karena itu, Eric Brewer merumuskan konjektur yang dibuktikan formal oleh Seth Gilbert dan Nancy Lynch (2002).
+            ...Pada arsitektur sistem terdistribusi skala besar, latensi jaringan dan potensi partisi fisik tidak dapat dihilangkan sepenuhnya.
           </p>
           
-          <!-- Exact Highlighted Passage -->
           <div class="p-3 my-2 rounded-lg bg-yellow-400/20 dark:bg-yellow-500/20 border-l-4 border-yellow-500 text-[var(--nlm-text-primary)] font-medium">
             <span class="nlm-citation mr-1">1</span>
             "Teorema CAP membuktikan ketidakmungkinan matematis mencapai konsistensi kuat (Consistency) secara bersamaan dengan ketersediaan penuh (Availability) ketika terjadi partisi jaringan (Partition Tolerance)."
           </div>
 
           <p class="mt-3">
-            Implikasi praktisnya: Seorang perancang arsitektur data harus memilih antara CP (menolak permintaan baca/tulis saat partisi demi konsistensi) atau AP (menerima permintaan namun berisiko membaca data usang)...
+            Implikasi praktis: Arsitek sistem harus memilih antara CP atau AP saat terjadi split-brain...
           </p>
-        </div>
-
-        <div class="flex items-center justify-between text-xs text-[var(--nlm-text-tertiary)] pt-2">
-          <span>Kecocokan Semantik Grounding: <strong>99.4%</strong></span>
-          <button onclick="downloadSourceToHP(event, 'Slide_Bab3_Distributed_Systems.pdf')" class="text-blue-600 font-semibold hover:underline flex items-center space-x-1">
-            <i class="fa-solid fa-download text-[11px]"></i>
-            <span>Unduh Berkas Lengkap ke Komputer / HP</span>
-          </button>
         </div>
       </div>
 
@@ -668,8 +705,54 @@
   <!-- ======================================================== -->
   <script>
     let isDarkTheme = false;
+    let isLeftOpen = true;
+    let isRightOpen = true;
+    let currentMode = 'document'; // 'document' or 'general'
 
-    // 1. THEME SWITCHER (GELAP & TERANG)
+    // 1. COLLAPSIBLE SIDEBARS (BUKA TUTUP SUMBER & STUDIO)
+    function toggleLeftSidebar() {
+      const sidebar = document.getElementById('sidebar-sources');
+      const reopenBtn = document.getElementById('reopen-sources-btn');
+      const icon = document.getElementById('btn-icon-sources');
+
+      isLeftOpen = !isLeftOpen;
+      if (isLeftOpen) {
+        sidebar.style.width = '320px';
+        sidebar.classList.remove('opacity-0', 'pointer-events-none');
+        reopenBtn.classList.add('hidden');
+        reopenBtn.classList.remove('flex');
+        icon.className = "fa-solid fa-bars text-sm";
+      } else {
+        sidebar.style.width = '0px';
+        sidebar.classList.add('opacity-0', 'pointer-events-none');
+        reopenBtn.classList.remove('hidden');
+        reopenBtn.classList.add('flex');
+        icon.className = "fa-solid fa-bars-staggered text-sm";
+      }
+    }
+
+    function toggleRightSidebar() {
+      const sidebar = document.getElementById('sidebar-studio');
+      const reopenBtn = document.getElementById('reopen-studio-btn');
+      const icon = document.getElementById('btn-icon-studio');
+
+      isRightOpen = !isRightOpen;
+      if (isRightOpen) {
+        sidebar.style.width = '288px'; // 72 = 288px
+        sidebar.classList.remove('opacity-0', 'pointer-events-none');
+        reopenBtn.classList.add('hidden');
+        reopenBtn.classList.remove('flex');
+        icon.className = "fa-solid fa-columns text-sm";
+      } else {
+        sidebar.style.width = '0px';
+        sidebar.classList.add('opacity-0', 'pointer-events-none');
+        reopenBtn.classList.remove('hidden');
+        reopenBtn.classList.add('flex');
+        icon.className = "fa-solid fa-table-columns text-sm";
+      }
+    }
+
+    // 2. THEME SWITCHER (GELAP & TERANG)
     function toggleNotebookTheme() {
       const html = document.documentElement;
       const icon = document.getElementById('theme-btn-icon');
@@ -688,51 +771,165 @@
       }
     }
 
-    // 2. MODEL SWITCHER
-    function toggleModelDropdown() {
-      const menu = document.getElementById('model-dropdown-menu');
-      menu.classList.toggle('hidden');
+    // 3. AI MODE SWITCHER (MODE DOKUMEN VS AI BEBAS/UMUM)
+    function setAiMode(mode) {
+      currentMode = mode;
+      const btnDoc = document.getElementById('btn-mode-doc');
+      const btnGen = document.getElementById('btn-mode-general');
+      const input = document.getElementById('nlm-chat-input');
+      const modeText = document.getElementById('input-mode-text');
+      const modeIcon = document.getElementById('input-mode-icon');
+      const notice = document.getElementById('bottom-notice-text');
+      const heroSub = document.getElementById('hero-subtitle');
+
+      if (mode === 'document') {
+        btnDoc.className = "px-3 py-1 rounded-full font-semibold bg-blue-600 text-white transition flex items-center space-x-1.5 shadow-xs";
+        btnGen.className = "px-3 py-1 rounded-full font-medium text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] transition flex items-center space-x-1.5";
+        input.placeholder = "Tanyakan seputar 4 dokumen laptop...";
+        modeText.textContent = "4 Dokumen";
+        modeIcon.innerHTML = '<i class="fa-solid fa-file-shield text-blue-600"></i>';
+        notice.textContent = "Mode Dokumen Aktif: Jawaban dibumikan dengan sitasi rujukan dokumen laptop.";
+        heroSub.textContent = "NoteRoute membumikan analisis ke dalam berkas dokumen yang Anda pilih. Dapatkan jawaban terverifikasi dengan rujukan sitasi akurat.";
+        showToast("Mode Dokumen Aktif", "Jawaban AI difokuskan pada isi berkas yang diunggah.");
+      } else {
+        btnGen.className = "px-3 py-1 rounded-full font-semibold bg-emerald-600 text-white transition flex items-center space-x-1.5 shadow-xs";
+        btnDoc.className = "px-3 py-1 rounded-full font-medium text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] transition flex items-center space-x-1.5";
+        input.placeholder = "Tanyakan apa saja kepada AI (Mode Bebas & Terbuka)...";
+        modeText.textContent = "AI Bebas";
+        modeIcon.innerHTML = '<i class="fa-solid fa-globe text-emerald-600"></i>';
+        notice.textContent = "Mode AI Bebas Aktif: Pertanyaan terbuka untuk coding, ide, essay, dan topik apa saja.";
+        heroSub.textContent = "Gunakan NoteRoute sebagai asisten AI umum serbaguna tanpa batasan file yang diunggah.";
+        showToast("Mode AI Umum Aktif", "Anda sekarang bebas menanyakan topik apa pun di luar dokumen.");
+      }
     }
 
-    function selectRouterModel(name, badge, color) {
-      document.getElementById('active-model-name').textContent = name;
-      toggleModelDropdown();
-      showToast("Model AI Aktif", `Inferensi diarahkan ke ${name}.`);
+    function cycleMode() {
+      setAiMode(currentMode === 'document' ? 'general' : 'document');
     }
 
-    // 3. SOURCE CHECKBOXES SELECTION
+    // 4. POPUP MODAL: "TAMBAHKAN SUMBER" (DRAG & DROP)
+    function openAddSourceModal() {
+      document.getElementById('add-source-modal').classList.remove('hidden');
+    }
+
+    function closeAddSourceModal() {
+      document.getElementById('add-source-modal').classList.add('hidden');
+      document.getElementById('upload-progress-box').classList.add('hidden');
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('dropzone-box').classList.add('dropzone-active');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById('dropzone-box').classList.remove('dropzone-active');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('dropzone-box').classList.remove('dropzone-active');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        processUploadedFile(files[0].name, (files[0].size / (1024 * 1024)).toFixed(2));
+      }
+    }
+
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      if (files.length > 0) {
+        processUploadedFile(files[0].name, (files[0].size / (1024 * 1024)).toFixed(2));
+      }
+    }
+
+    function processUploadedFile(filename, sizeMB) {
+      const pBox = document.getElementById('upload-progress-box');
+      const pBar = document.getElementById('upload-bar');
+      const pPct = document.getElementById('uploading-pct');
+      const pName = document.getElementById('uploading-filename');
+
+      pBox.classList.remove('hidden');
+      pName.textContent = filename;
+
+      let pct = 0;
+      const timer = setInterval(() => {
+        pct += 25;
+        if (pct > 100) pct = 100;
+        pBar.style.width = pct + '%';
+        pPct.textContent = pct + '%';
+
+        if (pct >= 100) {
+          clearInterval(timer);
+          setTimeout(() => {
+            closeAddSourceModal();
+            addNewSourceCard(filename, sizeMB);
+            showToast("Sumber Ditambahkan", `${filename} berhasil diunggah dan diindeks.`);
+          }, 350);
+        }
+      }, 150);
+    }
+
+    function addNewSourceCard(filename, sizeMB) {
+      const list = document.getElementById('sources-list-container');
+      const isPdf = filename.toLowerCase().endsWith('.pdf');
+      const isDoc = filename.toLowerCase().endsWith('.doc') || filename.toLowerCase().endsWith('.docx');
+      const iconClass = isPdf ? 'fa-file-pdf text-red-600 bg-red-500/10' : (isDoc ? 'fa-file-word text-indigo-600 bg-indigo-500/10' : 'fa-file-lines text-blue-600 bg-blue-500/10');
+      
+      const card = document.createElement('div');
+      card.className = "p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group";
+      card.onclick = () => previewSource(99, filename, 1);
+      card.innerHTML = `
+        <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-blue-600">
+        <div class="w-6 h-6 rounded-lg ${iconClass} flex items-center justify-center text-xs shrink-0 mt-0.5">
+          <i class="fa-solid ${isPdf ? 'fa-file-pdf' : (isDoc ? 'fa-file-word' : 'fa-file-lines')} text-[11px]"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition">${filename}</h4>
+          <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
+            <span>Baru</span> &bull; <span>${sizeMB || '1.2'} MB</span>
+          </div>
+        </div>
+        <button onclick="downloadFile(event, '${filename}')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-blue-600" title="Unduh">
+          <i class="fa-solid fa-download text-[11px]"></i>
+        </button>
+      `;
+      list.prepend(card);
+      updateSourceCount();
+    }
+
+    // 5. SOURCES LOGIC
     function updateSourceCount() {
       const chks = document.querySelectorAll('.source-chk');
       const count = Array.from(chks).filter(c => c.checked).length;
       document.getElementById('source-selected-count').textContent = `(${count} terpilih)`;
+      document.getElementById('reopen-source-count').textContent = count;
       document.getElementById('check-all-sources').checked = (count === chks.length);
-      showToast("Sumber Diperbarui", `${count} dokumen aktif dalam memori konteks chat.`);
     }
 
     function toggleAllSources(master) {
       const chks = document.querySelectorAll('.source-chk');
       chks.forEach(c => c.checked = master.checked);
-      document.getElementById('source-selected-count').textContent = `(${master.checked ? chks.length : 0} terpilih)`;
-      showToast("Konteks Dokumen", master.checked ? "Semua dokumen aktif." : "Konteks dikosongkan.");
+      updateSourceCount();
+      showToast("Konteks Sumber", master.checked ? "Semua berkas aktif." : "Semua berkas dinonaktifkan.");
     }
 
-    function previewSource(id) {
-      openSourceCitation(id, id === 1 ? 14 : 1);
+    function previewSource(id, name, page) {
+      document.getElementById('modal-doc-title').textContent = name;
+      openSourceCitation(id, page);
     }
 
-    // 4. CITATION INSPECTOR MODAL
     function openSourceCitation(sourceId, pageNumber) {
-      const modal = document.getElementById('citation-source-modal');
       document.getElementById('modal-page-badge').textContent = `Halaman ${pageNumber} • Rujukan Terverifikasi [${sourceId}]`;
-      modal.classList.remove('hidden');
+      document.getElementById('citation-source-modal').classList.remove('hidden');
     }
 
     function closeCitationModal() {
       document.getElementById('citation-source-modal').classList.add('hidden');
     }
 
-    // 5. CHAT INTERACTIONS
-    function triggerSuggestedPrompt(text) {
+    // 6. CHAT & SUBMISSION
+    function sendPrompt(text) {
       document.getElementById('nlm-chat-input').value = text;
       submitNlmPrompt();
     }
@@ -746,68 +943,95 @@
       document.getElementById('nlm-welcome-hero').classList.add('hidden');
       document.getElementById('nlm-active-messages').classList.remove('hidden');
 
+      const responseContainer = document.getElementById('ai-response-container');
+      const groundingTag = document.getElementById('response-grounding-tag');
+
+      if (currentMode === 'general') {
+        groundingTag.textContent = "Mode AI Umum (Tanpa Dokumen)";
+        responseContainer.innerHTML = `
+          <p>Tentu! Berikut analisis menyeluruh mengenai <strong>"${text}"</strong>:</p>
+          <p class="text-[var(--nlm-text-secondary)] my-2">
+            Sebagai asisten AI cerdas NoteRoute, saya dapat membantu Anda memecahkan masalah pemrograman, penyusunan algoritma, perancangan basis data, maupun penulisan karya ilmiah tanpa terbatas pada berkas dokumen yang diunggah.
+          </p>
+          <div class="p-3 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs font-mono">
+            // Rekomendasi Solusi Teknis:<br>
+            const engine = new NoteRouteRouter({ failover: true, timeout: 500 });
+          </div>
+        `;
+      } else {
+        groundingTag.textContent = "2 rujukan terverifikasi";
+        responseContainer.innerHTML = `
+          <p>Berdasarkan pembahasan pada <strong>Slide Bab 3: Sistem Terdistribusi</strong>, Teorema CAP menyatakan bahwa sistem data terdistribusi tidak dapat menjamin ketiga karakteristik secara bersamaan <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>:</p>
+          <ul class="list-disc ml-5 space-y-1.5 text-[var(--nlm-text-secondary)] my-2">
+            <li><strong>Consistency:</strong> Setiap pembacaan menerima data tulis terbaru <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>.</li>
+            <li><strong>Availability:</strong> Setiap permintaan non-galat menerima respons.</li>
+            <li><strong>Partition Tolerance:</strong> Sistem tetap beroperasi meski terjadi partisi jaringan <span class="nlm-citation" onclick="openSourceCitation(1, 16)">2</span>.</li>
+          </ul>
+        `;
+      }
+
       input.value = '';
-      showToast("Menghasilkan Jawaban", "Mengirim kueri grounding ke Gemini 1.5 Flash...");
+      showToast("Menghasilkan Jawaban", currentMode === 'general' ? "Memproses jawaban AI umum..." : "Membaca 4 berkas dokumen laptop...");
       
       const scroll = document.getElementById('nlm-chat-scroll');
       scroll.scrollTop = scroll.scrollHeight;
     }
 
     function copyAnswerText() {
-      showToast("Teks Disalin", "Jawaban disalin ke clipboard dengan format markdown.");
+      showToast("Disalin", "Jawaban disalin ke clipboard.");
     }
 
     function saveAnswerAsNote() {
+      createNewNoteInStudio("Catatan dari Jawaban AI", "Poin kesimpulan yang disimpan langsung dari obrolan.");
+    }
+
+    function createNewNoteInStudio(customTitle, customBody) {
       const container = document.getElementById('notes-container');
       const note = document.createElement('div');
-      note.className = "p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer";
+      note.className = "p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer";
       note.innerHTML = `
-        <div class="font-bold text-xs text-[var(--nlm-text-primary)] mb-1">Catatan dari Obrolan Terakhir</div>
-        <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-relaxed">
-          Teorema CAP (Brewer's Theorem) membuktikan keterbatasan matematis konsistensi dalam partisi jaringan...
+        <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate mb-0.5">${customTitle || "Catatan Baru"}</div>
+        <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-snug">
+          ${customBody || "Ketik catatan Anda di sini..."}
         </p>
-        <div class="mt-2 text-[10px] text-[var(--nlm-text-tertiary)] flex justify-between">
-          <span>Baru saja disimpan</span>
-          <span>Tersinkron</span>
+        <div class="mt-1.5 text-[9px] text-[var(--nlm-text-tertiary)] flex justify-between">
+          <span>Baru saja</span>
+          <span>Tersimpan</span>
         </div>
       `;
       container.prepend(note);
-      document.getElementById('saved-note-count').textContent = "3 Catatan";
-      showToast("Tersimpan di Studio", "Catatan berhasil ditambahkan ke panel kanan.");
+      
+      const countEl = document.getElementById('saved-note-count');
+      const newCount = container.children.length;
+      countEl.textContent = newCount;
+      document.getElementById('reopen-studio-count').textContent = newCount;
+
+      // Ensure studio is open if closed
+      if (!isRightOpen) toggleRightSidebar();
+      showToast("Catatan Dibuat", "Catatan berhasil ditambahkan ke Studio.");
     }
 
-    // 6. STUDIO TOOLS GENERATOR
     function generateAudioOverview() {
       const btn = document.getElementById('btn-audio-generate');
       const label = document.getElementById('audio-btn-label');
-      label.textContent = "Menghasilkan Podcast Audio...";
+      label.textContent = "Membuat...";
       btn.classList.add('opacity-75');
 
       setTimeout(() => {
-        label.textContent = "Putar Ikhtisar Audio (8:42)";
+        label.textContent = "Putar Audio (8:42)";
         btn.classList.remove('opacity-75', 'bg-purple-600');
         btn.classList.add('bg-emerald-600');
-        showToast("Audio Deep Dive Siap!", "Podcast diskusi 2 host AI berhasil digenerate.");
-      }, 1500);
+        showToast("Audio Siap!", "Podcast diskusi 2 host AI selesai dibuat.");
+      }, 1200);
     }
 
-    function createStudyTool(toolName) {
-      showToast(toolName, `Membuat ${toolName} terstruktur dari 4 sumber dokumen...`);
-      saveAnswerAsNote();
+    function createStudyTool(name) {
+      createNewNoteInStudio(name, `Dihasilkan otomatis berdasarkan materi berkas laptop.`);
     }
 
-    function createNewNoteModal() {
-      showToast("Catatan Baru", "Membuka editor catatan bebas di Studio.");
-      saveAnswerAsNote();
-    }
-
-    function downloadSourceToHP(event, filename) {
+    function downloadFile(event, filename) {
       event.stopPropagation();
-      showToast("Mengunduh Berkas", `Mengalirkan ${filename} dari server Alwaysdata...`);
-    }
-
-    function openAddSourceModal() {
-      showToast("Sinkronkan Laptop", "Memindai folder dokumen materi kuliah di laptop Zakky...");
+      showToast("Mengunduh Berkas", `Mengambil ${filename} dari server Alwaysdata...`);
     }
 
     // 7. TOAST HELPER
@@ -825,12 +1049,12 @@
       }, 2500);
     }
 
-    // Close dropdowns on outside click
+    // Close modals on outside click
     window.addEventListener('click', (e) => {
-      const menu = document.getElementById('model-dropdown-menu');
-      if (!menu.contains(e.target) && !e.target.closest('button[onclick="toggleModelDropdown()"]')) {
-        menu.classList.add('hidden');
-      }
+      const addModal = document.getElementById('add-source-modal');
+      const citModal = document.getElementById('citation-source-modal');
+      if (e.target === addModal) closeAddSourceModal();
+      if (e.target === citModal) closeCitationModal();
     });
   </script>
 </body>
