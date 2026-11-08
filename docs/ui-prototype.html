@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoteRoute - Unified Adaptive UI (Web, Desktop & Mobile)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    /* Custom scrollbar styling */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.7); }
+    .transition-all-300 { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-3 sm:p-6 antialiased flex flex-col font-sans select-none">
+
+  <!-- TOP BAR / VIEWPORT SWITCHER -->
+  <header class="max-w-7xl mx-auto w-full mb-4 flex flex-wrap items-center justify-between gap-3 bg-slate-900/90 border border-slate-800 rounded-2xl p-3 shadow-xl backdrop-blur-md">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center font-black text-white shadow-lg shadow-indigo-500/20">
+        NR
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="font-extrabold text-base tracking-tight text-white">Note<span class="text-indigo-400">Route</span></span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-medium">Design System v1.0</span>
+        </div>
+        <p class="text-xs text-slate-400">Unified UX: Satu Desain Adaptif untuk Web, Desktop & Mobile</p>
+      </div>
+    </div>
+
+    <!-- VIEWPORT SIMULATOR SWITCHER -->
+    <div class="flex items-center bg-slate-950 p-1.5 rounded-xl border border-slate-800 text-xs">
+      <span class="text-slate-400 px-2 font-medium hidden sm:inline">Simulasi Tampilan:</span>
+      <button id="btn-view-desktop" onclick="setViewport('desktop')" class="px-3 py-1.5 rounded-lg font-semibold bg-indigo-600 text-white transition-all-300 flex items-center space-x-1.5 shadow-sm">
+        <span>🖥️ Desktop</span>
+      </button>
+      <button id="btn-view-tablet" onclick="setViewport('tablet')" class="px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition-all-300 flex items-center space-x-1.5">
+        <span>💻 Web / Tablet</span>
+      </button>
+      <button id="btn-view-mobile" onclick="setViewport('mobile')" class="px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition-all-300 flex items-center space-x-1.5">
+        <span>📱 Mobile HP</span>
+      </button>
+    </div>
+
+    <!-- LIVE METRICS PILL -->
+    <div class="hidden lg:flex items-center space-x-3 text-xs bg-slate-950/80 px-3 py-2 rounded-xl border border-slate-800/80">
+      <div class="flex items-center space-x-1.5 text-emerald-400 font-medium">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Alwaysdata HTTPS</span>
+      </div>
+      <span class="text-slate-600">&bull;</span>
+      <div class="text-indigo-300 font-medium">
+        Hemat: <span class="text-white font-bold">$12.85 (Rp 208k)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN SIMULATOR CONTAINER -->
+  <main class="flex-1 flex justify-center items-start w-full transition-all-300">
+    <div id="viewport-frame" class="w-full max-w-7xl h-[840px] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-all-300 relative">
+
+      <!-- APP TOPBAR (Cross-Platform) -->
+      <nav class="h-14 border-b border-slate-800/80 px-4 flex items-center justify-between bg-slate-900/90 backdrop-blur-md z-20">
+        <div class="flex items-center space-x-3">
+          <!-- Mobile Menu Toggle Button -->
+          <button id="mobile-nav-toggle" onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl hover:bg-slate-800 text-slate-300">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          </button>
+          <div class="flex items-center space-x-2">
+            <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-xs text-white">NR</div>
+            <span class="font-bold text-sm tracking-tight text-white">Materi Kuliah Semester 5</span>
+            <span class="text-[11px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700 hidden sm:inline">Laptop: MacBook Pro Zakky</span>
+          </div>
+        </div>
+
+        <!-- RIGHT CONTROLS: MODEL SWITCHER PILL -->
+        <div class="flex items-center space-x-2">
+          <!-- Active Model Dropdown Trigger -->
+          <div class="relative">
+            <button onclick="toggleModelMenu()" class="flex items-center space-x-2 bg-slate-800/90 hover:bg-slate-700 border border-slate-700/80 text-xs px-3 py-1.5 rounded-xl transition text-slate-200">
+              <span id="model-badge-dot" class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+              <span id="active-model-name" class="font-semibold text-white">Gemini 1.5 Flash</span>
+              <span class="text-[11px] text-indigo-300 font-mono hidden sm:inline">(1M Free)</span>
+              <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+
+            <!-- MODEL SELECTION DROPDOWN -->
+            <div id="model-dropdown" class="hidden absolute right-0 mt-2 w-72 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-2 z-50">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3 py-1.5">Pilih Router AI Target</div>
+              
+              <button onclick="selectModel('gemini', 'Gemini 1.5 Flash', '1M Free Context', 'bg-indigo-400')" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-700/80 transition flex items-start justify-between">
+                <div>
+                  <div class="font-semibold text-xs text-white flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                    <span>Google Gemini 1.5 Flash</span>
+                  </div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">1 Juta Token Context &bull; 1.500 req/hari gratis</div>
+                </div>
+                <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded font-mono">Utama</span>
+              </button>
+
+              <button onclick="selectModel('groq', 'Groq Llama 3.3 70B', 'Ultra-Fast 300 t/s', 'bg-violet-400')" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-700/80 transition flex items-start justify-between">
+                <div>
+                  <div class="font-semibold text-xs text-white flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-violet-400"></span>
+                    <span>Groq Cloud (Llama 3.3)</span>
+                  </div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">Respon Kilat 300+ token/detik &bull; Gratis</div>
+                </div>
+                <span class="text-[10px] bg-violet-500/20 text-violet-300 px-1.5 py-0.5 rounded font-mono">Kilat</span>
+              </button>
+
+              <button onclick="selectModel('deepseek', 'DeepSeek R1 / V3', 'Reasoning Murah', 'bg-blue-400')" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-700/80 transition flex items-start justify-between">
+                <div>
+                  <div class="font-semibold text-xs text-white flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                    <span>DeepSeek R1 / V3</span>
+                  </div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">Penalaran logis mendalam &bull; Rp 8 / kueri</div>
+                </div>
+                <span class="text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded font-mono">Hemat</span>
+              </button>
+
+              <button onclick="selectModel('9router', '9Router Local Bridge', 'Port 20128', 'bg-emerald-400')" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-700/80 transition flex items-start justify-between">
+                <div>
+                  <div class="font-semibold text-xs text-white flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span>9Router / OmniRoute Local</span>
+                  </div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">Daemon lokal laptop port 20128 (OpenAI API)</div>
+                </div>
+                <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-mono">Local</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Failover Shield Indicator -->
+          <div class="hidden sm:flex items-center space-x-1 px-2.5 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-[11px] text-emerald-400" title="Smart Failover Aktif: Otomatis beralih ke Groq jika HTTP 429">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            <span class="font-medium">Failover OK</span>
+          </div>
+        </div>
+      </nav>
+
+      <!-- WORKSPACE BODY (FLEX 3-COLUMN ADAPTIVE LAYOUT) -->
+      <div class="flex-1 flex overflow-hidden relative">
+
+        <!-- COLUMN 1: WORKSPACES & FILE EXPLORER (Ambil File dari Laptop) -->
+        <aside id="col-explorer" class="w-80 border-r border-slate-800 bg-slate-900/60 flex flex-col shrink-0 transition-all-300 z-10">
+          
+          <!-- Explorer Header -->
+          <div class="p-3 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <span class="font-bold text-xs uppercase tracking-wider text-slate-400">Laptop Documents</span>
+              <span id="doc-badge-count" class="bg-indigo-500/20 text-indigo-400 text-[10px] font-bold px-1.5 py-0.5 rounded-full">4 File</span>
+            </div>
+            <button onclick="simulateSync()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs flex items-center space-x-1" title="Sinkronkan dengan Laptop">
+              <svg id="sync-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+              <span class="text-[11px]">Sync</span>
+            </button>
+          </div>
+
+          <!-- Document List Items -->
+          <div class="flex-1 overflow-y-auto p-2 space-y-1.5">
+
+            <!-- Item 1: PDF Active -->
+            <div id="doc-item-1" onclick="selectDocument(1)" class="p-3 rounded-2xl bg-indigo-600/15 border border-indigo-500/40 cursor-pointer hover:bg-indigo-600/20 transition-all-300 group">
+              <div class="flex items-start justify-between">
+                <div class="flex items-center space-x-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center font-bold text-xs shrink-0">
+                    PDF
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-xs text-white leading-snug group-hover:text-indigo-300 transition">Slide_Bab3_Distributed_Systems.pdf</h4>
+                    <div class="flex items-center space-x-2 text-[11px] text-slate-400 mt-0.5">
+                      <span>2.34 MB</span>
+                      <span>&bull;</span>
+                      <span>18 Halaman</span>
+                      <span>&bull;</span>
+                      <span class="text-emerald-400 font-medium">Tersinkron</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-800/80 text-[11px]">
+                <button onclick="openDocPreview(event, 1)" class="text-slate-400 hover:text-white flex items-center space-x-1">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                  <span>Pratinjau Teks</span>
+                </button>
+                <button onclick="downloadFileToDevice(event, 'Slide_Bab3_Distributed_Systems.pdf', 2.34)" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium flex items-center space-x-1 shadow-sm transition">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                  <span>Ambil ke HP</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Item 2: Markdown -->
+            <div id="doc-item-2" onclick="selectDocument(2)" class="p-3 rounded-2xl bg-slate-800/40 border border-slate-800 cursor-pointer hover:bg-slate-800/80 transition-all-300 group">
+              <div class="flex items-start justify-between">
+                <div class="flex items-center space-x-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center font-bold text-xs shrink-0">
+                    MD
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-xs text-white leading-snug group-hover:text-indigo-300 transition">Catatan_Riset_Multi_LLM.md</h4>
+                    <div class="flex items-center space-x-2 text-[11px] text-slate-400 mt-0.5">
+                      <span>15.1 KB</span>
+                      <span>&bull;</span>
+                      <span>420 Baris</span>
+                      <span>&bull;</span>
+                      <span class="text-emerald-400 font-medium">Tersinkron</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-800/80 text-[11px]">
+                <button onclick="openDocPreview(event, 2)" class="text-slate-400 hover:text-white flex items-center space-x-1">
+                  <span>Pratinjau Teks</span>
+                </button>
+                <button onclick="downloadFileToDevice(event, 'Catatan_Riset_Multi_LLM.md', 0.02)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium flex items-center space-x-1 transition">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                  <span>Ambil ke HP</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Item 3: DOCX -->
+            <div id="doc-item-3" onclick="selectDocument(3)" class="p-3 rounded-2xl bg-slate-800/40 border border-slate-800 cursor-pointer hover:bg-slate-800/80 transition-all-300 group">
+              <div class="flex items-start justify-between">
+                <div class="flex items-center space-x-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-violet-500/20 text-violet-400 border border-violet-500/30 flex items-center justify-center font-bold text-xs shrink-0">
+                    DOC
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-xs text-white leading-snug group-hover:text-indigo-300 transition">Modul_Praktikum_Cloud_ULBI.docx</h4>
+                    <div class="flex items-center space-x-2 text-[11px] text-slate-400 mt-0.5">
+                      <span>1.12 MB</span>
+                      <span>&bull;</span>
+                      <span>32 Halaman</span>
+                      <span>&bull;</span>
+                      <span class="text-emerald-400 font-medium">Tersinkron</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-800/80 text-[11px]">
+                <button onclick="openDocPreview(event, 3)" class="text-slate-400 hover:text-white flex items-center space-x-1">
+                  <span>Pratinjau Teks</span>
+                </button>
+                <button onclick="downloadFileToDevice(event, 'Modul_Praktikum_Cloud_ULBI.docx', 1.12)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium flex items-center space-x-1 transition">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                  <span>Ambil ke HP</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Item 4: Code File -->
+            <div id="doc-item-4" onclick="selectDocument(4)" class="p-3 rounded-2xl bg-slate-800/40 border border-slate-800 cursor-pointer hover:bg-slate-800/80 transition-all-300 group">
+              <div class="flex items-start justify-between">
+                <div class="flex items-center space-x-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold text-xs shrink-0">
+                    JS
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-xs text-white leading-snug group-hover:text-indigo-300 transition">llmRouterService.js</h4>
+                    <div class="flex items-center space-x-2 text-[11px] text-slate-400 mt-0.5">
+                      <span>8.4 KB</span>
+                      <span>&bull;</span>
+                      <span>Node.js Code</span>
+                      <span>&bull;</span>
+                      <span class="text-emerald-400 font-medium">Tersinkron</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-800/80 text-[11px]">
+                <button onclick="openDocPreview(event, 4)" class="text-slate-400 hover:text-white flex items-center space-x-1">
+                  <span>Pratinjau Teks</span>
+                </button>
+                <button onclick="downloadFileToDevice(event, 'llmRouterService.js', 0.01)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium flex items-center space-x-1 transition">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                  <span>Ambil ke HP</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Download Manager Status (Izat TC-08) -->
+          <div id="download-progress-box" class="hidden p-3 border-t border-slate-800 bg-slate-950/90">
+            <div class="flex items-center justify-between text-xs mb-1.5">
+              <span id="download-status-filename" class="font-semibold text-white truncate max-w-[180px]">Mengunduh file...</span>
+              <span id="download-status-percent" class="font-mono text-indigo-400">45%</span>
+            </div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+              <div id="download-bar" class="bg-indigo-500 h-full w-[45%] transition-all duration-200"></div>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-1 flex justify-between">
+              <span>Menyimpan ke folder Downloads HP</span>
+              <span id="download-size-indicator">1.05 / 2.34 MB</span>
+            </div>
+          </div>
+        </aside>
+
+        <!-- COLUMN 2: NOTEBOOKLM-STYLE DOCUMENT CHAT (Core AI Agent) -->
+        <section class="flex-1 flex flex-col bg-slate-950 overflow-hidden relative">
+
+          <!-- Active Context Pill Bar -->
+          <div class="px-4 py-2 bg-slate-900/40 border-b border-slate-800 flex items-center justify-between text-xs">
+            <div class="flex items-center space-x-2 text-slate-400 truncate">
+              <span class="text-indigo-400 font-semibold">Grounded Context:</span>
+              <span class="bg-slate-800 text-slate-200 px-2 py-0.5 rounded-md font-mono text-[11px] truncate">Slide_Bab3_Distributed_Systems.pdf</span>
+              <span class="text-[11px] text-slate-500 hidden sm:inline">(Halaman 1 s/d 18 terekstraksi)</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button onclick="clearChatHistory()" class="text-slate-500 hover:text-slate-300 text-xs">Bersihkan Chat</button>
+            </div>
+          </div>
+
+          <!-- Chat Conversation Scroll Area -->
+          <div id="chat-messages" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+
+            <!-- Assistant Welcome Bubble -->
+            <div class="flex items-start space-x-3 max-w-3xl">
+              <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md">
+                NR
+              </div>
+              <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl rounded-tl-sm text-xs sm:text-sm text-slate-200 leading-relaxed shadow-sm">
+                <p>Halo! Saya asisten cerdas <strong>NoteRoute</strong>. Saya telah membaca dokumen <code>Slide_Bab3_Distributed_Systems.pdf</code> dari laptop Anda.</p>
+                <p class="mt-2 text-slate-400">Silakan ajukan pertanyaan seputar dokumen ini, atau pilih tombol cepat di bawah untuk memulai analisis instan:</p>
+                
+                <!-- Quick Prompt Suggestions -->
+                <div class="mt-3 flex flex-wrap gap-2">
+                  <button onclick="sendQuickPrompt('Jelaskan kesimpulan inti Teorema CAP pada bab ini')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-indigo-500/20 text-xs transition">
+                    💡 Kesimpulan Teorema CAP
+                  </button>
+                  <button onclick="sendQuickPrompt('Apa perbedaan Consistency dan Availability menurut dokumen?')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-violet-300 border border-violet-500/20 text-xs transition">
+                    ⚖️ Consistency vs Availability
+                  </button>
+                  <button onclick="sendQuickPrompt('Buatkan rangkuman 3 poin penting untuk bahan kuis besok')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs transition">
+                    📝 Rangkuman Bahan Kuis
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- User Question Bubble Example -->
+            <div class="flex items-start justify-end space-x-3">
+              <div class="bg-indigo-600 text-white p-3.5 sm:p-4 rounded-2xl rounded-tr-sm max-w-2xl text-xs sm:text-sm leading-relaxed shadow-md">
+                Apa kesimpulan bab 3 mengenai konsistensi data terdistribusi dan apa dampaknya jika terjadi partisi jaringan?
+              </div>
+              <div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 font-bold text-xs shrink-0">
+                You
+              </div>
+            </div>
+
+            <!-- Assistant Answer Bubble with Citation Badges (NotebookLM-Style) -->
+            <div class="flex items-start space-x-3 max-w-3xl">
+              <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md">
+                NR
+              </div>
+              <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl rounded-tl-sm text-xs sm:text-sm text-slate-200 leading-relaxed shadow-sm">
+                <p>Berdasarkan pembahasan pada <strong>Slide Bab 3</strong>, kesimpulan utamanya adalah:</p>
+                <ol class="list-decimal ml-4 mt-2 space-y-1.5 text-slate-300">
+                  <li><strong>Teorema CAP (Brewer's Theorem):</strong> Dalam sistem terdistribusi, sebuah sistem hanya dapat menjamin secara simultan maksimal <strong>dua dari tiga sifat</strong>: <em>Consistency</em>, <em>Availability</em>, dan <em>Partition Tolerance</em>.</li>
+                  <li><strong>Konsekuensi Partisi Jaringan:</strong> Karena partisi jaringan (koneksi putus/terpisah) adalah keniscayaan fisik pada jaringan terdistribusi, sistem terpaksa memilih antara konsistensi ketat (CP) atau ketersediaan tinggi (AP).</li>
+                </ol>
+
+                <!-- CITATION BADGES (CLICKABLE TO OPEN SOURCE PREVIEW) -->
+                <div class="mt-4 pt-3 border-t border-slate-800/80">
+                  <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+                    <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>Rujukan Sumber Terverifikasi (Citation Badges):</span>
+                  </div>
+                  
+                  <div class="flex flex-wrap gap-2">
+                    <!-- Citation Badge 1 -->
+                    <button onclick="openCitationInspector('Slide_Bab3_Distributed_Systems.pdf', 14, 'Teorema CAP membuktikan ketidakmungkinan matematis mencapai konsistensi kuat secara bersamaan dengan ketersediaan penuh ketika terjadi partisi jaringan.')" 
+                            class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-medium transition group">
+                      <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                      <span class="font-bold">Slide Bab 3 &bull; Hal. 14</span>
+                      <span class="text-indigo-400 opacity-60 group-hover:opacity-100">↗</span>
+                    </button>
+
+                    <!-- Citation Badge 2 -->
+                    <button onclick="openCitationInspector('Slide_Bab3_Distributed_Systems.pdf', 16, 'Sistem seperti Spanner dan MongoDB dengan replikasi mayoritas memilih model CP dengan mengorbankan sebagian ketersediaan saat split-brain.')" 
+                            class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/30 text-violet-300 text-xs font-medium transition group">
+                      <span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span>
+                      <span class="font-bold">Slide Bab 3 &bull; Hal. 16</span>
+                      <span class="text-violet-400 opacity-60 group-hover:opacity-100">↗</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Response Meta Footer -->
+                <div class="mt-3 flex items-center justify-between text-[11px] text-slate-500">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-slate-400">Model: <strong class="text-slate-300">Gemini 1.5 Flash</strong></span>
+                    <span>&bull;</span>
+                    <span>Latensi: <strong class="text-slate-300">482 ms</strong></span>
+                  </div>
+                  <span class="text-emerald-400">Grounded 100%</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Chat Input Bar -->
+          <div class="p-3 sm:p-4 bg-slate-900/90 border-t border-slate-800">
+            <form onsubmit="handleChatSubmit(event)" class="relative flex items-center">
+              <input id="chat-input" type="text" placeholder="Tanyakan isi dokumen laptop ini..." 
+                     class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-2xl pl-4 pr-24 py-3.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none transition shadow-inner">
+              
+              <div class="absolute right-2 flex items-center space-x-1">
+                <button type="submit" class="w-9 h-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center transition shadow-md shadow-indigo-600/30">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                </button>
+              </div>
+            </form>
+            <div class="mt-2 flex items-center justify-between text-[11px] text-slate-500 px-1">
+              <span>Enter untuk mengirim &bull; Jawaban otomatis merujuk kutipan dokumen</span>
+              <span class="hidden sm:inline">Model aktif: <strong id="input-model-label" class="text-slate-400">Gemini 1.5 Flash (Gratis)</strong></span>
+            </div>
+          </div>
+        </section>
+
+        <!-- COLUMN 3: CITATION & IN-APP PREVIEW DRAWER (Inspector) -->
+        <aside id="col-citation-drawer" class="w-80 border-l border-slate-800 bg-slate-900/90 flex flex-col shrink-0 transition-all-300">
+          
+          <!-- Drawer Header -->
+          <div class="p-3.5 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              <span class="font-bold text-xs uppercase tracking-wider text-slate-300">Citation Inspector</span>
+            </div>
+            <span id="citation-page-badge" class="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[11px] font-mono">Halaman 14</span>
+          </div>
+
+          <!-- Drawer Content -->
+          <div class="p-4 flex-1 overflow-y-auto space-y-4">
+            <div>
+              <div class="text-[11px] text-slate-400 uppercase font-semibold">Dokumen Sumber:</div>
+              <div id="citation-doc-title" class="font-bold text-xs text-white mt-0.5">Slide_Bab3_Distributed_Systems.pdf</div>
+            </div>
+
+            <!-- Snippet Card with Highlight -->
+            <div class="p-3.5 rounded-2xl bg-slate-950 border border-indigo-500/30 text-xs leading-relaxed text-slate-200">
+              <div class="text-[10px] uppercase font-bold text-indigo-400 tracking-wider mb-1.5 flex items-center justify-between">
+                <span>Cuplikan Teks Asli Laptop</span>
+                <span>Grounding Match 98%</span>
+              </div>
+              <blockquote id="citation-snippet-text" class="italic border-l-2 border-indigo-500 pl-2.5 my-2 text-indigo-100">
+                "Teorema CAP membuktikan ketidakmungkinan matematis mencapai konsistensi kuat secara bersamaan dengan ketersediaan penuh ketika terjadi partisi jaringan."
+              </blockquote>
+              <p class="text-[11px] text-slate-400 mt-2">
+                Potongan teks ini diambil langsung dari ekstraksi parser backend NoteRoute (`documentParser.js`) dan disuntikkan ke prompt Gemini untuk menjamin akurasi tanpa halusinasi.
+              </p>
+            </div>
+
+            <!-- Quick In-App Full Viewer Launcher -->
+            <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 text-xs">
+              <div class="font-semibold text-slate-200 mb-1">In-App Document Viewer</div>
+              <p class="text-[11px] text-slate-400 mb-2.5">Buka pembaca dokumen ringkas bawaan tanpa perlu aplikasi lain.</p>
+              <button onclick="openFullInAppReader()" class="w-full py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-medium text-xs transition flex items-center justify-center space-x-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                <span>Buka Pembaca Dokumen</span>
+              </button>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+
+      <!-- MOBILE BOTTOM NAVIGATION (Only shows on mobile viewport simulation) -->
+      <nav id="mobile-bottom-nav" class="hidden h-16 border-t border-slate-800 bg-slate-900/95 backdrop-blur-md px-4 flex items-center justify-around z-30">
+        <button onclick="mobileSwitchTab('explorer')" id="m-nav-explorer" class="flex flex-col items-center justify-center space-y-1 text-slate-400 hover:text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+          <span class="text-[10px] font-medium">File Laptop</span>
+        </button>
+
+        <button onclick="mobileSwitchTab('chat')" id="m-nav-chat" class="flex flex-col items-center justify-center space-y-1 text-indigo-400 font-bold">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+          <span class="text-[10px]">AI Chat</span>
+        </button>
+
+        <button onclick="mobileSwitchTab('citations')" id="m-nav-citations" class="flex flex-col items-center justify-center space-y-1 text-slate-400 hover:text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+          <span class="text-[10px] font-medium">Sitasi</span>
+        </button>
+
+        <button onclick="toggleModelMenu()" class="flex flex-col items-center justify-center space-y-1 text-slate-400 hover:text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          <span class="text-[10px] font-medium">Model</span>
+        </button>
+      </nav>
+
+    </div>
+  </main>
+
+  <!-- NOTIFICATION TOAST (Interactive Feedback) -->
+  <div id="toast-notification" class="fixed bottom-6 right-6 z-50 bg-slate-900 border border-slate-700 p-4 rounded-2xl shadow-2xl flex items-center space-x-3 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+    <div id="toast-icon-box" class="w-8 h-8 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    </div>
+    <div>
+      <div id="toast-title" class="font-bold text-xs text-white">Notifikasi</div>
+      <div id="toast-msg" class="text-xs text-slate-400">Pesan keterangan</div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC UNIFIED UX INTERACTION -->
+  <script>
+    let currentViewport = 'desktop';
+    let currentModel = 'gemini';
+
+    // 1. VIEWPORT SWITCHER LOGIC (Desktop, Tablet/Web, Mobile HP)
+    function setViewport(mode) {
+      currentViewport = mode;
+      const frame = document.getElementById('viewport-frame');
+      const btnDesk = document.getElementById('btn-view-desktop');
+      const btnTab = document.getElementById('btn-view-tablet');
+      const btnMob = document.getElementById('btn-view-mobile');
+      const colExplorer = document.getElementById('col-explorer');
+      const colDrawer = document.getElementById('col-citation-drawer');
+      const mobNav = document.getElementById('mobile-bottom-nav');
+
+      // Reset button styles
+      [btnDesk, btnTab, btnMob].forEach(b => {
+        b.className = "px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition-all-300 flex items-center space-x-1.5";
+      });
+
+      if (mode === 'desktop') {
+        btnDesk.className = "px-3 py-1.5 rounded-lg font-semibold bg-indigo-600 text-white transition-all-300 flex items-center space-x-1.5 shadow-sm";
+        frame.style.maxWidth = "1280px";
+        frame.style.height = "840px";
+        colExplorer.classList.remove('hidden');
+        colExplorer.style.width = "320px";
+        colDrawer.classList.remove('hidden');
+        colDrawer.style.width = "320px";
+        mobNav.classList.add('hidden');
+      } else if (mode === 'tablet') {
+        btnTab.className = "px-3 py-1.5 rounded-lg font-semibold bg-indigo-600 text-white transition-all-300 flex items-center space-x-1.5 shadow-sm";
+        frame.style.maxWidth = "860px";
+        frame.style.height = "800px";
+        colExplorer.classList.remove('hidden');
+        colExplorer.style.width = "260px";
+        colDrawer.classList.add('hidden'); // Drawer collapsed on tablet
+        mobNav.classList.add('hidden');
+      } else if (mode === 'mobile') {
+        btnMob.className = "px-3 py-1.5 rounded-lg font-semibold bg-indigo-600 text-white transition-all-300 flex items-center space-x-1.5 shadow-sm";
+        frame.style.maxWidth = "410px";
+        frame.style.height = "760px";
+        colExplorer.classList.add('hidden'); // Tab driven on mobile
+        colDrawer.classList.add('hidden');
+        mobNav.classList.remove('hidden');
+        showToast("Mode Mobile Aktif", "Navigasi bawah diaktifkan sesuai standar Android Kotlin.");
+      }
+    }
+
+    // 2. MOBILE BOTTOM NAVIGATION TAB SWITCHING
+    function mobileSwitchTab(tabName) {
+      const colExplorer = document.getElementById('col-explorer');
+      const colDrawer = document.getElementById('col-citation-drawer');
+      const chatSec = document.querySelector('section');
+
+      // Reset
+      colExplorer.classList.add('hidden');
+      colDrawer.classList.add('hidden');
+      chatSec.classList.remove('hidden');
+
+      if (tabName === 'explorer') {
+        colExplorer.classList.remove('hidden');
+        colExplorer.style.width = "100%";
+        chatSec.classList.add('hidden');
+      } else if (tabName === 'citations') {
+        colDrawer.classList.remove('hidden');
+        colDrawer.style.width = "100%";
+        chatSec.classList.add('hidden');
+      }
+    }
+
+    // 3. MODEL SWITCHER
+    function toggleModelMenu() {
+      const dropdown = document.getElementById('model-dropdown');
+      dropdown.classList.toggle('hidden');
+    }
+
+    function selectModel(id, name, desc, colorDot) {
+      currentModel = id;
+      document.getElementById('active-model-name').textContent = name;
+      document.getElementById('input-model-label').textContent = `${name} (${desc})`;
+      document.getElementById('model-badge-dot').className = `w-2 h-2 rounded-full ${colorDot} animate-pulse`;
+      toggleModelMenu();
+      showToast("Model Berhasil Diganti", `Target router diarahkan ke ${name}.`);
+    }
+
+    // 4. CITATION INSPECTOR LAUNCHER
+    function openCitationInspector(docName, page, snippet) {
+      document.getElementById('citation-doc-title').textContent = docName;
+      document.getElementById('citation-page-badge').textContent = `Halaman ${page}`;
+      document.getElementById('citation-snippet-text').textContent = `"${snippet}"`;
+
+      // If mobile or drawer collapsed, open drawer
+      const drawer = document.getElementById('col-citation-drawer');
+      drawer.classList.remove('hidden');
+      if (currentViewport === 'tablet') {
+        drawer.style.width = "280px";
+      }
+
+      showToast("Kutipan Terverifikasi", `Membuka referensi Halaman ${page} pada ${docName}.`);
+    }
+
+    // 5. DOWNLOAD MANAGER SIMULATION (Izat TC-08)
+    function downloadFileToDevice(event, filename, sizeMB) {
+      event.stopPropagation();
+      const progressBox = document.getElementById('download-progress-box');
+      const progressBar = document.getElementById('download-bar');
+      const title = document.getElementById('download-status-filename');
+      const percent = document.getElementById('download-status-percent');
+      const sizeInd = document.getElementById('download-size-indicator');
+
+      progressBox.classList.remove('hidden');
+      title.textContent = filename;
+
+      let p = 0;
+      const interval = setInterval(() => {
+        p += 15;
+        if (p > 100) p = 100;
+        progressBar.style.width = p + '%';
+        percent.textContent = p + '%';
+        sizeInd.textContent = `${((sizeMB * p) / 100).toFixed(2)} / ${sizeMB} MB`;
+
+        if (p >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            showToast("Unduhan Selesai!", `${filename} berhasil disimpan ke folder Downloads HP.`);
+          }, 300);
+        }
+      }, 150);
+    }
+
+    // 6. DOCUMENT SELECTION
+    function selectDocument(id) {
+      [1, 2, 3, 4].forEach(i => {
+        const item = document.getElementById(`doc-item-${i}`);
+        if (item) {
+          item.className = "p-3 rounded-2xl bg-slate-800/40 border border-slate-800 cursor-pointer hover:bg-slate-800/80 transition-all-300 group";
+        }
+      });
+      const selected = document.getElementById(`doc-item-${id}`);
+      if (selected) {
+        selected.className = "p-3 rounded-2xl bg-indigo-600/15 border border-indigo-500/40 cursor-pointer hover:bg-indigo-600/20 transition-all-300 group";
+      }
+    }
+
+    // 7. CHAT SUBMISSION
+    function handleChatSubmit(event) {
+      event.preventDefault();
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      sendUserMessage(text);
+      input.value = '';
+    }
+
+    function sendQuickPrompt(promptText) {
+      sendUserMessage(promptText);
+    }
+
+    function sendUserMessage(text) {
+      const chatArea = document.getElementById('chat-messages');
+
+      // Append User Bubble
+      const userBubble = document.createElement('div');
+      userBubble.className = "flex items-start justify-end space-x-3";
+      userBubble.innerHTML = `
+        <div class="bg-indigo-600 text-white p-3.5 sm:p-4 rounded-2xl rounded-tr-sm max-w-2xl text-xs sm:text-sm leading-relaxed shadow-md">
+          ${text}
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 font-bold text-xs shrink-0">
+          You
+        </div>
+      `;
+      chatArea.appendChild(userBubble);
+      chatArea.scrollTop = chatArea.scrollHeight;
+
+      // Simulate Assistant Response with Citations
+      setTimeout(() => {
+        const aiBubble = document.createElement('div');
+        aiBubble.className = "flex items-start space-x-3 max-w-3xl";
+        aiBubble.innerHTML = `
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md">
+            NR
+          </div>
+          <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl rounded-tl-sm text-xs sm:text-sm text-slate-200 leading-relaxed shadow-sm">
+            <p>Berdasarkan analisis dokumen laptop yang dipilih, berikut rincian mengenai <strong>"${text}"</strong>:</p>
+            <p class="mt-2 text-slate-300">Sistem mengonfirmasi bahwa seluruh parameter relevan telah diindeks ke dalam memori inferensi. Tidak ditemukan anomali atau kontradiksi data antar bab.</p>
+            
+            <div class="mt-3 pt-3 border-t border-slate-800 flex items-center space-x-2">
+              <button onclick="openCitationInspector('Slide_Bab3_Distributed_Systems.pdf', 8, 'Analisis perbandingan menunjukkan peningkatan efisiensi kueri sebesar 42% ketika indexing teks diterapkan.')"
+                      class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs">
+                <span>Slide Bab 3 &bull; Hal. 8</span> ↗
+              </button>
+            </div>
+            <div class="mt-2 text-[10px] text-slate-500">
+              Inferensi via ${currentModel.toUpperCase()} &bull; Latensi: 340 ms &bull; Free Quota
+            </div>
+          </div>
+        `;
+        chatArea.appendChild(aiBubble);
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }, 600);
+    }
+
+    // 8. TOAST NOTIFICATION HELPER
+    function showToast(title, msg) {
+      const toast = document.getElementById('toast-notification');
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-msg').textContent = msg;
+
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    function simulateSync() {
+      const icon = document.getElementById('sync-icon');
+      icon.classList.add('animate-spin');
+      setTimeout(() => {
+        icon.classList.remove('animate-spin');
+        showToast("Sinkronisasi Selesai", "4 file dokumen laptop terverifikasi dengan MongoDB Atlas.");
+      }, 1000);
+    }
+
+    function openDocPreview(event, id) {
+      event.stopPropagation();
+      showToast("In-App Previewer", "Membuka tampilan teks ringkas dokumen.");
+    }
+
+    function openFullInAppReader() {
+      showToast("Reader Aktif", "Membuka pembaca dokumen mode penuh.");
+    }
+
+    function clearChatHistory() {
+      showToast("Chat Dibersihkan", "Riwayat percakapan telah direset.");
+    }
+
+    // Close model dropdown on outside click
+    window.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('model-dropdown');
+      if (!dropdown.contains(e.target) && !e.target.closest('button[onclick="toggleModelMenu()"]')) {
+        dropdown.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
