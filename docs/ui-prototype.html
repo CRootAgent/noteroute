@@ -152,7 +152,7 @@
       </button>
 
       <!-- SHARE BUTTON -->
-      <button onclick="showToast('Bagikan Catatan', 'Tautan kolaborasi disalin ke clipboard.')" class="hidden sm:flex px-3 py-1 rounded-full bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-xs font-semibold text-[var(--nlm-text-primary)] items-center space-x-1.5 transition">
+      <button onclick="showToast('Bagikan Catatan', 'Tautan proyek disalin ke clipboard.')" class="hidden sm:flex px-3 py-1 rounded-full bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-xs font-semibold text-[var(--nlm-text-primary)] items-center space-x-1.5 transition">
         <i class="fa-solid fa-arrow-up-from-bracket text-[10px]"></i>
         <span>Bagikan</span>
       </button>
@@ -187,15 +187,15 @@
             </button>
             <button onclick="openSettingsModal('api')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
               <i class="fa-solid fa-key text-[11px] w-4 text-amber-500"></i>
-              <span>Mengatur Kunci API (Keys)</span>
+              <span>Mengatur Kunci API (Providers)</span>
             </button>
             <button onclick="openSettingsModal('routing')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
-              <i class="fa-solid fa-route text-[11px] w-4 text-emerald-500"></i>
-              <span>Routing ke AI Mana Saja (Multi-LLM)</span>
+              <i class="fa-solid fa-arrow-down-1-9 text-[11px] w-4 text-emerald-500"></i>
+              <span>Atur Prioritas AI (Routing)</span>
             </button>
             <button onclick="openSettingsModal('general')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--nlm-surface-variant)] flex items-center space-x-2.5 transition">
-              <i class="fa-solid fa-gear text-[11px] w-4 text-[var(--nlm-text-tertiary)]"></i>
-              <span>Pengaturan Umum NoteRoute</span>
+              <i class="fa-solid fa-ellipsis text-[11px] w-4 text-[var(--nlm-text-tertiary)]"></i>
+              <span>Lainnya</span>
             </button>
           </div>
 
@@ -345,7 +345,7 @@
           </div>
         </div>
 
-        <!-- SECTION B: CATATAN BUATAN SENDIRI (DIPINDAHKAN KE SIDEBAR SUMBER SESUAI INSTRUKSI) -->
+        <!-- SECTION B: CATATAN BUATAN SENDIRI (HANYA CATATAN YANG DIBUAT USER LANGSUNG) -->
         <div class="pt-2 border-t border-[var(--nlm-border-subtle)]">
           <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-1 mb-2 flex items-center justify-between">
             <span>Catatan Saya</span>
@@ -354,7 +354,7 @@
 
           <div id="sidebar-notes-container" class="space-y-1.5">
             <!-- User Note 1 -->
-            <div onclick="openViewNoteModal('Rangkuman Teorema CAP & Spanner', 'Spanner menggunakan atomic clock (TrueTime API) untuk menjamin konsistensi eksternal tingkat tinggi tanpa mengorbankan partisi data terdistribusi.', '08 Nov 2026 • Dari obrolan')" 
+            <div onclick="openViewNoteModal('Rangkuman Teorema CAP & Spanner', 'Spanner menggunakan atomic clock (TrueTime API) untuk menjamin konsistensi eksternal tingkat tinggi tanpa mengorbankan partisi data terdistribusi.', '08 Nov 2026 • Catatan Buatan Sendiri')" 
                  class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition group">
               <div class="flex items-center justify-between">
                 <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition flex items-center space-x-1.5">
@@ -369,7 +369,7 @@
             </div>
 
             <!-- User Note 2 -->
-            <div onclick="openViewNoteModal('Metrik Penghematan Multi-LLM', 'Biaya tersimpan kumulatif $12.85 dengan perutean prioritas Gemini 1.5 Flash 1M Context dan failover otomatis ke Groq Cloud.', '07 Nov 2026 • Manual')" 
+            <div onclick="openViewNoteModal('Metrik Penghematan Multi-LLM', 'Biaya tersimpan kumulatif $12.85 dengan perutean prioritas Gemini 1.5 Flash 1M Context dan failover otomatis ke Groq Cloud.', '07 Nov 2026 • Catatan Buatan Sendiri')" 
                  class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition group">
               <div class="flex items-center justify-between">
                 <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition flex items-center space-x-1.5">
@@ -468,7 +468,7 @@
                 <span id="user-question-text">Apa kesimpulan inti Teorema CAP pada Slide Bab 3?</span>
               </div>
 
-              <!-- Inline Edit Form (Hidden by default) -->
+              <!-- Inline Edit Form -->
               <div id="user-edit-form" class="hidden w-full bg-[var(--nlm-surface)] border border-blue-500 rounded-2xl p-3 shadow-md space-y-2">
                 <textarea id="user-edit-textarea" rows="2" class="w-full bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] focus:outline-none resize-none"></textarea>
                 <div class="flex justify-end space-x-2 text-xs">
@@ -541,7 +541,7 @@
 
       </div>
 
-      <!-- FLOATING PILL CHAT INPUT BAR WITH PERSISTENT AI DISCLAIMER -->
+      <!-- FLOATING PILL CHAT INPUT BAR (SEND BUTTON TURNS GREEN IN GENERAL AI MODE) -->
       <div class="p-3 sm:p-4 bg-transparent shrink-0">
         <div class="max-w-2xl mx-auto">
           
@@ -556,12 +556,14 @@
             <input id="nlm-chat-input" type="text" placeholder="Tanyakan seputar 4 dokumen laptop..." 
                    class="flex-1 bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none min-w-0">
 
-            <button onclick="submitNlmPrompt()" class="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition shadow-xs shrink-0">
+            <!-- SEND BUTTON (WARNA BERUBAH MENJADI HIJAU SAAT MODE AI UMUM) -->
+            <button id="nlm-send-btn" onclick="submitNlmPrompt()" 
+                    class="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all duration-300 shadow-xs shrink-0">
               <i class="fa-solid fa-arrow-up text-xs"></i>
             </button>
           </div>
 
-          <!-- KETERANGAN AI DAPAT MEMBUAT KESALAHAN (SESUAI PERMINTAAN USER) -->
+          <!-- KETERANGAN AI DAPAT MEMBUAT KESALAHAN -->
           <div class="mt-2 text-center text-[11px] text-[var(--nlm-text-tertiary)] font-normal flex items-center justify-center space-x-1">
             <i class="fa-solid fa-circle-info text-[10px] opacity-75"></i>
             <span>NoteRoute dapat membuat kesalahan. Harap periksa kembali informasi penting dan rujukan dokumen aslinya.</span>
@@ -579,7 +581,8 @@
     </button>
 
     <!-- ====================================================== -->
-    <!-- PANEL 3: STUDIO & ALAT (RIGHT PANEL - SLIMMER 280px)   -->
+    <!-- PANEL 3: STUDIO & CATATAN ALAT (RIGHT PANEL - 280px)   -->
+    <!-- CATATAN LINIMASA, FAQ, BRIEFING, PANDUAN TETAP DISINI  -->
     <!-- ====================================================== -->
     <aside id="sidebar-studio" class="w-72 border-l border-[var(--nlm-border)] bg-[var(--nlm-surface)] flex flex-col justify-between shrink-0 select-none smooth-panel z-10 overflow-hidden">
       
@@ -646,6 +649,46 @@
               <div class="text-indigo-600 text-[11px]"><i class="fa-solid fa-timeline"></i></div>
               <div class="font-medium text-[11px] text-[var(--nlm-text-primary)] truncate">Linimasa</div>
             </button>
+          </div>
+        </div>
+
+        <!-- CATATAN HASIL GENERASI ALAT STUDIO (TETAP DI STUDIO SESUAI INSTRUKSI) -->
+        <div>
+          <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-1 mb-1.5 flex items-center justify-between">
+            <span>Catatan Studio</span>
+            <span id="studio-notes-count" class="font-mono text-[10px]">2</span>
+          </div>
+
+          <div id="studio-notes-container" class="space-y-1.5">
+            <!-- Studio Note 1: Linimasa -->
+            <div onclick="openViewNoteModal('Linimasa Materi', 'Kronologi perkembangan sistem terdistribusi dari RPC (1984), Gilbert & Lynch (2002), Google Spanner (2012), hingga Multi-LLM Gateway (2024).', 'Studio &bull; Linimasa Otomatis')" 
+                 class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer">
+              <div class="flex items-center justify-between">
+                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate flex items-center space-x-1.5">
+                  <i class="fa-solid fa-timeline text-indigo-500 text-[10px]"></i>
+                  <span class="truncate">Linimasa Materi</span>
+                </div>
+                <span class="text-[9px] text-[var(--nlm-text-tertiary)]">Baru</span>
+              </div>
+              <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-snug mt-1">
+                Rangkuman otomatis dihasilkan berdasarkan 4 berkas laptop...
+              </p>
+            </div>
+
+            <!-- Studio Note 2: FAQ -->
+            <div onclick="openViewNoteModal('Tanya Jawab (FAQ) Ujian', '1. Mengapa split-brain berbahaya bagi konsistensi? Karena dapat memicu pembagian cluster tanpa replikasi mayoritas. 2. Apa beda CAP dan PACELC?', 'Studio &bull; FAQ Otomatis')" 
+                 class="p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer">
+              <div class="flex items-center justify-between">
+                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate flex items-center space-x-1.5">
+                  <i class="fa-solid fa-circle-question text-amber-500 text-[10px]"></i>
+                  <span class="truncate">FAQ Ujian Bab 3</span>
+                </div>
+                <span class="text-[9px] text-[var(--nlm-text-tertiary)]">Baru</span>
+              </div>
+              <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-snug mt-1">
+                Daftar pertanyaan dan kunci jawaban terstruktur...
+              </p>
+            </div>
           </div>
         </div>
 
@@ -781,7 +824,7 @@
   <!-- 5. MODAL: PROFILE & COMPLETE SETTINGS                    -->
   <!-- ======================================================== -->
   <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="w-full max-w-3xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="w-full max-w-4xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
       
       <!-- Settings Header -->
       <div class="p-4 border-b border-[var(--nlm-border)] flex items-center justify-between">
@@ -791,7 +834,7 @@
           </div>
           <div>
             <h3 class="font-bold text-sm text-[var(--nlm-text-primary)]">Pengaturan &amp; Konfigurasi NoteRoute</h3>
-            <span class="text-xs text-[var(--nlm-text-tertiary)]">Kelola akun, kunci API, dan perutean gateway multi-LLM</span>
+            <span class="text-xs text-[var(--nlm-text-tertiary)]">Kelola akun, kunci API gratis (Providers), prioritas AI, dan sistem</span>
           </div>
         </div>
         <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-full hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] flex items-center justify-center transition">
@@ -803,7 +846,7 @@
       <div class="flex-1 flex overflow-hidden">
         
         <!-- Tab Navigation -->
-        <div class="w-56 border-r border-[var(--nlm-border)] p-3 space-y-1 bg-[var(--nlm-surface-variant)] text-xs font-medium">
+        <div class="w-56 border-r border-[var(--nlm-border)] p-3 space-y-1 bg-[var(--nlm-surface-variant)] text-xs font-medium shrink-0">
           <button onclick="switchSettingsTab('profile')" id="stab-profile" class="w-full text-left px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold transition flex items-center space-x-2">
             <i class="fa-regular fa-user text-xs w-4"></i>
             <span>Profil Pengguna</span>
@@ -817,17 +860,17 @@
             <span>Mengatur Kunci API</span>
           </button>
           <button onclick="switchSettingsTab('routing')" id="stab-routing" class="w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
-            <i class="fa-solid fa-route text-xs w-4 text-emerald-500"></i>
-            <span>Routing ke AI Mana Saja</span>
+            <i class="fa-solid fa-arrow-down-1-9 text-xs w-4 text-emerald-500"></i>
+            <span>Atur Prioritas AI</span>
           </button>
           <button onclick="switchSettingsTab('general')" id="stab-general" class="w-full text-left px-3 py-2 rounded-xl text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)] transition flex items-center space-x-2">
-            <i class="fa-solid fa-gear text-xs w-4"></i>
-            <span>Pengaturan Umum</span>
+            <i class="fa-solid fa-ellipsis text-xs w-4 text-[var(--nlm-text-tertiary)]"></i>
+            <span>Lainnya</span>
           </button>
         </div>
 
         <!-- Tab Contents Area -->
-        <div class="flex-1 overflow-y-auto p-6 text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+        <div class="flex-1 overflow-y-auto p-5 text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
           
           <!-- TAB 1: PROFIL -->
           <div id="scontent-profile" class="space-y-4">
@@ -842,7 +885,7 @@
                 <input type="text" value="714250028" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)]">
               </div>
               <div>
-                <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Peran dalam Tim</label>
+                <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Peran Tim</label>
                 <input type="text" value="Ketua Tim (Modul A: Backend &amp; Cloud)" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)]" disabled>
               </div>
               <div>
@@ -850,95 +893,307 @@
                 <input type="text" value="Izat Ibrahimovic Irawan (714250024)" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)]" disabled>
               </div>
             </div>
+
+            <!-- PENJELASAN SINKRONISASI AKUN & FILE CLOUD -->
+            <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs">
+              <div class="font-bold text-blue-600 dark:text-blue-400 mb-1 flex items-center space-x-1.5">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Jaminan Sinkronisasi Berkas &amp; Kunci API</span>
+              </div>
+              <p class="text-[var(--nlm-text-secondary)] leading-relaxed">
+                Akun Anda terhubung dengan basis data cloud <strong>MongoDB Atlas</strong> dan server Alwaysdata. Seluruh berkas laptop yang Anda unggah serta kunci API yang disimpan akan <strong>tetap ada dan tersambung otomatis</strong> saat Anda berpindah antar-laptop atau membukanya dari aplikasi HP Android Izat.
+              </p>
+            </div>
           </div>
 
-          <!-- TAB 2: KEAMANAN -->
+          <!-- TAB 2: KEAMANAN AKUN -->
           <div id="scontent-security" class="hidden space-y-4">
             <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Keamanan Akun &amp; Sesi Perangkat</h4>
-            <div class="space-y-3">
-              <div class="p-3.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
+            
+            <div class="p-3.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] space-y-2">
+              <div class="flex items-center justify-between">
                 <div>
-                  <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">Laptop Zakky (MacBook Pro)</div>
-                  <div class="text-[11px] text-[var(--nlm-text-tertiary)]">Sesi Aktif &bull; Sinkronisasi Dokumen Selalu Aktif</div>
+                  <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">Enkripsi Kunci API: AES-256-GCM</div>
+                  <div class="text-[11px] text-[var(--nlm-text-tertiary)]">Seluruh kunci API dienkripsi di sisi server database cloud</div>
                 </div>
-                <span class="text-emerald-600 font-bold text-[11px]">Terhubung</span>
-              </div>
-              <div class="p-3.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
-                <div>
-                  <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">HP Android Izat (Client Mobile)</div>
-                  <div class="text-[11px] text-[var(--nlm-text-tertiary)]">Terotentikasi via Retrofit Token</div>
-                </div>
-                <span class="text-emerald-600 font-bold text-[11px]">Terhubung</span>
+                <span class="text-xs bg-emerald-500/10 text-emerald-600 font-bold px-2 py-0.5 rounded">Aktif &bull; Aman</span>
               </div>
             </div>
-          </div>
-
-          <!-- TAB 3: MENGATUR KUNCI API -->
-          <div id="scontent-api" class="hidden space-y-4">
-            <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Manajemen Kunci API (Bring Your Own Key)</h4>
-            <div class="space-y-3">
-              <div>
-                <label class="block font-medium text-[var(--nlm-text-primary)] mb-1">Google Gemini API Key (1.5 Flash)</label>
-                <input type="password" value="AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs font-mono text-[var(--nlm-text-primary)]">
-                <span class="text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5 block">Kapasitas: 1.500 req/hari &bull; 1.000.000 token context gratis</span>
-              </div>
-              <div>
-                <label class="block font-medium text-[var(--nlm-text-primary)] mb-1">Groq Cloud API Key (Llama 3.3 70B)</label>
-                <input type="password" value="gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs font-mono text-[var(--nlm-text-primary)]">
-                <span class="text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5 block">Kecepatan: 300+ token/s &bull; Digunakan saat failover 429</span>
-              </div>
-              <div>
-                <label class="block font-medium text-[var(--nlm-text-primary)] mb-1">DeepSeek API Key (R1 / V3)</label>
-                <input type="password" value="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs font-mono text-[var(--nlm-text-primary)]">
-              </div>
-            </div>
-          </div>
-
-          <!-- TAB 4: ROUTING KE AI MANA SAJA -->
-          <div id="scontent-routing" class="hidden space-y-4">
-            <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Konfigurasi Perutean AI (Multi-LLM Gateway)</h4>
-            <p class="text-[11px] text-[var(--nlm-text-tertiary)]">
-              Tentukan urutan prioritas AI dan aturan failover otomatis jika model utama mengalami batasan kuota HTTP 429.
-            </p>
 
             <div class="space-y-2">
+              <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">Perangkat yang Sedang Login:</div>
               <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
-                <div>
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">1. Google Gemini 1.5 Flash (Prioritas Utama)</div>
-                  <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Konteks 1M Token &bull; Ekstraksi dokumen tebal gratis</div>
+                <div class="flex items-center space-x-2.5">
+                  <i class="fa-solid fa-laptop text-blue-600 text-sm"></i>
+                  <div>
+                    <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">MacBook Pro Zakky (Desktop Client)</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Aktif sekarang &bull; Bandung, Indonesia</div>
+                  </div>
                 </div>
-                <span class="text-xs bg-blue-500/10 text-blue-600 font-bold px-2 py-0.5 rounded">Prioritas 1</span>
+                <span class="text-emerald-600 font-bold text-[10px]">Perangkat Ini</span>
               </div>
 
               <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
-                <div>
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">2. Groq Cloud Llama 3.3 70B (Failover Cadangan)</div>
-                  <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Otomatis aktif dalam &lt; 500ms jika Gemini 429</div>
+                <div class="flex items-center space-x-2.5">
+                  <i class="fa-solid fa-mobile-screen text-indigo-600 text-sm"></i>
+                  <div>
+                    <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">HP Android Izat (Mobile Client)</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Terotentikasi via Retrofit Token &bull; Selalu Sinkron</div>
+                  </div>
                 </div>
-                <span class="text-xs bg-violet-500/10 text-violet-600 font-bold px-2 py-0.5 rounded">Prioritas 2</span>
-              </div>
-
-              <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
-                <div>
-                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">3. 9Router / OmniRoute Local Daemon</div>
-                  <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Bridge lokal laptop port 20128/v1</div>
-                </div>
-                <span class="text-xs bg-emerald-500/10 text-emerald-600 font-bold px-2 py-0.5 rounded">Prioritas 3</span>
+                <span class="text-emerald-600 font-bold text-[10px]">Tersinkron</span>
               </div>
             </div>
           </div>
 
-          <!-- TAB 5: PENGATURAN UMUM -->
-          <div id="scontent-general" class="hidden space-y-4">
-            <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Pengaturan Umum Aplikasi NoteRoute</h4>
-            <div class="space-y-3">
+          <!-- TAB 3: MENGATUR KUNCI API (PERSIS SCREENSHOT PROVIDERS GRID - HANYA AI GRATIS & BYOK) -->
+          <div id="scontent-api" class="hidden space-y-4">
+            <div class="flex items-center justify-between">
               <div>
-                <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Server Cloud Backend</label>
-                <input type="text" value="https://noteroute.alwaysdata.net/api" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-mono" disabled>
+                <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Penyedia AI Gratis (Free Tier Providers)</h4>
+                <p class="text-[11px] text-[var(--nlm-text-tertiary)]">Pilih dan konfigurasikan model AI yang dapat tersambung gratis untuk NoteRoute.</p>
               </div>
-              <div>
-                <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Database Cluster</label>
-                <input type="text" value="MongoDB Atlas Cloud (Workspaces, Documents, Citations)" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)]" disabled>
+              <button onclick="showToast('Uji Koneksi', 'Memeriksa status semua provider AI gratis...')" class="px-3 py-1.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-xs font-semibold text-blue-600 flex items-center space-x-1.5 transition">
+                <i class="fa-solid fa-play text-[9px]"></i>
+                <span>Test All Free</span>
+              </button>
+            </div>
+
+            <!-- PROVIDERS GRID (MODEL PERSIS SCREENSHOT GAMBAR 3) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+              
+              <!-- Card 1: Google Gemini -->
+              <div onclick="openConfigureApiKey('Google Gemini', 'AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', '1.500 req/hari &bull; 1M Context Free')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
+                <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm shrink-0">
+                  <i class="fa-brands fa-google"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Gemini AI</div>
+                  <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>1M Free Ready</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: Groq Cloud -->
+              <div onclick="openConfigureApiKey('Groq Cloud', 'gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'Ultra-fast 300+ t/s &bull; Free Tier')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
+                <div class="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-600 flex items-center justify-center text-sm shrink-0">
+                  <i class="fa-solid fa-bolt"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Groq (Llama 3.3)</div>
+                  <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>300 t/s Kilat</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 3: Kiiro / Kiro AI -->
+              <div onclick="openConfigureApiKey('Kiro AI', 'kiro_free_auth_key', 'Free Tier Connected')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
+                <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 flex items-center justify-center text-sm shrink-0">
+                  <i class="fa-solid fa-ghost"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Kiro AI</div>
+                  <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>1 Connected</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 4: DeepSeek -->
+              <div onclick="openConfigureApiKey('DeepSeek', 'sk_deepseek_xxxxxxxxxxxxxxxx', 'Reasoning Murah / Free Credits')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
+                <div class="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-600 flex items-center justify-center text-sm shrink-0">
+                  <i class="fa-solid fa-brain"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">DeepSeek R1/V3</div>
+                  <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>Aktif</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 5: 9Router / OmniRoute Local -->
+              <div onclick="openConfigureApiKey('9Router Local', 'http://localhost:20128/v1', 'Local Daemon Bridge &bull; 100% Gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-sm shrink-0">
+                  <i class="fa-solid fa-network-wired"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">9Router Local</div>
+                  <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>Port 20128</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 6: OpenRouter Free -->
+              <div onclick="openConfigureApiKey('OpenRouter (Free)', 'sk-or-xxxxxxxxxxxxxxxx', 'Akses model Llama &amp; Mistral Gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
+                <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-sm shrink-0">
+                  <i class="fa-solid fa-shuffle"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">OpenRouter Free</div>
+                  <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Tersedia</div>
+                </div>
+              </div>
+
+              <!-- Card 7: Ollama Localhost -->
+              <div onclick="openConfigureApiKey('Ollama Local', 'http://localhost:11434', 'Model lokal offline tanpa internet')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
+                <div class="w-8 h-8 rounded-lg bg-slate-500/10 text-slate-600 dark:text-slate-400 flex items-center justify-center text-sm shrink-0">
+                  <i class="fa-solid fa-server"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Ollama Local</div>
+                  <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Offline Free</div>
+                </div>
+              </div>
+
+              <!-- Card 8: Cloudflare Workers AI -->
+              <div onclick="openConfigureApiKey('Cloudflare AI', 'cf_api_xxxxxxxx', '10.000 neurons/hari gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm shrink-0">
+                  <i class="fa-solid fa-cloud"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Cloudflare AI</div>
+                  <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Free Tier</div>
+                </div>
+              </div>
+
+              <!-- Card 9: Cerebras Inference -->
+              <div onclick="openConfigureApiKey('Cerebras', 'csk_xxxxxxxxxxxxxxxx', 'Inference ultra-cepat gratis')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex items-center space-x-2.5 group">
+                <div class="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-sm shrink-0">
+                  <i class="fa-solid fa-microchip"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">Cerebras Fast</div>
+                  <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Free Tier</div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Single Key Edit Card (Visible when card clicked) -->
+            <div id="provider-key-edit-box" class="p-4 rounded-xl border border-blue-500/40 bg-[var(--nlm-surface)] space-y-2">
+              <div class="flex items-center justify-between">
+                <span id="provider-edit-name" class="font-bold text-xs text-[var(--nlm-text-primary)]">Konfigurasi Kunci API</span>
+                <span id="provider-edit-note" class="text-[10px] text-blue-600 font-medium">Free Tier</span>
+              </div>
+              <input id="provider-edit-input" type="password" value="" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs font-mono text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500">
+              <div class="flex justify-end space-x-2 pt-1">
+                <button onclick="saveProviderKey()" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-medium text-xs">Simpan Kunci</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: ATUR PRIORITAS AI (SEBELUMNYA TAB ROUTING) -->
+          <div id="scontent-routing" class="hidden space-y-4">
+            <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Atur Prioritas AI yang Digunakan</h4>
+            <p class="text-[11px] text-[var(--nlm-text-tertiary)]">
+              Sistem akan memanggil AI urutan teratas terlebih dahulu. Jika terjadi HTTP 429 (Rate Limit Exceeded), Heuristic Failover NoteRoute otomatis mengalihkan kueri ke prioritas berikutnya dalam &lt; 500ms.
+            </p>
+
+            <div class="space-y-2.5">
+              <!-- Priority 1 -->
+              <div class="p-3.5 rounded-xl border border-blue-500/30 bg-blue-500/5 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <span class="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">1</span>
+                  <div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Google Gemini 1.5 Flash (Prioritas Utama)</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">1.000.000 Token Context &bull; Ekstraksi ratusan halaman berkas gratis</div>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                  <span class="text-[10px] text-blue-600 font-bold bg-blue-500/10 px-2 py-0.5 rounded">Utama</span>
+                </div>
+              </div>
+
+              <!-- Priority 2 -->
+              <div class="p-3.5 rounded-xl border border-orange-500/30 bg-orange-500/5 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <span class="w-6 h-6 rounded-full bg-orange-600 text-white font-bold text-xs flex items-center justify-center">2</span>
+                  <div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Groq Cloud (Llama 3.3 70B) (Failover Cadangan)</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Respon kilat 300+ token/s &bull; Otomatis menggantikan jika Gemini 429</div>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                  <span class="text-[10px] text-orange-600 font-bold bg-orange-500/10 px-2 py-0.5 rounded">Failover #1</span>
+                </div>
+              </div>
+
+              <!-- Priority 3 -->
+              <div class="p-3.5 rounded-xl border border-purple-500/30 bg-purple-500/5 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <span class="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center">3</span>
+                  <div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Kiro AI / DeepSeek R1 (Penalaran Kompleks)</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Digunakan untuk kueri logika berbiaya ultra-murah</div>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                  <span class="text-[10px] text-purple-600 font-bold bg-purple-500/10 px-2 py-0.5 rounded">Penalaran</span>
+                </div>
+              </div>
+
+              <!-- Priority 4 -->
+              <div class="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <span class="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">4</span>
+                  <div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)]">9Router / OmniRoute Local Daemon (Offline Bridge)</div>
+                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Target proksi terminal laptop port 20128</div>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                  <span class="text-[10px] text-emerald-600 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">Lokal</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 5: LAINNYA (SEBELUMNYA PENGATURAN UMUM) -->
+          <div id="scontent-general" class="hidden space-y-5">
+            <div>
+              <h4 class="font-bold text-sm text-[var(--nlm-text-primary)] mb-1">Tentang Aplikasi &amp; Hak Cipta</h4>
+              <div class="p-3.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] space-y-1 text-xs">
+                <div class="font-bold text-[var(--nlm-text-primary)]">NoteRoute &bull; Cross-Device Knowledge Agent &amp; Smart Gateway</div>
+                <div class="text-[var(--nlm-text-secondary)]">Mata Kuliah: <strong>Proyek 2 (CRUD &amp; Code Coverage &ge; 80%)</strong></div>
+                <div class="text-[var(--nlm-text-secondary)]">Program Studi: D4 Teknik Informatika &bull; Universitas Logistik dan Bisnis Internasional (ULBI)</div>
+                <div class="text-[var(--nlm-text-secondary)]">Dosen Pembimbing: <strong>Rolly Maulana Awangga, S.T., M.T., CAIP.</strong></div>
+                <div class="text-[10px] text-[var(--nlm-text-tertiary)] pt-2 border-t border-[var(--nlm-border-subtle)]">
+                  &copy; 2026 Ahmad Zakky Nurfauzan &amp; Izat Ibrahimovic Irawan. Hak cipta dilindungi undang-undang.
+                </div>
+              </div>
+            </div>
+
+            <!-- ZONA BERBAHAYA (RESET ALL API & HAPUS AKUN) -->
+            <div class="space-y-3 pt-2">
+              <h4 class="font-bold text-xs text-red-600 uppercase tracking-wider">Zona Berbahaya (Danger Zone)</h4>
+              
+              <div class="p-3.5 rounded-xl border border-red-500/30 bg-red-500/5 flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Reset Semua Kunci API</div>
+                  <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Menghapus seluruh kunci API yang tersimpan dan mengembalikan ke setelan awal</div>
+                </div>
+                <button onclick="resetAllApiKeys()" class="px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-xs transition">
+                  Reset All API
+                </button>
+              </div>
+
+              <div class="p-3.5 rounded-xl border border-red-500/30 bg-red-500/5 flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-xs text-[var(--nlm-text-primary)]">Hapus Akun &amp; Berkas Cloud</div>
+                  <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Menghapus akun permanen beserta seluruh berkas dokumen di MongoDB Atlas</div>
+                </div>
+                <button onclick="deleteAccountAndData()" class="px-3 py-1.5 rounded-xl border border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-semibold text-xs transition">
+                  Hapus Akun
+                </button>
               </div>
             </div>
           </div>
@@ -1055,7 +1310,7 @@
       }
     }
 
-    // 2. PROJECT NAME INLINE EDITING (FUNGSI GANTI NAMA PROJEK)
+    // 2. PROJECT NAME INLINE EDITING
     function enableProjectRename() {
       const display = document.getElementById('project-title-display');
       const input = document.getElementById('project-title-input');
@@ -1114,7 +1369,7 @@
 
       document.getElementById('user-question-text').textContent = newText;
       cancelPromptEdit();
-      showToast("Pertanyaan Diperbarui", "Menghasilkan ulang jawaban berdasarkan pertanyaan baru...");
+      showToast("Pertanyaan Diperbarui", "Menghasilkan ulang jawaban...");
       regenerateAiResponse();
     }
 
@@ -1130,7 +1385,7 @@
         container.innerHTML = `
           <p><strong>[Jawaban Diperbarui]</strong> Berdasarkan analisis ulang komprehensif pada dokumen:</p>
           <p class="text-[var(--nlm-text-secondary)] my-2">
-            Teorema CAP mengonfirmasi bahwa saat partisi jaringan terjadi di sistem terdistribusi, pengorbanan antara konsistensi kuat vs responsivitas tinggi bersifat mutlak <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>.
+            Teorema CAP mengonfirmasi bahwa saat partisi jaringan terjadi di sistem terdistribusi, kompromi antara konsistensi ketat vs responsivitas tinggi bersifat mutlak <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>.
           </p>
           <ul class="list-disc ml-5 space-y-1 text-[var(--nlm-text-secondary)]">
             <li>Sistem CP: Menolak kueri split-brain demi mencegah inkonsistensi <span class="nlm-citation" onclick="openSourceCitation(1, 16)">2</span>.</li>
@@ -1190,9 +1445,35 @@
       });
     }
 
+    function openConfigureApiKey(name, sampleKey, note) {
+      document.getElementById('provider-edit-name').textContent = `Konfigurasi Kunci API: ${name}`;
+      document.getElementById('provider-edit-note').textContent = note;
+      document.getElementById('provider-edit-input').value = sampleKey;
+      document.getElementById('provider-key-edit-box').scrollIntoView({ behavior: 'smooth' });
+      showToast("Pilih Provider", `Membuka pengaturan kunci untuk ${name}.`);
+    }
+
+    function saveProviderKey() {
+      const name = document.getElementById('provider-edit-name').textContent;
+      showToast("Kunci Disimpan", `${name} berhasil disimpan dan dienkripsi AES-256.`);
+    }
+
     function saveAllSettings() {
       closeSettingsModal();
-      showToast("Pengaturan Disimpan", "Kunci API, rute provider, dan profil berhasil diperbarui.");
+      showToast("Pengaturan Disimpan", "Kunci API, prioritas AI, dan profil berhasil diperbarui.");
+    }
+
+    function resetAllApiKeys() {
+      if (confirm("Apakah Anda yakin ingin mereset seluruh kunci API ke setelan awal?")) {
+        showToast("Reset Berhasil", "Seluruh kunci API telah direset ke default.");
+      }
+    }
+
+    function deleteAccountAndData() {
+      if (confirm("PERINGATAN: Seluruh berkas laptop di MongoDB Atlas dan akun NoteRoute Anda akan dihapus permanen. Lanjutkan?")) {
+        showToast("Akun Dihapus", "Akun dan berkas Anda telah dibersihkan.");
+        closeSettingsModal();
+      }
     }
 
     // 6. NOTE VIEWER & EDITOR MODAL (MELIHAT ISI CATATAN)
@@ -1223,10 +1504,10 @@
     }
 
     function openCreateNoteModal() {
-      openViewNoteModal("Catatan Baru", "Tulis ide, rangkuman, atau poin penting materi kuliah di sini...", "Baru Dibuat");
+      openViewNoteModal("Catatan Baru", "Tulis ide, rangkuman, atau poin penting materi kuliah di sini...", "Catatan Buatan Sendiri");
     }
 
-    // 7. AI MODE SWITCHER
+    // 7. AI MODE SWITCHER (SEND BUTTON CHANGES TO GREEN ON AI BEBAS)
     function setAiMode(mode) {
       currentMode = mode;
       const btnDoc = document.getElementById('btn-mode-doc');
@@ -1234,6 +1515,7 @@
       const input = document.getElementById('nlm-chat-input');
       const modeText = document.getElementById('input-mode-text');
       const modeIcon = document.getElementById('input-mode-icon');
+      const sendBtn = document.getElementById('nlm-send-btn');
       const heroSub = document.getElementById('hero-subtitle');
 
       if (mode === 'document') {
@@ -1242,6 +1524,9 @@
         input.placeholder = "Tanyakan seputar 4 dokumen laptop...";
         modeText.textContent = "4 Dokumen";
         modeIcon.innerHTML = '<i class="fa-solid fa-file-shield text-blue-600"></i>';
+        
+        // SEND BUTTON BLUE
+        sendBtn.className = "w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all duration-300 shadow-xs shrink-0";
         heroSub.textContent = "NoteRoute membumikan analisis ke dalam berkas dokumen yang Anda pilih. Dapatkan jawaban terverifikasi dengan rujukan sitasi akurat.";
         showToast("Mode Dokumen", "Jawaban difokuskan pada isi dokumen laptop.");
       } else {
@@ -1250,8 +1535,11 @@
         input.placeholder = "Tanyakan apa saja kepada AI (Mode Bebas & Terbuka)...";
         modeText.textContent = "AI Bebas";
         modeIcon.innerHTML = '<i class="fa-solid fa-globe text-emerald-600"></i>';
+        
+        // SEND BUTTON TURNS GREEN (SESUAI INSTRUKSI GAMBAR 2)
+        sendBtn.className = "w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all duration-300 shadow-xs shrink-0";
         heroSub.textContent = "Gunakan NoteRoute sebagai asisten AI umum serbaguna tanpa batasan berkas yang diunggah.";
-        showToast("Mode AI Bebas", "Anda bebas menanyakan topik apa saja di luar dokumen.");
+        showToast("Mode AI Bebas", "Tombol kirim aktif hijau & pertanyaan terbuka untuk apa saja.");
       }
     }
 
@@ -1427,16 +1715,17 @@
       showToast("Teks Disalin", "Jawaban disalin ke clipboard.");
     }
 
+    // SAVE NOTE FROM CHAT GOES TO LEFT SIDEBAR (CATATAN SAYA)
     function saveAnswerAsNote() {
       addNoteToSidebar("Rangkuman dari Chat", "Poin kesimpulan yang disimpan langsung dari obrolan.");
-      showToast("Disimpan ke Catatan", "Tersimpan di panel Sumber.");
+      showToast("Disimpan ke Catatan Saya", "Tersimpan di panel kiri Sumber.");
     }
 
     function addNoteToSidebar(title, body) {
       const container = document.getElementById('sidebar-notes-container');
       const card = document.createElement('div');
       card.className = "p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition group";
-      card.onclick = () => openViewNoteModal(title, body, "Baru saja • Dari obrolan");
+      card.onclick = () => openViewNoteModal(title, body, "Baru saja • Catatan Buatan Sendiri");
       card.innerHTML = `
         <div class="flex items-center justify-between">
           <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition flex items-center space-x-1.5">
@@ -1467,9 +1756,27 @@
       }, 1000);
     }
 
+    // LINIMASA, FAQ, BRIEFING, PANDUAN TETAP DI STUDIO SESUAI INSTRUKSI!
     function createStudyTool(name) {
-      addNoteToSidebar(name, `Rangkuman otomatis dihasilkan berdasarkan 4 berkas laptop.`);
-      showToast(name, "Catatan ditambahkan ke panel Sumber.");
+      const container = document.getElementById('studio-notes-container');
+      const card = document.createElement('div');
+      card.className = "p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer";
+      card.onclick = () => openViewNoteModal(name, `Rangkuman otomatis ${name} dihasilkan berdasarkan 4 berkas laptop.`, `Studio &bull; ${name}`);
+      card.innerHTML = `
+        <div class="flex items-center justify-between">
+          <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate flex items-center space-x-1.5">
+            <i class="fa-solid fa-file-lines text-indigo-500 text-[10px]"></i>
+            <span class="truncate">${name}</span>
+          </div>
+          <span class="text-[9px] text-[var(--nlm-text-tertiary)]">Baru</span>
+        </div>
+        <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-snug mt-1">
+          Rangkuman otomatis dihasilkan berdasarkan 4 berkas laptop...
+        </p>
+      `;
+      container.prepend(card);
+      document.getElementById('studio-notes-count').textContent = container.children.length;
+      showToast(name, "Catatan ditambahkan ke panel Studio.");
     }
 
     function downloadFile(event, filename) {
