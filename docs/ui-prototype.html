@@ -638,15 +638,18 @@
               <i class="fa-solid fa-microchip text-[10px] text-[var(--nlm-brand)]"></i>
               <span>Status &amp; Simulasi AI:</span>
             </span>
-            <div class="flex items-center space-x-1.5">
-              <button onclick="simulateAiState('normal')" class="px-2 py-0.5 rounded-md bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-secondary)] border border-[var(--nlm-border)] text-[10px] transition font-medium" title="Uji Alur Normal AI">
-                <i class="fa-solid fa-check text-emerald-500 mr-1 text-[9px]"></i>Normal
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button onclick="simulateAiState('normal')" class="px-2 py-0.5 rounded-md bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-secondary)] border border-[var(--nlm-border)] text-[10px] transition font-medium" title="Uji Alur Normal AI (Gemini Utama)">
+                <i class="fa-solid fa-check text-emerald-500 mr-1 text-[9px]"></i>Normal (Gemini)
               </button>
-              <button onclick="simulateAiState('timeout')" class="px-2 py-0.5 rounded-md bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[10px] transition font-medium" title="Uji Simulasi Timeout / Jaringan Terputus">
-                <i class="fa-solid fa-clock text-amber-500 mr-1 text-[9px]"></i>Simulasi Timeout
+              <button onclick="simulateAiState('failover')" class="px-2 py-0.5 rounded-md bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 text-[10px] transition font-medium" title="Uji Auto-Failover Senyap (Gemini Sibuk -> Otomatis ke Groq)">
+                <i class="fa-solid fa-shuffle text-blue-500 mr-1 text-[9px]"></i>Auto-Failover
               </button>
-              <button onclick="simulateAiState('quota')" class="px-2 py-0.5 rounded-md bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 text-[10px] transition font-medium" title="Uji Simulasi Token / Kuota Habis (HTTP 429)">
-                <i class="fa-solid fa-bolt text-red-500 mr-1 text-[9px]"></i>Simulasi Kuota 429
+              <button onclick="simulateAiState('offline')" class="px-2 py-0.5 rounded-md bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[10px] transition font-medium" title="Uji Kondisi Internet Laptop Putus (Offline)">
+                <i class="fa-solid fa-wifi mr-1 text-[9px] text-amber-500"></i>Internet Putus
+              </button>
+              <button onclick="simulateAiState('all-exhausted')" class="px-2 py-0.5 rounded-md bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 text-[10px] transition font-medium" title="Uji Kondisi Seluruh 5 AI Habis Kuota (HTTP 429)">
+                <i class="fa-solid fa-bolt text-red-500 mr-1 text-[9px]"></i>Semua AI Habis
               </button>
             </div>
           </div>
@@ -703,62 +706,62 @@
             </div>
           </div>
 
-          <!-- ANIMATED STATE 2: JAGA-JAGA KONEKSI TERPUTUS / TIMEOUT -->
+          <!-- ANIMATED STATE 2: JAGA-JAGA KONEKSI INTERNET LAPTOP TERPUTUS (OFFLINE TOTAL) -->
           <div id="ai-timeout-card" class="hidden p-4 rounded-2xl border border-amber-500/40 bg-amber-500/5 dark:bg-amber-950/20 space-y-3 animate-fade-up animate-shake">
             <div class="flex items-start space-x-3">
               <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm shrink-0 border border-amber-500/30">
-                <i class="fa-solid fa-triangle-exclamation animate-gentle-pulse"></i>
+                <i class="fa-solid fa-wifi-slash animate-gentle-pulse"></i>
               </div>
               <div class="flex-1 space-y-1">
                 <div class="flex items-center justify-between">
                   <h4 class="font-bold text-xs sm:text-sm text-amber-700 dark:text-amber-300 flex items-center space-x-1.5">
-                    <span>Koneksi AI Terputus / Jaringan Lambat</span>
+                    <span>Koneksi Internet Terputus (Mode Offline)</span>
                   </h4>
-                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 font-mono font-medium">HTTP 504 Timeout</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 font-mono font-medium">Jaringan Offline</span>
                 </div>
                 <p class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
-                  Penyedia AI tidak merespons dalam batas waktu aman. Sesi pertanyaan Anda tidak hilang. Anda dapat mencoba menghubungi ulang atau mengalihkan ke model cadangan berkecepatan tinggi.
+                  Perangkat Anda tidak terhubung ke jaringan internet. NoteRoute otomatis menahan draf pertanyaan Anda secara lokal dan akan langsung mengirimkannya kembali begitu koneksi WiFi atau seluler tersambung.
                 </p>
               </div>
             </div>
             <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-amber-500/20 text-xs">
               <button onclick="retryLastPrompt()" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold transition flex items-center space-x-1.5 shadow-xs">
                 <i class="fa-solid fa-rotate-right text-xs"></i>
-                <span>Coba Hubungkan Ulang</span>
+                <span>Coba Sambungkan Ulang</span>
               </button>
-              <button onclick="failoverToFallbackProvider('Groq Llama 3 70B')" class="px-3 py-1.5 rounded-xl bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-[var(--nlm-text-primary)] font-medium transition flex items-center space-x-1.5">
-                <i class="fa-solid fa-bolt text-amber-500 text-xs"></i>
-                <span>Alihkan ke Groq (Pencadangan Cepat)</span>
+              <button onclick="failoverToFallbackProvider('9Router Lokal Offline')" class="px-3 py-1.5 rounded-xl bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-[var(--nlm-text-primary)] font-medium transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-network-wired text-amber-500 text-xs"></i>
+                <span>Beralih ke 9Router / Ollama (Offline Tanpa Kuota)</span>
               </button>
             </div>
           </div>
 
-          <!-- ANIMATED STATE 3: JAGA-JAGA TOKEN / KUOTA HABIS (HTTP 429) -->
+          <!-- ANIMATED STATE 3: JAGA-JAGA SELURUH 5 AI DI RANTAI PRIORITAS HABIS KUOTA (HTTP 429) -->
           <div id="ai-quota-card" class="hidden p-4 rounded-2xl border border-red-500/40 bg-red-500/5 dark:bg-red-950/20 space-y-3 animate-fade-up animate-shake">
             <div class="flex items-start space-x-3">
               <div class="w-8 h-8 rounded-xl bg-red-500/15 text-red-600 dark:text-red-400 flex items-center justify-center text-sm shrink-0 border border-red-500/30">
-                <i class="fa-solid fa-gauge-simple-high animate-gentle-pulse"></i>
+                <i class="fa-solid fa-layer-group animate-gentle-pulse"></i>
               </div>
               <div class="flex-1 space-y-1">
                 <div class="flex items-center justify-between">
                   <h4 class="font-bold text-xs sm:text-sm text-red-700 dark:text-red-300 flex items-center space-x-1.5">
-                    <span>Batas Kuota / Token Harian Tercapai</span>
+                    <span>Seluruh AI di Rantai Prioritas Telah Habis</span>
                   </h4>
-                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-700 dark:text-red-300 font-mono font-medium">HTTP 429 Rate Limit</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-700 dark:text-red-300 font-mono font-medium">Semua Kuota Terlampaui (429)</span>
                 </div>
                 <p class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
-                  Kunci API saat ini telah mencapai batas permintaan rate limit (RPM/TPM). NoteRoute dapat mengalihkan rute ke penyedia gratis cadangan secara langsung.
+                  Seluruh 5 penyedia AI di rantai failover Anda (Gemini, Groq, Kiro, DeepSeek, OpenRouter) telah mencapai batas harian token. Anda dapat menambahkan kunci API baru di Pengaturan atau mengaktifkan daemon lokal tanpa kuota.
                 </p>
               </div>
             </div>
             <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-red-500/20 text-xs">
-              <button onclick="failoverToFallbackProvider('Kiro AI')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition flex items-center space-x-1.5 shadow-xs">
-                <i class="fa-solid fa-shuffle text-xs"></i>
-                <span>Alihkan ke Kiro AI (Aktif / Gratis)</span>
-              </button>
-              <button onclick="openSettingsModal('api')" class="px-3 py-1.5 rounded-xl bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-[var(--nlm-text-primary)] font-medium transition flex items-center space-x-1.5">
-                <i class="fa-solid fa-key text-amber-500 text-xs"></i>
+              <button onclick="openSettingsModal('api')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition flex items-center space-x-1.5 shadow-xs">
+                <i class="fa-solid fa-key text-xs"></i>
                 <span>Kelola Kunci API di Pengaturan</span>
+              </button>
+              <button onclick="failoverToFallbackProvider('Ollama Local Offline')" class="px-3 py-1.5 rounded-xl bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] text-[var(--nlm-text-primary)] font-medium transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-server text-emerald-500 text-xs"></i>
+                <span>Gunakan Ollama Local (Bebas Kuota)</span>
               </button>
             </div>
           </div>
@@ -770,6 +773,12 @@
             </div>
             
             <div class="flex-1 space-y-3 text-xs sm:text-sm text-[var(--nlm-text-primary)] leading-relaxed">
+              
+              <!-- Subtle Auto-Failover Pill (Muncul Saat AI Utama Sibuk/Limit) -->
+              <div id="ai-failover-pill" class="hidden inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[11px] font-medium">
+                <i class="fa-solid fa-shuffle text-[10px]"></i>
+                <span>Gemini 1.5 sibuk (HTTP 429) &bull; Otomatis dialihkan ke Groq Llama 3.3 70B tanpa jeda</span>
+              </div>
               <div id="ai-response-container">
                 <p>
                   Berdasarkan pembahasan pada <strong>Slide Bab 3: Sistem Terdistribusi</strong>, Teorema CAP (Brewer's Theorem) menyatakan bahwa sistem data terdistribusi tidak dapat menjamin ketiga karakteristik berikut secara bersamaan <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>:
@@ -1450,6 +1459,31 @@
                 <i class="fa-solid fa-play text-[9px]"></i>
                 <span>Test All Free</span>
               </button>
+            </div>
+
+            <!-- DUAL-TIER VALUE BANNER (RAMAH ORANG AWAM & SANGAT MENARIK UNTUK ADVANCE) -->
+            <div class="p-4 rounded-2xl border border-blue-500/25 bg-blue-500/5 dark:bg-blue-950/20 space-y-2.5">
+              <div class="flex items-start space-x-3">
+                <div class="w-8 h-8 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm shrink-0">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex flex-wrap items-center justify-between gap-1">
+                    <h5 class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)] flex items-center space-x-2">
+                      <span>Fleksibilitas Kunci API NoteRoute (Dual-Tier)</span>
+                    </h5>
+                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold">Siap Pakai &amp; Bebas Kunci Pribadi</span>
+                  </div>
+                  <div class="text-xs text-[var(--nlm-text-secondary)] space-y-1.5 leading-relaxed pt-0.5">
+                    <p>
+                      <strong class="text-[var(--nlm-text-primary)]">👤 Orang Awam (Tanpa Setup):</strong> Anda tidak wajib mengisi kunci API. NoteRoute menyediakan <em>Community Shared Pool</em> gratis bawaan sehingga dapat langsung digunakan untuk bertanya pada dokumen.
+                    </p>
+                    <p>
+                      <strong class="text-[var(--nlm-text-primary)]">⚡ Pengguna Advance (BYOK - Bring Your Own Key):</strong> Punya 1 atau lebih API key sendiri? Masukkan di bawah untuk menikmati <strong>kuota tanpa batas harian</strong>, latensi kilat, rotasi otomatis anti-limit (<em>auto-failover</em>), serta dukungan AI lokal offline (Ollama / 9Router) dengan enkripsi lokal aman.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- PROVIDERS GRID (MODEL PERSIS SCREENSHOT PROVIDERS DENGAN TOMBOL TUTORIAL & KETERANGAN 9ROUTER) -->
@@ -2911,52 +2945,72 @@
       }
     }
 
-    // SIMULASI STATUS AI: NORMAL, TIMEOUT/JARINGAN TERPUTUS, KUOTA/TOKEN HABIS
+    // SIMULASI STATUS AI: NORMAL, AUTO-FAILOVER SENYAP, INTERNET PUTUS (OFFLINE), SEMUA AI HABIS (429)
     function simulateAiState(state) {
       const thinking = document.getElementById('ai-thinking-state');
       const timeoutCard = document.getElementById('ai-timeout-card');
       const quotaCard = document.getElementById('ai-quota-card');
       const responseBlock = document.getElementById('ai-response-block');
       const thinkingText = document.getElementById('ai-thinking-status-text');
+      const failoverPill = document.getElementById('ai-failover-pill');
+      const badge = document.getElementById('ai-provider-badge');
 
       thinking.classList.add('hidden');
       timeoutCard.classList.add('hidden');
       quotaCard.classList.add('hidden');
       responseBlock.classList.add('hidden');
+      if (failoverPill) failoverPill.classList.add('hidden');
 
       if (state === 'normal') {
-        thinkingText.textContent = "Menganalisis 4 berkas laptop & mencocokkan semantik sitasi...";
+        if (badge) badge.textContent = "Gemini 1.5 Flash";
+        thinkingText.textContent = "Menganalisis 4 berkas laptop & mencocokkan semantik sitasi (Gemini)...";
         thinking.classList.remove('hidden');
-        showToast("Simulasi AI", "Mengirim kueri ke penyedia utama...");
+        showToast("AI Utama (Gemini)", "Mengirim kueri ke penyedia utama...");
         setTimeout(() => {
           thinking.classList.add('hidden');
           responseBlock.classList.remove('hidden');
           responseBlock.classList.remove('animate-fade-up');
           void responseBlock.offsetWidth;
           responseBlock.classList.add('animate-fade-up');
-          showToast("Respon Berhasil", "Jawaban selesai digenerasi dengan rujukan terverifikasi.");
+          showToast("Respon Berhasil", "Jawaban selesai digenerasi langsung dari Gemini 1.5 Flash.");
           const scroll = document.getElementById('nlm-chat-scroll');
           if (scroll) scroll.scrollTop = scroll.scrollHeight;
-        }, 750);
-      } else if (state === 'timeout') {
-        thinkingText.textContent = "Menghubungi endpoint AI (mendeteksi keterlambatan jaringan)...";
+        }, 650);
+      } else if (state === 'failover') {
+        thinkingText.textContent = "Gemini 1.5 sibuk (HTTP 429) &rarr; Otomatis beralih ke Groq (Llama 3.3 70B)...";
         thinking.classList.remove('hidden');
-        showToast("Simulasi Timeout", "Menunggu respons dari gateway penyedia...");
+        showToast("Auto-Failover Senyap", "Gemini limit. Beralih instan ke Groq...");
         setTimeout(() => {
           thinking.classList.add('hidden');
-          timeoutCard.classList.remove('hidden');
-          showToast("Koneksi Terputus", "Server AI tidak merespons (HTTP 504 Gateway Timeout).");
+          if (badge) badge.textContent = "Groq Llama 3.3 70B";
+          if (failoverPill) failoverPill.classList.remove('hidden');
+          responseBlock.classList.remove('hidden');
+          responseBlock.classList.remove('animate-fade-up');
+          void responseBlock.offsetWidth;
+          responseBlock.classList.add('animate-fade-up');
+          showToast("Failover Berhasil", "Kueri dijawab mulus oleh Groq tanpa jeda atau error.");
           const scroll = document.getElementById('nlm-chat-scroll');
           if (scroll) scroll.scrollTop = scroll.scrollHeight;
         }, 700);
-      } else if (state === 'quota') {
-        thinkingText.textContent = "Mengirim token prompt ke API penyedia...";
+      } else if (state === 'offline' || state === 'timeout') {
+        thinkingText.textContent = "Mendeteksi status jaringan internet...";
         thinking.classList.remove('hidden');
-        showToast("Simulasi Kuota", "Memeriksa kuota token API...");
+        showToast("Memeriksa Koneksi", "Jaringan internet tidak terdeteksi...");
+        setTimeout(() => {
+          thinking.classList.add('hidden');
+          timeoutCard.classList.remove('hidden');
+          showToast("Internet Terputus", "Koneksi offline. Pertanyaan tersimpan aman.");
+          const scroll = document.getElementById('nlm-chat-scroll');
+          if (scroll) scroll.scrollTop = scroll.scrollHeight;
+        }, 600);
+      } else if (state === 'all-exhausted' || state === 'quota') {
+        thinkingText.textContent = "Memeriksa kuota 5 provider rantai failover...";
+        thinking.classList.remove('hidden');
+        showToast("Memeriksa Kuota", "Seluruh kuota penyedia terpakai...");
         setTimeout(() => {
           thinking.classList.add('hidden');
           quotaCard.classList.remove('hidden');
-          showToast("Batas Kuota", "HTTP 429: Batas kuota harian/menit tercapai.");
+          showToast("Semua AI Habis", "5 penyedia limit. Beralih ke model lokal / tambah API.");
           const scroll = document.getElementById('nlm-chat-scroll');
           if (scroll) scroll.scrollTop = scroll.scrollHeight;
         }, 600);
