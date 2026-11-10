@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="6dp"
+    android:background="@drawable/bg_citation_badge"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="10dp"
+    android:paddingVertical="5dp">
+
+    <ImageView
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:contentDescription="Citation"
+        android:src="@drawable/ic_citation" />
+
+    <TextView
+        android:id="@+id/tv_citation_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:textColor="@color/primary_light"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        tools:text="Slide_Bab3_Distributed_Systems.pdf : Hal 14" />
+</LinearLayout>
