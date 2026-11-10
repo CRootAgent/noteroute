@@ -42,6 +42,10 @@ function loadLatestReleaseInfo() {
             downloadBtn.href = apkAsset.browser_download_url;
             downloadBtn.innerHTML = `<i class="fa-solid fa-download text-lg mr-2"></i> Unduh NoteRoute (${release.tag_name})`;
           }
+          const heroBtn = document.getElementById("btn-download-apk-hero");
+          if (heroBtn) {
+            heroBtn.href = apkAsset.browser_download_url;
+          }
         }
       } else {
         // Fallback jika belum ada tag rilis resmi
@@ -63,6 +67,8 @@ function setupGuideTabs() {
   const tabLaptop = document.getElementById("tab-btn-laptop");
   const tabApiKey = document.getElementById("tab-btn-apikey");
   const tab9Router = document.getElementById("tab-btn-9router");
+
+  if (!tabLaptop || !tabApiKey || !tab9Router) return;
 
   const resetTabStyles = () => {
     [tabLaptop, tabApiKey, tab9Router].forEach(btn => {

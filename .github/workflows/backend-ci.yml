@@ -1,0 +1,50 @@
+name: Backend CI & Automated Code Coverage
+
+on:
+  push:
+    branches:
+      - main
+      - 'feat/**'
+    paths:
+      - 'server/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'server/**'
+      - '.github/workflows/backend-ci.yml'
+
+jobs:
+  test:
+    name: Jest Unit & Integration Tests (Target Coverage >= 80%)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install Server Dependencies
+        run: npm ci
+
+      - name: Run Test Suite with Code Coverage (TC-01 s/d TC-06)
+        run: npm test -- --coverage --colors
+
+      - name: Upload Code Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: server/coverage/
+          retention-days: 14
