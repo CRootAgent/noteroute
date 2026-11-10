@@ -44,7 +44,9 @@ class TC11_HealthCheckConnectivityTest {
 
     @Test
     fun `TC-11-02: Validate Base URLs matching API_CONTRACT specification`() {
-        assertEquals("https://noteroute.alwaysdata.net/api/", Constants.BASE_URL_PRODUCTION)
+        assertEquals("https://noteroute-zakky.loca.lt/api/", Constants.BASE_URL_PRODUCTION)
+        assertEquals("https://noteroute-zakky.loca.lt/api/", Constants.BASE_URL_LOCALTUNNEL)
+        assertEquals("103.139.10.180", Constants.LOCALTUNNEL_BYPASS_IP)
         assertEquals("http://10.0.2.2:3000/api/", Constants.BASE_URL_EMULATOR)
         assertTrue(Constants.BASE_URL_LAN_DEFAULT.startsWith("http://"))
     }

@@ -46,7 +46,8 @@
 - **Komponen:** `StatusFragment`, `StatusViewModel`, `ApiClient`
 - **Fitur:**
   - Memeriksa konektivitas backend engine dan status database (`GET /health`).
-  - Pemilihan Base URL fleksibel (Cloud Production Alwaysdata, Android Studio Emulator `10.0.2.2`, atau Custom IP WiFi LAN laptop).
+  - Pemilihan Base URL fleksibel: Cloud Production LocalTunnel (`https://noteroute-zakky.loca.lt/api/`), Android Studio Emulator `10.0.2.2`, atau Custom IP WiFi LAN laptop.
+  - Dilengkapi otomatis dengan header `Bypass-Tunnel-Reminder: true` di Retrofit OkHttp untuk melewati konfirmasi LocalTunnel tanpa hambatan.
   - Tampilan metrik efisiensi token dan estimasi penghematan biaya.
 
 ### 6. 🔀 Multi-LLM Switcher & Auto-Failover Shield (TC-12)

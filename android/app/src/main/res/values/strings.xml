@@ -48,7 +48,7 @@
     <string name="db_connected">Database: Terhubung</string>
     <string name="db_disconnected">Database: Terputus</string>
     <string name="base_url_label">Pilih Lingkungan API:</string>
-    <string name="env_cloud">Cloud Alwaysdata (Production)</string>
+    <string name="env_cloud">LocalTunnel Cloud (noteroute-zakky.loca.lt)</string>
     <string name="env_emulator">Android Studio Emulator (10.0.2.2)</string>
     <string name="env_lan">WiFi Laptop Zakky (Custom LAN)</string>
     <string name="btn_apply_url">Terapkan URL</string>

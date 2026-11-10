@@ -1,6 +1,7 @@
 package com.noteroute.app.data.api
 
 import com.noteroute.app.utils.Constants
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -22,7 +23,18 @@ object ApiClient {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
+        // Automatic LocalTunnel bypass header interceptor
+        val tunnelBypassInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val requestWithBypass = originalRequest.newBuilder()
+                .header(Constants.HEADER_BYPASS_TUNNEL, "true")
+                .header("User-Agent", "NoteRoute-Android-Client")
+                .build()
+            chain.proceed(requestWithBypass)
+        }
+
         return OkHttpClient.Builder()
+            .addInterceptor(tunnelBypassInterceptor)
             .addInterceptor(mockInterceptor)
             .addInterceptor(loggingInterceptor)
             .connectTimeout(Constants.CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
