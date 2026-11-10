@@ -14,7 +14,7 @@ object TestDataFactory {
             id = "6727bd89f1a23b0012e84101",
             name = "Materi Kuliah Semester 5",
             description = "Slide kuliah, modul praktikum, dan riset",
-            document_count = 8,
+            documentCount = 8,
             createdAt = "2026-11-04T08:00:00.000Z"
         )
     )

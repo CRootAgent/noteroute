@@ -42,7 +42,7 @@ class TC09_DocumentChatInferenceTest {
     """.trimIndent()
 
     @Test
-    fun `TC-09-01: Construct and serialize ChatRequest payload`() {
+    fun `TC-09-01 - Construct and serialize ChatRequest payload`() {
         val request = ChatRequest(
             workspaceId = "6727bd89f1a23b0012e84101",
             prompt = "Apa kesimpulan bab 3?",
@@ -61,7 +61,7 @@ class TC09_DocumentChatInferenceTest {
     }
 
     @Test
-    fun `TC-09-02: Deserialize ChatResponse envelope correctly`() {
+    fun `TC-09-02 - Deserialize ChatResponse envelope correctly`() {
         val type = object : TypeToken<ApiResponse<ChatResponseData>>() {}.type
         val response: ApiResponse<ChatResponseData> = gson.fromJson(sampleChatResponseJson, type)
 

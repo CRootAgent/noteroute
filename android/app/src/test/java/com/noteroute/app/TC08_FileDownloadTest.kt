@@ -18,7 +18,7 @@ class TC08_FileDownloadTest {
     private val gson = Gson()
 
     @Test
-    fun `TC-08-01: Parse 404 FILE_NOT_FOUND error envelope`() {
+    fun `TC-08-01 - Parse 404 FILE_NOT_FOUND error envelope`() {
         val errorJson = """
         {
           "success": false,
@@ -35,7 +35,7 @@ class TC08_FileDownloadTest {
     }
 
     @Test
-    fun `TC-08-02: Stream download progress tracking calculation`() {
+    fun `TC-08-02 - Stream download progress tracking calculation`() {
         val simulatedData = "Simulated binary payload for NoteRoute stream transfer...".toByteArray()
         val inputStream = ByteArrayInputStream(simulatedData)
         val outputStream = ByteArrayOutputStream()

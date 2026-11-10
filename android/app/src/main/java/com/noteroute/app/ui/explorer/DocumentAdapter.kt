@@ -20,7 +20,6 @@ class DocumentAdapter(
     private var downloadingDocumentId: String? = null
 
     fun setDownloadingId(id: String?) {
-        val previousId = downloadingDocumentId
         downloadingDocumentId = id
         notifyDataSetChanged()
     }

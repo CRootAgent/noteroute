@@ -14,7 +14,7 @@ import java.io.File
 class TC12_KeystoreAndModelSwitcherTest {
 
     @Test
-    fun `TC-12-01: Verify all 4 AI model targets match API_CONTRACT`() {
+    fun `TC-12-01 - Verify all 4 AI model targets match API_CONTRACT`() {
         assertEquals("gemini", AiModel.GEMINI.targetKey)
         assertEquals("groq", AiModel.GROQ.targetKey)
         assertEquals("deepseek", AiModel.DEEPSEEK.targetKey)
@@ -27,7 +27,7 @@ class TC12_KeystoreAndModelSwitcherTest {
     }
 
     @Test
-    fun `TC-12-02: Validate Keystore specifications matching KEYSTORE_AND_SECRETS_SPEC`() {
+    fun `TC-12-02 - Validate Keystore specifications matching KEYSTORE_AND_SECRETS_SPEC`() {
         val expectedAlias = "noteroute_key"
         val expectedKeystoreName = "note-route-release.jks"
 
@@ -43,7 +43,7 @@ class TC12_KeystoreAndModelSwitcherTest {
     }
 
     @Test
-    fun `TC-12-03: Validate heuristic fallback logic to Groq on rate limit`() {
+    fun `TC-12-03 - Validate heuristic fallback logic to Groq on rate limit`() {
         var currentModel = AiModel.GEMINI
         val httpStatusCode = 429 // Rate limit exceeded
 

@@ -31,7 +31,7 @@ class TC11_HealthCheckConnectivityTest {
     """.trimIndent()
 
     @Test
-    fun `TC-11-01: Parse health check response correctly`() {
+    fun `TC-11-01 - Parse health check response correctly`() {
         val type = object : TypeToken<ApiResponse<HealthCheckData>>() {}.type
         val response: ApiResponse<HealthCheckData> = gson.fromJson(healthJson, type)
 
@@ -43,7 +43,7 @@ class TC11_HealthCheckConnectivityTest {
     }
 
     @Test
-    fun `TC-11-02: Validate Base URLs matching API_CONTRACT specification`() {
+    fun `TC-11-02 - Validate Base URLs matching API_CONTRACT specification`() {
         assertEquals("https://noteroute-zakky.loca.lt/api/", Constants.BASE_URL_PRODUCTION)
         assertEquals("https://noteroute-zakky.loca.lt/api/", Constants.BASE_URL_LOCALTUNNEL)
         assertEquals("103.139.10.180", Constants.LOCALTUNNEL_BYPASS_IP)

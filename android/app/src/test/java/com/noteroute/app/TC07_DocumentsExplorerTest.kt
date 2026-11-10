@@ -50,7 +50,7 @@ class TC07_DocumentsExplorerTest {
     """.trimIndent()
 
     @Test
-    fun `TC-07-01: Parse documents API response correctly`() {
+    fun `TC-07-01 - Parse documents API response correctly`() {
         val type = object : TypeToken<ApiResponse<List<DocumentItem>>>() {}.type
         val response: ApiResponse<List<DocumentItem>> = gson.fromJson(sampleJson, type)
 
@@ -68,7 +68,7 @@ class TC07_DocumentsExplorerTest {
     }
 
     @Test
-    fun `TC-07-02: Validate badge type detection for different files`() {
+    fun `TC-07-02 - Validate badge type detection for different files`() {
         assertEquals("PDF", FileUtils.getBadgeText("application/pdf", "slide.pdf"))
         assertEquals("MD", FileUtils.getBadgeText("text/markdown", "notes.md"))
         assertEquals("DOCX", FileUtils.getBadgeText("application/vnd.openxmlformats", "report.docx"))
@@ -76,7 +76,7 @@ class TC07_DocumentsExplorerTest {
     }
 
     @Test
-    fun `TC-07-03: Filter documents by search keyword`() {
+    fun `TC-07-03 - Filter documents by search keyword`() {
         val docs = TestDataFactory.createSampleDocuments()
         val query = "Riset"
 

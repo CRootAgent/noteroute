@@ -24,7 +24,7 @@ class TC10_CitationBadgesTest {
     """.trimIndent()
 
     @Test
-    fun `TC-10-01: Parse citation item and map page number correctly`() {
+    fun `TC-10-01 - Parse citation item and map page number correctly`() {
         val citation = gson.fromJson(citationJson, CitationItem::class.java)
 
         assertNotNull(citation)
@@ -38,7 +38,7 @@ class TC10_CitationBadgesTest {
     }
 
     @Test
-    fun `TC-10-02: Format citation badge label for mobile UI`() {
+    fun `TC-10-02 - Format citation badge label for mobile UI`() {
         val citation = TestDataFactory.createSampleChatResponse().citations.first()
         val badgeLabel = "${citation.filename} : Hal ${citation.page}"
 
