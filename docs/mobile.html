@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>NoteRoute Mobile - Grounded AI & File Laptop Companion</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Google Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Google Sans"', '"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"Roboto Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              500: '#2563eb',
+              600: '#1d4ed8',
+              700: '#1e40af',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --app-bg: #0b0f19;
+      --app-surface: #111827;
+      --app-surface-variant: #1f2937;
+      --app-border: #374151;
+      --app-border-subtle: #1f2937;
+      --app-text-primary: #f9fafb;
+      --app-text-secondary: #9ca3af;
+      --app-text-tertiary: #6b7280;
+      --app-brand: #2563eb;
+      --app-brand-light: #3b82f6;
+    }
+
+    html.light {
+      --app-bg: #f8fafc;
+      --app-surface: #ffffff;
+      --app-surface-variant: #f1f5f9;
+      --app-border: #e2e8f0;
+      --app-border-subtle: #f1f5f9;
+      --app-text-primary: #0f172a;
+      --app-text-secondary: #475569;
+      --app-text-tertiary: #94a3b8;
+      --app-brand: #2563eb;
+      --app-brand-light: #60a5fa;
+    }
+
+    body {
+      background-color: #030712;
+      color: var(--app-text-primary);
+      font-family: 'Google Sans', 'Plus Jakarta Sans', -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    /* Device Mockup Shell for Desktop */
+    .mobile-frame-wrapper {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .mobile-frame-wrapper.frame-mode {
+      width: 412px;
+      height: 870px;
+      max-height: 92vh;
+      border-radius: 46px;
+      box-shadow: 0 0 0 12px #1f2937, 0 0 0 14px #374151, 0 35px 80px -15px rgba(0, 0, 0, 0.75);
+      border: 3px solid #111827;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .mobile-frame-wrapper.full-mode {
+      width: 100% !important;
+      max-width: 520px;
+      height: 100vh !important;
+      max-height: 100vh !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+
+    @media (max-width: 640px) {
+      .mobile-frame-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .desktop-controls-bar {
+        display: none !important;
+      }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(156, 163, 175, 0.3);
+      border-radius: 10px;
+    }
+
+    /* Bottom Sheet Animation */
+    @keyframes slideUpSheet {
+      from {
+        transform: translateY(100%);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    .animate-sheet-up {
+      animation: slideUpSheet 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Pulse Glow */
+    .glow-brand {
+      box-shadow: 0 0 25px -5px rgba(37, 99, 235, 0.4);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-0 sm:p-4 bg-slate-950">
+
+  <!-- ======================================================== -->
+  <!-- DESKTOP TOP BAR CONTROLS (TAMPIL HANYA DI DESKTOP)       -->
+  <!-- ======================================================== -->
+  <div class="desktop-controls-bar hidden sm:flex items-center justify-between w-full max-w-lg mb-3 px-3 py-2 bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-800 text-xs text-slate-300 shadow-xl">
+    <div class="flex items-center space-x-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span class="font-bold text-white">NoteRoute Mobile</span>
+      <span class="text-[11px] text-slate-400">&bull; Docs Preview</span>
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <!-- Frame Switcher Button -->
+      <button onclick="toggleViewportMode()" id="btn-toggle-frame" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-semibold flex items-center space-x-1.5 transition cursor-pointer">
+        <i class="fa-solid fa-mobile-screen"></i>
+        <span id="frame-mode-text">Layar Penuh</span>
+      </button>
+
+      <!-- Back to Web Workspace -->
+      <a href="../landing/index.html" class="px-2.5 py-1 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 text-[11px] font-semibold flex items-center space-x-1.5 transition">
+        <i class="fa-solid fa-laptop text-[10px]"></i>
+        <span>Web Workspace</span>
+      </a>
+
+      <!-- Back to Home -->
+      <a href="../index.html" class="p-1.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition" title="Kembali ke Beranda">
+        <i class="fa-solid fa-house text-xs"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- THE MOBILE DEVICE CONTAINER                              -->
+  <!-- ======================================================== -->
+  <div id="mobile-app-container" class="mobile-frame-wrapper frame-mode w-full flex flex-col bg-[var(--app-bg)] relative">
+
+    <!-- 1. STATUS BAR ANDROID / iOS (JAM & INDIKATOR SINYAL) -->
+    <div class="h-10 px-6 pt-2 pb-1 flex items-center justify-between text-xs font-semibold select-none shrink-0 z-40 bg-[var(--app-bg)]/90 backdrop-blur-md">
+      <!-- Jam Real-Time -->
+      <span id="mobile-clock" class="font-mono text-xs text-[var(--app-text-primary)]">19:45</span>
+
+      <!-- Dynamic Island / Kamera Depan Mockup -->
+      <div class="w-24 h-4 bg-black rounded-full mx-auto hidden sm:flex items-center justify-center space-x-2 px-2 shadow-inner border border-zinc-800/60">
+        <span class="w-2 h-2 rounded-full bg-zinc-900 border border-zinc-700"></span>
+        <span class="w-2 h-2 rounded-full bg-blue-900/40"></span>
+      </div>
+
+      <!-- Icon Sinyal, Wifi & Baterai -->
+      <div class="flex items-center space-x-2 text-[11px] text-[var(--app-text-secondary)]">
+        <span class="text-[9px] font-bold tracking-wider text-emerald-500">5G</span>
+        <i class="fa-solid fa-wifi text-[10px]"></i>
+        <i class="fa-solid fa-battery-full text-xs text-emerald-400"></i>
+      </div>
+    </div>
+
+    <!-- 2. MOBILE TOPBAR (BRAND & ACTIVE MODEL SWITCHER) -->
+    <header class="h-14 px-4 border-b border-[var(--app-border)] bg-[var(--app-surface)]/95 backdrop-blur-md flex items-center justify-between shrink-0 z-30">
+      
+      <!-- Brand & Active Notebook Title -->
+      <div class="flex items-center space-x-2.5 truncate">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center text-xs shadow-md shadow-blue-500/25 shrink-0">
+          <i class="fa-solid fa-book-bookmark"></i>
+        </div>
+        <div class="truncate text-left">
+          <div class="flex items-center space-x-1.5">
+            <span class="font-bold text-xs text-[var(--app-text-primary)] truncate">Sistem Terdistribusi</span>
+            <i class="fa-solid fa-chevron-down text-[9px] text-[var(--app-text-tertiary)]"></i>
+          </div>
+          <div class="flex items-center space-x-1 text-[10px] text-emerald-500 font-medium">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Alwaysdata &bull; Atlas Sync</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Model Switcher Pill & Actions -->
+      <div class="flex items-center space-x-1.5">
+        <!-- AI Model Pill Button -->
+        <button onclick="openModelPickerSheet()" class="px-2.5 py-1 rounded-full bg-[var(--app-surface-variant)] border border-[var(--app-border)] hover:border-blue-500 flex items-center space-x-1.5 text-xs transition cursor-pointer">
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+          <span id="active-model-name" class="font-semibold text-[11px] text-[var(--app-text-primary)]">Gemini 1.5</span>
+          <i class="fa-solid fa-shield-halved text-[9px] text-emerald-400" title="Auto-Failover Heuristik Aktif"></i>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button onclick="toggleMobileTheme()" class="w-7 h-7 rounded-full bg-[var(--app-surface-variant)] text-[var(--app-text-secondary)] hover:text-[var(--app-text-primary)] flex items-center justify-center text-xs transition cursor-pointer" title="Ganti Tema">
+          <i id="theme-toggle-icon" class="fa-solid fa-moon text-[11px]"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- ======================================================== -->
+    <!-- 3. MAIN DYNAMIC VIEWPORT (BERALIH ANTAR TAB MOBILE)      -->
+    <!-- ======================================================== -->
+    <main class="flex-1 flex flex-col overflow-hidden relative bg-[var(--app-bg)]">
+
+      <!-- ====================================================== -->
+      <!-- VIEW TAB 1: 💬 AI CHAT GROUNDED (VIEW UTAMA)           -->
+      <!-- ====================================================== -->
+      <section id="view-chat" class="flex-1 flex flex-col h-full overflow-hidden">
+        
+        <!-- Chat Stream Message History -->
+        <div id="chat-stream-box" class="flex-1 overflow-y-auto p-4 space-y-4">
+          
+          <!-- System Welcome Banner -->
+          <div class="p-3.5 rounded-2xl bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/25 space-y-1.5 text-left">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-blue-400 flex items-center space-x-1.5">
+                <i class="fa-solid fa-sparkles text-[11px]"></i>
+                <span>Grounded Multi-LLM Assistant</span>
+              </span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-mono font-semibold">4 Sumber Aktif</span>
+            </div>
+            <p class="text-[11px] text-[var(--app-text-secondary)] leading-relaxed">
+              Tanyakan materi perkuliahan dari dokumen laptop Anda. Jawaban diverifikasi langsung dari berkas asli dengan nomor halaman.
+            </p>
+          </div>
+
+          <!-- Message 1: User Question -->
+          <div class="flex justify-end">
+            <div class="max-w-[82%] px-4 py-2.5 rounded-2xl rounded-tr-sm bg-blue-600 text-white text-xs leading-relaxed shadow-sm">
+              Jelaskan perbedaan mendasar antara model RPC tradisional dan arsitektur Multi-LLM Router di NoteRoute!
+            </div>
+          </div>
+
+          <!-- Message 2: AI Response with Citations -->
+          <div class="flex justify-start space-x-2">
+            <div class="w-7 h-7 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-sm">
+              <i class="fa-solid fa-robot text-[11px]"></i>
+            </div>
+            <div class="max-w-[88%] space-y-2 text-left">
+              <div class="p-3.5 rounded-2xl rounded-tl-sm bg-[var(--app-surface)] border border-[var(--app-border)] text-xs text-[var(--app-text-primary)] leading-relaxed space-y-2.5 shadow-xs">
+                <p>
+                  Berdasarkan berkas <strong>Slide Sistem Terdistribusi</strong> dan <strong>Arsitektur NoteRoute</strong>, perbedaan utamanya meliputi:
+                </p>
+                
+                <ul class="space-y-1.5 pl-1">
+                  <li class="flex items-start space-x-1.5">
+                    <span class="text-blue-500 font-bold">&bull;</span>
+                    <span>
+                      <strong>RPC Tradisional (1984):</strong> Meniru pemanggilan prosedur lokal pada jaringan dengan coupling kuat dan ketiadaan fallback dinamis jika server target crash 
+                      <button onclick="openCitationInspector(1)" class="inline-flex items-center px-1.5 py-0.5 rounded-md bg-blue-500/15 text-blue-500 hover:bg-blue-500/30 font-bold text-[10px] ml-1 transition cursor-pointer">[1]</button>.
+                    </span>
+                  </li>
+                  <li class="flex items-start space-x-1.5">
+                    <span class="text-blue-500 font-bold">&bull;</span>
+                    <span>
+                      <strong>Dynamic Multi-LLM Router:</strong> Menggunakan <em>heuristic failover</em> adaptif. Jika model primer (Gemini 1.5) terkena batas kuota HTTP 429, kueri dialihkan otomatis dalam &lt;100ms ke Groq atau model lokal 
+                      <button onclick="openCitationInspector(2)" class="inline-flex items-center px-1.5 py-0.5 rounded-md bg-blue-500/15 text-blue-500 hover:bg-blue-500/30 font-bold text-[10px] ml-1 transition cursor-pointer">[2]</button>.
+                    </span>
+                  </li>
+                </ul>
+
+                <!-- Citation Quick Badges Footer -->
+                <div class="pt-2 border-t border-[var(--app-border-subtle)] flex items-center space-x-2 text-[10px] text-[var(--app-text-tertiary)]">
+                  <span>Sitasi Sumber:</span>
+                  <button onclick="openCitationInspector(1)" class="px-2 py-0.5 rounded bg-[var(--app-surface-variant)] text-blue-400 hover:underline cursor-pointer">Hal 14 &bull; Slide_Sistem.pdf</button>
+                  <button onclick="openCitationInspector(2)" class="px-2 py-0.5 rounded bg-[var(--app-surface-variant)] text-blue-400 hover:underline cursor-pointer">Bab 2 &bull; Failover.docx</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Chat Bubble Container (Untuk pesan baru yang dikirim user) -->
+          <div id="dynamic-chat-container" class="space-y-4"></div>
+
+        </div>
+
+        <!-- Suggestion Chips Carousel -->
+        <div class="px-3 py-1.5 border-t border-[var(--app-border-subtle)] flex items-center space-x-2 overflow-x-auto shrink-0 bg-[var(--app-surface)]/60 text-[11px] whitespace-nowrap">
+          <button onclick="fillAndSendPrompt('Ringkas konsep konsensus Raft dalam 3 poin!')" class="px-2.5 py-1 rounded-full bg-[var(--app-surface-variant)] border border-[var(--app-border)] hover:border-blue-500 text-[var(--app-text-secondary)] transition cursor-pointer">
+            ⚡ Ringkas Raft
+          </button>
+          <button onclick="fillAndSendPrompt('Buat 3 soal kuis pilihan ganda dari berkas ini!')" class="px-2.5 py-1 rounded-full bg-[var(--app-surface-variant)] border border-[var(--app-border)] hover:border-blue-500 text-[var(--app-text-secondary)] transition cursor-pointer">
+            📝 Buat Kuis
+          </button>
+          <button onclick="fillAndSendPrompt('Bagaimana cara kerja auto-failover ke Groq saat terkena rate limit?')" class="px-2.5 py-1 rounded-full bg-[var(--app-surface-variant)] border border-[var(--app-border)] hover:border-blue-500 text-[var(--app-text-secondary)] transition cursor-pointer">
+            🛡️ Heuristic Failover
+          </button>
+        </div>
+
+        <!-- Mobile Chat Input Bar -->
+        <div class="p-3 border-t border-[var(--app-border)] bg-[var(--app-surface)] shrink-0">
+          <form onsubmit="handleSendChat(event)" class="flex items-center space-x-2">
+            <!-- Attachment Button -->
+            <button type="button" onclick="switchMobileTab('files')" class="w-9 h-9 rounded-full bg-[var(--app-surface-variant)] text-[var(--app-text-secondary)] hover:text-blue-500 flex items-center justify-center text-xs transition cursor-pointer shrink-0" title="Tambah Dokumen">
+              <i class="fa-solid fa-paperclip"></i>
+            </button>
+
+            <!-- Text Input -->
+            <div class="relative flex-1">
+              <input id="mobile-chat-input" type="text" placeholder="Tanyakan dokumen kuliah..." required
+                     class="w-full pl-3.5 pr-8 py-2 rounded-full bg-[var(--app-surface-variant)] border border-[var(--app-border)] text-xs text-[var(--app-text-primary)] placeholder-[var(--app-text-tertiary)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20">
+              <button type="button" onclick="showToast('Voice Input', 'Perekaman suara via mikrofon siap digunakan.')" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--app-text-tertiary)] hover:text-blue-500">
+                <i class="fa-solid fa-microphone"></i>
+              </button>
+            </div>
+
+            <!-- Send Button -->
+            <button type="submit" id="btn-send-chat" class="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center text-xs shadow-md shadow-blue-500/30 active:scale-95 transition cursor-pointer shrink-0">
+              <i class="fa-solid fa-arrow-up"></i>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ====================================================== -->
+      <!-- VIEW TAB 2: 📁 BERKAS LAPTOP & AMBIL KE HP             -->
+      <!-- ====================================================== -->
+      <section id="view-files" class="hidden flex-1 flex flex-col h-full overflow-y-auto p-4 space-y-4">
+        
+        <!-- Laptop Ingestion Status Card -->
+        <div class="p-3.5 rounded-2xl bg-[var(--app-surface)] border border-[var(--app-border)] space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-laptop"></i>
+              </div>
+              <div class="text-left">
+                <div class="font-bold text-xs text-[var(--app-text-primary)]">MacBook Pro Zakky</div>
+                <div class="text-[10px] text-emerald-400 font-medium">Status: Sinkron &bull; IP: 192.168.1.15</div>
+              </div>
+            </div>
+            <button onclick="simulateSyncLaptopFiles()" class="px-2.5 py-1 rounded-xl bg-blue-600/15 text-blue-400 hover:bg-blue-600/25 border border-blue-500/20 text-[11px] font-semibold flex items-center space-x-1 transition cursor-pointer">
+              <i id="sync-icon" class="fa-solid fa-arrows-rotate text-[10px]"></i>
+              <span>Sinkron</span>
+            </button>
+          </div>
+          <div class="text-[11px] text-[var(--app-text-secondary)] text-left">
+            Total 4 berkas ingested (2.1 MB) siap diekstrak untuk konteks grounding AI atau diunduh langsung ke HP.
+          </div>
+        </div>
+
+        <!-- Section Title -->
+        <div class="flex items-center justify-between px-1">
+          <h3 class="font-bold text-xs text-[var(--app-text-primary)]">Berkas Tersedia di Laptop:</h3>
+          <span class="text-[10px] text-[var(--app-text-tertiary)]">Klik aksi untuk ambil ke HP</span>
+        </div>
+
+        <!-- File List (Cards) -->
+        <div class="space-y-2.5 text-left">
+
+          <!-- File 1: PDF -->
+          <div class="p-3 rounded-2xl bg-[var(--app-surface)] border border-[var(--app-border)] hover:border-blue-500/40 transition space-y-2.5">
+            <div class="flex items-start justify-between">
+              <div class="flex items-start space-x-2.5 truncate">
+                <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center text-sm shrink-0 mt-0.5">
+                  <i class="fa-solid fa-file-pdf"></i>
+                </div>
+                <div class="truncate">
+                  <div class="font-semibold text-xs text-[var(--app-text-primary)] truncate">Slide_Sistem_Terdistribusi_Pertemuan_03.pdf</div>
+                  <div class="text-[10px] text-[var(--app-text-tertiary)] mt-0.5">1.4 MB &bull; 42 Chunks &bull; Diubah 2 jam lalu</div>
+                </div>
+              </div>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold shrink-0">Grounded</span>
+            </div>
+            <!-- Progress Bar Simpan ke HP -->
+            <div id="prog-wrap-1" class="hidden w-full space-y-1">
+              <div class="flex justify-between text-[10px] text-[var(--app-text-tertiary)]">
+                <span>Mengunduh ke HP...</span>
+                <span id="prog-pct-1">0%</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                <div id="prog-bar-1" class="h-full bg-blue-500 transition-all duration-300 w-0"></div>
+              </div>
+            </div>
+            <!-- Action Buttons -->
+            <div class="flex items-center space-x-2 pt-1 border-t border-[var(--app-border-subtle)]">
+              <button onclick="previewFileText('Slide_Sistem_Terdistribusi_Pertemuan_03.pdf', 'Kumpulan materi RPC, RMI, dan gRPC dalam sistem heterogen. Membahas stub, skeleton, marshaling, serta idempotency.')" class="flex-1 py-1.5 rounded-xl bg-[var(--app-surface-variant)] text-[var(--app-text-secondary)] text-[11px] font-semibold flex items-center justify-center space-x-1.5 transition cursor-pointer hover:bg-slate-700">
+                <i class="fa-solid fa-eye text-[10px]"></i>
+                <span>Pratinjau</span>
+              </button>
+              <button onclick="downloadFileToPhone(1, 'Slide_Sistem_Terdistribusi_Pertemuan_03.pdf')" class="flex-1 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-semibold flex items-center justify-center space-x-1.5 shadow-sm shadow-blue-500/20 transition cursor-pointer">
+                <i class="fa-solid fa-download text-[10px]"></i>
+                <span>Ambil ke HP</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- File 2: DOCX -->
+          <div class="p-3 rounded-2xl bg-[var(--app-surface)] border border-[var(--app-border)] hover:border-blue-500/40 transition space-y-2.5">
+            <div class="flex items-start justify-between">
+              <div class="flex items-start space-x-2.5 truncate">
+                <div class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-500 flex items-center justify-center text-sm shrink-0 mt-0.5">
+                  <i class="fa-solid fa-file-word"></i>
+                </div>
+                <div class="truncate">
+                  <div class="font-semibold text-xs text-[var(--app-text-primary)] truncate">Ringkasan_RPC_dan_Failover_Architecture.docx</div>
+                  <div class="text-[10px] text-[var(--app-text-tertiary)] mt-0.5">420 KB &bull; 18 Chunks &bull; Kemarin</div>
+                </div>
+              </div>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold shrink-0">Grounded</span>
+            </div>
+            <!-- Progress Bar Simpan ke HP -->
+            <div id="prog-wrap-2" class="hidden w-full space-y-1">
+              <div class="flex justify-between text-[10px] text-[var(--app-text-tertiary)]">
+                <span>Mengunduh ke HP...</span>
+                <span id="prog-pct-2">0%</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                <div id="prog-bar-2" class="h-full bg-blue-500 transition-all duration-300 w-0"></div>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 pt-1 border-t border-[var(--app-border-subtle)]">
+              <button onclick="previewFileText('Ringkasan_RPC_dan_Failover_Architecture.docx', 'Desain sistem failover multi-model NoteRoute: Router Bridge lokal -> Groq Cloud -> Gemini 1.5 -> AI Lokal.')" class="flex-1 py-1.5 rounded-xl bg-[var(--app-surface-variant)] text-[var(--app-text-secondary)] text-[11px] font-semibold flex items-center justify-center space-x-1.5 transition cursor-pointer hover:bg-slate-700">
+                <i class="fa-solid fa-eye text-[10px]"></i>
+                <span>Pratinjau</span>
+              </button>
+              <button onclick="downloadFileToPhone(2, 'Ringkasan_RPC_dan_Failover_Architecture.docx')" class="flex-1 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-semibold flex items-center justify-center space-x-1.5 shadow-sm shadow-blue-500/20 transition cursor-pointer">
+                <i class="fa-solid fa-download text-[10px]"></i>
+                <span>Ambil ke HP</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- File 3: Markdown -->
+          <div class="p-3 rounded-2xl bg-[var(--app-surface)] border border-[var(--app-border)] hover:border-blue-500/40 transition space-y-2.5">
+            <div class="flex items-start justify-between">
+              <div class="flex items-start space-x-2.5 truncate">
+                <div class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center text-sm shrink-0 mt-0.5">
+                  <i class="fa-solid fa-file-code"></i>
+                </div>
+                <div class="truncate">
+                  <div class="font-semibold text-xs text-[var(--app-text-primary)] truncate">Catatan_Kuis_Algoritma_Konsensus_Raft.md</div>
+                  <div class="text-[10px] text-[var(--app-text-tertiary)] mt-0.5">65 KB &bull; 8 Chunks &bull; 3 hari lalu</div>
+                </div>
+              </div>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold shrink-0">Grounded</span>
+            </div>
+            <!-- Progress Bar Simpan ke HP -->
+            <div id="prog-wrap-3" class="hidden w-full space-y-1">
+              <div class="flex justify-between text-[10px] text-[var(--app-text-tertiary)]">
+                <span>Mengunduh ke HP...</span>
+                <span id="prog-pct-3">0%</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                <div id="prog-bar-3" class="h-full bg-blue-500 transition-all duration-300 w-0"></div>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 pt-1 border-t border-[var(--app-border-subtle)]">
+              <button onclick="previewFileText('Catatan_Kuis_Algoritma_Konsensus_Raft.md', 'Tiga status node dalam Raft: Leader, Follower, Candidate. Log replication and election timeouts (150ms-300ms).')" class="flex-1 py-1.5 rounded-xl bg-[var(--app-surface-variant)] text-[var(--app-text-secondary)] text-[11px] font-semibold flex items-center justify-center space-x-1.5 transition cursor-pointer hover:bg-slate-700">
+                <i class="fa-solid fa-eye text-[10px]"></i>
+                <span>Pratinjau</span>
+              </button>
+              <button onclick="downloadFileToPhone(3, 'Catatan_Kuis_Algoritma_Konsensus_Raft.md')" class="flex-1 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-semibold flex items-center justify-center space-x-1.5 shadow-sm shadow-blue-500/20 transition cursor-pointer">
+                <i class="fa-solid fa-download text-[10px]"></i>
+                <span>Ambil ke HP</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- File 4: TXT -->
+          <div class="p-3 rounded-2xl bg-[var(--app-surface)] border border-[var(--app-border)] hover:border-blue-500/40 transition space-y-2.5">
+            <div class="flex items-start justify-between">
+              <div class="flex items-start space-x-2.5 truncate">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-sm shrink-0 mt-0.5">
+                  <i class="fa-solid fa-file-lines"></i>
+                </div>
+                <div class="truncate">
+                  <div class="font-semibold text-xs text-[var(--app-text-primary)] truncate">Kumpulan_Soal_UTS_Tahun_Lalu.txt</div>
+                  <div class="text-[10px] text-[var(--app-text-tertiary)] mt-0.5">112 KB &bull; 12 Chunks &bull; 1 minggu lalu</div>
+                </div>
+              </div>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold shrink-0">Grounded</span>
+            </div>
+            <!-- Progress Bar Simpan ke HP -->
+            <div id="prog-wrap-4" class="hidden w-full space-y-1">
+              <div class="flex justify-between text-[10px] text-[var(--app-text-tertiary)]">
+                <span>Mengunduh ke HP...</span>
+                <span id="prog-pct-4">0%</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                <div id="prog-bar-4" class="h-full bg-blue-500 transition-all duration-300 w-0"></div>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 pt-1 border-t border-[var(--app-border-subtle)]">
+              <button onclick="previewFileText('Kumpulan_Soal_UTS_Tahun_Lalu.txt', '10 butir soal essay sistem terdistribusi, teorema CAP (Consistency, Availability, Partition tolerance), dan 2-Phase Commit.')" class="flex-1 py-1.5 rounded-xl bg-[var(--app-surface-variant)] text-[var(--app-text-secondary)] text-[11px] font-semibold flex items-center justify-center space-x-1.5 transition cursor-pointer hover:bg-slate-700">
+                <i class="fa-solid fa-eye text-[10px]"></i>
+                <span>Pratinjau</span>
+              </button>
+              <button onclick="downloadFileToPhone(4, 'Kumpulan_Soal_UTS_Tahun_Lalu.txt')" class="flex-1 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-semibold flex items-center justify-center space-x-1.5 shadow-sm shadow-blue-500/20 transition cursor-pointer">
+                <i class="fa-solid fa-download text-[10px]"></i>
+                <span>Ambil ke HP</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ====================================================== -->
+      <!-- VIEW TAB 3: 📑 SITASI & STUDIO AI                      -->
+      <!-- ====================================================== -->
+      <section id="view-citations" class="hidden flex-1 flex flex-col h-full overflow-y-auto p-4 space-y-4">
+        
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-xs text-[var(--app-text-primary)]">Inspektor Sitasi Dokumen:</h3>
+          <span class="text-[10px] text-blue-400 font-mono">100% Grounded</span>
+        </div>
+
+        <!-- Citation Card 1 -->
+        <div class="p-3.5 rounded-2xl bg-[var(--app-surface)] border border-[var(--app-border)] text-left space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-500/15 text-blue-400 font-bold text-xs">[Sitasi 1]</span>
+            <span class="text-[10px] text-[var(--app-text-tertiary)] font-mono">Relevansi: 96%</span>
+          </div>
+          <div class="text-xs font-semibold text-[var(--app-text-primary)]">Slide_Sistem_Terdistribusi_Pertemuan_03.pdf &bull; Hal 14</div>
+          <blockquote class="p-2.5 rounded-xl bg-[var(--app-surface-variant)] border-l-2 border-blue-500 text-[11px] text-[var(--app-text-secondary)] italic leading-relaxed">
+            "Birrell & Nelson (1984) memperkenalkan Remote Procedure Call (RPC) sebagai abstraksi transfer pesan. Namun RPC memiliki kelemahan transparansi semu karena latency jaringan dan kemungkinan partial failures."
+          </blockquote>
+        </div>
+
+        <!-- Citation Card 2 -->
+        <div class="p-3.5 rounded-2xl bg-[var(--app-surface)] border border-[var(--app-border)] text-left space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-400 font-bold text-xs">[Sitasi 2]</span>
+            <span class="text-[10px] text-[var(--app-text-tertiary)] font-mono">Relevansi: 94%</span>
+          </div>
+          <div class="text-xs font-semibold text-[var(--app-text-primary)]">Ringkasan_RPC_dan_Failover_Architecture.docx &bull; Bab 2</div>
+          <blockquote class="p-2.5 rounded-xl bg-[var(--app-surface-variant)] border-l-2 border-indigo-500 text-[11px] text-[var(--app-text-secondary)] italic leading-relaxed">
+            "NoteRoute Heuristic Router mendeteksi respons HTTP 429 dari upstream server, kemudian melakukan transisi ke provider cadangan dengan konteks grounded dokumen utuh."
+          </blockquote>
+        </div>
+
+        <!-- Studio Tools Quick Generator -->
+        <div class="pt-2 border-t border-[var(--app-border-subtle)] space-y-2 text-left">
+          <h4 class="font-bold text-xs text-[var(--app-text-primary)]">AI Studio Tools:</h4>
+          
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="generateStudioSummary()" class="p-3 rounded-2xl bg-[var(--app-surface)] border border-[var(--app-border)] hover:border-blue-500 flex flex-col items-center space-y-1.5 transition cursor-pointer">
+              <div class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-list-check"></i>
+              </div>
+              <span class="text-xs font-semibold text-[var(--app-text-primary)]">Catatan Kilat</span>
+            </button>
+
+            <button onclick="generateStudioQuiz()" class="p-3 rounded-2xl bg-[var(--app-surface)] border border-[var(--app-border)] hover:border-purple-500 flex flex-col items-center space-y-1.5 transition cursor-pointer">
+              <div class="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-graduation-cap"></i>
+              </div>
+              <span class="text-xs font-semibold text-[var(--app-text-primary)]">Kuis 3 Soal</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Studio Output Container -->
+        <div id="studio-output-box" class="hidden p-3.5 rounded-2xl bg-[var(--app-surface)] border border-blue-500/40 text-left space-y-2 animate-fade-in">
+          <div class="flex items-center justify-between">
+            <span id="studio-output-title" class="font-bold text-xs text-blue-400">Hasil Studio AI:</span>
+            <button onclick="document.getElementById('studio-output-box').classList.add('hidden')" class="text-xs text-[var(--app-text-tertiary)] hover:text-white">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <div id="studio-output-content" class="text-xs text-[var(--app-text-secondary)] leading-relaxed space-y-2"></div>
+        </div>
+      </section>
+
+      <!-- ====================================================== -->
+      <!-- VIEW TAB 4: ⚙️ PENGATURAN & KUNCI API                  -->
+      <!-- ====================================================== -->
+      <section id="view-settings" class="hidden flex-1 flex flex-col h-full overflow-y-auto p-4 space-y-4">
+        
+        <!-- User Identity Card -->
+        <div class="p-4 rounded-2xl bg-[var(--app-surface)] border border-[var(--app-border)] flex items-center space-x-3 text-left">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-base flex items-center justify-center shadow-md">
+            AZ
+          </div>
+          <div class="truncate">
+            <div class="font-bold text-sm text-[var(--app-text-primary)] truncate">Ahmad Zakky Nurfauzan</div>
+            <div class="text-xs text-[var(--app-text-tertiary)] truncate">ahmadzakky@ulbi.ac.id</div>
+            <div class="text-[10px] text-emerald-400 font-semibold mt-0.5">NPM: 714250028 &bull; Modul A</div>
+          </div>
+        </div>
+
+        <!-- Cloud Engine Status -->
+        <div class="p-3.5 rounded-2xl bg-[var(--app-surface)] border border-[var(--app-border)] text-left space-y-2 text-xs">
+          <div class="font-bold text-xs text-[var(--app-text-primary)]">Infrastruktur Cloud:</div>
+          
+          <div class="flex items-center justify-between p-2 rounded-xl bg-[var(--app-surface-variant)]">
+            <div class="flex items-center space-x-2">
+              <i class="fa-solid fa-server text-blue-400 text-xs"></i>
+              <span>Alwaysdata Backend API</span>
+            </div>
+            <span class="text-[10px] font-bold text-emerald-400">ONLINE</span>
+          </div>
+
+          <div class="flex items-center justify-between p-2 rounded-xl bg-[var(--app-surface-variant)]">
+            <div class="flex items-center space-x-2">
+              <i class="fa-solid fa-database text-emerald-400 text-xs"></i>
+              <span>MongoDB Atlas Cloud NoSQL</span>
+            </div>
+            <span class="text-[10px] font-bold text-emerald-400">CONNECTED</span>
+          </div>
+        </div>
+
+        <!-- AI Providers Status (Prioritas) -->
+        <div class="p-3.5 rounded-2xl bg-[var(--app-surface)] border border-[var(--app-border)] text-left space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-xs text-[var(--app-text-primary)]">Rantai Prioritas Auto-Failover:</span>
+            <span class="text-[10px] text-blue-400 font-mono">Otomatis</span>
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between p-2 rounded-xl bg-[var(--app-surface-variant)]">
+              <span class="font-semibold text-[var(--app-text-primary)]">1. Google Gemini 1.5 Flash</span>
+              <span class="text-[10px] text-blue-400">1M Free Context</span>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded-xl bg-[var(--app-surface-variant)]">
+              <span class="font-semibold text-[var(--app-text-primary)]">2. Groq Llama 3.3 70B</span>
+              <span class="text-[10px] text-amber-400">Kilat &bull; Backup</span>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded-xl bg-[var(--app-surface-variant)]">
+              <span class="font-semibold text-[var(--app-text-primary)]">3. 9Router AI Lokal</span>
+              <span class="text-[10px] text-purple-400">Offline Fallback</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Switch to Desktop Workspace -->
+        <div class="pt-2 border-t border-[var(--app-border-subtle)] space-y-2 text-left">
+          <a href="../landing/index.html" class="w-full py-2.5 px-3 rounded-2xl bg-blue-600/15 border border-blue-500/25 text-blue-400 font-semibold text-xs flex items-center justify-center space-x-2 transition hover:bg-blue-600/25">
+            <i class="fa-solid fa-laptop text-xs"></i>
+            <span>Buka Versi Desktop / Workspace</span>
+          </a>
+          <a href="../index.html" class="w-full py-2.5 px-3 rounded-2xl bg-[var(--app-surface-variant)] border border-[var(--app-border)] text-[var(--app-text-secondary)] font-semibold text-xs flex items-center justify-center space-x-2 transition hover:text-white">
+            <i class="fa-solid fa-arrow-left text-xs"></i>
+            <span>Kembali ke Homepage NoteRoute</span>
+          </a>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ======================================================== -->
+    <!-- 4. BOTTOM NAVIGATION BAR (MATERIAL 3 MOBILE STYLE)       -->
+    <!-- ======================================================== -->
+    <nav class="h-16 border-t border-[var(--app-border)] bg-[var(--app-surface)]/95 backdrop-blur-md px-2 flex items-center justify-around shrink-0 z-30 select-none pb-safe">
+      
+      <!-- Tab 1: AI Chat -->
+      <button onclick="switchMobileTab('chat')" id="nav-btn-chat" class="flex-1 py-1 flex flex-col items-center space-y-1 text-blue-500 transition cursor-pointer">
+        <div class="w-9 h-6 rounded-full bg-blue-500/15 flex items-center justify-center text-xs">
+          <i class="fa-solid fa-comment-dots text-sm"></i>
+        </div>
+        <span class="text-[10px] font-bold">AI Chat</span>
+      </button>
+
+      <!-- Tab 2: Berkas Laptop -->
+      <button onclick="switchMobileTab('files')" id="nav-btn-files" class="flex-1 py-1 flex flex-col items-center space-y-1 text-[var(--app-text-tertiary)] hover:text-[var(--app-text-primary)] transition cursor-pointer relative">
+        <div class="w-9 h-6 rounded-full flex items-center justify-center text-xs">
+          <i class="fa-solid fa-folder-open text-sm"></i>
+        </div>
+        <span class="text-[10px] font-semibold">File Laptop</span>
+        <!-- Badge count -->
+        <span class="absolute top-0 right-5 w-4 h-4 rounded-full bg-blue-600 text-white text-[9px] font-bold flex items-center justify-center">4</span>
+      </button>
+
+      <!-- Tab 3: Sitasi & Studio -->
+      <button onclick="switchMobileTab('citations')" id="nav-btn-citations" class="flex-1 py-1 flex flex-col items-center space-y-1 text-[var(--app-text-tertiary)] hover:text-[var(--app-text-primary)] transition cursor-pointer">
+        <div class="w-9 h-6 rounded-full flex items-center justify-center text-xs">
+          <i class="fa-solid fa-book-open text-sm"></i>
+        </div>
+        <span class="text-[10px] font-semibold">Sitasi</span>
+      </button>
+
+      <!-- Tab 4: Pengaturan -->
+      <button onclick="switchMobileTab('settings')" id="nav-btn-settings" class="flex-1 py-1 flex flex-col items-center space-y-1 text-[var(--app-text-tertiary)] hover:text-[var(--app-text-primary)] transition cursor-pointer">
+        <div class="w-9 h-6 rounded-full flex items-center justify-center text-xs">
+          <i class="fa-solid fa-gear text-sm"></i>
+        </div>
+        <span class="text-[10px] font-semibold">Pengaturan</span>
+      </button>
+
+    </nav>
+
+    <!-- Home Indicator Bar (Apple / Android Gesture Bar) -->
+    <div class="h-4 bg-[var(--app-surface)] flex items-center justify-center shrink-0">
+      <div class="w-32 h-1 bg-zinc-600/50 rounded-full"></div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- 5. INTERACTIVE BOTTOM SHEETS & MODALS                    -->
+    <!-- ======================================================== -->
+
+    <!-- BOTTOM SHEET: INSPEKTOR SITASI (SLIDE-UP DARI BAWAH) -->
+    <div id="sheet-citation" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex flex-col justify-end">
+      <div class="w-full bg-[var(--app-surface)] border-t border-[var(--app-border)] rounded-t-3xl p-4 space-y-3.5 animate-sheet-up max-h-[80vh] overflow-y-auto">
+        <!-- Handle Bar -->
+        <div class="w-12 h-1.5 bg-zinc-600 rounded-full mx-auto cursor-pointer" onclick="closeCitationInspector()"></div>
+        
+        <div class="flex items-center justify-between border-b border-[var(--app-border-subtle)] pb-2">
+          <div class="flex items-center space-x-2">
+            <div class="w-7 h-7 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-quote-left"></i>
+            </div>
+            <h3 id="sheet-citation-title" class="font-bold text-xs text-[var(--app-text-primary)]">Kutipan Asli Dokumen</h3>
+          </div>
+          <button onclick="closeCitationInspector()" class="w-7 h-7 rounded-full hover:bg-[var(--app-surface-variant)] text-[var(--app-text-tertiary)] flex items-center justify-center">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <div id="sheet-citation-body" class="text-xs text-[var(--app-text-secondary)] space-y-2 text-left leading-relaxed">
+          <!-- Populated by JS -->
+        </div>
+
+        <button onclick="closeCitationInspector()" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition cursor-pointer">
+          Tutup Sitasi
+        </button>
+      </div>
+    </div>
+
+    <!-- BOTTOM SHEET: AI MODEL PICKER -->
+    <div id="sheet-model-picker" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex flex-col justify-end">
+      <div class="w-full bg-[var(--app-surface)] border-t border-[var(--app-border)] rounded-t-3xl p-4 space-y-3 animate-sheet-up max-h-[80vh] overflow-y-auto">
+        <!-- Handle Bar -->
+        <div class="w-12 h-1.5 bg-zinc-600 rounded-full mx-auto cursor-pointer" onclick="closeModelPickerSheet()"></div>
+        
+        <div class="flex items-center justify-between border-b border-[var(--app-border-subtle)] pb-2 text-left">
+          <div>
+            <h3 class="font-bold text-sm text-[var(--app-text-primary)]">Pilih Model AI Router</h3>
+            <span class="text-[11px] text-[var(--app-text-tertiary)]">Auto-failover aktif otomatis jika kuota model habis</span>
+          </div>
+          <button onclick="closeModelPickerSheet()" class="w-7 h-7 rounded-full hover:bg-[var(--app-surface-variant)] text-[var(--app-text-tertiary)] flex items-center justify-center">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <div class="space-y-2 text-left text-xs">
+          <!-- Model 1: Gemini -->
+          <button onclick="selectAiModel('Gemini 1.5', '1.500 req/hari &bull; 1M Context Free')" class="w-full p-3 rounded-2xl border-2 border-blue-600 bg-blue-600/10 flex items-center justify-between transition cursor-pointer">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-brands fa-google text-blue-500 text-base"></i>
+              <div>
+                <div class="font-bold text-[var(--app-text-primary)]">Google Gemini 1.5 Flash</div>
+                <div class="text-[10px] text-[var(--app-text-tertiary)]">1.500 req/hari &bull; 1 JUTA Token Konteks</div>
+              </div>
+            </div>
+            <i class="fa-solid fa-circle-check text-blue-500 text-sm"></i>
+          </button>
+
+          <!-- Model 2: Groq -->
+          <button onclick="selectAiModel('Groq Llama 3.3', 'Fast Inference &bull; Llama 3.3 70B Versatile')" class="w-full p-3 rounded-2xl border border-[var(--app-border)] hover:bg-[var(--app-surface-variant)] flex items-center justify-between transition cursor-pointer">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-solid fa-bolt text-amber-500 text-base"></i>
+              <div>
+                <div class="font-bold text-[var(--app-text-primary)]">Groq Cloud (Llama 3.3 70B)</div>
+                <div class="text-[10px] text-[var(--app-text-tertiary)]">Inference Kilat &bull; Auto Backup</div>
+              </div>
+            </div>
+          </button>
+
+          <!-- Model 3: 9Router -->
+          <button onclick="selectAiModel('9Router Lokal', '100% Offline &bull; OpenAI Compatible')" class="w-full p-3 rounded-2xl border border-[var(--app-border)] hover:bg-[var(--app-surface-variant)] flex items-center justify-between transition cursor-pointer">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-solid fa-server text-purple-400 text-base"></i>
+              <div>
+                <div class="font-bold text-[var(--app-text-primary)]">9Router / OmniRoute Lokal</div>
+                <div class="text-[10px] text-[var(--app-text-tertiary)]">Bridge Server Laptop &bull; Offline Ready</div>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL PRATINJAU DOKUMEN LAPTOP -->
+    <div id="modal-preview-doc" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="w-full max-w-sm rounded-3xl bg-[var(--app-surface)] border border-[var(--app-border)] shadow-2xl p-4 space-y-3 text-left animate-fade-in">
+        <div class="flex items-center justify-between border-b border-[var(--app-border-subtle)] pb-2">
+          <div class="flex items-center space-x-2">
+            <i class="fa-regular fa-file-lines text-blue-500"></i>
+            <span id="preview-doc-title" class="font-bold text-xs text-[var(--app-text-primary)] truncate max-w-[200px]">Pratinjau Berkas</span>
+          </div>
+          <button onclick="document.getElementById('modal-preview-doc').classList.add('hidden')" class="w-7 h-7 rounded-full hover:bg-[var(--app-surface-variant)] text-[var(--app-text-tertiary)] flex items-center justify-center">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <div id="preview-doc-content" class="text-xs text-[var(--app-text-secondary)] leading-relaxed max-h-56 overflow-y-auto p-2 rounded-xl bg-[var(--app-surface-variant)] font-mono">
+          <!-- Populated by JS -->
+        </div>
+
+        <button onclick="document.getElementById('modal-preview-doc').classList.add('hidden')" class="w-full py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold">
+          Tutup Pratinjau
+        </button>
+      </div>
+    </div>
+
+    <!-- FLOATING TOAST NOTIFICATION -->
+    <div id="mobile-toast" class="fixed top-12 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-full bg-slate-900/95 border border-slate-700 text-white text-xs font-medium shadow-2xl flex items-center space-x-2 transition-all duration-300 -translate-y-16 opacity-0 pointer-events-none">
+      <i id="mobile-toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+      <span id="mobile-toast-msg">Notifikasi</span>
+    </div>
+
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT LOGIC & MOBILE APP CONTROLLER                 -->
+  <!-- ======================================================== -->
+  <script>
+    // 1. Clock Updater
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      const el = document.getElementById('mobile-clock');
+      if (el) el.textContent = `${hours}:${mins}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 2. Viewport Frame Mode Toggle (Desktop Preview Controller)
+    let isFullMode = false;
+    function toggleViewportMode() {
+      const container = document.getElementById('mobile-app-container');
+      const btnText = document.getElementById('frame-mode-text');
+      isFullMode = !isFullMode;
+      if (isFullMode) {
+        container.classList.remove('frame-mode');
+        container.classList.add('full-mode');
+        btnText.textContent = "Bingkai HP";
+      } else {
+        container.classList.remove('full-mode');
+        container.classList.add('frame-mode');
+        btnText.textContent = "Layar Penuh";
+      }
+    }
+
+    // 3. Tab Navigation Controller
+    let currentTab = 'chat';
+    function switchMobileTab(tab) {
+      currentTab = tab;
+      
+      // Hide all views
+      ['chat', 'files', 'citations', 'settings'].forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const btn = document.getElementById(`nav-btn-${t}`);
+        if (view) view.classList.add('hidden');
+        if (btn) {
+          btn.className = "flex-1 py-1 flex flex-col items-center space-y-1 text-[var(--app-text-tertiary)] hover:text-[var(--app-text-primary)] transition cursor-pointer relative";
+          const iconWrap = btn.querySelector('div');
+          if (iconWrap) iconWrap.classList.remove('bg-blue-500/15');
+        }
+      });
+
+      // Show active view
+      const activeView = document.getElementById(`view-${tab}`);
+      const activeBtn = document.getElementById(`nav-btn-${tab}`);
+      if (activeView) activeView.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.className = "flex-1 py-1 flex flex-col items-center space-y-1 text-blue-500 transition cursor-pointer relative";
+        const iconWrap = activeBtn.querySelector('div');
+        if (iconWrap) iconWrap.classList.add('bg-blue-500/15');
+      }
+    }
+
+    // 4. Chat Input & Grounded Response Simulation
+    function fillAndSendPrompt(text) {
+      document.getElementById('mobile-chat-input').value = text;
+      handleSendChat(new Event('submit'));
+    }
+
+    function handleSendChat(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('mobile-chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const container = document.getElementById('dynamic-chat-container');
+      
+      // 1. Append User Message
+      const userBubble = document.createElement('div');
+      userBubble.className = "flex justify-end";
+      userBubble.innerHTML = `
+        <div class="max-w-[82%] px-4 py-2.5 rounded-2xl rounded-tr-sm bg-blue-600 text-white text-xs leading-relaxed shadow-sm">
+          ${escapeHtml(text)}
+        </div>
+      `;
+      container.appendChild(userBubble);
+      input.value = '';
+
+      // Scroll to bottom
+      const stream = document.getElementById('chat-stream-box');
+      stream.scrollTop = stream.scrollHeight;
+
+      // 2. Typing indicator
+      const typingEl = document.createElement('div');
+      typingEl.className = "flex justify-start space-x-2";
+      typingEl.innerHTML = `
+        <div class="w-7 h-7 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xs shrink-0 mt-0.5">
+          <i class="fa-solid fa-robot text-[11px]"></i>
+        </div>
+        <div class="p-3 rounded-2xl bg-[var(--app-surface)] border border-[var(--app-border)] text-xs text-[var(--app-text-tertiary)] flex items-center space-x-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" style="animation-delay: 0.15s"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" style="animation-delay: 0.3s"></span>
+        </div>
+      `;
+      container.appendChild(typingEl);
+      stream.scrollTop = stream.scrollHeight;
+
+      // 3. Simulated Response
+      setTimeout(() => {
+        container.removeChild(typingEl);
+
+        const aiBubble = document.createElement('div');
+        aiBubble.className = "flex justify-start space-x-2";
+        aiBubble.innerHTML = `
+          <div class="w-7 h-7 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-sm">
+            <i class="fa-solid fa-robot text-[11px]"></i>
+          </div>
+          <div class="max-w-[88%] space-y-2 text-left">
+            <div class="p-3.5 rounded-2xl rounded-tl-sm bg-[var(--app-surface)] border border-[var(--app-border)] text-xs text-[var(--app-text-primary)] leading-relaxed space-y-2 shadow-xs">
+              <p>
+                Berdasarkan sintesis dokumen perkuliahan di laptop Anda:
+              </p>
+              <p>
+                Kueri Anda dianalisis menggunakan <strong>Google Gemini 1.5 Flash</strong> dengan grounded context dari berkas <em>Slide_Sistem_Terdistribusi</em> 
+                <button onclick="openCitationInspector(1)" class="inline-flex items-center px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-500 font-bold text-[10px] ml-1">[1]</button>.
+                Logika perutean memastikan latensi pengerjaan tetap berada di bawah 1 detik tanpa kehilangan metadata berkas.
+              </p>
+              <div class="pt-1.5 border-t border-[var(--app-border-subtle)] flex items-center space-x-2 text-[10px] text-[var(--app-text-tertiary)]">
+                <span>Terverifikasi dari:</span>
+                <button onclick="openCitationInspector(1)" class="text-blue-400 hover:underline">Slide_Sistem.pdf (Hal 14)</button>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(aiBubble);
+        stream.scrollTop = stream.scrollHeight;
+      }, 900);
+    }
+
+    // 5. Citation Bottom Sheet Handler
+    const CITATIONS_DB = {
+      1: {
+        title: "Slide_Sistem_Terdistribusi_Pertemuan_03.pdf (Halaman 14)",
+        text: "Kutipan Dokumen: 'Birrell & Nelson (1984) memperkenalkan Remote Procedure Call (RPC) sebagai abstraksi transfer pesan. Namun RPC memiliki kelemahan transparansi semu karena latency jaringan dan kemungkinan partial failures.'",
+        meta: "Ekstraksi Chunks: 42 chunks &bull; Skor Kosinus: 0.963 &bull; Grounded By: PDFParser v2"
+      },
+      2: {
+        title: "Ringkasan_RPC_dan_Failover_Architecture.docx (Bab 2)",
+        text: "Kutipan Dokumen: 'NoteRoute Heuristic Router mendeteksi respons HTTP 429 dari upstream server, kemudian melakukan transisi ke provider cadangan dengan konteks grounded dokumen utuh.'",
+        meta: "Ekstraksi Chunks: 18 chunks &bull; Skor Kosinus: 0.941 &bull; Grounded By: DocxIngest"
+      }
+    };
+
+    function openCitationInspector(id) {
+      const sheet = document.getElementById('sheet-citation');
+      const body = document.getElementById('sheet-citation-body');
+      const title = document.getElementById('sheet-citation-title');
+      const item = CITATIONS_DB[id] || CITATIONS_DB[1];
+
+      title.textContent = `Sitasi [${id}] Terverifikasi`;
+      body.innerHTML = `
+        <div class="font-bold text-xs text-blue-400">${item.title}</div>
+        <p class="p-3 rounded-xl bg-[var(--app-surface-variant)] text-[11px] text-[var(--app-text-secondary)] italic border-l-2 border-blue-500">
+          ${item.text}
+        </p>
+        <div class="text-[10px] text-[var(--app-text-tertiary)] font-mono">${item.meta}</div>
+      `;
+
+      sheet.classList.remove('hidden');
+    }
+
+    function closeCitationInspector() {
+      document.getElementById('sheet-citation').classList.add('hidden');
+    }
+
+    // 6. Download File Simulation to Phone
+    function downloadFileToPhone(id, filename) {
+      const wrap = document.getElementById(`prog-wrap-${id}`);
+      const bar = document.getElementById(`prog-bar-${id}`);
+      const pct = document.getElementById(`prog-pct-${id}`);
+      if (!wrap || !bar || !pct) return;
+
+      wrap.classList.remove('hidden');
+      bar.style.width = '0%';
+      pct.textContent = '0%';
+
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 25) + 15;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+          bar.style.width = '100%';
+          pct.textContent = '100%';
+          setTimeout(() => {
+            wrap.classList.add('hidden');
+            showToast('Berhasil Diunduh!', `${filename} tersimpan di folder Download HP.`);
+          }, 400);
+        } else {
+          bar.style.width = `${progress}%`;
+          pct.textContent = `${progress}%`;
+        }
+      }, 150);
+    }
+
+    // 7. Preview File Text
+    function previewFileText(title, content) {
+      const modal = document.getElementById('modal-preview-doc');
+      document.getElementById('preview-doc-title').textContent = title;
+      document.getElementById('preview-doc-content').textContent = content;
+      modal.classList.remove('hidden');
+    }
+
+    // 8. Model Switcher Sheet
+    function openModelPickerSheet() {
+      document.getElementById('sheet-model-picker').classList.remove('hidden');
+    }
+
+    function closeModelPickerSheet() {
+      document.getElementById('sheet-model-picker').classList.add('hidden');
+    }
+
+    function selectAiModel(name, desc) {
+      document.getElementById('active-model-name').textContent = name;
+      closeModelPickerSheet();
+      showToast('Model AI Aktif', `Router kini menggunakan ${name}`);
+    }
+
+    // 9. Sync Laptop Simulation
+    function simulateSyncLaptopFiles() {
+      const icon = document.getElementById('sync-icon');
+      if (icon) icon.classList.add('fa-spin');
+      showToast('Sinkronisasi Berjalan', 'Memeriksa berkas baru di laptop Zakky...');
+      setTimeout(() => {
+        if (icon) icon.classList.remove('fa-spin');
+        showToast('Sinkronisasi Selesai', '4 berkas laptop telah mutakhir.');
+      }, 1200);
+    }
+
+    // 10. Studio AI Generators
+    function generateStudioSummary() {
+      const box = document.getElementById('studio-output-box');
+      const title = document.getElementById('studio-output-title');
+      const content = document.getElementById('studio-output-content');
+      
+      title.textContent = "Catatan Kilat: Ringkasan Sistem Terdistribusi";
+      content.innerHTML = `
+        <ul class="space-y-1.5 pl-1">
+          <li><strong>1. Karakteristik:</strong> Concurrency of components, lack of a global clock, independent failures of components.</li>
+          <li><strong>2. RPC Abstraction:</strong> Client Stub melakukan marshaling, jaringan mentransmisi paket, Server Skeleton unmarshaling & invoke target function.</li>
+          <li><strong>3. Dynamic Failover:</strong> Auto-failover NoteRoute menjamin ketersediaan continuous grounded chat tanpa interupsi kuota.</li>
+        </ul>
+      `;
+      box.classList.remove('hidden');
+      box.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function generateStudioQuiz() {
+      const box = document.getElementById('studio-output-box');
+      const title = document.getElementById('studio-output-title');
+      const content = document.getElementById('studio-output-content');
+      
+      title.textContent = "Kuis 3 Soal: Uji Pemahaman Mandiri";
+      content.innerHTML = `
+        <div class="space-y-2">
+          <div>
+            <p class="font-bold text-[var(--app-text-primary)]">1. Siapa pencetus awal konsep RPC pada tahun 1984?</p>
+            <p class="text-[11px] text-emerald-400 font-semibold mt-0.5">&check; Jawaban: Birrell & Nelson</p>
+          </div>
+          <div>
+            <p class="font-bold text-[var(--app-text-primary)]">2. Status HTTP apa yang memicu failover otomatis di NoteRoute?</p>
+            <p class="text-[11px] text-emerald-400 font-semibold mt-0.5">&check; Jawaban: HTTP 429 (Too Many Requests / Rate Limit)</p>
+          </div>
+          <div>
+            <p class="font-bold text-[var(--app-text-primary)]">3. Database cloud apa yang dipakai untuk metadata berkas?</p>
+            <p class="text-[11px] text-emerald-400 font-semibold mt-0.5">&check; Jawaban: MongoDB Atlas</p>
+          </div>
+        </div>
+      `;
+      box.classList.remove('hidden');
+      box.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // 11. Toast Utility
+    let toastTimeout;
+    function showToast(title, msg) {
+      const toast = document.getElementById('mobile-toast');
+      const msgEl = document.getElementById('mobile-toast-msg');
+      msgEl.textContent = `${title}: ${msg}`;
+      toast.classList.remove('-translate-y-16', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('-translate-y-16', 'opacity-0', 'pointer-events-none');
+      }, 3000);
+    }
+
+    // 12. Theme Toggle
+    function toggleMobileTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById('theme-toggle-icon');
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        html.classList.add('light');
+        if (icon) {
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        }
+      } else {
+        html.classList.remove('light');
+        html.classList.add('dark');
+        if (icon) {
+          icon.classList.remove('fa-sun');
+          icon.classList.add('fa-moon');
+        }
+      }
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+  </script>
+</body>
+</html>
