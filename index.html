@@ -1283,13 +1283,14 @@
             </div>
           </div>
           <div class="pt-6 mt-4 border-t border-[var(--nlm-border-subtle)]">
-            <a
-              href="landing/index.html"
-              class="w-full py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center justify-center space-x-2 transition shadow-sm"
+            <button
+              type="button"
+              onclick="handleOpenWebClick(event)"
+              class="w-full py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center justify-center space-x-2 transition shadow-sm cursor-pointer"
             >
               <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
               <span>Buka NoteRoute Web</span>
-            </a>
+            </button>
           </div>
         </div>
 
@@ -1319,17 +1320,17 @@
               <p
                 class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed mt-1"
               >
-                Asisten cerdas portabel dengan tampilan adaptif khas Android NotebookLM, simulasi unduh berkas ke penyimpanan HP, dan router AI hemat kuota.
+                Asisten cerdas portabel dengan tampilan adaptif khas Android NotebookLM, unduh berkas langsung ke memori HP, dan router AI hemat kuota.
               </p>
             </div>
           </div>
           <div class="pt-6 mt-4 border-t border-[var(--nlm-border-subtle)]">
             <a
-              href="docs/android.html"
-              class="w-full py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center space-x-2 transition shadow-sm"
+              href="#panduan"
+              class="w-full py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center space-x-2 transition shadow-sm cursor-pointer"
             >
-              <i class="fa-brands fa-android text-sm"></i>
-              <span>Buka Versi Android</span>
+              <i class="fa-solid fa-download text-xs"></i>
+              <span>Unduh Versi Android</span>
             </a>
           </div>
         </div>
@@ -1372,6 +1373,7 @@
             <button
               id="tab-btn-laptop"
               type="button"
+              onclick="switchGuideTab('laptop')"
               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 text-white shadow-xs transition cursor-pointer"
             >
               <i class="fa-solid fa-laptop mr-1.5"></i>1. Setup Laptop
@@ -1379,6 +1381,7 @@
             <button
               id="tab-btn-apikey"
               type="button"
+              onclick="switchGuideTab('apikey')"
               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
             >
               <i class="fa-solid fa-key mr-1.5"></i>2. API Key Gratis
@@ -1386,6 +1389,7 @@
             <button
               id="tab-btn-9router"
               type="button"
+              onclick="switchGuideTab('9router')"
               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
             >
               <i class="fa-solid fa-network-wired mr-1.5"></i>3. 9Router Lokal
@@ -1393,6 +1397,7 @@
             <button
               id="tab-btn-cloud"
               type="button"
+              onclick="switchGuideTab('cloud')"
               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
             >
               <i class="fa-solid fa-cloud mr-1.5"></i>4. Akun GCP, Alwaysdata &amp; MongoDB
@@ -1464,12 +1469,9 @@
               <span>Download APK (app-release.apk)</span>
             </a>
 
-            <div class="flex items-center justify-between text-[11px] text-[var(--nlm-text-tertiary)] px-2">
+            <div class="flex items-center justify-center text-[11px] text-[var(--nlm-text-tertiary)] px-2">
               <a href="https://github.com/CRootAgent/noteroute/releases" target="_blank" class="hover:text-blue-500 transition underline">
                 <i class="fa-brands fa-github mr-1"></i>Daftar Rilis GitHub
-              </a>
-              <a href="docs/android.html" class="hover:text-emerald-500 transition underline">
-                <i class="fa-solid fa-mobile-screen mr-1"></i>Simulasi HP Web
               </a>
             </div>
           </div>
@@ -2256,6 +2258,137 @@
           window.location.href = "landing/index.html";
         } else {
           openAuthModal("signup");
+        }
+      }
+
+      function handleOpenWebClick(e) {
+        if (e) e.preventDefault();
+        if (currentUser && currentUser.isLoggedIn) {
+          window.location.href = "landing/index.html";
+        } else {
+          showToast(
+            "Pendaftaran Diperlukan",
+            "Silakan daftar akun terlebih dahulu untuk mengakses NoteRoute Web."
+          );
+          openAuthModal("signup");
+        }
+      }
+
+      function switchGuideTab(tab) {
+        const tabLaptop = document.getElementById("tab-btn-laptop");
+        const tabApiKey = document.getElementById("tab-btn-apikey");
+        const tab9Router = document.getElementById("tab-btn-9router");
+        const tabCloud = document.getElementById("tab-btn-cloud");
+        const box = document.getElementById("guide-box");
+        if (!box) return;
+
+        const inactiveClass =
+          "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer";
+        const activeClass =
+          "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 text-white shadow-xs transition cursor-pointer";
+
+        [tabLaptop, tabApiKey, tab9Router, tabCloud].forEach((btn) => {
+          if (btn) btn.className = inactiveClass;
+        });
+
+        if (tab === "laptop") {
+          if (tabLaptop) tabLaptop.className = activeClass;
+          box.innerHTML = `
+            <h3 class="font-bold text-[var(--nlm-text-primary)] text-base sm:text-lg mb-3">
+              Langkah 1: Setup Agen Sinkronisasi Dokumen di Laptop
+            </h3>
+            <p class="text-xs sm:text-sm text-[var(--nlm-text-secondary)] mb-4 leading-relaxed">
+              Agen laptop bertugas membaca folder materi kuliah (PDF, DOCX, TXT, MD) dan menyinkronkan berkas ke cloud backend NoteRoute agar bisa diakses dan diunduh dari HP Android Anda.
+            </p>
+            <div class="bg-slate-900 text-slate-200 p-4 rounded-2xl text-xs font-mono overflow-x-auto mb-4 border border-slate-800">
+              <code># 1. Masuk ke direktori server NoteRoute<br>cd noteroute/server<br><br># 2. Pasang dependensi &amp; jalankan server Express<br>npm install<br>npm start</code>
+            </div>
+            <p class="text-xs text-[var(--nlm-text-tertiary)] flex items-center space-x-2">
+              <i class="fa-solid fa-circle-check text-emerald-500"></i>
+              <span>Folder dokumen Anda otomatis terindeks dan siap diakses dari HP.</span>
+            </p>
+          `;
+        } else if (tab === "apikey") {
+          if (tabApiKey) tabApiKey.className = activeClass;
+          box.innerHTML = `
+            <h3 class="font-bold text-[var(--nlm-text-primary)] text-base sm:text-lg mb-3">
+              Langkah 2: Dapatkan API Key Gratis (Rp 0)
+            </h3>
+            <p class="text-xs sm:text-sm text-[var(--nlm-text-secondary)] mb-4 leading-relaxed">
+              NoteRoute memanfaatkan kuota inferensi gratis dari Google dan Groq dengan kapasitas sangat besar:
+            </p>
+            <div class="space-y-3 mb-4 text-xs sm:text-sm">
+              <div class="p-3 rounded-2xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)]">
+                <strong class="text-indigo-600 dark:text-indigo-400">Google Gemini 1.5 Flash:</strong> Buka <a href="https://aistudio.google.com" target="_blank" class="underline font-semibold text-[var(--nlm-text-primary)]">aistudio.google.com</a> &bull; Buat API Key &bull; Kuota: 1.500 request/hari, 1 JUTA token context gratis!
+              </div>
+              <div class="p-3 rounded-2xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)]">
+                <strong class="text-violet-600 dark:text-violet-400">Groq Cloud (Llama 3.3 70B):</strong> Buka <a href="https://console.groq.com" target="_blank" class="underline font-semibold text-[var(--nlm-text-primary)]">console.groq.com</a> &bull; Buat API Key gratis &bull; Kecepatan respon ultra-kilat 300+ token/detik.
+              </div>
+            </div>
+            <p class="text-xs text-[var(--nlm-text-tertiary)] flex items-center space-x-2">
+              <i class="fa-solid fa-circle-check text-emerald-500"></i>
+              <span>Kunci API disimpan aman di file .env backend atau pengaturan aplikasi HP.</span>
+            </p>
+          `;
+        } else if (tab === "9router") {
+          if (tab9Router) tab9Router.className = activeClass;
+          box.innerHTML = `
+            <h3 class="font-bold text-[var(--nlm-text-primary)] text-base sm:text-lg mb-3">
+              Langkah 3: Menghubungkan ke 9Router / OmniRoute Lokal
+            </h3>
+            <p class="text-xs sm:text-sm text-[var(--nlm-text-secondary)] mb-4 leading-relaxed">
+              Jika Anda menjalankan daemon 9Router atau OmniRoute lokal di laptop pada port <code>20128</code>:
+            </p>
+            <div class="bg-slate-900 text-slate-200 p-4 rounded-2xl text-xs font-mono overflow-x-auto mb-4 border border-slate-800">
+              <code># 1. Pastikan 9Router daemon berjalan di laptop<br>9router start --port 20128<br><br># 2. Endpoint OpenAI-compatible otomatis aktif di:<br>http://localhost:20128/v1/chat/completions</code>
+            </div>
+            <p class="text-xs text-[var(--nlm-text-tertiary)] flex items-center space-x-2">
+              <i class="fa-solid fa-circle-check text-emerald-500"></i>
+              <span>NoteRoute Core Router akan mendeteksi instance lokal ini dan menjadikannya salah satu target inferensi hemat biaya.</span>
+            </p>
+          `;
+        } else if (tab === "cloud") {
+          if (tabCloud) tabCloud.className = activeClass;
+          box.innerHTML = `
+            <h3 class="font-bold text-[var(--nlm-text-primary)] text-base sm:text-lg mb-3">
+              Langkah 4: Tata Cara Pembuatan Akun Cloud (GCP, Alwaysdata &amp; MongoDB)
+            </h3>
+            <p class="text-xs sm:text-sm text-[var(--nlm-text-secondary)] mb-4 leading-relaxed">
+              Ikuti tiga langkah mudah berikut untuk mengonfigurasi layanan cloud resmi NoteRoute:
+            </p>
+            <div class="space-y-3.5 mb-4 text-xs sm:text-sm">
+              <div class="p-3.5 rounded-2xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] space-y-1.5">
+                <div class="flex items-center space-x-2">
+                  <span class="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold text-[11px]">1. Google Cloud Platform (GCP) / AI Studio</span>
+                </div>
+                <p class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+                  Buka <a href="https://aistudio.google.com" target="_blank" class="text-blue-600 dark:text-blue-400 font-semibold underline">aistudio.google.com</a> &bull; Masuk dengan akun Google Anda &bull; Klik <em>"Get API Key"</em> &bull; Buat kunci pada project GCP default Anda. Kuota: <strong>1.500 request/hari gratis</strong> dengan 1 Juta token context window untuk membaca dokumen PDF kuliah.
+                </p>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] space-y-1.5">
+                <div class="flex items-center space-x-2">
+                  <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">2. Alwaysdata (Hosting Cloud Backend)</span>
+                </div>
+                <p class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+                  Daftar akun gratis di <a href="https://admin.alwaysdata.com" target="_blank" class="text-emerald-600 dark:text-emerald-400 font-semibold underline">admin.alwaysdata.com</a> &bull; Buka menu <em>Web &gt; Sites</em> &bull; Tambahkan situs baru bertipe <strong>Node.js (v20.x)</strong> &bull; Masukkan repositori <code>CRootAgent/noteroute</code> &bull; Hubungkan domain publik HTTPS: <code>https://noteroute.alwaysdata.net/api</code>.
+                </p>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] space-y-1.5">
+                <div class="flex items-center space-x-2">
+                  <span class="px-2 py-0.5 rounded-md bg-teal-500/10 text-teal-600 dark:text-teal-400 font-bold text-[11px]">3. MongoDB Atlas (Cloud Database)</span>
+                </div>
+                <p class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+                  Daftar di <a href="https://www.mongodb.com/atlas" target="_blank" class="text-teal-600 dark:text-teal-400 font-semibold underline">mongodb.com/atlas</a> &bull; Buat cluster gratis <strong>M0 Shared</strong> &bull; Buat Database User &amp; Password &bull; Whitelist IP Address ke <code>0.0.0.0/0</code> &bull; Salin Connection String <code>mongodb+srv://...</code> ke dalam berkas <code>.env</code> server NoteRoute.
+                </p>
+              </div>
+            </div>
+            <p class="text-xs text-[var(--nlm-text-tertiary)] flex items-center space-x-2">
+              <i class="fa-solid fa-circle-check text-emerald-500"></i>
+              <span>Setelah ketiga kredensial terpasang, backend cloud Alwaysdata akan otomatis tersambung ke MongoDB Atlas dan API Gemini.</span>
+            </p>
+          `;
         }
       }
 

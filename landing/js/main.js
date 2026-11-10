@@ -188,8 +188,11 @@ function setupGuideTabs() {
   }
 }
 
-// Inisialisasi seluruh komponen saat DOM siap
-document.addEventListener("DOMContentLoaded", () => {
+// Inisialisasi komponen rilis saat DOM siap
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    loadLatestReleaseInfo();
+  });
+} else {
   loadLatestReleaseInfo();
-  setupGuideTabs();
-});
+}

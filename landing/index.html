@@ -2312,6 +2312,21 @@
 
     // 1. Inisialisasi Tema & Profil & Custom API & Prioritas
     function initApp() {
+      // Auth Guard: Belum daftar / login tidak bisa masuk ke workspace NoteRoute Web
+      let isAuthed = false;
+      try {
+        const raw = localStorage.getItem('noteroute_auth_user');
+        if (raw) {
+          const u = JSON.parse(raw);
+          if (u && u.isLoggedIn) isAuthed = true;
+        }
+      } catch (e) {}
+
+      if (!isAuthed) {
+        window.location.replace('../index.html?auth=signup');
+        return;
+      }
+
       initTheme();
       loadStoredProfile();
       updateSortMenuUI();
