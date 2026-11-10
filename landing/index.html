@@ -442,7 +442,7 @@
       <!-- USER PROFILE AVATAR (IDENTIK DENGAN WORKSPACE NOTEBOOK) -->
       <div id="topbar-auth-container" class="relative">
         <button onclick="toggleProfileDropdown()" id="topbar-avatar-btn" class="w-8 h-8 rounded-full bg-indigo-600 hover:ring-2 hover:ring-blue-500 text-white font-bold text-xs flex items-center justify-center transition shadow-xs overflow-hidden cursor-pointer" title="Menu Akun &amp; Pengaturan">
-          <span id="topbar-avatar-text">AZ</span>
+          <span id="topbar-avatar-text">U</span>
           <img id="topbar-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover hidden">
         </button>
 
@@ -450,12 +450,12 @@
         <div id="profile-dropdown-menu" class="hidden absolute right-0 mt-2 w-72 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-xl p-2 z-50 animate-dropdown">
           <div class="p-3 border-b border-[var(--nlm-border-subtle)] flex items-center space-x-3">
             <div id="dropdown-avatar-box" class="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0 overflow-hidden">
-              <span id="dropdown-avatar-text">AZ</span>
+              <span id="dropdown-avatar-text">U</span>
               <img id="dropdown-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover hidden">
             </div>
             <div class="truncate">
-              <div id="topbar-user-name" class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">Ahmad Zakky Nurfauzan</div>
-              <div id="topbar-user-email" class="text-[11px] text-[var(--nlm-text-tertiary)] truncate">ahmadzakky@ulbi.ac.id</div>
+              <div id="topbar-user-name" class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">Pengguna</div>
+              <div id="topbar-user-email" class="text-[11px] text-[var(--nlm-text-tertiary)] truncate">user@noteroute.app</div>
               <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5 flex items-center space-x-1">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                 <span>Akun Cloud &bull; Aktif</span>
@@ -553,9 +553,10 @@
 
       <!-- Right: + Notebook baru (Primary Pill Button Khas NotebookLM) -->
       <div>
-        <button onclick="openNewNotebookModal()" class="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-[var(--nlm-btn-primary)] hover:bg-[var(--nlm-btn-primary-hover)] text-white font-semibold text-xs sm:text-sm flex items-center space-x-2 shadow-sm shadow-blue-500/20 active:scale-95 transition-all">
+        <button onclick="openNewNotebookModal()" class="px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-full bg-[var(--nlm-btn-primary)] hover:bg-[var(--nlm-btn-primary-hover)] text-white font-semibold text-xs sm:text-sm flex items-center space-x-1.5 sm:space-x-2 shadow-sm shadow-blue-500/20 active:scale-95 transition-all">
           <i class="fa-solid fa-plus text-xs"></i>
-          <span>Notebook baru</span>
+          <span class="hidden sm:inline">Notebook baru</span>
+          <span class="sm:hidden text-xs">Baru</span>
         </button>
       </div>
 
@@ -1094,7 +1095,7 @@
             <div class="p-4 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
               <div class="relative">
                 <div id="settings-avatar-box" class="w-16 h-16 rounded-full bg-indigo-600 text-white font-bold text-xl flex items-center justify-center shadow-md overflow-hidden ring-2 ring-[var(--nlm-border)]">
-                  <span id="settings-avatar-text">AZ</span>
+                  <span id="settings-avatar-text">U</span>
                   <img id="settings-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover hidden">
                 </div>
               </div>
@@ -1121,11 +1122,11 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Nama Depan</label>
-                  <input type="text" id="prof-first-name" value="Ahmad" oninput="onFirstNameChange(this.value)" placeholder="Nama depan Anda" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-medium focus:border-blue-500 focus:outline-none transition">
+                  <input type="text" id="prof-first-name" value="" oninput="onFirstNameChange(this.value)" placeholder="Nama depan Anda" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-medium focus:border-blue-500 focus:outline-none transition">
                 </div>
                 <div>
                   <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Nama Belakang</label>
-                  <input type="text" id="prof-last-name" value="Zakky Nurfauzan" oninput="onLastNameChange(this.value)" placeholder="Nama belakang Anda" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-medium focus:border-blue-500 focus:outline-none transition">
+                  <input type="text" id="prof-last-name" value="" oninput="onLastNameChange(this.value)" placeholder="Nama belakang Anda" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-medium focus:border-blue-500 focus:outline-none transition">
                 </div>
               </div>
 
@@ -1135,12 +1136,12 @@
                     <label class="block font-medium text-[var(--nlm-text-tertiary)]">Nama Panggilan</label>
                     <span class="text-[9px] text-blue-600 dark:text-blue-400 font-semibold bg-blue-500/10 px-1.5 py-0.5 rounded">Otomatis dari Nama Depan</span>
                   </div>
-                  <input type="text" id="prof-nickname" value="Ahmad" readonly class="w-full bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-bold cursor-not-allowed opacity-90">
+                  <input type="text" id="prof-nickname" value="" readonly class="w-full bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-bold cursor-not-allowed opacity-90">
                   <span class="text-[10px] text-[var(--nlm-text-tertiary)] mt-1 block">Otomatis digunakan untuk sapaan AI dan sistem.</span>
                 </div>
                 <div>
                   <label class="block font-medium text-[var(--nlm-text-tertiary)] mb-1">Alamat Email</label>
-                  <input type="email" id="prof-email" value="ahmadzakky@ulbi.ac.id" oninput="onEmailChange(this.value)" placeholder="nama@email.com" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-medium focus:border-blue-500 focus:outline-none transition">
+                  <input type="email" id="prof-email" value="" oninput="onEmailChange(this.value)" placeholder="nama@email.com" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-medium focus:border-blue-500 focus:outline-none transition">
                 </div>
               </div>
 
@@ -2747,6 +2748,37 @@
       }
     }
 
+    function getInitialsFromName(firstName, lastName, fullName = "") {
+      const fn = (firstName || "").trim();
+      const ln = (lastName || "").trim();
+      if (fn && ln) {
+        return (fn[0] + ln[0]).toUpperCase();
+      }
+      if (fn) {
+        return (fn.length >= 2 ? fn.substring(0, 2) : fn[0]).toUpperCase();
+      }
+      const parts = (fullName || "").trim().split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      }
+      if (parts[0]) {
+        return (parts[0].length >= 2 ? parts[0].substring(0, 2) : parts[0][0]).toUpperCase();
+      }
+      return "U";
+    }
+
+    function resetAvatarImage() {
+      ['settings-avatar', 'topbar-avatar', 'dropdown-avatar'].forEach(id => {
+        const img = document.getElementById(id + '-img');
+        const txt = document.getElementById(id + '-text');
+        if (img && txt) {
+          img.src = '';
+          img.classList.add('hidden');
+          txt.classList.remove('hidden');
+        }
+      });
+    }
+
     // Profile handlers & localStorage sync
     function loadStoredProfile() {
       try {
@@ -2757,39 +2789,54 @@
           try { authUser = JSON.parse(authRaw); } catch(e){}
         }
 
+        let fn = '';
+        let ln = '';
+        let nickname = '';
+        let email = '';
+        let avatar = '';
+
         if (stored) {
-          const p = JSON.parse(stored);
-          if (p.firstName) document.getElementById('prof-first-name').value = p.firstName;
-          if (p.lastName) document.getElementById('prof-last-name').value = p.lastName;
-          if (p.nickname) document.getElementById('prof-nickname').value = p.nickname;
-          if (p.email) {
-            document.getElementById('prof-email').value = p.email;
-            document.getElementById('topbar-user-email').textContent = p.email;
+          try {
+            const p = JSON.parse(stored);
+            if (p) {
+              fn = p.firstName || '';
+              ln = p.lastName || '';
+              nickname = p.nickname || '';
+              email = p.email || '';
+              avatar = p.avatarDataUrl || '';
+            }
+          } catch(e){}
+        }
+
+        if (authUser && authUser.isLoggedIn) {
+          if (!fn) fn = authUser.firstName || '';
+          if (!ln) ln = authUser.lastName || '';
+          if (!fn && authUser.name) {
+            const parts = authUser.name.split(' ');
+            fn = parts[0] || '';
+            ln = parts.slice(1).join(' ') || '';
           }
-          if (p.avatarDataUrl) {
-            applyAvatarImage(p.avatarDataUrl);
-          } else if (authUser && authUser.avatar) {
-            applyAvatarImage(authUser.avatar);
-          } else {
-            updateHeaderUserIdentity();
-          }
-        } else if (authUser && authUser.isLoggedIn) {
-          const parts = (authUser.name || 'Pengguna').split(' ');
-          const fn = parts[0] || 'Pengguna';
-          const ln = parts.slice(1).join(' ') || '';
-          document.getElementById('prof-first-name').value = fn;
-          document.getElementById('prof-last-name').value = ln;
-          document.getElementById('prof-nickname').value = fn;
-          if (authUser.email) {
-            document.getElementById('prof-email').value = authUser.email;
-            document.getElementById('topbar-user-email').textContent = authUser.email;
-          }
-          if (authUser.avatar) {
-            applyAvatarImage(authUser.avatar);
-          } else {
-            updateHeaderUserIdentity();
-          }
+          if (!nickname) nickname = authUser.nickname || fn;
+          if (!email) email = authUser.email || '';
+          if (!avatar && authUser.avatar) avatar = authUser.avatar;
+        }
+
+        const fnInput = document.getElementById('prof-first-name');
+        const lnInput = document.getElementById('prof-last-name');
+        const nickInput = document.getElementById('prof-nickname');
+        const emailInput = document.getElementById('prof-email');
+        const topbarEmailEl = document.getElementById('topbar-user-email');
+
+        if (fnInput) fnInput.value = fn;
+        if (lnInput) lnInput.value = ln;
+        if (nickInput) nickInput.value = nickname || fn || 'Pengguna';
+        if (emailInput) emailInput.value = email;
+        if (topbarEmailEl) topbarEmailEl.textContent = email || 'user@noteroute.app';
+
+        if (avatar) {
+          applyAvatarImage(avatar);
         } else {
+          resetAvatarImage();
           updateHeaderUserIdentity();
         }
       } catch (e) {
@@ -3052,27 +3099,46 @@
     }
 
     function updateHeaderUserIdentity() {
-      const fn = document.getElementById('prof-first-name').value.trim();
-      const ln = document.getElementById('prof-last-name').value.trim();
-      const fullName = (fn + ' ' + ln).trim() || 'Ahmad Zakky Nurfauzan';
-      document.getElementById('topbar-user-name').textContent = fullName;
+      const fnInput = document.getElementById('prof-first-name');
+      const lnInput = document.getElementById('prof-last-name');
+      let fn = fnInput ? fnInput.value.trim() : '';
+      let ln = lnInput ? lnInput.value.trim() : '';
       
-      let initials = 'U';
-      if (fn && ln) {
-        initials = (fn[0] + ln[0]).toUpperCase();
-      } else if (fn) {
-        initials = fn.substring(0, 2).toUpperCase();
+      let authUser = null;
+      try {
+        const authRaw = localStorage.getItem('noteroute_auth_user');
+        if (authRaw) authUser = JSON.parse(authRaw);
+      } catch (e) {}
+
+      if (!fn && !ln && authUser) {
+        fn = authUser.firstName || '';
+        ln = authUser.lastName || '';
+        if (!fn && authUser.name) {
+          const parts = authUser.name.split(' ');
+          fn = parts[0] || '';
+          ln = parts.slice(1).join(' ') || '';
+        }
       }
-      document.getElementById('topbar-avatar-text').textContent = initials;
-      document.getElementById('dropdown-avatar-text').textContent = initials;
-      document.getElementById('settings-avatar-text').textContent = initials;
+
+      const fullName = (fn + ' ' + ln).trim() || (authUser && authUser.name) || 'Pengguna';
+      const topbarNameEl = document.getElementById('topbar-user-name');
+      if (topbarNameEl) topbarNameEl.textContent = fullName;
+      
+      // Ambil inisial nama depan dan nama belakang
+      const initials = getInitialsFromName(fn, ln, fullName);
+
+      const topAvatar = document.getElementById('topbar-avatar-text');
+      const dropAvatar = document.getElementById('dropdown-avatar-text');
+      const setAvatar = document.getElementById('settings-avatar-text');
+      if (topAvatar) topAvatar.textContent = initials;
+      if (dropAvatar) dropAvatar.textContent = initials;
+      if (setAvatar) setAvatar.textContent = initials;
 
       // Sync unauth vs auth topbar buttons in workspace
-      const authRaw = localStorage.getItem('noteroute_auth_user');
       const unauthContainer = document.getElementById('topbar-unauth-container');
       const authContainer = document.getElementById('topbar-auth-container');
       if (unauthContainer) {
-        if (!authRaw) {
+        if (!authUser) {
           unauthContainer.classList.remove('hidden');
           if (authContainer) authContainer.classList.add('hidden');
         } else {

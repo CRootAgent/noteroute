@@ -234,16 +234,25 @@
       @media (max-width: 768px) {
         .auth-slider-box {
           width: 100%;
-          max-width: 440px;
-          min-height: 540px;
-          max-height: 85vh;
+          max-width: 420px;
+          min-height: auto;
+          max-height: 88vh;
           overflow-y: auto;
+          border-radius: 20px;
+          -webkit-overflow-scrolling: touch;
+        }
+        .form-panel {
+          position: relative;
+          width: 100%;
+          height: auto;
+          min-height: auto;
+          padding: 1.25rem 1rem !important;
         }
         .sign-in-panel,
         .sign-up-panel {
           width: 100%;
           position: relative;
-          min-height: 480px;
+          min-height: auto;
         }
         .overlay-slider-container {
           display: none;
@@ -257,13 +266,13 @@
         .auth-slider-box.right-panel-active .sign-up-panel {
           transform: none;
           opacity: 1;
-          display: block;
+          display: flex;
         }
         .auth-slider-box:not(.right-panel-active) .sign-up-panel {
           display: none;
         }
         .auth-slider-box:not(.right-panel-active) .sign-in-panel {
-          display: block;
+          display: flex;
           opacity: 1;
           transform: none;
         }
@@ -411,7 +420,7 @@
                 class="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs overflow-hidden ring-2 ring-blue-500/30 hover:scale-105 transition cursor-pointer select-none"
                 title="Menu Profil Pengguna"
               >
-                <span id="nav-avatar-text">AZ</span>
+                <span id="nav-avatar-text">U</span>
                 <img
                   id="nav-avatar-img"
                   src=""
@@ -432,7 +441,7 @@
                     id="nav-user-fullname"
                     class="font-bold text-xs text-[var(--nlm-text-primary)] truncate"
                   >
-                    Ahmad Zakky
+                    Pengguna
                   </div>
                   <div
                     id="nav-user-email"
@@ -610,10 +619,10 @@
         </p>
 
         <!-- Action Buttons -->
-        <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 max-w-sm sm:max-w-none mx-auto">
           <button
             onclick="handleHeroCtaClick()"
-            class="px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-500 hover:from-blue-700 hover:via-indigo-700 hover:to-sky-600 text-white font-bold text-sm flex items-center space-x-2.5 shadow-lg shadow-blue-500/25 active:scale-95 transition-all cursor-pointer"
+            class="w-full sm:w-auto px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-500 hover:from-blue-700 hover:via-indigo-700 hover:to-sky-600 text-white font-bold text-sm flex items-center justify-center space-x-2.5 shadow-lg shadow-blue-500/25 active:scale-95 transition-all cursor-pointer"
           >
             <i class="fa-solid fa-bolt text-xs"></i>
             <span>Mulai Riset Gratis</span>
@@ -621,7 +630,7 @@
           <a
             id="btn-download-apk-hero"
             href="https://github.com/CRootAgent/noteroute/releases/latest/download/app-release.apk"
-            class="px-6 py-3 rounded-full border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-sm flex items-center space-x-2.5 transition shadow-xs"
+            class="w-full sm:w-auto px-6 py-3 rounded-full border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-sm flex items-center justify-center space-x-2.5 transition shadow-xs text-center"
             title="Unduh &amp; Coba Aplikasi Android NoteRoute Langsung (.apk)"
           >
             <i class="fa-brands fa-android text-base text-emerald-500"></i>
@@ -1379,13 +1388,13 @@
         
         <!-- Kolom Kiri: Tab Switcher Panduan (Langkah 1, 2, 3) -->
         <div class="lg:col-span-7 bg-[var(--nlm-surface)] p-6 sm:p-8 rounded-3xl border border-[var(--nlm-border)] shadow-sm">
-          <!-- Tab Navigation Buttons -->
-          <div class="flex flex-wrap gap-2 mb-6 border-b border-[var(--nlm-border-subtle)] pb-4">
+          <!-- Tab Navigation Buttons (Responsif: 2x2 di HP, Flex di Tablet/Desktop) -->
+          <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mb-6 border-b border-[var(--nlm-border-subtle)] pb-4">
             <button
               id="tab-btn-laptop"
               type="button"
               onclick="switchGuideTab('laptop')"
-              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 text-white shadow-xs transition cursor-pointer"
+              class="w-full sm:w-auto text-center sm:text-left px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 text-white shadow-xs transition cursor-pointer"
             >
               <i class="fa-solid fa-laptop mr-1.5"></i>1. Setup Laptop
             </button>
@@ -1393,7 +1402,7 @@
               id="tab-btn-apikey"
               type="button"
               onclick="switchGuideTab('apikey')"
-              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+              class="w-full sm:w-auto text-center sm:text-left px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
             >
               <i class="fa-solid fa-key mr-1.5"></i>2. API Key Gratis
             </button>
@@ -1401,7 +1410,7 @@
               id="tab-btn-9router"
               type="button"
               onclick="switchGuideTab('9router')"
-              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+              class="w-full sm:w-auto text-center sm:text-left px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
             >
               <i class="fa-solid fa-network-wired mr-1.5"></i>3. 9Router Lokal
             </button>
@@ -1409,9 +1418,10 @@
               id="tab-btn-cloud"
               type="button"
               onclick="switchGuideTab('cloud')"
-              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+              class="w-full sm:w-auto text-center sm:text-left px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+              title="Panduan Pembuatan Akun GCP, Alwaysdata & MongoDB"
             >
-              <i class="fa-solid fa-cloud mr-1.5"></i>4. Akun GCP, Alwaysdata &amp; MongoDB
+              <i class="fa-solid fa-cloud mr-1.5"></i>4. Cloud &amp; DB
             </button>
           </div>
 
@@ -1706,8 +1716,8 @@
 
               <!-- Inputs -->
               <div class="w-full space-y-2.5 text-left text-xs">
-                <!-- Pisahkan Nama Depan & Nama Belakang -->
-                <div class="grid grid-cols-2 gap-2">
+                <!-- Pisahkan Nama Depan & Nama Belakang (Responsif Mobile) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--nlm-text-tertiary)]">
                       <i class="fa-regular fa-user text-xs"></i>
@@ -1985,6 +1995,25 @@
         }
       }
 
+      function getInitialsFromName(firstName, lastName, fullName = "") {
+        const fn = (firstName || "").trim();
+        const ln = (lastName || "").trim();
+        if (fn && ln) {
+          return (fn[0] + ln[0]).toUpperCase();
+        }
+        if (fn) {
+          return (fn.length >= 2 ? fn.substring(0, 2) : fn[0]).toUpperCase();
+        }
+        const parts = (fullName || "").trim().split(/\s+/).filter(Boolean);
+        if (parts.length >= 2) {
+          return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+        if (parts[0]) {
+          return (parts[0].length >= 2 ? parts[0].substring(0, 2) : parts[0][0]).toUpperCase();
+        }
+        return "U";
+      }
+
       function renderLoggedInUI(user) {
         const unauthWrap = document.getElementById("nav-unauth-container");
         const authWrap = document.getElementById("nav-auth-container");
@@ -2005,18 +2034,8 @@
         if (nameEl) nameEl.textContent = user.name || "Pengguna NoteRoute";
         if (emailEl) emailEl.textContent = user.email || "user@noteroute.app";
 
-        // Avatar & Initials
-        let initials = "U";
-        if (user.firstName && user.lastName) {
-          initials = (user.firstName[0] + user.lastName[0]).toUpperCase();
-        } else {
-          const parts = (user.name || "").trim().split(" ");
-          if (parts.length >= 2) {
-            initials = (parts[0][0] + parts[1][0]).toUpperCase();
-          } else if (parts[0]) {
-            initials = parts[0].substring(0, 2).toUpperCase();
-          }
-        }
+        // Avatar & Inisial Nama Depan & Belakang Dinamis
+        const initials = getInitialsFromName(user.firstName, user.lastName, user.name);
 
         // Cek avatar dari user object atau noteroute-user-profile
         let avatarSrc = user.avatar || "";
@@ -2185,24 +2204,42 @@
           return;
         }
 
-        // Format name from email if not yet set
-        const derivedName = email
-          .split("@")[0]
-          .replace(/[._]/g, " ")
-          .replace(/\b\w/g, (l) => l.toUpperCase());
+        let existingFirstName = "";
+        let existingLastName = "";
+        let existingAvatar = "";
+        try {
+          const stored = localStorage.getItem("noteroute-user-profile");
+          if (stored) {
+            const p = JSON.parse(stored);
+            if (p && p.firstName) existingFirstName = p.firstName;
+            if (p && p.lastName) existingLastName = p.lastName;
+            if (p && p.avatarDataUrl) existingAvatar = p.avatarDataUrl;
+          }
+        } catch (e) {}
+
+        const derivedName = (existingFirstName || existingLastName)
+          ? (existingFirstName + (existingLastName ? " " + existingLastName : "")).trim()
+          : email
+              .split("@")[0]
+              .replace(/[._]/g, " ")
+              .replace(/\b\w/g, (l) => l.toUpperCase());
+
+        const initials = getInitialsFromName(existingFirstName, existingLastName, derivedName);
 
         const user = {
           name: derivedName,
+          firstName: existingFirstName,
+          lastName: existingLastName,
+          nickname: existingFirstName || derivedName,
           email: email,
-          avatar: "",
+          avatar: existingAvatar,
+          initials: initials,
           isLoggedIn: true,
           loginAt: Date.now(),
         };
 
         localStorage.setItem("noteroute_auth_user", JSON.stringify(user));
-
-        // Sync with profile storage for workspace
-        syncUserProfileStorage(user.name, user.email);
+        syncUserProfileStorage(existingFirstName || derivedName, existingLastName, email, false);
 
         currentUser = user;
         renderLoggedInUI(user);
@@ -2238,6 +2275,7 @@
         }
 
         const fullName = (firstName + (lastName ? " " + lastName : "")).trim();
+        const initials = getInitialsFromName(firstName, lastName, fullName);
 
         const user = {
           name: fullName,
@@ -2245,13 +2283,15 @@
           lastName: lastName,
           nickname: firstName,
           email: email,
-          avatar: "",
+          avatar: "", // Akun pertama kali: avatar gambar kosong sehingga inisial nama depan + belakang tampil
+          initials: initials,
           isLoggedIn: true,
           loginAt: Date.now(),
         };
 
         localStorage.setItem("noteroute_auth_user", JSON.stringify(user));
-        syncUserProfileStorage(firstName, lastName, email);
+        // Reset avatarDataUrl di profile storage untuk akun baru agar inisial akun baru tidak tertimpa
+        syncUserProfileStorage(firstName, lastName, email, true);
 
         currentUser = user;
         renderLoggedInUI(user);
@@ -2266,16 +2306,18 @@
         }, 700);
       }
 
-      function syncUserProfileStorage(fn, ln, email) {
+      function syncUserProfileStorage(fn, ln, email, isNewAccount = false) {
         let existingAvatar = "";
-        try {
-          const stored = localStorage.getItem("noteroute-user-profile");
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            if (parsed && parsed.avatarDataUrl)
-              existingAvatar = parsed.avatarDataUrl;
-          }
-        } catch (e) {}
+        if (!isNewAccount) {
+          try {
+            const stored = localStorage.getItem("noteroute-user-profile");
+            if (stored) {
+              const parsed = JSON.parse(stored);
+              if (parsed && parsed.avatarDataUrl)
+                existingAvatar = parsed.avatarDataUrl;
+            }
+          } catch (e) {}
+        }
 
         const p = {
           firstName: fn || "Pengguna",
