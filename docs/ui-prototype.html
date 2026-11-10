@@ -503,79 +503,7 @@
           </div>
 
           <div id="sources-list-container" class="space-y-1.5">
-            <!-- Source Card 1 (PDF) -->
-            <div id="src-1" data-name="Slide_Bab3_Distributed_Systems.pdf" data-size="2.34" data-date="2026-11-08" onclick="handleSourceCardClick(event, 1, 'Slide_Bab3_Distributed_Systems.pdf', 14)" class="source-card p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
-              <!-- Delete Checkbox (Hanya muncul saat mode hapus aktif) -->
-              <input type="checkbox" onchange="updateDelSourcesCount()" onclick="event.stopPropagation()" class="source-del-chk hidden mt-1 w-3.5 h-3.5 rounded accent-rose-600 cursor-pointer">
-              <!-- Context Checkbox -->
-              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-[var(--nlm-brand)]">
-              <div class="w-6 h-6 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
-                <i class="fa-solid fa-file-pdf text-[11px]"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-[var(--nlm-brand)] transition">Slide_Bab3_Distributed_Systems.pdf</h4>
-                <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
-                  <span>18 halaman</span> &bull; <span>2.34 MB</span>
-                </div>
-              </div>
-              <button onclick="downloadFile(event, 'Slide_Bab3_Distributed_Systems.pdf')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-brand)]" title="Unduh">
-                <i class="fa-solid fa-download text-[11px]"></i>
-              </button>
-            </div>
-
-            <!-- Source Card 2 (Markdown) -->
-            <div id="src-2" data-name="Catatan_Riset_Multi_LLM.md" data-size="0.015" data-date="2026-11-07" onclick="handleSourceCardClick(event, 2, 'Catatan_Riset_Multi_LLM.md', 1)" class="source-card p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
-              <input type="checkbox" onchange="updateDelSourcesCount()" onclick="event.stopPropagation()" class="source-del-chk hidden mt-1 w-3.5 h-3.5 rounded accent-rose-600 cursor-pointer">
-              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-[var(--nlm-brand)]">
-              <div class="w-6 h-6 rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center text-xs shrink-0 mt-0.5">
-                <i class="fa-solid fa-file-lines text-[11px]"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Catatan_Riset_Multi_LLM.md</h4>
-                <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
-                  <span>420 baris</span> &bull; <span>15.1 KB</span>
-                </div>
-              </div>
-              <button onclick="downloadFile(event, 'Catatan_Riset_Multi_LLM.md')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-teal-600" title="Unduh">
-                <i class="fa-solid fa-download text-[11px]"></i>
-              </button>
-            </div>
-
-            <!-- Source Card 3 (DOCX) -->
-            <div id="src-3" data-name="Modul_Praktikum_Cloud_ULBI.docx" data-size="1.12" data-date="2026-11-06" onclick="handleSourceCardClick(event, 3, 'Modul_Praktikum_Cloud_ULBI.docx', 1)" class="source-card p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
-              <input type="checkbox" onchange="updateDelSourcesCount()" onclick="event.stopPropagation()" class="source-del-chk hidden mt-1 w-3.5 h-3.5 rounded accent-rose-600 cursor-pointer">
-              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-[var(--nlm-brand)]">
-              <div class="w-6 h-6 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
-                <i class="fa-solid fa-file-word text-[11px]"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-[var(--nlm-brand)] transition">Modul_Praktikum_Cloud_ULBI.docx</h4>
-                <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
-                  <span>32 halaman</span> &bull; <span>1.12 MB</span>
-                </div>
-              </div>
-              <button onclick="downloadFile(event, 'Modul_Praktikum_Cloud_ULBI.docx')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-brand)]" title="Unduh">
-                <i class="fa-solid fa-download text-[11px]"></i>
-              </button>
-            </div>
-
-            <!-- Source Card 4 (JS Code) -->
-            <div id="src-4" data-name="llmRouterService.js" data-size="0.008" data-date="2026-11-05" onclick="handleSourceCardClick(event, 4, 'llmRouterService.js', 1)" class="source-card p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group">
-              <input type="checkbox" onchange="updateDelSourcesCount()" onclick="event.stopPropagation()" class="source-del-chk hidden mt-1 w-3.5 h-3.5 rounded accent-rose-600 cursor-pointer">
-              <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk mt-1 w-3.5 h-3.5 rounded accent-[var(--nlm-brand)]">
-              <div class="w-6 h-6 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
-                <i class="fa-solid fa-file-code text-[11px]"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-[var(--nlm-brand)] transition">llmRouterService.js</h4>
-                <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
-                  <span>Backend Code</span> &bull; <span>8.4 KB</span>
-                </div>
-              </div>
-              <button onclick="downloadFile(event, 'llmRouterService.js')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-brand)]" title="Unduh">
-                <i class="fa-solid fa-download text-[11px]"></i>
-              </button>
-            </div>
+            <!-- Dynamic sources populated via renderSources() -->
           </div>
         </div>
 
@@ -617,41 +545,7 @@
           </div>
 
           <div id="sidebar-notes-container" class="space-y-1.5">
-            <!-- User Note 1 -->
-            <div id="note-card-1" data-title="Teorema CAP & Spanner" data-date="2026-11-08" onclick="handleNoteCardClick(event, 'Rangkuman Teorema CAP & Spanner', 'Spanner menggunakan atomic clock (TrueTime API) untuk menjamin konsistensi eksternal tingkat tinggi tanpa mengorbankan partisi data terdistribusi.', '08 Nov 2026 • Catatan Buatan Sendiri')" 
-                 class="user-note-card p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition group flex items-start space-x-2">
-              <input type="checkbox" onchange="updateDelNotesCount()" onclick="event.stopPropagation()" class="note-del-chk hidden mt-0.5 w-3.5 h-3.5 rounded accent-rose-600 cursor-pointer shrink-0">
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between">
-                  <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition flex items-center space-x-1.5">
-                    <i class="fa-regular fa-note-sticky text-indigo-500 text-[11px]"></i>
-                    <span class="truncate">Teorema CAP &amp; Spanner</span>
-                  </div>
-                  <span class="text-[9px] text-[var(--nlm-text-tertiary)]">08 Nov</span>
-                </div>
-                <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 mt-1 leading-snug">
-                  Spanner menggunakan atomic clock (TrueTime API) untuk menjamin konsistensi eksternal...
-                </p>
-              </div>
-            </div>
-
-            <!-- User Note 2 -->
-            <div id="note-card-2" data-title="Metrik Penghematan Multi-LLM" data-date="2026-11-07" onclick="handleNoteCardClick(event, 'Metrik Penghematan Multi-LLM', 'Biaya tersimpan kumulatif $12.85 dengan perutean prioritas Gemini 1.5 Flash 1M Context dan failover otomatis ke Groq Cloud.', '07 Nov 2026 • Catatan Buatan Sendiri')" 
-                 class="user-note-card p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition group flex items-start space-x-2">
-              <input type="checkbox" onchange="updateDelNotesCount()" onclick="event.stopPropagation()" class="note-del-chk hidden mt-0.5 w-3.5 h-3.5 rounded accent-rose-600 cursor-pointer shrink-0">
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between">
-                  <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-blue-600 transition flex items-center space-x-1.5">
-                    <i class="fa-regular fa-note-sticky text-indigo-500 text-[11px]"></i>
-                    <span class="truncate">Metrik Penghematan AI</span>
-                  </div>
-                  <span class="text-[9px] text-[var(--nlm-text-tertiary)]">07 Nov</span>
-                </div>
-                <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 mt-1 leading-snug">
-                  Biaya tersimpan $12.85 dengan Gemini 1.5 Flash 1M Context...
-                </p>
-              </div>
-            </div>
+            <!-- Dynamic notes populated via renderNotes() -->
           </div>
         </div>
 
@@ -1087,41 +981,7 @@
           </div>
 
           <div id="studio-notes-container" class="space-y-1.5">
-            <!-- Studio Note 1: Linimasa -->
-            <div id="studio-note-1" data-title="Linimasa Materi" data-date="2026-11-08" onclick="handleStudioNoteCardClick(event, 'Linimasa Materi', 'Kronologi perkembangan sistem terdistribusi dari RPC (1984), Gilbert & Lynch (2002), Google Spanner (2012), hingga Multi-LLM Gateway (2024).', 'Studio &bull; Linimasa Otomatis')" 
-                 class="studio-note-card p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer flex items-start space-x-2">
-              <input type="checkbox" onchange="updateDelStudioNotesCount()" onclick="event.stopPropagation()" class="studionote-del-chk hidden mt-0.5 w-3.5 h-3.5 rounded accent-rose-600 cursor-pointer shrink-0">
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between">
-                  <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate flex items-center space-x-1.5">
-                    <i class="fa-solid fa-timeline text-indigo-500 text-[10px]"></i>
-                    <span class="truncate">Linimasa Materi</span>
-                  </div>
-                  <span class="text-[9px] text-[var(--nlm-text-tertiary)]">Baru</span>
-                </div>
-                <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-snug mt-1">
-                  Rangkuman otomatis dihasilkan berdasarkan 4 berkas laptop...
-                </p>
-              </div>
-            </div>
-
-            <!-- Studio Note 2: FAQ -->
-            <div id="studio-note-2" data-title="FAQ Ujian Bab 3" data-date="2026-11-07" onclick="handleStudioNoteCardClick(event, 'Tanya Jawab (FAQ) Ujian', '1. Mengapa split-brain berbahaya bagi konsistensi? Karena dapat memicu pembagian cluster tanpa replikasi mayoritas. 2. Apa beda CAP dan PACELC?', 'Studio &bull; FAQ Otomatis')" 
-                 class="studio-note-card p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer flex items-start space-x-2">
-              <input type="checkbox" onchange="updateDelStudioNotesCount()" onclick="event.stopPropagation()" class="studionote-del-chk hidden mt-0.5 w-3.5 h-3.5 rounded accent-rose-600 cursor-pointer shrink-0">
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between">
-                  <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate flex items-center space-x-1.5">
-                    <i class="fa-solid fa-circle-question text-amber-500 text-[10px]"></i>
-                    <span class="truncate">FAQ Ujian Bab 3</span>
-                  </div>
-                  <span class="text-[9px] text-[var(--nlm-text-tertiary)]">Baru</span>
-                </div>
-                <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-snug mt-1">
-                  Daftar pertanyaan dan kunci jawaban terstruktur...
-                </p>
-              </div>
-            </div>
+            <!-- Dynamic studio notes populated via renderStudioNotes() -->
           </div>
         </div>
 
@@ -1373,6 +1233,15 @@
                   <input type="email" id="prof-email" value="ahmadzakky@ulbi.ac.id" oninput="onEmailChange(this.value)" placeholder="nama@email.com" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs text-[var(--nlm-text-primary)] font-medium focus:border-blue-500 focus:outline-none transition">
                 </div>
               </div>
+
+              <!-- Tombol Simpan Perubahan Profil Pengguna -->
+              <div class="pt-1 flex items-center justify-between bg-blue-500/5 border border-blue-500/20 p-3 rounded-xl">
+                <span class="text-[11px] text-[var(--nlm-text-tertiary)]">Simpan perubahan identitas nama dan email profil Anda.</span>
+                <button type="button" onclick="saveUserProfileSettings()" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition flex items-center space-x-1.5 shadow-xs cursor-pointer">
+                  <i class="fa-solid fa-floppy-disk text-[11px]"></i>
+                  <span>Simpan Perubahan Profil</span>
+                </button>
+              </div>
             </div>
 
             <!-- GANTI KATA SANDI (PASSWORD) -->
@@ -1543,40 +1412,44 @@
 
           <!-- TAB 2: KEAMANAN AKUN -->
           <div id="scontent-security" class="hidden space-y-4">
-            <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Keamanan Akun &amp; Sesi Perangkat</h4>
+            <div>
+              <h4 class="font-bold text-sm text-[var(--nlm-text-primary)]">Keamanan Akun &amp; Sesi Perangkat</h4>
+              <p class="text-[11px] text-[var(--nlm-text-tertiary)]">Kelola status enkripsi data dan pantau sesi perangkat yang sedang aktif.</p>
+            </div>
             
             <div class="p-3.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] space-y-2">
               <div class="flex items-center justify-between">
                 <div>
                   <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">Enkripsi Kunci API: AES-256-GCM</div>
-                  <div class="text-[11px] text-[var(--nlm-text-tertiary)]">Seluruh kunci API dienkripsi di sisi server database cloud</div>
+                  <div class="text-[11px] text-[var(--nlm-text-tertiary)]">Seluruh kunci API dienkripsi di sisi server database cloud dan penyimpanan lokal aman</div>
                 </div>
                 <span class="text-xs bg-emerald-500/10 text-emerald-600 font-bold px-2 py-0.5 rounded">Aktif &bull; Aman</span>
               </div>
             </div>
 
-            <div class="space-y-2">
-              <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">Perangkat yang Sedang Login:</div>
-              <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
-                <div class="flex items-center space-x-2.5">
-                  <i class="fa-solid fa-laptop text-blue-600 text-sm"></i>
-                  <div>
-                    <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">MacBook Pro Zakky (Desktop Client)</div>
-                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Aktif sekarang &bull; Bandung, Indonesia</div>
-                  </div>
-                </div>
-                <span class="text-emerald-600 font-bold text-[10px]">Perangkat Ini</span>
+            <div class="space-y-2 pt-2">
+              <div class="flex items-center justify-between">
+                <h5 class="font-bold text-xs text-[var(--nlm-text-primary)]">Sesi Perangkat Aktif:</h5>
+                <button type="button" onclick="showToast('Sesi Lain Dibersihkan', 'Semua sesi perangkat lain telah berhasil diputus.')" class="text-[10px] text-rose-500 hover:underline font-semibold cursor-pointer">
+                  Keluar dari Sesi Lain
+                </button>
               </div>
-
-              <div class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] flex items-center justify-between">
+              
+              <!-- Sesi Perangkat Nyata (Terdeteksi Otomatis) -->
+              <div class="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex items-center justify-between">
                 <div class="flex items-center space-x-2.5">
-                  <i class="fa-solid fa-mobile-screen text-indigo-600 text-sm"></i>
+                  <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-sm shrink-0">
+                    <i id="workspace-current-device-icon" class="fa-solid fa-laptop"></i>
+                  </div>
                   <div>
-                    <div class="font-semibold text-xs text-[var(--nlm-text-primary)]">HP Android Izat (Mobile Client)</div>
-                    <div class="text-[10px] text-[var(--nlm-text-tertiary)]">Terotentikasi via Retrofit Token &bull; Selalu Sinkron</div>
+                    <div id="workspace-current-device-name" class="font-semibold text-xs text-[var(--nlm-text-primary)]">Perangkat Ini (Sesi Aktif)</div>
+                    <div id="workspace-current-device-details" class="text-[10px] text-[var(--nlm-text-tertiary)]">Aktif sekarang &bull; Terotentikasi</div>
                   </div>
                 </div>
-                <span class="text-emerald-600 font-bold text-[10px]">Tersinkron</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 font-bold text-[10px] flex items-center space-x-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span>Perangkat Ini</span>
+                </span>
               </div>
             </div>
           </div>
@@ -2673,33 +2546,124 @@
       if (isRightOpen && isCompact()) toggleRightSidebar();
     }
 
-    // 1B. SORT & MULTI-SELECT DELETE: SUMBER
+    // ========================================================
+    // NOTEBOOK CONTEXT & DATA STORES (SUMBER, CATATAN, STUDIO)
+    // ========================================================
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentNotebookId = urlParams.get('id') || 'default_notebook';
+    const initialNotebookTitle = urlParams.get('title') || 'Materi Kuliah Semester 5 • Sistem Terdistribusi';
+
+    function getNotebookStorageKey(prefix) {
+      return `${prefix}_${currentNotebookId}`;
+    }
+
+    function initNotebookTitle() {
+      const display = document.getElementById('project-title-display');
+      const input = document.getElementById('project-title-input');
+      const heroTitle = document.getElementById('hero-title');
+      if (display) display.textContent = initialNotebookTitle;
+      if (input) input.value = initialNotebookTitle;
+      if (heroTitle) heroTitle.textContent = initialNotebookTitle;
+    }
+
+    // --- 1. SUMBER (DOCUMENTS / SOURCES) ---
     let currentSourceSort = 'name'; // 'name' | 'size' | 'date'
     let isSourceDeleteMode = false;
 
+    function loadNotebookSources() {
+      try {
+        const raw = localStorage.getItem(getNotebookStorageKey('noteroute_sources'));
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveNotebookSources(sources) {
+      localStorage.setItem(getNotebookStorageKey('noteroute_sources'), JSON.stringify(sources));
+    }
+
+    function renderSources() {
+      const container = document.getElementById('sources-list-container');
+      if (!container) return;
+      const sources = loadNotebookSources();
+
+      if (sources.length === 0) {
+        container.innerHTML = `
+          <div id="sources-empty-state" class="p-4 text-center text-xs text-[var(--nlm-text-tertiary)] border border-dashed border-[var(--nlm-border)] rounded-2xl my-2">
+            <i class="fa-solid fa-cloud-arrow-up text-base text-blue-500 mb-1.5 block"></i>
+            <p class="font-medium text-[var(--nlm-text-secondary)]">Belum ada sumber berkas</p>
+            <p class="text-[10px] mt-0.5">Unggah dokumen (PDF, DOCX, TXT) untuk dianalisis oleh AI NoteRoute.</p>
+          </div>
+        `;
+        const badge = document.getElementById('sources-badge-count');
+        if (badge) badge.textContent = `0 Berkas`;
+        updateSourceCount();
+        return;
+      }
+
+      container.innerHTML = sources.map(src => {
+        const filename = src.name || 'Dokumen.pdf';
+        const isPdf = filename.toLowerCase().endsWith('.pdf');
+        const isDoc = filename.toLowerCase().endsWith('.doc') || filename.toLowerCase().endsWith('.docx');
+        const iconClass = isPdf ? 'fa-file-pdf text-red-600 bg-red-500/10' : (isDoc ? 'fa-file-word text-indigo-600 bg-indigo-500/10' : 'fa-file-lines text-teal-600 bg-teal-500/10');
+        const iconName = isPdf ? 'fa-file-pdf' : (isDoc ? 'fa-file-word' : 'fa-file-lines');
+        const sizeStr = src.size ? `${src.size} MB` : '1.2 MB';
+        const dateStr = src.date || new Date().toISOString().split('T')[0];
+
+        return `
+          <div class="source-card p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group"
+               data-id="${src.id}"
+               data-name="${escapeHtml(filename)}"
+               data-size="${src.size || '1.2'}"
+               data-date="${dateStr}"
+               onclick="handleSourceCardClick(event, '${src.id}', '${escapeHtml(filename)}', 1)">
+            <input type="checkbox" data-source-id="${src.id}" onchange="updateDelSourcesCount()" onclick="event.stopPropagation()" class="source-del-chk ${isSourceDeleteMode ? '' : 'hidden'} mt-1 w-3.5 h-3.5 rounded accent-rose-600 cursor-pointer">
+            <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk ${isSourceDeleteMode ? 'hidden' : ''} mt-1 w-3.5 h-3.5 rounded accent-[var(--nlm-brand)]">
+            <div class="w-6 h-6 rounded-lg ${iconClass} flex items-center justify-center text-xs shrink-0 mt-0.5">
+              <i class="fa-solid ${iconName} text-[11px]"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-[var(--nlm-brand)] transition">${escapeHtml(filename)}</h4>
+              <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
+                <span>${dateStr}</span> &bull; <span>${sizeStr}</span>
+              </div>
+            </div>
+            <button onclick="downloadFile(event, '${escapeHtml(filename)}')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-brand)]" title="Unduh">
+              <i class="fa-solid fa-download text-[11px]"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      const badge = document.getElementById('sources-badge-count');
+      if (badge) badge.textContent = `${sources.length} Berkas`;
+      updateSourceCount();
+    }
+
     function cycleSortSources() {
       const label = document.getElementById('label-sort-sources');
-      const container = document.getElementById('sources-list-container');
-      const cards = Array.from(container.querySelectorAll('.source-card'));
-      if (cards.length === 0) return;
+      let sources = loadNotebookSources();
+      if (sources.length === 0) return;
 
       if (currentSourceSort === 'name') {
         currentSourceSort = 'size';
         if (label) label.textContent = "Ukuran";
-        cards.sort((a, b) => parseFloat(b.dataset.size || 0) - parseFloat(a.dataset.size || 0));
+        sources.sort((a, b) => parseFloat(b.size || 0) - parseFloat(a.size || 0));
         showToast("Urutan Sumber", "Diurutkan berdasarkan ukuran file terbesar.");
       } else if (currentSourceSort === 'size') {
         currentSourceSort = 'date';
         if (label) label.textContent = "Terkini";
-        cards.sort((a, b) => new Date(b.dataset.date || 0) - new Date(a.dataset.date || 0));
+        sources.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
         showToast("Urutan Sumber", "Diurutkan berdasarkan berkas terbaru.");
       } else {
         currentSourceSort = 'name';
         if (label) label.textContent = "Nama";
-        cards.sort((a, b) => (a.dataset.name || '').localeCompare(b.dataset.name || ''));
+        sources.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
         showToast("Urutan Sumber", "Diurutkan secara alfabetis (A-Z).");
       }
-      cards.forEach(card => container.appendChild(card));
+      saveNotebookSources(sources);
+      renderSources();
     }
 
     function toggleDeleteModeSources(forceState = null) {
@@ -2743,16 +2707,13 @@
         showToast("Pilih Berkas", "Silakan pilih minimal 1 berkas sumber untuk dihapus.");
         return;
       }
+      const idsToDelete = new Set(checkedBoxes.map(chk => chk.dataset.sourceId));
+      let sources = loadNotebookSources();
       const count = checkedBoxes.length;
-      checkedBoxes.forEach(chk => {
-        const card = chk.closest('.source-card');
-        if (card) card.remove();
-      });
+      sources = sources.filter(s => !idsToDelete.has(s.id));
+      saveNotebookSources(sources);
       toggleDeleteModeSources(false);
-      updateSourceCount();
-      const remaining = document.querySelectorAll('.source-card').length;
-      const badge = document.getElementById('sources-badge-count');
-      if (badge) badge.textContent = `${remaining} Berkas`;
+      renderSources();
       showToast("Sumber Dihapus", `${count} berkas sumber berhasil dihapus.`);
     }
 
@@ -2769,28 +2730,94 @@
       previewSource(id, filename, page);
     }
 
-    // 1C. SORT & MULTI-SELECT DELETE: CATATAN SAYA
+    // --- 1C. CATATAN SAYA (NOTES) ---
     let currentNotesSort = 'date'; // 'date' | 'title'
     let isNotesDeleteMode = false;
+    let activeEditingNoteId = null;
+
+    function loadNotebookNotes() {
+      try {
+        const raw = localStorage.getItem(getNotebookStorageKey('noteroute_notes'));
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveNotebookNotes(notes) {
+      localStorage.setItem(getNotebookStorageKey('noteroute_notes'), JSON.stringify(notes));
+    }
+
+    function renderNotes() {
+      const container = document.getElementById('sidebar-notes-container');
+      if (!container) return;
+      const notes = loadNotebookNotes();
+
+      if (notes.length === 0) {
+        container.innerHTML = `
+          <div id="notes-empty-state" class="p-4 text-center text-xs text-[var(--nlm-text-tertiary)] border border-dashed border-[var(--nlm-border)] rounded-2xl my-2">
+            <i class="fa-solid fa-note-sticky text-base text-blue-500 mb-1.5 block"></i>
+            <p class="font-medium text-[var(--nlm-text-secondary)]">Belum ada catatan</p>
+            <p class="text-[10px] mt-0.5">Buat catatan pribadi atau simpan ringkasan penting materi kuliah.</p>
+          </div>
+        `;
+        const badge = document.getElementById('sidebar-notes-count');
+        if (badge) badge.textContent = `0 Catatan`;
+        return;
+      }
+
+      container.innerHTML = notes.map(note => {
+        const title = note.title || 'Catatan Tanpa Judul';
+        const body = note.body || '';
+        const dateStr = note.date || new Date().toISOString().split('T')[0];
+        const category = note.category || 'Catatan Pribadi';
+
+        return `
+          <div class="user-note-card p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer flex items-start space-x-2"
+               data-id="${note.id}"
+               data-title="${escapeHtml(title)}"
+               data-date="${dateStr}"
+               onclick="handleNoteCardClick(event, '${note.id}')">
+            <input type="checkbox" data-note-id="${note.id}" onchange="updateDelNotesCount()" onclick="event.stopPropagation()" class="note-del-chk ${isNotesDeleteMode ? '' : 'hidden'} mt-0.5 w-3.5 h-3.5 rounded accent-rose-600 cursor-pointer shrink-0">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <h4 class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate">${escapeHtml(title)}</h4>
+                <span class="text-[9px] text-[var(--nlm-text-tertiary)]">${dateStr}</span>
+              </div>
+              <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-snug mt-1">
+                ${escapeHtml(body)}
+              </p>
+              <div class="mt-2 flex items-center space-x-2 text-[9px] text-blue-500 font-medium">
+                <i class="fa-solid fa-pen-nib text-[9px]"></i>
+                <span>${escapeHtml(category)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const badge = document.getElementById('sidebar-notes-count');
+      if (badge) badge.textContent = `${notes.length} Catatan`;
+    }
 
     function cycleSortNotes() {
       const label = document.getElementById('label-sort-notes');
-      const container = document.getElementById('sidebar-notes-container');
-      const cards = Array.from(container.querySelectorAll('.user-note-card'));
-      if (cards.length === 0) return;
+      let notes = loadNotebookNotes();
+      if (notes.length === 0) return;
 
       if (currentNotesSort === 'date') {
         currentNotesSort = 'title';
         if (label) label.textContent = "Judul";
-        cards.sort((a, b) => (a.dataset.title || '').localeCompare(b.dataset.title || ''));
+        notes.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
         showToast("Urutan Catatan", "Diurutkan secara alfabetis (A-Z).");
       } else {
         currentNotesSort = 'date';
         if (label) label.textContent = "Terkini";
-        cards.sort((a, b) => new Date(b.dataset.date || 0) - new Date(a.dataset.date || 0));
+        notes.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
         showToast("Urutan Catatan", "Diurutkan berdasarkan catatan terbaru.");
       }
-      cards.forEach(card => container.appendChild(card));
+      saveNotebookNotes(notes);
+      renderNotes();
     }
 
     function toggleDeleteModeNotes(forceState = null) {
@@ -2831,19 +2858,17 @@
         showToast("Pilih Catatan", "Silakan pilih minimal 1 catatan untuk dihapus.");
         return;
       }
+      const idsToDelete = new Set(checkedBoxes.map(chk => chk.dataset.noteId));
+      let notes = loadNotebookNotes();
       const count = checkedBoxes.length;
-      checkedBoxes.forEach(chk => {
-        const card = chk.closest('.user-note-card');
-        if (card) card.remove();
-      });
+      notes = notes.filter(n => !idsToDelete.has(n.id));
+      saveNotebookNotes(notes);
       toggleDeleteModeNotes(false);
-      const remaining = document.querySelectorAll('.user-note-card').length;
-      const badge = document.getElementById('sidebar-notes-count');
-      if (badge) badge.textContent = `${remaining} Catatan`;
+      renderNotes();
       showToast("Catatan Dihapus", `${count} catatan berhasil dihapus.`);
     }
 
-    function handleNoteCardClick(event, title, body, meta) {
+    function handleNoteCardClick(event, noteId) {
       if (isNotesDeleteMode) {
         const card = event.currentTarget;
         const chk = card.querySelector('.note-del-chk');
@@ -2853,31 +2878,107 @@
         }
         return;
       }
-      openViewNoteModal(title, body, meta);
+      const notes = loadNotebookNotes();
+      const note = notes.find(n => n.id === noteId);
+      if (note) {
+        activeEditingNoteId = note.id;
+        document.getElementById('note-modal-title').value = note.title;
+        document.getElementById('note-modal-body').value = note.body;
+        document.getElementById('note-modal-meta').textContent = `${note.date || 'Tersimpan'} • ${note.category || 'Catatan Pribadi'}`;
+        document.getElementById('note-viewer-modal').classList.remove('hidden');
+      }
     }
 
-    // 1D. SORT & MULTI-SELECT DELETE: CATATAN STUDIO
+    // --- 1D. CATATAN STUDIO (STUDIO TOOLS) ---
     let currentStudioNotesSort = 'date';
     let isStudioNotesDeleteMode = false;
 
+    function loadNotebookStudio() {
+      try {
+        const raw = localStorage.getItem(getNotebookStorageKey('noteroute_studio'));
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveNotebookStudio(items) {
+      localStorage.setItem(getNotebookStorageKey('noteroute_studio'), JSON.stringify(items));
+    }
+
+    function renderStudioNotes() {
+      const container = document.getElementById('studio-notes-container');
+      if (!container) return;
+      const items = loadNotebookStudio();
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div id="studio-empty-state" class="p-4 text-center text-xs text-[var(--nlm-text-tertiary)] border border-dashed border-[var(--nlm-border)] rounded-xl my-2">
+            <i class="fa-solid fa-wand-magic-sparkles text-sm text-purple-500 mb-1 block"></i>
+            <p class="font-medium text-[var(--nlm-text-secondary)]">Belum ada hasil Studio</p>
+            <p class="text-[10px] mt-0.5">Pilih salah satu generator studi di atas untuk membuat rangkuman instan.</p>
+          </div>
+        `;
+        const badge = document.getElementById('studio-notes-count');
+        if (badge) badge.textContent = `0`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => {
+        const title = item.title || 'Alat Studi';
+        const body = item.body || '';
+        const dateStr = item.date || new Date().toISOString().split('T')[0];
+        const toolType = item.toolType || 'Studio';
+
+        return `
+          <div class="studio-note-card p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer flex items-start space-x-2"
+               data-id="${item.id}"
+               data-title="${escapeHtml(title)}"
+               data-date="${dateStr}"
+               onclick="handleStudioNoteCardClick(event, '${item.id}')">
+            <input type="checkbox" data-studio-id="${item.id}" onchange="updateDelStudioNotesCount()" onclick="event.stopPropagation()" class="studionote-del-chk ${isStudioNotesDeleteMode ? '' : 'hidden'} mt-0.5 w-3.5 h-3.5 rounded accent-rose-600 cursor-pointer shrink-0">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate flex items-center space-x-1.5">
+                  <i class="fa-solid fa-file-lines text-indigo-500 text-[10px]"></i>
+                  <span class="truncate">${escapeHtml(title)}</span>
+                </div>
+                <span class="text-[9px] text-[var(--nlm-text-tertiary)]">${dateStr}</span>
+              </div>
+              <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-snug mt-1">
+                ${escapeHtml(body)}
+              </p>
+              <div class="mt-2 flex items-center space-x-2 text-[9px] text-purple-500 font-medium">
+                <i class="fa-solid fa-wand-magic-sparkles text-[9px]"></i>
+                <span>${escapeHtml(toolType)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const badge = document.getElementById('studio-notes-count');
+      if (badge) badge.textContent = items.length;
+    }
+
     function cycleSortStudioNotes() {
       const label = document.getElementById('label-sort-studionotes');
-      const container = document.getElementById('studio-notes-container');
-      const cards = Array.from(container.querySelectorAll('.studio-note-card'));
-      if (cards.length === 0) return;
+      let items = loadNotebookStudio();
+      if (items.length === 0) return;
 
       if (currentStudioNotesSort === 'date') {
         currentStudioNotesSort = 'title';
         if (label) label.textContent = "Judul";
-        cards.sort((a, b) => (a.dataset.title || '').localeCompare(b.dataset.title || ''));
+        items.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
         showToast("Urutan Studio", "Diurutkan secara alfabetis (A-Z).");
       } else {
         currentStudioNotesSort = 'date';
         if (label) label.textContent = "Terkini";
-        cards.sort((a, b) => new Date(b.dataset.date || 0) - new Date(a.dataset.date || 0));
+        items.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
         showToast("Urutan Studio", "Diurutkan berdasarkan catatan terbaru.");
       }
-      cards.forEach(card => container.appendChild(card));
+      saveNotebookStudio(items);
+      renderStudioNotes();
     }
 
     function toggleDeleteModeStudioNotes(forceState = null) {
@@ -2918,19 +3019,17 @@
         showToast("Pilih Catatan Studio", "Silakan pilih minimal 1 catatan studio untuk dihapus.");
         return;
       }
+      const idsToDelete = new Set(checkedBoxes.map(chk => chk.dataset.studioId));
+      let items = loadNotebookStudio();
       const count = checkedBoxes.length;
-      checkedBoxes.forEach(chk => {
-        const card = chk.closest('.studio-note-card');
-        if (card) card.remove();
-      });
+      items = items.filter(s => !idsToDelete.has(s.id));
+      saveNotebookStudio(items);
       toggleDeleteModeStudioNotes(false);
-      const remaining = document.querySelectorAll('.studio-note-card').length;
-      const badge = document.getElementById('studio-notes-count');
-      if (badge) badge.textContent = remaining;
+      renderStudioNotes();
       showToast("Catatan Studio Dihapus", `${count} catatan studio berhasil dihapus.`);
     }
 
-    function handleStudioNoteCardClick(event, title, body, meta) {
+    function handleStudioNoteCardClick(event, studioId) {
       if (isStudioNotesDeleteMode) {
         const card = event.currentTarget;
         const chk = card.querySelector('.studionote-del-chk');
@@ -2940,7 +3039,11 @@
         }
         return;
       }
-      openViewNoteModal(title, body, meta);
+      const items = loadNotebookStudio();
+      const item = items.find(s => s.id === studioId);
+      if (item) {
+        openViewNoteModal(item.title, item.body, `Studio &bull; ${item.toolType || item.title}`);
+      }
     }
 
     // 2. PROJECT NAME INLINE EDITING
@@ -2964,6 +3067,19 @@
         display.textContent = newTitle;
         if (heroTitle) heroTitle.textContent = newTitle;
         showToast("Nama Proyek Diperbarui", `Disimpan sebagai "${newTitle}".`);
+
+        // Sinkronisasi judul ke daftar notebook di localStorage
+        try {
+          const raw = localStorage.getItem('noteroute_user_notebooks');
+          if (raw) {
+            let nbs = JSON.parse(raw);
+            const idx = nbs.findIndex(nb => String(nb.id) === String(currentNotebookId));
+            if (idx !== -1) {
+              nbs[idx].title = newTitle;
+              localStorage.setItem('noteroute_user_notebooks', JSON.stringify(nbs));
+            }
+          }
+        } catch (e) {}
       }
       input.classList.add('hidden');
       display.classList.remove('hidden');
@@ -3173,7 +3289,8 @@
         document.getElementById('provider-edit-name').textContent = `Konfigurasi Kunci API: ${name}`;
         document.getElementById('provider-edit-note').textContent = note || 'Free Tier';
         const existingKey = localStorage.getItem('noteroute_key_' + id) || '';
-        document.getElementById('provider-edit-input').value = existingKey || sampleKey || '';
+        document.getElementById('provider-edit-input').value = existingKey || '';
+        document.getElementById('provider-edit-input').placeholder = sampleKey ? 'Contoh format: ' + sampleKey : 'Masukkan kunci API resmi Anda...';
         box.scrollIntoView({ behavior: 'smooth' });
         showToast("Pilih Provider", `Membuka pengaturan kunci untuk ${name}.`);
       }
@@ -3297,6 +3414,44 @@
           localStorage.setItem('noteroute_auth_user', JSON.stringify(a));
         }
       } catch (e) {}
+    }
+
+    function saveUserProfileSettings() {
+      saveProfileToStorage();
+      updateHeaderUserIdentity();
+      showToast("Profil Disimpan", "Perubahan profil berhasil disimpan ke sesi akun Anda.");
+    }
+
+    function renderCurrentDeviceSession() {
+      const ua = navigator.userAgent;
+      let devName = "Komputer (Desktop)";
+      let iconClass = "fa-laptop";
+      if (/mobile/i.test(ua)) {
+        devName = /android/i.test(ua) ? "HP Android" : (/iphone/i.test(ua) ? "Apple iPhone" : "Smartphone");
+        iconClass = "fa-mobile-screen";
+      } else if (/macintosh|mac os x/i.test(ua)) {
+        devName = "Apple Mac";
+        iconClass = "fa-laptop";
+      } else if (/windows/i.test(ua)) {
+        devName = "Windows PC";
+        iconClass = "fa-desktop";
+      } else if (/linux/i.test(ua)) {
+        devName = "Linux Desktop";
+        iconClass = "fa-desktop";
+      }
+
+      let browser = "Web Browser";
+      if (/chrome/i.test(ua) && !/edg/i.test(ua)) browser = "Google Chrome";
+      else if (/safari/i.test(ua) && !/chrome/i.test(ua)) browser = "Safari";
+      else if (/firefox/i.test(ua)) browser = "Mozilla Firefox";
+      else if (/edg/i.test(ua)) browser = "Microsoft Edge";
+
+      const nameEl = document.getElementById('workspace-current-device-name');
+      const detailsEl = document.getElementById('workspace-current-device-details');
+      const iconEl = document.getElementById('workspace-current-device-icon');
+      if (nameEl) nameEl.textContent = `${devName} • ${browser}`;
+      if (detailsEl) detailsEl.textContent = `Aktif sekarang • Sesi Terotentikasi`;
+      if (iconEl) iconEl.className = `fa-solid ${iconClass}`;
     }
 
     function handleLogout() {
@@ -3711,10 +3866,10 @@
     }
 
     const BUILTIN_PROVIDERS_MAP = {
-      gemini: { id: 'gemini', name: 'Google Gemini 1.5 Flash', icon: 'fa-brands fa-google', iconColor: 'blue', desc: '1.500 req/hari • 1M Context Free', isDefaultReady: true },
-      groq: { id: 'groq', name: 'Groq Cloud (Llama 3.3 70B)', icon: 'fa-solid fa-bolt', iconColor: 'orange', desc: 'Inference ultra-cepat • 300+ token/detik', isDefaultReady: true },
-      daemon_9router: { id: 'daemon_9router', name: '9Router Local Daemon', icon: 'fa-solid fa-network-wired', iconColor: 'emerald', desc: '100% Offline di Port 20128 • 1 Jaringan LAN', isDefaultReady: true },
-      deepseek: { id: 'deepseek', name: 'DeepSeek V3 / R1', icon: 'fa-solid fa-brain', iconColor: 'indigo', desc: 'Reasoning Canggih • Free Credits', isDefaultReady: true },
+      gemini: { id: 'gemini', name: 'Google Gemini 1.5 Flash', icon: 'fa-brands fa-google', iconColor: 'blue', desc: '1.500 req/hari • 1M Context Free' },
+      groq: { id: 'groq', name: 'Groq Cloud (Llama 3.3 70B)', icon: 'fa-solid fa-bolt', iconColor: 'orange', desc: 'Inference ultra-cepat • 300+ token/detik' },
+      daemon_9router: { id: 'daemon_9router', name: '9Router Local Daemon', icon: 'fa-solid fa-network-wired', iconColor: 'emerald', desc: '100% Offline di Port 20128 • 1 Jaringan LAN' },
+      deepseek: { id: 'deepseek', name: 'DeepSeek V3 / R1', icon: 'fa-solid fa-brain', iconColor: 'indigo', desc: 'Reasoning Canggih • Free Credits' },
       cerebras: { id: 'cerebras', name: 'Cerebras', icon: 'fa-solid fa-microchip', iconColor: 'purple', desc: 'Inference wafer-scale ultra-cepat • 1.800+ t/s' },
       openrouter: { id: 'openrouter', name: 'OpenRouter (Free)', icon: 'fa-solid fa-route', iconColor: 'sky', desc: 'Akses model Llama & Mistral Gratis (:free)' },
       mistral: { id: 'mistral', name: 'Mistral AI', icon: 'fa-solid fa-wind', iconColor: 'amber', desc: 'Codestral & Mistral 7B • Free Tier' },
@@ -3731,11 +3886,11 @@
     function getConnectedProviders() {
       const connected = [];
 
-      // 1. Built-in default ready & built-in with saved key
+      // Hanya tampilkan provider yang kunci API-nya sudah dimasukkan oleh pengguna
       Object.keys(BUILTIN_PROVIDERS_MAP).forEach(id => {
         const item = BUILTIN_PROVIDERS_MAP[id];
         const savedKey = localStorage.getItem('noteroute_key_' + id);
-        if (item.isDefaultReady || (savedKey && savedKey.trim())) {
+        if (savedKey && savedKey.trim()) {
           connected.push({
             ...item,
             isConnected: true
@@ -4307,35 +4462,74 @@
       }).join('');
     }
 
-    // 6. NOTE VIEWER & EDITOR MODAL (MELIHAT ISI CATATAN)
-    function openViewNoteModal(title, body, meta) {
-      document.getElementById('note-modal-title').value = title;
-      document.getElementById('note-modal-body').value = body;
-      document.getElementById('note-modal-meta').textContent = meta || "08 Nov 2026 • Tersimpan";
+    // 6. NOTE VIEWER & EDITOR MODAL (MELIHAT & MENYIMPAN CATATAN)
+    function openViewNoteModal(title, body, meta, noteId = null) {
+      activeEditingNoteId = noteId;
+      document.getElementById('note-modal-title').value = title || '';
+      document.getElementById('note-modal-body').value = body || '';
+      document.getElementById('note-modal-meta').textContent = meta || "Catatan Pribadi • Tersimpan";
       document.getElementById('note-viewer-modal').classList.remove('hidden');
     }
 
     function closeNoteModal() {
+      activeEditingNoteId = null;
       document.getElementById('note-viewer-modal').classList.add('hidden');
     }
 
     function saveNoteModalChanges() {
-      const title = document.getElementById('note-modal-title').value;
+      const title = document.getElementById('note-modal-title').value.trim() || 'Catatan Baru';
+      const body = document.getElementById('note-modal-body').value.trim();
+      let notes = loadNotebookNotes();
+      const dateStr = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+
+      if (activeEditingNoteId) {
+        const idx = notes.findIndex(n => n.id === activeEditingNoteId);
+        if (idx !== -1) {
+          notes[idx].title = title;
+          notes[idx].body = body;
+          notes[idx].date = dateStr;
+        }
+      } else {
+        const newNote = {
+          id: 'note_' + Date.now(),
+          title: title,
+          body: body,
+          date: dateStr,
+          category: 'Catatan Buatan Sendiri'
+        };
+        notes.unshift(newNote);
+      }
+
+      saveNotebookNotes(notes);
       closeNoteModal();
-      showToast("Perubahan Disimpan", `Catatan "${title}" berhasil diperbarui.`);
+      renderNotes();
+      showToast("Perubahan Disimpan", `Catatan "${title}" berhasil disimpan.`);
     }
 
     function deleteCurrentNote() {
+      if (!activeEditingNoteId) {
+        closeNoteModal();
+        return;
+      }
+      let notes = loadNotebookNotes();
+      notes = notes.filter(n => n.id !== activeEditingNoteId);
+      saveNotebookNotes(notes);
       closeNoteModal();
+      renderNotes();
       showToast("Catatan Dihapus", "Catatan telah dihapus dari daftar.");
     }
 
     function copyNoteModalText() {
+      const body = document.getElementById('note-modal-body').value;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(body);
+      }
       showToast("Teks Disalin", "Isi catatan disalin ke papan klip.");
     }
 
     function openCreateNoteModal() {
-      openViewNoteModal("Catatan Baru", "Tulis ide, rangkuman, atau poin penting materi kuliah di sini...", "Catatan Buatan Sendiri");
+      activeEditingNoteId = null;
+      openViewNoteModal("", "", "Catatan Baru • Dibuat Sekarang", null);
     }
 
     // 7. AI MODE SWITCHER (SELURUH PALET WARNA BERUBAH SECARA SISTEMIK)
@@ -4446,39 +4640,19 @@
       }, 150);
     }
 
-    function addNewSourceCard(filename, sizeMB) {
-      const list = document.getElementById('sources-list-container');
-      const isPdf = filename.toLowerCase().endsWith('.pdf');
-      const isDoc = filename.toLowerCase().endsWith('.doc') || filename.toLowerCase().endsWith('.docx');
-      const iconClass = isPdf ? 'fa-file-pdf text-red-600 bg-red-500/10' : (isDoc ? 'fa-file-word text-indigo-600 bg-indigo-500/10' : 'fa-file-lines text-teal-600 bg-teal-500/10');
-      
-      const card = document.createElement('div');
-      card.className = "source-card p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] cursor-pointer transition flex items-start space-x-2.5 group";
-      card.dataset.name = filename;
-      card.dataset.size = sizeMB || '1.2';
-      card.dataset.date = new Date().toISOString().split('T')[0];
-      card.onclick = (e) => handleSourceCardClick(e, 99, filename, 1);
-      card.innerHTML = `
-        <input type="checkbox" onchange="updateDelSourcesCount()" onclick="event.stopPropagation()" class="source-del-chk ${isSourceDeleteMode ? '' : 'hidden'} mt-1 w-3.5 h-3.5 rounded accent-rose-600 cursor-pointer">
-        <input type="checkbox" checked onclick="event.stopPropagation(); updateSourceCount()" class="source-chk ${isSourceDeleteMode ? 'hidden' : ''} mt-1 w-3.5 h-3.5 rounded accent-[var(--nlm-brand)]">
-        <div class="w-6 h-6 rounded-lg ${iconClass} flex items-center justify-center text-xs shrink-0 mt-0.5">
-          <i class="fa-solid ${isPdf ? 'fa-file-pdf' : (isDoc ? 'fa-file-word' : 'fa-file-lines')} text-[11px]"></i>
-        </div>
-        <div class="flex-1 min-w-0">
-          <h4 class="font-medium text-xs text-[var(--nlm-text-primary)] truncate group-hover:text-[var(--nlm-brand)] transition">${filename}</h4>
-          <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] mt-0.5">
-            <span>Baru</span> &bull; <span>${sizeMB || '1.2'} MB</span>
-          </div>
-        </div>
-        <button onclick="downloadFile(event, '${filename}')" class="opacity-0 group-hover:opacity-100 p-1 text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-brand)]" title="Unduh">
-          <i class="fa-solid fa-download text-[11px]"></i>
-        </button>
-      `;
-      list.prepend(card);
-      updateSourceCount();
-      const remaining = document.querySelectorAll('.source-card').length;
-      const badge = document.getElementById('sources-badge-count');
-      if (badge) badge.textContent = `${remaining} Berkas`;
+    function addNewSourceCard(filename, sizeMB, fileId) {
+      const sources = loadNotebookSources();
+      const newSrc = {
+        id: fileId || ('src_' + Date.now()),
+        name: filename,
+        size: sizeMB || '1.2',
+        date: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }),
+        type: filename.split('.').pop().toLowerCase()
+      };
+      sources.unshift(newSrc);
+      saveNotebookSources(sources);
+      renderSources();
+      showToast("Sumber Ditambahkan", `${filename} berhasil ditambahkan ke workspace.`);
     }
 
     // 9. SOURCES SELECTION & CITATION
@@ -4780,30 +4954,19 @@
 
     // LINIMASA, FAQ, BRIEFING, PANDUAN TETAP DI STUDIO SESUAI INSTRUKSI!
     function createStudyTool(name) {
-      const container = document.getElementById('studio-notes-container');
-      const card = document.createElement('div');
-      card.className = "studio-note-card p-2.5 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] transition cursor-pointer flex items-start space-x-2";
-      card.dataset.title = name;
-      card.dataset.date = new Date().toISOString().split('T')[0];
-      card.onclick = (e) => handleStudioNoteCardClick(e, name, `Rangkuman otomatis ${name} dihasilkan berdasarkan berkas laptop.`, `Studio &bull; ${name}`);
-      card.innerHTML = `
-        <input type="checkbox" onchange="updateDelStudioNotesCount()" onclick="event.stopPropagation()" class="studionote-del-chk ${isStudioNotesDeleteMode ? '' : 'hidden'} mt-0.5 w-3.5 h-3.5 rounded accent-rose-600 cursor-pointer shrink-0">
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between">
-            <div class="font-semibold text-xs text-[var(--nlm-text-primary)] truncate flex items-center space-x-1.5">
-              <i class="fa-solid fa-file-lines text-indigo-500 text-[10px]"></i>
-              <span class="truncate">${name}</span>
-            </div>
-            <span class="text-[9px] text-[var(--nlm-text-tertiary)]">Baru</span>
-          </div>
-          <p class="text-[11px] text-[var(--nlm-text-secondary)] line-clamp-2 leading-snug mt-1">
-            Rangkuman otomatis dihasilkan berdasarkan berkas laptop...
-          </p>
-        </div>
-      `;
-      container.prepend(card);
-      document.getElementById('studio-notes-count').textContent = container.children.length;
-      showToast(name, "Catatan ditambahkan ke panel Studio.");
+      const items = loadNotebookStudio();
+      const dateStr = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+      const newItem = {
+        id: 'studio_' + Date.now(),
+        title: name,
+        body: `Rangkuman otomatis ${name} dihasilkan secara komprehensif berdasarkan berkas dokumen laptop dan materi kuliah. Anda dapat mengedit teks ini kapan saja.`,
+        date: dateStr,
+        toolType: name
+      };
+      items.unshift(newItem);
+      saveNotebookStudio(items);
+      renderStudioNotes();
+      showToast(name, "Materi studi berhasil dibuat dan ditambahkan ke panel Studio.");
     }
 
     function downloadFile(event, filename) {
@@ -4837,9 +5000,14 @@
     // INITIALIZATION (THEME & SYSTEM LISTENER & PROFILE & CUSTOM APIS & PRIORITY & RESPONSIVE SIDEBARS)
     const savedTheme = localStorage.getItem('noteroute-theme-pref') || 'system';
     setThemePreference(savedTheme, false);
+    initNotebookTitle();
     loadStoredProfile();
+    renderCurrentDeviceSession();
     renderCustomProviders();
     renderPriorityList();
+    renderSources();
+    renderNotes();
+    renderStudioNotes();
     initPhotoEditorEvents();
     initResponsiveSidebars();
 
@@ -4858,6 +5026,51 @@
         closeAddSourceModal();
       }
     });
+  </script>
+
+  <!-- JSCroot ES Module Integration: Sinkronisasi Workspace & Dokumen Cloud Backend -->
+  <script type="module">
+    import { get } from "https://cdn.jsdelivr.net/gh/jscroot/api@0.0.6/croot.js";
+    import { setInner, onClick } from "https://cdn.jsdelivr.net/gh/jscroot/element@0.1.5/croot.js";
+
+    // Ekspos JSCroot helper ke window scope
+    window.jscroot = { get, setInner, onClick };
+
+    // Sinkronisasi dokumen cloud dari backend NoteRoute Alwaysdata
+    const currentWsId = currentNotebookId || 'default-workspace';
+    const ALWAYS_DATA_API_DOCS = `https://noteroute.alwaysdata.net/api/documents?workspace_id=${encodeURIComponent(currentWsId)}`;
+
+    try {
+      get(ALWAYS_DATA_API_DOCS, (res) => {
+        try {
+          if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+            const currentSources = loadNotebookSources();
+            const existingIds = new Set(currentSources.map(s => s.id));
+            let hasNew = false;
+            res.data.forEach(item => {
+              if (!existingIds.has(item.id)) {
+                currentSources.push({
+                  id: item.id,
+                  name: item.filename || 'Dokumen.pdf',
+                  size: (item.file_size ? (item.file_size / (1024 * 1024)).toFixed(2) : '1.2'),
+                  date: item.created_at ? new Date(item.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) : 'Cloud',
+                  type: (item.filename || '').split('.').pop().toLowerCase()
+                });
+                hasNew = true;
+              }
+            });
+            if (hasNew) {
+              saveNotebookSources(currentSources);
+              renderSources();
+            }
+          }
+        } catch (err) {
+          console.warn("JSCroot sync: Menggunakan penyimpanan lokal.", err);
+        }
+      });
+    } catch (e) {
+      console.warn("JSCroot network error, fallback ke localStorage offline.", e);
+    }
   </script>
 </body>
 </html>

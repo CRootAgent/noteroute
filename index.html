@@ -406,8 +406,10 @@
             <!-- User Avatar Dropdown Trigger -->
             <div class="relative">
               <button
+                id="nav-avatar-btn"
                 onclick="toggleUserNavMenu()"
-                class="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs overflow-hidden ring-2 ring-blue-500/30 hover:scale-105 transition"
+                class="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs overflow-hidden ring-2 ring-blue-500/30 hover:scale-105 transition cursor-pointer select-none"
+                title="Menu Profil Pengguna"
               >
                 <span id="nav-avatar-text">AZ</span>
                 <img
@@ -548,6 +550,15 @@
             <i class="fa-solid fa-folder-open text-xs"></i>
             <span>Buka Workspace NoteRoute</span>
           </a>
+          <button
+            id="mobile-drawer-logout-btn"
+            type="button"
+            onclick="handleLogout(); closeMobileMenu();"
+            class="hidden w-full px-3 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 font-semibold text-xs flex items-center justify-center space-x-1.5 transition text-center cursor-pointer"
+          >
+            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+            <span>Keluar Akun</span>
+          </button>
         </div>
       </div>
     </header>
@@ -1695,17 +1706,28 @@
 
               <!-- Inputs -->
               <div class="w-full space-y-2.5 text-left text-xs">
-                <div class="relative">
-                  <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--nlm-text-tertiary)]">
-                    <i class="fa-regular fa-user text-xs"></i>
-                  </span>
-                  <input
-                    type="text"
-                    id="reg-name"
-                    required
-                    placeholder="Nama Lengkap"
-                    class="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
-                  />
+                <!-- Pisahkan Nama Depan & Nama Belakang -->
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--nlm-text-tertiary)]">
+                      <i class="fa-regular fa-user text-xs"></i>
+                    </span>
+                    <input
+                      type="text"
+                      id="reg-first-name"
+                      required
+                      placeholder="Nama Depan"
+                      class="w-full pl-8 pr-3 py-2.5 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                    />
+                  </div>
+                  <div class="relative">
+                    <input
+                      type="text"
+                      id="reg-last-name"
+                      placeholder="Nama Belakang"
+                      class="w-full px-3 py-2.5 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                    />
+                  </div>
                 </div>
                 <div class="relative">
                   <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--nlm-text-tertiary)]">
@@ -1972,6 +1994,9 @@
         const nbLink = document.getElementById("nav-link-notebook-saya");
         if (nbLink) nbLink.classList.remove("hidden");
 
+        const mobileLogoutBtn = document.getElementById("mobile-drawer-logout-btn");
+        if (mobileLogoutBtn) mobileLogoutBtn.classList.remove("hidden");
+
         const nameEl = document.getElementById("nav-user-fullname");
         const emailEl = document.getElementById("nav-user-email");
         const txtAvatar = document.getElementById("nav-avatar-text");
@@ -1980,17 +2005,30 @@
         if (nameEl) nameEl.textContent = user.name || "Pengguna NoteRoute";
         if (emailEl) emailEl.textContent = user.email || "user@noteroute.app";
 
-        // Initials
+        // Avatar & Initials
         let initials = "U";
-        const parts = (user.name || "").trim().split(" ");
-        if (parts.length >= 2) {
-          initials = (parts[0][0] + parts[1][0]).toUpperCase();
-        } else if (parts[0]) {
-          initials = parts[0].substring(0, 2).toUpperCase();
+        if (user.firstName && user.lastName) {
+          initials = (user.firstName[0] + user.lastName[0]).toUpperCase();
+        } else {
+          const parts = (user.name || "").trim().split(" ");
+          if (parts.length >= 2) {
+            initials = (parts[0][0] + parts[1][0]).toUpperCase();
+          } else if (parts[0]) {
+            initials = parts[0].substring(0, 2).toUpperCase();
+          }
         }
 
-        if (user.avatar) {
-          imgAvatar.src = user.avatar;
+        // Cek avatar dari user object atau noteroute-user-profile
+        let avatarSrc = user.avatar || "";
+        if (!avatarSrc) {
+          try {
+            const p = JSON.parse(localStorage.getItem("noteroute-user-profile") || "{}");
+            if (p && p.avatarDataUrl) avatarSrc = p.avatarDataUrl;
+          } catch (e) {}
+        }
+
+        if (avatarSrc) {
+          imgAvatar.src = avatarSrc;
           imgAvatar.classList.remove("hidden");
           txtAvatar.classList.add("hidden");
         } else {
@@ -2009,6 +2047,9 @@
 
         const nbLink = document.getElementById("nav-link-notebook-saya");
         if (nbLink) nbLink.classList.add("hidden");
+
+        const mobileLogoutBtn = document.getElementById("mobile-drawer-logout-btn");
+        if (mobileLogoutBtn) mobileLogoutBtn.classList.add("hidden");
 
         const dropdown = document.getElementById("user-nav-dropdown");
         if (dropdown) dropdown.classList.add("hidden");
@@ -2176,12 +2217,18 @@
 
       function handleSignUpSubmit(e) {
         e.preventDefault();
-        const name = document.getElementById("reg-name").value.trim();
-        const email = document.getElementById("reg-email").value.trim();
-        const pass = document.getElementById("reg-pass").value;
+        const firstName = (document.getElementById("reg-first-name")?.value || "").trim();
+        const lastName = (document.getElementById("reg-last-name")?.value || "").trim();
+        const email = (document.getElementById("reg-email")?.value || "").trim();
+        const pass = document.getElementById("reg-pass")?.value || "";
 
-        if (!name || !email || !pass) {
-          showToast("Peringatan", "Lengkapi seluruh formulir pendaftaran.");
+        if (!firstName) {
+          showToast("Nama Depan Diperlukan", "Silakan masukkan nama depan Anda.");
+          return;
+        }
+
+        if (!email || !pass) {
+          showToast("Peringatan", "Lengkapi email dan kata sandi.");
           return;
         }
 
@@ -2190,8 +2237,13 @@
           return;
         }
 
+        const fullName = (firstName + (lastName ? " " + lastName : "")).trim();
+
         const user = {
-          name: name,
+          name: fullName,
+          firstName: firstName,
+          lastName: lastName,
+          nickname: firstName,
           email: email,
           avatar: "",
           isLoggedIn: true,
@@ -2199,14 +2251,14 @@
         };
 
         localStorage.setItem("noteroute_auth_user", JSON.stringify(user));
-        syncUserProfileStorage(name, email);
+        syncUserProfileStorage(firstName, lastName, email);
 
         currentUser = user;
         renderLoggedInUI(user);
         closeAuthModal();
         showToast(
           "Akun Berhasil Dibuat!",
-          `Halo ${name}, selamat datang di NoteRoute!`,
+          `Halo ${fullName}, selamat datang di NoteRoute!`,
         );
 
         setTimeout(() => {
@@ -2214,12 +2266,7 @@
         }, 700);
       }
 
-
-
-      function syncUserProfileStorage(fullName, email) {
-        const parts = fullName.split(" ");
-        const fn = parts[0] || "Ahmad";
-        const ln = parts.slice(1).join(" ") || "";
+      function syncUserProfileStorage(fn, ln, email) {
         let existingAvatar = "";
         try {
           const stored = localStorage.getItem("noteroute-user-profile");
@@ -2231,13 +2278,14 @@
         } catch (e) {}
 
         const p = {
-          firstName: fn,
-          lastName: ln,
-          nickname: fn,
+          firstName: fn || "Pengguna",
+          lastName: ln || "",
+          nickname: fn || "Pengguna",
           email: email,
           avatarDataUrl: existingAvatar,
         };
         localStorage.setItem("noteroute-user-profile", JSON.stringify(p));
+      }
       }
 
       function handleForgotPassword() {
