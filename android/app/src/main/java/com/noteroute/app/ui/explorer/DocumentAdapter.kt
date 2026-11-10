@@ -54,8 +54,7 @@ class DocumentAdapter(
             }
 
             binding.tvFilename.text = item.filename
-            binding.tvFileSize.text = item.fileSizeFormatted
-            binding.tvSummary.text = item.summary ?: item.previewText ?: "Tidak ada ringkasan dokumen."
+            binding.tvFileMeta.text = "${item.fileSizeFormatted} • Tersinkron"
 
             val isDownloading = (item.id == downloadingDocumentId)
             binding.pbDownload.visibility = if (isDownloading) View.VISIBLE else View.GONE
@@ -63,10 +62,13 @@ class DocumentAdapter(
             binding.btnDownload.text = if (isDownloading) {
                 context.getString(R.string.downloading)
             } else {
-                context.getString(R.string.btn_download)
+                "Ke HP"
             }
 
-            binding.btnPreview.setOnClickListener {
+            binding.layoutDocContent.setOnClickListener {
+                onPreviewClick(item)
+            }
+            binding.root.setOnClickListener {
                 onPreviewClick(item)
             }
             binding.btnDownload.setOnClickListener {

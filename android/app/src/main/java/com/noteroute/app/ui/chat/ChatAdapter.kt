@@ -13,7 +13,7 @@ import com.noteroute.app.databinding.ItemChatUserBinding
 import com.noteroute.app.databinding.ItemCitationBadgeBinding
 
 class ChatAdapter(
-    private val onCitationClick: (CitationItem) -> Unit
+    private val onCitationClick: (CitationItem, Int) -> Unit
 ) : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallback) {
 
     override fun getItemViewType(position: Int): Int {
@@ -49,13 +49,13 @@ class ChatAdapter(
 
     class AssistantViewHolder(
         private val binding: ItemChatAssistantBinding,
-        private val onCitationClick: (CitationItem) -> Unit
+        private val onCitationClick: (CitationItem, Int) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: ChatMessage) {
             binding.tvAssistantMessage.text = item.text
             binding.tvAssistantTimestamp.text = item.timestamp
-            binding.tvModelBadge.text = item.modelUsed ?: "AI Assistant"
+            binding.tvModelBadge.text = item.modelUsed ?: "Gemini 1.5 Flash (Grounded)"
 
             if (item.latencyMs != null && item.latencyMs > 0) {
                 binding.tvLatency.visibility = View.VISIBLE
@@ -72,11 +72,13 @@ class ChatAdapter(
                 binding.layoutCitationsSection.visibility = View.VISIBLE
                 val inflater = LayoutInflater.from(binding.root.context)
 
-                for (citation in item.citations) {
+                item.citations.forEachIndexed { index, citation ->
                     val badgeBinding = ItemCitationBadgeBinding.inflate(inflater, binding.containerCitationBadges, false)
+                    val citationNum = index + 1
+                    badgeBinding.tvCitationNumber.text = citationNum.toString()
                     badgeBinding.tvCitationLabel.text = "${citation.filename} : Hal ${citation.page}"
                     badgeBinding.root.setOnClickListener {
-                        onCitationClick(citation)
+                        onCitationClick(citation, citationNum)
                     }
                     binding.containerCitationBadges.addView(badgeBinding.root)
                 }

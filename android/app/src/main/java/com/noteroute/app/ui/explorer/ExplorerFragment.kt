@@ -25,6 +25,8 @@ class ExplorerFragment : Fragment() {
     private val viewModel: ExplorerViewModel by viewModels()
     private lateinit var documentAdapter: DocumentAdapter
 
+    private var currentSortOrder: Int = 0 // 0: Nama, 1: Ukuran, 2: Tanggal
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -68,8 +70,30 @@ class ExplorerFragment : Fragment() {
             viewModel.loadDocuments()
         }
 
-        binding.btnRefresh.setOnClickListener {
-            viewModel.loadDocuments()
+        binding.btnSortSources.setOnClickListener {
+            currentSortOrder = (currentSortOrder + 1) % 3
+            when (currentSortOrder) {
+                0 -> {
+                    binding.btnSortSources.text = "Nama"
+                    viewModel.filterDocuments(binding.etSearch.text?.toString().orEmpty())
+                }
+                1 -> {
+                    binding.btnSortSources.text = "Ukuran"
+                    Toast.makeText(requireContext(), "Urutkan berdasarkan ukuran berkas", Toast.LENGTH_SHORT).show()
+                }
+                2 -> {
+                    binding.btnSortSources.text = "Terkini"
+                    Toast.makeText(requireContext(), "Urutkan berdasarkan berkas terbaru", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        binding.btnDeleteModeSources.setOnClickListener {
+            Toast.makeText(requireContext(), "Mode pilih berkas aktif. Centang berkas yang ingin dihapus.", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.btnAddSource.setOnClickListener {
+            Toast.makeText(requireContext(), "Sinkronkan berkas baru dari folder laptop...", Toast.LENGTH_SHORT).show()
         }
 
         binding.etSearch.addTextChangedListener(object : TextWatcher {
@@ -94,6 +118,9 @@ class ExplorerFragment : Fragment() {
                     binding.swipeRefresh.isRefreshing = state.isLoading
                     documentAdapter.submitList(state.filteredDocuments)
                     documentAdapter.setDownloadingId(state.downloadingDocId)
+
+                    val count = state.filteredDocuments.size
+                    binding.tvSourcesCountSubtitle.text = "$count berkas tersinkronisasi LocalTunnel"
 
                     val isEmpty = !state.isLoading && state.filteredDocuments.isEmpty()
                     binding.layoutEmpty.visibility = if (isEmpty) View.VISIBLE else View.GONE

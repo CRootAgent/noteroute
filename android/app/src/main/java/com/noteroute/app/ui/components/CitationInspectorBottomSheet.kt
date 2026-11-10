@@ -14,6 +14,7 @@ class CitationInspectorBottomSheet : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
 
     private var citationItem: CitationItem? = null
+    private var citationIndex: Int = 1
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,6 +27,8 @@ class CitationInspectorBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.tvModalCitationNumber.text = citationIndex.toString()
 
         citationItem?.let { citation ->
             binding.tvPageBadge.text = "Halaman ${citation.page}"
@@ -46,9 +49,10 @@ class CitationInspectorBottomSheet : BottomSheetDialogFragment() {
     companion object {
         const val TAG = "CitationInspectorBottomSheet"
 
-        fun newInstance(citation: CitationItem): CitationInspectorBottomSheet {
+        fun newInstance(citation: CitationItem, index: Int = 1): CitationInspectorBottomSheet {
             val fragment = CitationInspectorBottomSheet()
             fragment.citationItem = citation
+            fragment.citationIndex = index
             return fragment
         }
     }

@@ -1,59 +1,70 @@
 package com.noteroute.app.ui.main
 
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import com.noteroute.app.R
 import com.noteroute.app.databinding.ActivityMainBinding
-import com.noteroute.app.ui.chat.ChatFragment
-import com.noteroute.app.ui.explorer.ExplorerFragment
-import com.noteroute.app.ui.status.StatusFragment
+import com.noteroute.app.ui.home.HomeFragment
+import com.noteroute.app.ui.workspace.WorkspaceFragment
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private val explorerFragment by lazy { ExplorerFragment.newInstance() }
-    private val chatFragment by lazy { ChatFragment.newInstance() }
-    private val statusFragment by lazy { StatusFragment.newInstance() }
+    private val homeFragment by lazy {
+        HomeFragment.newInstance().apply {
+            onNotebookSelectedListener = { notebook ->
+                openWorkspace(notebook.name)
+            }
+            onCreateNewNotebookListener = {
+                openWorkspace("Untitled Notebook")
+            }
+        }
+    }
+
+    private var currentWorkspaceFragment: WorkspaceFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupBottomNavigation()
+        // Hide legacy bottom nav in MainActivity because Home and Workspace have their own ergonomic navigation
+        binding.bottomNavigation.visibility = android.view.View.GONE
 
         if (savedInstanceState == null) {
-            // Default to Chat (or Explorer)
-            replaceFragment(chatFragment)
-            binding.bottomNavigation.selectedItemId = R.id.menu_chat
+            showHome()
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (currentWorkspaceFragment != null && currentWorkspaceFragment?.isVisible == true) {
+                    showHome()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
 
-    private fun setupBottomNavigation() {
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.menu_explorer -> {
-                    replaceFragment(explorerFragment)
-                    true
-                }
-                R.id.menu_chat -> {
-                    replaceFragment(chatFragment)
-                    true
-                }
-                R.id.menu_status -> {
-                    replaceFragment(statusFragment)
-                    true
-                }
-                else -> false
+    private fun showHome() {
+        currentWorkspaceFragment = null
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, homeFragment)
+            .commit()
+    }
+
+    private fun openWorkspace(title: String) {
+        val workspace = WorkspaceFragment.newInstance(title).apply {
+            onBackToHomeListener = {
+                showHome()
             }
         }
-    }
-
-    private fun replaceFragment(fragment: Fragment) {
+        currentWorkspaceFragment = workspace
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
+            .replace(R.id.fragment_container, workspace)
             .commit()
     }
 }

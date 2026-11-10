@@ -6,15 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.noteroute.app.R
 import com.noteroute.app.databinding.FragmentChatBinding
 import com.noteroute.app.ui.components.CitationInspectorBottomSheet
 import com.noteroute.app.ui.components.ModelSwitcherBottomSheet
+import com.noteroute.app.ui.components.SourcePickerBottomSheet
 import kotlinx.coroutines.launch
 
 class ChatFragment : Fragment() {
@@ -24,6 +27,8 @@ class ChatFragment : Fragment() {
 
     private val viewModel: ChatViewModel by viewModels()
     private lateinit var chatAdapter: ChatAdapter
+
+    private var isNotebookMode: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,8 +48,8 @@ class ChatFragment : Fragment() {
 
     private fun setupRecyclerView() {
         chatAdapter = ChatAdapter(
-            onCitationClick = { citation ->
-                val inspector = CitationInspectorBottomSheet.newInstance(citation)
+            onCitationClick = { citation, index ->
+                val inspector = CitationInspectorBottomSheet.newInstance(citation, index)
                 inspector.show(parentFragmentManager, CitationInspectorBottomSheet.TAG)
             }
         )
@@ -58,15 +63,31 @@ class ChatFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        // Model Switcher Click
-        binding.btnModelSwitcher.setOnClickListener {
-            val switcher = ModelSwitcherBottomSheet.newInstance(
-                activeModel = viewModel.uiState.value.activeModel,
-                onSelected = { selectedModel ->
-                    viewModel.setModel(selectedModel)
-                }
-            )
-            switcher.show(parentFragmentManager, ModelSwitcherBottomSheet.TAG)
+        // Starter Prompt Buttons
+        binding.btnStarterTopic.setOnClickListener {
+            sendMessage("Learn about a new topic")
+        }
+        binding.btnStarterCreate.setOnClickListener {
+            sendMessage("Create something new")
+        }
+        binding.btnStarterProject.setOnClickListener {
+            sendMessage("Make progress on a project")
+        }
+
+        // Mode Switcher: Mode Notebook vs AI Umum
+        binding.btnModeNotebook.setOnClickListener {
+            setAppMode(true)
+        }
+        binding.btnModeGeneral.setOnClickListener {
+            setAppMode(false)
+        }
+
+        // Source Picker Dialog
+        binding.btnSourcePicker.setOnClickListener {
+            val sheet = SourcePickerBottomSheet.newInstance { count ->
+                binding.tvSourcePickerLabel.text = "$count Sumber Dipilih"
+            }
+            sheet.show(parentFragmentManager, SourcePickerBottomSheet.TAG)
         }
 
         // Send Button Click
@@ -83,42 +104,49 @@ class ChatFragment : Fragment() {
                 false
             }
         }
+    }
 
-        // Clear Chat
-        binding.btnClearChat.setOnClickListener {
-            viewModel.clearChat()
-        }
-
-        // Suggested Prompt Chips
-        binding.chipPrompt1.setOnClickListener {
-            binding.etMessage.setText(binding.chipPrompt1.text)
-            sendMessageFromInput()
-        }
-        binding.chipPrompt2.setOnClickListener {
-            binding.etMessage.setText(binding.chipPrompt2.text)
-            sendMessageFromInput()
-        }
-        binding.chipPrompt3.setOnClickListener {
-            binding.etMessage.setText(binding.chipPrompt3.text)
-            sendMessageFromInput()
+    private fun setAppMode(notebookMode: Boolean) {
+        isNotebookMode = notebookMode
+        val context = requireContext()
+        if (notebookMode) {
+            binding.btnModeNotebook.setBackgroundResource(R.drawable.bg_chat_user)
+            binding.btnModeNotebook.setTextColor(ContextCompat.getColor(context, R.color.white))
+            binding.btnModeGeneral.setBackgroundColor(0)
+            binding.btnModeGeneral.setTextColor(ContextCompat.getColor(context, R.color.slate_400))
+            binding.btnSourcePicker.visibility = View.VISIBLE
+        } else {
+            binding.btnModeGeneral.setBackgroundResource(R.drawable.bg_chat_user)
+            binding.btnModeGeneral.setTextColor(ContextCompat.getColor(context, R.color.white))
+            binding.btnModeNotebook.setBackgroundColor(0)
+            binding.btnModeNotebook.setTextColor(ContextCompat.getColor(context, R.color.slate_400))
+            binding.btnSourcePicker.visibility = View.GONE
         }
     }
 
     private fun sendMessageFromInput() {
         val text = binding.etMessage.text?.toString().orEmpty()
         if (text.isNotBlank()) {
-            viewModel.sendMessage(text)
+            sendMessage(text)
             binding.etMessage.text?.clear()
         }
+    }
+
+    private fun sendMessage(text: String) {
+        binding.scrollWelcomeBanner.visibility = View.GONE
+        viewModel.sendMessage(text)
     }
 
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    binding.tvActiveModelName.text = state.activeModel.displayName
                     binding.layoutThinking.visibility = if (state.isThinking) View.VISIBLE else View.GONE
                     binding.btnSend.isEnabled = !state.isThinking
+
+                    if (state.messages.size > 1) {
+                        binding.scrollWelcomeBanner.visibility = View.GONE
+                    }
 
                     chatAdapter.submitList(state.messages) {
                         if (state.messages.isNotEmpty()) {

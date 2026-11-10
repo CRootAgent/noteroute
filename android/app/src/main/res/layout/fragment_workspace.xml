@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#14171D">
+
+    <!-- Workspace Topbar -->
+    <LinearLayout
+        android:id="@+id/layout_workspace_topbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#14171D"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btn_back_home"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            android:src="@drawable/ic_arrow_back" />
+
+        <LinearLayout
+            android:id="@+id/layout_title_click"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_workspace_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Materi Kuliah Semester 5 • Sistem Terdistribusi"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NoteRoute AI Workspace"
+                android:textColor="@color/slate_400"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_share_workspace"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Share"
+            android:src="@drawable/ic_share" />
+
+        <ImageButton
+            android:id="@+id/btn_menu_workspace"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Menu"
+            android:src="@drawable/ic_more_vert" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider_topbar"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#1E232B"
+        app:layout_constraintTop_toBottomOf="@id/layout_workspace_topbar" />
+
+    <!-- Tab Content Container -->
+    <FrameLayout
+        android:id="@+id/workspace_fragment_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/workspace_bottom_nav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider_topbar" />
+
+    <!-- Material Bottom Navigation Bar: [Sources] [Chat] [Studio] -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/workspace_bottom_nav"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:background="#171A21"
+        app:elevation="8dp"
+        app:itemIconTint="@color/primary_light"
+        app:itemTextColor="@color/slate_200"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/workspace_bottom_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
