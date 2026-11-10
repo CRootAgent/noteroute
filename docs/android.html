@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>NoteRoute - Android Notebook</title>
+  <!-- Tailwind CSS & FontAwesome Icons -->
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #111317;
+      color: #e5e7eb;
+      overscroll-behavior-y: none;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Ambient glow at bottom like authentic NotebookLM Android */
+    .ambient-glow {
+      background: radial-gradient(circle at 50% 100%, rgba(20, 83, 45, 0.28) 0%, rgba(13, 148, 136, 0.12) 35%, rgba(17, 19, 23, 0) 70%);
+    }
+
+    /* Hide scrollbars */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeInUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes slideUpSheet {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .animate-sheet {
+      animation: slideUpSheet 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Citation badge */
+    .nlm-cite-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 17px;
+      height: 17px;
+      border-radius: 9999px;
+      background-color: #2563eb;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 700;
+      margin-left: 3px;
+      margin-right: 3px;
+      cursor: pointer;
+      vertical-align: middle;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#0d0f12] sm:p-4">
+
+  <!-- ======================================================== -->
+  <!-- PHONE FRAME CONTAINER (RESPONSIVE MOCKUP / NATIVE FULL)  -->
+  <!-- ======================================================== -->
+  <div id="phone-container" class="w-full sm:max-w-[420px] h-screen sm:h-[880px] sm:max-h-[94vh] bg-[#14171d] sm:rounded-[44px] sm:border-[8px] sm:border-[#2a2f3b] sm:shadow-2xl overflow-hidden flex flex-col relative ambient-glow">
+
+    <!-- 0. ANDROID STATUS BAR (JAM REAL-TIME, 5G, BATERAI 64%) -->
+    <div class="h-8 w-full px-5 flex items-center justify-between text-xs text-zinc-300 font-medium shrink-0 z-30 select-none pt-1">
+      <div class="flex items-center space-x-1.5">
+        <span id="android-clock" class="font-semibold text-[13px] tracking-tight">20.47</span>
+        <span class="text-[10px] text-zinc-400 font-normal">Min, 8 Nov</span>
+        <i class="fa-solid fa-cloud text-[9px] text-zinc-400 ml-1"></i>
+      </div>
+      <div class="flex items-center space-x-2 text-[11px] text-zinc-300">
+        <i class="fa-regular fa-clock text-[10px]"></i>
+        <span class="text-[9px] font-bold px-1 bg-zinc-800 rounded text-zinc-400">VoLTE1</span>
+        <i class="fa-solid fa-wifi text-[10px]"></i>
+        <i class="fa-solid fa-signal text-[10px]"></i>
+        <span class="text-[11px] font-semibold">64%</span>
+        <i class="fa-solid fa-battery-three-quarters text-sm"></i>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 1: PAGE MASUK / DAFTAR (AUTHENTICATION SCREEN)     -->
+    <!-- (TWEAK: NoteRoute Menyediakan Halaman Masuk/Daftar)     -->
+    <!-- ======================================================== -->
+    <div id="view-auth" class="flex-1 flex flex-col justify-between p-6 animate-fade-in z-20">
+      <!-- Top Brand Graphic -->
+      <div class="pt-6 text-center space-y-3">
+        <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center text-2xl mx-auto shadow-lg shadow-blue-500/25">
+          <i class="fa-solid fa-book-bookmark"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-white">NoteRoute Notebook</h1>
+          <p class="text-xs text-zinc-400 mt-1 max-w-xs mx-auto">
+            Platform AI Notebook dengan Multi-LLM Routing &amp; Rujukan Dokumen Grounded.
+          </p>
+        </div>
+      </div>
+
+      <!-- Auth Form Card -->
+      <div class="bg-[#1e232c] border border-white/10 rounded-3xl p-5 shadow-xl space-y-4">
+        <!-- Auth Tabs (Masuk vs Daftar) -->
+        <div class="flex items-center p-1 rounded-2xl bg-zinc-900/70 border border-white/5 text-xs font-semibold">
+          <button id="auth-tab-btn-signin" type="button" onclick="setAuthTab('signin')" class="flex-1 py-2 rounded-xl bg-blue-600 text-white transition text-center shadow-xs">
+            Masuk
+          </button>
+          <button id="auth-tab-btn-signup" type="button" onclick="setAuthTab('signup')" class="flex-1 py-2 rounded-xl text-zinc-400 hover:text-white transition text-center">
+            Daftar Akun
+          </button>
+        </div>
+
+        <form id="mobile-auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
+          <!-- Full Name (Only on Signup) -->
+          <div id="auth-field-name" class="hidden space-y-1">
+            <label class="text-[11px] font-semibold text-zinc-300">Nama Lengkap</label>
+            <div class="relative">
+              <i class="fa-regular fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-zinc-400"></i>
+              <input id="auth-input-name" type="text" placeholder="Ahmad Zakky" class="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-zinc-900/60 border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500">
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="space-y-1">
+            <label class="text-[11px] font-semibold text-zinc-300">Alamat Email</label>
+            <div class="relative">
+              <i class="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-zinc-400"></i>
+              <input id="auth-input-email" type="email" value="user@noteroute.app" required placeholder="nama@email.com" class="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-zinc-900/60 border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500">
+            </div>
+          </div>
+
+          <!-- Password with Eye Toggle -->
+          <div class="space-y-1">
+            <label class="text-[11px] font-semibold text-zinc-300">Kata Sandi</label>
+            <div class="relative">
+              <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-zinc-400"></i>
+              <input id="auth-input-pass" type="password" value="rahasia123" required placeholder="Minimal 6 karakter" class="w-full pl-9 pr-10 py-2.5 rounded-2xl bg-zinc-900/60 border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500">
+              <button type="button" onclick="togglePassVisibility('auth-input-pass', this)" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white" title="Lihat kata sandi">
+                <i class="fa-regular fa-eye text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button id="auth-submit-btn" type="submit" class="w-full py-3 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-500 hover:opacity-95 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-lg shadow-blue-500/25 transition active:scale-95">
+            <span id="auth-submit-label">Masuk ke NoteRoute</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </form>
+
+        <div class="text-center">
+          <span class="text-[11px] text-zinc-400">Tersambung ke cloud Alwaysdata &amp; MongoDB Atlas.</span>
+        </div>
+      </div>
+
+      <!-- Bottom Hint -->
+      <div class="text-center pb-2">
+        <span class="text-[10px] text-zinc-500">NoteRoute v2.0 Android &bull; Edisi Penelitian Mobile</span>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 2: HOMEPAGE ANDROID (DAFTAR NOTEBOOK & FAB BAR)    -->
+    <!-- (SESUAI SCREENSHOT 1 & SCREENSHOT 5 DENGAN TWEAK)       -->
+    <!-- ======================================================== -->
+    <div id="view-home" class="hidden flex-1 flex flex-col justify-between overflow-hidden animate-fade-in relative z-20">
+      
+      <!-- Topbar: Gemini/NoteRoute Notebook, Search, Profile Icon -->
+      <div class="h-14 px-5 flex items-center justify-between shrink-0">
+        <div class="flex items-center space-x-2">
+          <span class="text-xl font-bold tracking-tight text-white">NoteRoute Notebook</span>
+        </div>
+        <div class="flex items-center space-x-3.5">
+          <button onclick="showToast('Pencarian', 'Cari notebook kuliah & riset...')" class="w-9 h-9 rounded-full hover:bg-white/5 text-zinc-300 flex items-center justify-center transition" title="Cari Notebook">
+            <i class="fa-solid fa-magnifying-glass text-base"></i>
+          </button>
+          
+          <!-- Profile Avatar 'A' (Identik Web & Screenshot 1/5) -->
+          <button onclick="toggleProfileSheet()" id="home-avatar-btn" class="w-8 h-8 rounded-full bg-[#7c3aed] text-white font-bold text-xs flex items-center justify-center shadow-md ring-2 ring-white/10 active:scale-95 transition" title="Profil &amp; Akun">
+            <span>A</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Scroll Content (Notebooks or Empty State) -->
+      <!-- TWEAK (Item 9): Hapus filter All, Shared, Downloaded -->
+      <div class="flex-1 overflow-y-auto px-5 py-3 space-y-3 no-scrollbar">
+
+        <!-- Notebooks List Container -->
+        <div id="home-notebooks-list" class="space-y-3">
+          
+          <!-- Notebook Card 1 (Tapping it opens Workspace immediately) -->
+          <div onclick="openWorkspace('Materi Kuliah Semester 5 • Sistem Terdistribusi')" class="p-4 rounded-3xl bg-[#23272e] hover:bg-[#282d36] border border-white/5 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between group">
+            <div class="flex items-center space-x-3.5 min-w-0">
+              <div class="w-10 h-10 rounded-2xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-lg shrink-0">
+                <i class="fa-solid fa-book"></i>
+              </div>
+              <div class="min-w-0">
+                <h3 class="font-bold text-sm text-white truncate group-hover:text-blue-400 transition">
+                  Materi Kuliah Semester 5 &bull; Sistem Terdistribusi
+                </h3>
+                <p class="text-xs text-zinc-400 mt-0.5 flex items-center space-x-1.5">
+                  <span class="text-emerald-400 font-semibold">4 sumber</span>
+                  <span>&bull;</span>
+                  <span>Barusan diedit</span>
+                </p>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-xs text-zinc-500 group-hover:text-white transition"></i>
+          </div>
+
+          <!-- Notebook Card 2 -->
+          <div onclick="openWorkspace('Catatan Riset Multi-LLM & Failover')" class="p-4 rounded-3xl bg-[#23272e] hover:bg-[#282d36] border border-white/5 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between group">
+            <div class="flex items-center space-x-3.5 min-w-0">
+              <div class="w-10 h-10 rounded-2xl bg-blue-500/15 text-blue-400 flex items-center justify-center text-lg shrink-0">
+                <i class="fa-solid fa-book"></i>
+              </div>
+              <div class="min-w-0">
+                <h3 class="font-bold text-sm text-white truncate group-hover:text-blue-400 transition">
+                  Catatan Riset Multi-LLM &amp; Failover
+                </h3>
+                <p class="text-xs text-zinc-400 mt-0.5 flex items-center space-x-1.5">
+                  <span class="text-emerald-400 font-semibold">2 sumber</span>
+                  <span>&bull;</span>
+                  <span>Kemarin</span>
+                </p>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-xs text-zinc-500 group-hover:text-white transition"></i>
+          </div>
+
+        </div>
+
+        <!-- Empty State (Tersembunyi jika ada notebook) -->
+        <div id="home-empty-state" class="hidden flex flex-col items-center justify-center py-24 text-center space-y-3">
+          <div class="w-16 h-16 rounded-2xl border-2 border-dashed border-zinc-600 flex items-center justify-center text-zinc-500 text-2xl">
+            <i class="fa-regular fa-clone"></i>
+          </div>
+          <h2 class="text-xl font-bold text-white tracking-tight">Let's get started</h2>
+          <p class="text-xs text-zinc-400 max-w-xs">Create your first notebook below.</p>
+        </div>
+
+      </div>
+
+      <!-- Bottom FAB Bar: ONLY "+ Create New" -->
+      <!-- TWEAK (Item 5): Hapus tombol kamera dan mic di semua tempat -->
+      <!-- TWEAK (Item 6): Saat create new langsung ke tampilan workspace -->
+      <div class="p-5 pb-6 flex items-center justify-center shrink-0">
+        <button onclick="handleCreateNewNotebook()" class="px-7 py-3.5 rounded-full bg-white hover:bg-zinc-100 text-zinc-900 font-bold text-xs flex items-center space-x-2 shadow-2xl active:scale-95 transition-all cursor-pointer">
+          <i class="fa-solid fa-plus text-xs"></i>
+          <span class="text-sm">Create New</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 3: WORKSPACE ANDROID (SESUAI SS 2, 3, 4 + TWEAKS)    -->
+    <!-- ======================================================== -->
+    <div id="view-workspace" class="hidden flex-1 flex flex-col justify-between overflow-hidden animate-fade-in relative z-20">
+      
+      <!-- Workspace Topbar: Back Arrow, Notebook Title, Share, 3-dots -->
+      <div class="h-14 px-4 flex items-center justify-between border-b border-white/5 bg-[#14171d]/90 backdrop-blur-md shrink-0">
+        <div class="flex items-center space-x-2.5 min-w-0">
+          <button onclick="backToHome()" class="w-9 h-9 rounded-full hover:bg-white/10 text-white flex items-center justify-center transition shrink-0" title="Kembali ke Daftar Notebook">
+            <i class="fa-solid fa-arrow-left text-sm"></i>
+          </button>
+          <div class="min-w-0">
+            <h2 id="workspace-title-display" onclick="renameNotebookPrompt()" class="text-sm font-bold text-white truncate cursor-pointer hover:underline decoration-dotted" title="Klik untuk mengubah judul">
+              Untitled Notebook
+            </h2>
+            <p class="text-[10px] text-zinc-400 -mt-0.5">NoteRoute AI Workspace</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-1 shrink-0">
+          <button onclick="showToast('Bagikan', 'Tautan notebook disalin ke papan klip.')" class="w-8 h-8 rounded-full hover:bg-white/10 text-zinc-300 flex items-center justify-center transition" title="Bagikan">
+            <i class="fa-solid fa-share-nodes text-xs"></i>
+          </button>
+          <button onclick="showToast('Menu Opsi', 'Opsi: Ekspor Catatan, Bersihkan Riwayat, Setelan AI.')" class="w-8 h-8 rounded-full hover:bg-white/10 text-zinc-300 flex items-center justify-center transition" title="Menu">
+            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- WORKSPACE TAB 1: CHAT TAB (DEFAULT)                  -->
+      <!-- ==================================================== -->
+      <div id="tab-content-chat" class="flex-1 flex flex-col overflow-hidden relative">
+        
+        <!-- Chat Scroll Area -->
+        <div id="chat-messages-container" class="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
+
+          <!-- Welcome Initial Hero Banner (Screenshot 2) -->
+          <div id="chat-welcome-banner" class="pt-4 pb-2 space-y-3">
+            <div class="text-3xl">✋</div>
+            <h2 class="text-xl font-bold tracking-tight text-white">Let's start your notebook...</h2>
+            <p class="text-xs text-zinc-400 leading-relaxed">
+              This is your blank canvas to understand, create, or make progress on something new. I can help you get started or you can go ahead and add your own sources.
+            </p>
+
+            <div class="pt-2">
+              <p class="text-xs font-semibold text-zinc-300 mb-2">What would you like this notebook to help you do?</p>
+              <div class="space-y-2">
+                <button onclick="sendQuickPrompt('Learn about a new topic')" class="w-full p-3 rounded-2xl bg-[#1e232b] hover:bg-[#252b35] border border-white/5 text-left text-xs text-zinc-200 transition">
+                  Learn about a new topic
+                </button>
+                <button onclick="sendQuickPrompt('Create something new')" class="w-full p-3 rounded-2xl bg-[#1e232b] hover:bg-[#252b35] border border-white/5 text-left text-xs text-zinc-200 transition">
+                  Create something new
+                </button>
+                <button onclick="sendQuickPrompt('Make progress on a project')" class="w-full p-3 rounded-2xl bg-[#1e232b] hover:bg-[#252b35] border border-white/5 text-left text-xs text-zinc-200 transition">
+                  Make progress on a project
+                </button>
+              </div>
+            </div>
+
+            <p class="text-[10px] text-zinc-500 pt-1">NoteRoute Notebook can be inaccurate, so double-check.</p>
+          </div>
+
+          <!-- Dynamic Chat Messages Area -->
+          <div id="chat-bubbles-list" class="space-y-3 hidden">
+            <!-- User Prompt Bubble -->
+            <div class="flex justify-end">
+              <div class="max-w-[85%] bg-blue-600 text-white rounded-2xl rounded-tr-xs p-3 text-xs leading-relaxed shadow-xs">
+                <span id="chat-user-msg-text">Apa isi inti Teorema CAP pada Slide Bab 3?</span>
+              </div>
+            </div>
+
+            <!-- AI Grounded Response Bubble -->
+            <div class="flex justify-start">
+              <div class="max-w-[92%] bg-[#1f242d] border border-white/5 text-zinc-200 rounded-2xl rounded-tl-xs p-3.5 text-xs leading-relaxed space-y-2 shadow-md">
+                <div class="flex items-center space-x-1.5 text-[10px] text-emerald-400 font-semibold mb-1">
+                  <i class="fa-solid fa-sparkles text-[9px]"></i>
+                  <span id="ai-provider-label">Gemini 1.5 Flash (Grounded)</span>
+                </div>
+                <p id="chat-ai-msg-text">
+                  Berdasarkan berkas <strong>Slide_Bab3_Distributed_Systems.pdf</strong>, Teorema CAP menyatakan sistem terdistribusi tidak bisa menjamin ketiga hal ini serentak:
+                </p>
+                <ul class="list-disc ml-4 space-y-1 text-zinc-300 text-[11px]">
+                  <li><strong>Consistency:</strong> Setiap pembacaan menerima data tulis terbaru <span class="nlm-cite-badge" onclick="openCitationModal('Slide_Bab3_Distributed_Systems.pdf', 14)">1</span></li>
+                  <li><strong>Availability:</strong> Setiap permintaan menerima respons non-galat.</li>
+                  <li><strong>Partition Tolerance:</strong> Sistem tetap hidup walau ada pemisahan node <span class="nlm-cite-badge" onclick="openCitationModal('Slide_Bab3_Distributed_Systems.pdf', 16)">2</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Bottom Chat Input & Controls (Screenshot 2 + Tweaks) -->
+        <div class="p-3 bg-[#14171d] border-t border-white/5 shrink-0 space-y-2">
+          
+          <!-- TWEAK (Item 7 & 10): Opsi Mode Notebook vs AI Umum & Pemilih Sumber -->
+          <div class="flex items-center justify-between text-xs">
+            <!-- Mode Switcher Pill -->
+            <div class="inline-flex p-0.5 rounded-full bg-zinc-900 border border-white/10 text-[11px]">
+              <button id="btn-mode-notebook" onclick="setAppMode('notebook')" class="px-2.5 py-0.5 rounded-full bg-blue-600 text-white font-semibold transition">
+                Mode Notebook
+              </button>
+              <button id="btn-mode-general" onclick="setAppMode('general')" class="px-2.5 py-0.5 rounded-full text-zinc-400 hover:text-white transition">
+                AI Umum
+              </button>
+            </div>
+
+            <!-- TWEAK (Item 10): Opsi Memilih Sumber di Chatbox (Hanya di Mode Notebook) -->
+            <button id="btn-source-picker" onclick="openSourcePickerSheet()" class="px-2 py-0.5 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] font-medium flex items-center space-x-1 border border-white/10 transition">
+              <i class="fa-solid fa-file-shield text-emerald-400 text-[9px]"></i>
+              <span id="source-picker-label">4/4 Sumber Dipilih</span>
+              <i class="fa-solid fa-chevron-down text-[8px] text-zinc-400"></i>
+            </button>
+          </div>
+
+          <!-- Chat Input Pill -->
+          <!-- TWEAK (Item 5): Hapus tombol kamera dan mic di semua tempat -->
+          <div class="flex items-center rounded-full bg-[#20252e] border border-white/10 pl-4 pr-1.5 py-1.5 focus-within:border-blue-500 transition shadow-inner">
+            <input id="chat-input-text" type="text" placeholder="Ask a question or create something" onkeydown="handleChatKeyDown(event)" class="flex-1 bg-transparent text-xs text-white placeholder-zinc-500 focus:outline-none min-w-0 py-1">
+            <button onclick="handleSendChat()" class="w-8 h-8 rounded-full bg-zinc-700 hover:bg-blue-600 text-white flex items-center justify-center transition shrink-0 active:scale-95" title="Kirim">
+              <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- WORKSPACE TAB 2: SOURCES TAB (SESUAI SS 3 + TWEAKS)  -->
+      <!-- ==================================================== -->
+      <div id="tab-content-sources" class="hidden flex-1 flex flex-col overflow-hidden relative">
+        
+        <!-- Sources Controls & Toolbar -->
+        <!-- TWEAK (Item 8 & 9): Isi sama dengan web + Opsi Urutan & Hapus Multi-Pilih -->
+        <div class="px-4 py-3 border-b border-white/5 flex items-center justify-between shrink-0">
+          <div>
+            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Sumber Dokumen Laptop</h3>
+            <p class="text-[10px] text-zinc-400"><span id="android-sources-count">4</span> berkas tersinkronisasi Alwaysdata</p>
+          </div>
+
+          <div class="flex items-center space-x-1.5 text-xs">
+            <!-- Urutkan -->
+            <button onclick="cycleSortSourcesAndroid()" id="btn-sort-sources-android" class="px-2 py-1 rounded-xl bg-zinc-800 text-zinc-300 text-[11px] font-medium flex items-center space-x-1">
+              <i class="fa-solid fa-arrow-down-a-z text-[9px]"></i>
+              <span id="label-sort-sources-android">Nama</span>
+            </button>
+            <!-- Hapus -->
+            <button onclick="toggleDeleteModeSourcesAndroid()" id="btn-del-sources-android" class="px-2 py-1 rounded-xl bg-zinc-800 hover:bg-rose-500/20 text-zinc-300 hover:text-rose-400 text-[11px] font-medium flex items-center space-x-1">
+              <i class="fa-regular fa-trash-can text-[10px]"></i>
+              <span>Hapus</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Bar saat Mode Hapus Sumber Android Aktif -->
+        <div id="sources-delete-bar-android" class="hidden px-4 py-2 bg-rose-500/10 border-b border-rose-500/20 flex items-center justify-between text-xs shrink-0">
+          <div class="flex items-center space-x-2">
+            <input type="checkbox" id="del-all-sources-android" onchange="toggleAllSourcesDelAndroid(this)" class="w-3.5 h-3.5 rounded accent-rose-600">
+            <label for="del-all-sources-android" class="text-[11px] font-bold text-rose-400">Pilih Semua</label>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="executeDeleteSourcesAndroid()" class="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold text-[10px]">
+              Hapus (<span id="del-count-sources-android">0</span>)
+            </button>
+            <button onclick="toggleDeleteModeSourcesAndroid(false)" class="px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-300 font-medium text-[10px]">
+              Batal
+            </button>
+          </div>
+        </div>
+
+        <!-- Sources Scrollable List (Identik Versi Web) -->
+        <div id="sources-list-android" class="flex-1 overflow-y-auto p-4 space-y-2.5 no-scrollbar">
+
+          <!-- Source 1: PDF -->
+          <div id="asrc-1" data-name="Slide_Bab3_Distributed_Systems.pdf" data-size="2.34" class="asrc-card p-3 rounded-2xl bg-[#1e232c] border border-white/5 flex items-center space-x-3 group">
+            <input type="checkbox" onchange="updateDelSourcesAndroidCount()" class="asrc-del-chk hidden w-4 h-4 rounded accent-rose-600 shrink-0">
+            <div class="w-9 h-9 rounded-xl bg-red-500/15 text-red-500 flex items-center justify-center text-sm shrink-0">
+              <i class="fa-solid fa-file-pdf"></i>
+            </div>
+            <div class="flex-1 min-w-0" onclick="handleAndroidSourceClick('Slide_Bab3_Distributed_Systems.pdf', 14)">
+              <h4 class="text-xs font-semibold text-white truncate">Slide_Bab3_Distributed_Systems.pdf</h4>
+              <p class="text-[10px] text-zinc-400">18 hal &bull; 2.34 MB &bull; Tersinkron</p>
+            </div>
+            <button onclick="simulateDownloadToPhone('Slide_Bab3_Distributed_Systems.pdf', this)" class="px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] font-semibold flex items-center space-x-1 shrink-0">
+              <i class="fa-solid fa-download text-[9px]"></i>
+              <span>Ke HP</span>
+            </button>
+          </div>
+
+          <!-- Source 2: Markdown -->
+          <div id="asrc-2" data-name="Catatan_Riset_Multi_LLM.md" data-size="0.015" class="asrc-card p-3 rounded-2xl bg-[#1e232c] border border-white/5 flex items-center space-x-3 group">
+            <input type="checkbox" onchange="updateDelSourcesAndroidCount()" class="asrc-del-chk hidden w-4 h-4 rounded accent-rose-600 shrink-0">
+            <div class="w-9 h-9 rounded-xl bg-teal-500/15 text-teal-400 flex items-center justify-center text-sm shrink-0">
+              <i class="fa-solid fa-file-lines"></i>
+            </div>
+            <div class="flex-1 min-w-0" onclick="handleAndroidSourceClick('Catatan_Riset_Multi_LLM.md', 1)">
+              <h4 class="text-xs font-semibold text-white truncate">Catatan_Riset_Multi_LLM.md</h4>
+              <p class="text-[10px] text-zinc-400">420 baris &bull; 15.1 KB &bull; Tersinkron</p>
+            </div>
+            <button onclick="simulateDownloadToPhone('Catatan_Riset_Multi_LLM.md', this)" class="px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] font-semibold flex items-center space-x-1 shrink-0">
+              <i class="fa-solid fa-download text-[9px]"></i>
+              <span>Ke HP</span>
+            </button>
+          </div>
+
+          <!-- Source 3: DOCX -->
+          <div id="asrc-3" data-name="Modul_Praktikum_Cloud_ULBI.docx" data-size="1.12" class="asrc-card p-3 rounded-2xl bg-[#1e232c] border border-white/5 flex items-center space-x-3 group">
+            <input type="checkbox" onchange="updateDelSourcesAndroidCount()" class="asrc-del-chk hidden w-4 h-4 rounded accent-rose-600 shrink-0">
+            <div class="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center text-sm shrink-0">
+              <i class="fa-solid fa-file-word"></i>
+            </div>
+            <div class="flex-1 min-w-0" onclick="handleAndroidSourceClick('Modul_Praktikum_Cloud_ULBI.docx', 1)">
+              <h4 class="text-xs font-semibold text-white truncate">Modul_Praktikum_Cloud_ULBI.docx</h4>
+              <p class="text-[10px] text-zinc-400">32 hal &bull; 1.12 MB &bull; Tersinkron</p>
+            </div>
+            <button onclick="simulateDownloadToPhone('Modul_Praktikum_Cloud_ULBI.docx', this)" class="px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] font-semibold flex items-center space-x-1 shrink-0">
+              <i class="fa-solid fa-download text-[9px]"></i>
+              <span>Ke HP</span>
+            </button>
+          </div>
+
+          <!-- Source 4: Code JS -->
+          <div id="asrc-4" data-name="llmRouterService.js" data-size="0.008" class="asrc-card p-3 rounded-2xl bg-[#1e232c] border border-white/5 flex items-center space-x-3 group">
+            <input type="checkbox" onchange="updateDelSourcesAndroidCount()" class="asrc-del-chk hidden w-4 h-4 rounded accent-rose-600 shrink-0">
+            <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center text-sm shrink-0">
+              <i class="fa-solid fa-file-code"></i>
+            </div>
+            <div class="flex-1 min-w-0" onclick="handleAndroidSourceClick('llmRouterService.js', 1)">
+              <h4 class="text-xs font-semibold text-white truncate">llmRouterService.js</h4>
+              <p class="text-[10px] text-zinc-400">Backend Code &bull; 8.4 KB &bull; Tersinkron</p>
+            </div>
+            <button onclick="simulateDownloadToPhone('llmRouterService.js', this)" class="px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] font-semibold flex items-center space-x-1 shrink-0">
+              <i class="fa-solid fa-download text-[9px]"></i>
+              <span>Ke HP</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Bottom Action: ONLY "+ Add a source" -->
+        <!-- TWEAK (Item 5): Hapus kamera dan mic -->
+        <div class="p-4 bg-[#14171d] border-t border-white/5 flex items-center justify-center shrink-0">
+          <button onclick="addNewSourcePromptAndroid()" class="px-6 py-3 rounded-full bg-white hover:bg-zinc-100 text-zinc-900 font-bold text-xs flex items-center space-x-2 shadow-lg active:scale-95 transition-all">
+            <i class="fa-solid fa-plus text-xs"></i>
+            <span>Add a source</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- WORKSPACE TAB 3: STUDIO TAB (SESUAI SS 4 + TWEAKS)   -->
+      <!-- ==================================================== -->
+      <div id="tab-content-studio" class="hidden flex-1 flex flex-col overflow-hidden relative">
+        
+        <div class="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
+
+          <!-- Section: Generate new (Screenshot 4 Grid) -->
+          <div>
+            <h3 class="text-xs font-bold text-zinc-300 uppercase tracking-wider mb-2.5">Generate new</h3>
+            
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <!-- Audio Overview -->
+              <button onclick="generateStudioArtifact('Audio Overview')" class="p-3 rounded-2xl bg-[#1e232b] hover:bg-[#252b35] border border-white/5 flex items-center space-x-2.5 transition text-left">
+                <i class="fa-solid fa-headphones text-purple-400 text-base shrink-0"></i>
+                <span class="font-semibold text-zinc-200 text-xs">Audio Overview</span>
+              </button>
+
+              <!-- Video Overview -->
+              <button onclick="generateStudioArtifact('Video Overview')" class="p-3 rounded-2xl bg-[#1e232b] hover:bg-[#252b35] border border-white/5 flex items-center space-x-2.5 transition text-left">
+                <i class="fa-solid fa-video text-rose-400 text-base shrink-0"></i>
+                <span class="font-semibold text-zinc-200 text-xs">Video Overview</span>
+              </button>
+
+              <!-- Slide Deck -->
+              <button onclick="generateStudioArtifact('Slide Deck')" class="p-3 rounded-2xl bg-[#1e232b] hover:bg-[#252b35] border border-white/5 flex items-center space-x-2.5 transition text-left">
+                <i class="fa-solid fa-newspaper text-amber-400 text-base shrink-0"></i>
+                <span class="font-semibold text-zinc-200 text-xs">Slide Deck</span>
+              </button>
+
+              <!-- Flashcards -->
+              <button onclick="generateStudioArtifact('Flashcards')" class="p-3 rounded-2xl bg-[#1e232b] hover:bg-[#252b35] border border-white/5 flex items-center space-x-2.5 transition text-left">
+                <i class="fa-solid fa-star text-yellow-400 text-base shrink-0"></i>
+                <span class="font-semibold text-zinc-200 text-xs">Flashcards</span>
+              </button>
+
+              <!-- Quiz -->
+              <button onclick="generateStudioArtifact('Quiz')" class="p-3 rounded-2xl bg-[#1e232b] hover:bg-[#252b35] border border-white/5 flex items-center space-x-2.5 transition text-left">
+                <i class="fa-solid fa-question-circle text-blue-400 text-base shrink-0"></i>
+                <span class="font-semibold text-zinc-200 text-xs">Quiz</span>
+              </button>
+
+              <!-- Infographic -->
+              <button onclick="generateStudioArtifact('Infographic')" class="p-3 rounded-2xl bg-[#1e232b] hover:bg-[#252b35] border border-white/5 flex items-center space-x-2.5 transition text-left">
+                <i class="fa-solid fa-chart-simple text-emerald-400 text-base shrink-0"></i>
+                <span class="font-semibold text-zinc-200 text-xs">Infographic</span>
+              </button>
+
+              <!-- Reports -->
+              <button onclick="generateStudioArtifact('Reports')" class="col-span-2 p-3 rounded-2xl bg-[#1e232b] hover:bg-[#252b35] border border-white/5 flex items-center space-x-2.5 transition text-left">
+                <i class="fa-solid fa-file-contract text-cyan-400 text-base shrink-0"></i>
+                <span class="font-semibold text-zinc-200 text-xs">Reports &amp; Executive Summary</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Section: Catatan Studio Output (TWEAK Item 8 & 9: Isi sama dengan web + Sort & Delete) -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-xs font-bold text-zinc-300 uppercase tracking-wider">
+                Catatan Studio (<span id="android-studio-count">2</span>)
+              </h3>
+              <div class="flex items-center space-x-1.5">
+                <button onclick="cycleSortStudioAndroid()" id="btn-sort-studio-android" class="px-2 py-0.5 rounded-lg bg-zinc-800 text-[10px] text-zinc-300 font-medium">
+                  <span id="label-sort-studio-android">Terkini</span>
+                </button>
+                <button onclick="toggleDeleteModeStudioAndroid()" class="px-2 py-0.5 rounded-lg bg-zinc-800 text-[10px] text-zinc-300 font-medium hover:text-rose-400">
+                  Hapus
+                </button>
+              </div>
+            </div>
+
+            <!-- Action Bar saat Mode Hapus Studio Aktif -->
+            <div id="studio-delete-bar-android" class="hidden p-2 mb-2 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-between text-xs">
+              <div class="flex items-center space-x-2">
+                <input type="checkbox" id="del-all-studio-android" onchange="toggleAllStudioDelAndroid(this)" class="w-3.5 h-3.5 rounded accent-rose-600">
+                <label for="del-all-studio-android" class="text-[11px] font-bold text-rose-400">Pilih Semua</label>
+              </div>
+              <div class="flex items-center space-x-2">
+                <button onclick="executeDeleteStudioAndroid()" class="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold text-[10px]">
+                  Hapus (<span id="del-count-studio-android">0</span>)
+                </button>
+                <button onclick="toggleDeleteModeStudioAndroid(false)" class="px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-300 font-medium text-[10px]">
+                  Batal
+                </button>
+              </div>
+            </div>
+
+            <div id="studio-output-list-android" class="space-y-2">
+              <!-- Item 1 -->
+              <div id="astud-1" data-title="Linimasa Materi" class="astud-card p-3 rounded-2xl bg-[#1e232c] border border-white/5 flex items-start space-x-2.5">
+                <input type="checkbox" onchange="updateDelStudioAndroidCount()" class="astud-del-chk hidden mt-1 w-4 h-4 rounded accent-rose-600 shrink-0">
+                <div class="flex-1 min-w-0" onclick="viewStudioItem('Linimasa Materi', 'Kronologi perkembangan sistem terdistribusi dari RPC (1984) hingga Google Spanner (2012).')">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold text-white">Linimasa Materi</span>
+                    <span class="text-[9px] text-zinc-400">Baru</span>
+                  </div>
+                  <p class="text-[11px] text-zinc-400 line-clamp-2 mt-1">Rangkuman otomatis linimasa berdasarkan berkas dokumen laptop...</p>
+                </div>
+              </div>
+
+              <!-- Item 2 -->
+              <div id="astud-2" data-title="FAQ Ujian Bab 3" class="astud-card p-3 rounded-2xl bg-[#1e232c] border border-white/5 flex items-start space-x-2.5">
+                <input type="checkbox" onchange="updateDelStudioAndroidCount()" class="astud-del-chk hidden mt-1 w-4 h-4 rounded accent-rose-600 shrink-0">
+                <div class="flex-1 min-w-0" onclick="viewStudioItem('FAQ Ujian Bab 3', 'Daftar pertanyaan & jawaban esensial Teorema CAP dan Split-Brain.')">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold text-white">FAQ Ujian Bab 3</span>
+                    <span class="text-[9px] text-zinc-400">Baru</span>
+                  </div>
+                  <p class="text-[11px] text-zinc-400 line-clamp-2 mt-1">1. Mengapa konsistensi data penting dalam partisi jaringan?</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Indicator (Screenshot 4) -->
+          <div class="text-center py-6 text-zinc-500 space-y-1">
+            <i class="fa-solid fa-wand-magic-sparkles text-xl opacity-40"></i>
+            <p class="text-xs">Studio output will be saved here.</p>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- BOTTOM NAVIGATION BAR (MATERIAL 3)                   -->
+      <!-- [📁 Sources] [💬 Chat] [✨ Studio]                   -->
+      <!-- ==================================================== -->
+      <div class="h-16 border-t border-white/5 bg-[#171a21] grid grid-cols-3 items-center shrink-0 z-30 select-none">
+        
+        <!-- Tab 1: Sources -->
+        <button id="nav-btn-sources" onclick="switchWorkspaceTab('sources')" class="flex flex-col items-center justify-center space-y-1 text-zinc-400 hover:text-white transition">
+          <div id="nav-pill-sources" class="px-4 py-1 rounded-full">
+            <i class="fa-regular fa-folder-open text-base"></i>
+          </div>
+          <span class="text-[10px] font-medium tracking-tight">Sources</span>
+        </button>
+
+        <!-- Tab 2: Chat (Active by default) -->
+        <button id="nav-btn-chat" onclick="switchWorkspaceTab('chat')" class="flex flex-col items-center justify-center space-y-1 text-white transition">
+          <div id="nav-pill-chat" class="px-4 py-1 rounded-full bg-zinc-800 text-blue-400 shadow-inner">
+            <i class="fa-regular fa-comment-dots text-base"></i>
+          </div>
+          <span class="text-[10px] font-bold tracking-tight">Chat</span>
+        </button>
+
+        <!-- Tab 3: Studio -->
+        <button id="nav-btn-studio" onclick="switchWorkspaceTab('studio')" class="flex flex-col items-center justify-center space-y-1 text-zinc-400 hover:text-white transition">
+          <div id="nav-pill-studio" class="px-4 py-1 rounded-full">
+            <i class="fa-solid fa-wand-magic-sparkles text-base"></i>
+          </div>
+          <span class="text-[10px] font-medium tracking-tight">Studio</span>
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- BOTTOM SHEET: PROFILE & AKUN (IDENTIK WEB & ITEM 11)     -->
+    <!-- ======================================================== -->
+    <div id="sheet-profile" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end">
+      <div class="w-full bg-[#1b2028] border-t border-white/10 rounded-t-3xl p-5 space-y-4 animate-sheet max-h-[85vh] overflow-y-auto">
+        <!-- Handle bar -->
+        <div class="w-10 h-1 rounded-full bg-zinc-600 mx-auto"></div>
+
+        <div class="flex items-center space-x-3.5 pb-3 border-b border-white/10">
+          <div class="w-12 h-12 rounded-full bg-[#7c3aed] text-white font-bold text-base flex items-center justify-center shrink-0">
+            <span>A</span>
+          </div>
+          <div class="min-w-0">
+            <h3 id="sheet-user-name" class="font-bold text-sm text-white truncate">Ahmad Zakky Nurfauzan</h3>
+            <p id="sheet-user-email" class="text-xs text-zinc-400 truncate">ahmadzakky@ulbi.ac.id</p>
+            <span class="inline-flex items-center space-x-1 text-[10px] text-emerald-400 font-semibold mt-0.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Alwaysdata Cloud &bull; Aktif</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="space-y-1 text-xs">
+          <button onclick="handleSwitchAccount()" class="w-full p-3 rounded-2xl bg-zinc-800/60 hover:bg-zinc-800 text-left text-zinc-200 flex items-center space-x-2.5 transition">
+            <i class="fa-solid fa-user-plus text-blue-400 w-4"></i>
+            <span>Ganti / Masuk Akun Lain</span>
+          </button>
+          <button onclick="showToast('Pengaturan Router', 'Prioritas: Gemini 1.5 Flash -> Groq -> 9Router')" class="w-full p-3 rounded-2xl bg-zinc-800/60 hover:bg-zinc-800 text-left text-zinc-200 flex items-center space-x-2.5 transition">
+            <i class="fa-solid fa-sliders text-purple-400 w-4"></i>
+            <span>Konfigurasi Multi-LLM Router</span>
+          </button>
+          <button onclick="handleLogoutAndroid()" class="w-full p-3 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 text-left text-rose-400 font-semibold flex items-center space-x-2.5 transition">
+            <i class="fa-solid fa-arrow-right-from-bracket w-4"></i>
+            <span>Keluar Akun (Logout)</span>
+          </button>
+        </div>
+
+        <button onclick="closeProfileSheet()" class="w-full py-2.5 rounded-2xl bg-zinc-800 text-zinc-300 font-semibold text-xs">
+          Tutup
+        </button>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- BOTTOM SHEET: PILIH SUMBER DI CHATBOX (ITEM 10)          -->
+    <!-- ======================================================== -->
+    <div id="sheet-source-picker" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end">
+      <div class="w-full bg-[#1b2028] border-t border-white/10 rounded-t-3xl p-5 space-y-3.5 animate-sheet">
+        <div class="w-10 h-1 rounded-full bg-zinc-600 mx-auto"></div>
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-white">Pilih Sumber Rujukan AI</h3>
+          <span class="text-[10px] text-zinc-400">Grounding Context</span>
+        </div>
+
+        <div class="space-y-2 max-h-60 overflow-y-auto">
+          <label class="flex items-center space-x-3 p-2.5 rounded-xl bg-zinc-800/60 cursor-pointer">
+            <input type="checkbox" checked onchange="updatePickedSources()" class="picked-source-chk w-4 h-4 rounded accent-blue-600">
+            <span class="text-xs text-white truncate">Slide_Bab3_Distributed_Systems.pdf</span>
+          </label>
+          <label class="flex items-center space-x-3 p-2.5 rounded-xl bg-zinc-800/60 cursor-pointer">
+            <input type="checkbox" checked onchange="updatePickedSources()" class="picked-source-chk w-4 h-4 rounded accent-blue-600">
+            <span class="text-xs text-white truncate">Catatan_Riset_Multi_LLM.md</span>
+          </label>
+          <label class="flex items-center space-x-3 p-2.5 rounded-xl bg-zinc-800/60 cursor-pointer">
+            <input type="checkbox" checked onchange="updatePickedSources()" class="picked-source-chk w-4 h-4 rounded accent-blue-600">
+            <span class="text-xs text-white truncate">Modul_Praktikum_Cloud_ULBI.docx</span>
+          </label>
+          <label class="flex items-center space-x-3 p-2.5 rounded-xl bg-zinc-800/60 cursor-pointer">
+            <input type="checkbox" checked onchange="updatePickedSources()" class="picked-source-chk w-4 h-4 rounded accent-blue-600">
+            <span class="text-xs text-white truncate">llmRouterService.js</span>
+          </label>
+        </div>
+
+        <button onclick="closeSourcePickerSheet()" class="w-full py-2.5 rounded-2xl bg-blue-600 text-white font-bold text-xs">
+          Terapkan Sumber
+        </button>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- BOTTOM SHEET: INSPEKSI SITASI / PRATINJAU DOKUMEN        -->
+    <!-- ======================================================== -->
+    <div id="sheet-citation" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end">
+      <div class="w-full bg-[#1b2028] border-t border-white/10 rounded-t-3xl p-5 space-y-3 animate-sheet max-h-[80vh] overflow-y-auto">
+        <div class="w-10 h-1 rounded-full bg-zinc-600 mx-auto"></div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2 min-w-0">
+            <span class="w-6 h-6 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">1</span>
+            <h3 id="citation-file-title" class="text-xs font-bold text-white truncate">Slide_Bab3_Distributed_Systems.pdf</h3>
+          </div>
+          <span id="citation-page-num" class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-mono font-medium">Halaman 14</span>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-zinc-900 border border-white/5 text-xs text-zinc-300 leading-relaxed font-mono">
+          <p id="citation-snippet-text">
+            "Teorema CAP (Brewer, 2000): Dalam sistem komputasi terdistribusi asynchronous, hampir tidak mungkin menjamin secara bersamaan Konsistensi (Consistency), Ketersediaan (Availability), dan Toleransi Partisi (Partition Tolerance)."
+          </p>
+        </div>
+
+        <div class="flex items-center justify-between text-[11px] text-zinc-400">
+          <span>Skor Relevansi Kosinus: <strong class="text-emerald-400">0.942</strong></span>
+          <span>Kutipan Terverifikasi</span>
+        </div>
+
+        <button onclick="closeCitationModal()" class="w-full py-2.5 rounded-2xl bg-zinc-800 text-zinc-300 font-semibold text-xs">
+          Tutup Pratinjau
+        </button>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFIKASI ANDROID -->
+    <div id="android-toast" class="hidden absolute top-12 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-2xl bg-zinc-800/95 border border-white/10 text-white text-xs font-medium shadow-2xl transition-all">
+      <span id="android-toast-text">Notifikasi</span>
+    </div>
+
+  </div>
+
+  <!-- JAVASCRIPT LOGIC UNTUK APLIKASI ANDROID STANDALONE -->
+  <script>
+    // 1. STATE & CLOCK
+    let currentAuthTab = 'signin';
+    let currentWorkspaceTab = 'chat';
+    let currentAppMode = 'notebook'; // 'notebook' | 'general'
+    let currentNotebookTitle = 'Materi Kuliah Semester 5 • Sistem Terdistribusi';
+    let currentUser = {
+      name: "Ahmad Zakky Nurfauzan",
+      email: "ahmadzakky@ulbi.ac.id",
+      isLoggedIn: true
+    };
+
+    function updateAndroidClock() {
+      const now = new Date();
+      const hrs = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      const el = document.getElementById('android-clock');
+      if (el) el.textContent = `${hrs}.${mins}`;
+    }
+    setInterval(updateAndroidClock, 1000);
+    updateAndroidClock();
+
+    // 2. AUTH SCREEN LOGIC
+    function setAuthTab(tab) {
+      currentAuthTab = tab;
+      const bIn = document.getElementById('auth-tab-btn-signin');
+      const bUp = document.getElementById('auth-tab-btn-signup');
+      const fName = document.getElementById('auth-field-name');
+      const sLbl = document.getElementById('auth-submit-label');
+
+      if (tab === 'signup') {
+        bUp.className = "flex-1 py-2 rounded-xl bg-blue-600 text-white transition text-center shadow-xs font-semibold";
+        bIn.className = "flex-1 py-2 rounded-xl text-zinc-400 hover:text-white transition text-center font-semibold";
+        fName.classList.remove('hidden');
+        sLbl.textContent = "Buat Akun NoteRoute";
+      } else {
+        bIn.className = "flex-1 py-2 rounded-xl bg-blue-600 text-white transition text-center shadow-xs font-semibold";
+        bUp.className = "flex-1 py-2 rounded-xl text-zinc-400 hover:text-white transition text-center font-semibold";
+        fName.classList.add('hidden');
+        sLbl.textContent = "Masuk ke NoteRoute";
+      }
+    }
+
+    function togglePassVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-regular fa-eye-slash text-xs';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-regular fa-eye text-xs';
+      }
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-input-email').value.trim();
+      const name = document.getElementById('auth-input-name').value.trim() || "Ahmad Zakky";
+
+      currentUser = {
+        name: name,
+        email: email,
+        isLoggedIn: true
+      };
+
+      document.getElementById('sheet-user-name').textContent = currentUser.name;
+      document.getElementById('sheet-user-email').textContent = currentUser.email;
+
+      showToast("Berhasil Masuk", `Selamat datang kembali, ${currentUser.name}!`);
+      
+      // Transisi dari Login ke Homepage Android
+      document.getElementById('view-auth').classList.add('hidden');
+      document.getElementById('view-home').classList.remove('hidden');
+    }
+
+    function handleSwitchAccount() {
+      closeProfileSheet();
+      document.getElementById('view-home').classList.add('hidden');
+      document.getElementById('view-workspace').classList.add('hidden');
+      document.getElementById('view-auth').classList.remove('hidden');
+      setAuthTab('signin');
+      showToast("Ganti Akun", "Silakan masukkan kredensial akun NoteRoute lainnya.");
+    }
+
+    function handleLogoutAndroid() {
+      closeProfileSheet();
+      currentUser.isLoggedIn = false;
+      document.getElementById('view-home').classList.add('hidden');
+      document.getElementById('view-workspace').classList.add('hidden');
+      document.getElementById('view-auth').classList.remove('hidden');
+      setAuthTab('signin');
+      showToast("Berhasil Keluar", "Akun Anda telah dikeluarkan.");
+    }
+
+    // 3. NAVIGATION (HOMEPAGE <-> WORKSPACE)
+    function handleCreateNewNotebook() {
+      // TWEAK (Item 6): Saat create new langsung ke tampilan workspace
+      openWorkspace("Untitled Notebook");
+      showToast("Notebook Baru", "Workspace baru siap digunakan.");
+    }
+
+    function openWorkspace(title) {
+      currentNotebookTitle = title || "Untitled Notebook";
+      document.getElementById('workspace-title-display').textContent = currentNotebookTitle;
+      document.getElementById('view-home').classList.add('hidden');
+      document.getElementById('view-workspace').classList.remove('hidden');
+      switchWorkspaceTab('chat');
+    }
+
+    function backToHome() {
+      document.getElementById('view-workspace').classList.add('hidden');
+      document.getElementById('view-home').classList.remove('hidden');
+    }
+
+    function renameNotebookPrompt() {
+      const newName = prompt("Ubah Nama Notebook:", currentNotebookTitle);
+      if (newName && newName.trim()) {
+        currentNotebookTitle = newName.trim();
+        document.getElementById('workspace-title-display').textContent = currentNotebookTitle;
+        showToast("Judul Diperbarui", currentNotebookTitle);
+      }
+    }
+
+    // 4. WORKSPACE TABS SWITCHING
+    function switchWorkspaceTab(tab) {
+      currentWorkspaceTab = tab;
+      const tChat = document.getElementById('tab-content-chat');
+      const tSources = document.getElementById('tab-content-sources');
+      const tStudio = document.getElementById('tab-content-studio');
+
+      const pillChat = document.getElementById('nav-pill-chat');
+      const pillSources = document.getElementById('nav-pill-sources');
+      const pillStudio = document.getElementById('nav-pill-studio');
+
+      const btnChat = document.getElementById('nav-btn-chat');
+      const btnSources = document.getElementById('nav-btn-sources');
+      const btnStudio = document.getElementById('nav-btn-studio');
+
+      [tChat, tSources, tStudio].forEach(el => el.classList.add('hidden'));
+      [pillChat, pillSources, pillStudio].forEach(el => {
+        el.className = "px-4 py-1 rounded-full";
+      });
+      [btnChat, btnSources, btnStudio].forEach(el => {
+        el.className = "flex flex-col items-center justify-center space-y-1 text-zinc-400 hover:text-white transition";
+      });
+
+      if (tab === 'chat') {
+        tChat.classList.remove('hidden');
+        pillChat.className = "px-4 py-1 rounded-full bg-zinc-800 text-blue-400 shadow-inner";
+        btnChat.className = "flex flex-col items-center justify-center space-y-1 text-white transition";
+      } else if (tab === 'sources') {
+        tSources.classList.remove('hidden');
+        pillSources.className = "px-4 py-1 rounded-full bg-zinc-800 text-blue-400 shadow-inner";
+        btnSources.className = "flex flex-col items-center justify-center space-y-1 text-white transition";
+      } else if (tab === 'studio') {
+        tStudio.classList.remove('hidden');
+        pillStudio.className = "px-4 py-1 rounded-full bg-zinc-800 text-blue-400 shadow-inner";
+        btnStudio.className = "flex flex-col items-center justify-center space-y-1 text-white transition";
+      }
+    }
+
+    // 5. CHAT LOGIC & MODE SWITCHING (TWEAKS 7 & 10)
+    function setAppMode(mode) {
+      currentAppMode = mode;
+      const bNb = document.getElementById('btn-mode-notebook');
+      const bGen = document.getElementById('btn-mode-general');
+      const spBtn = document.getElementById('btn-source-picker');
+      const pLabel = document.getElementById('ai-provider-label');
+      const input = document.getElementById('chat-input-text');
+
+      if (mode === 'notebook') {
+        bNb.className = "px-2.5 py-0.5 rounded-full bg-blue-600 text-white font-semibold transition";
+        bGen.className = "px-2.5 py-0.5 rounded-full text-zinc-400 hover:text-white transition";
+        spBtn.classList.remove('hidden');
+        pLabel.textContent = "Gemini 1.5 Flash (Grounded Notebook)";
+        input.placeholder = "Tanyakan seputar 4 berkas laptop Anda...";
+        showToast("Mode Notebook", "Fokus rujukan sitasi ke dokumen laptop.");
+      } else {
+        bGen.className = "px-2.5 py-0.5 rounded-full bg-emerald-600 text-white font-semibold transition";
+        bNb.className = "px-2.5 py-0.5 rounded-full text-zinc-400 hover:text-white transition";
+        spBtn.classList.add('hidden'); // TWEAK (Item 10): Opsi sumber disembunyikan saat AI umum
+        pLabel.textContent = "AI Umum (Bebas Tanpa Batasan Dokumen)";
+        input.placeholder = "Tanyakan apa saja kepada AI umum...";
+        showToast("Mode AI Umum", "Kueri terbuka bebas tanpa grounding berkas.");
+      }
+    }
+
+    function sendQuickPrompt(txt) {
+      document.getElementById('chat-input-text').value = txt;
+      handleSendChat();
+    }
+
+    function handleChatKeyDown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleSendChat();
+      }
+    }
+
+    function handleSendChat() {
+      const input = document.getElementById('chat-input-text');
+      const text = input.value.trim();
+      if (!text) return;
+
+      document.getElementById('chat-welcome-banner').classList.add('hidden');
+      const list = document.getElementById('chat-bubbles-list');
+      list.classList.remove('hidden');
+
+      document.getElementById('chat-user-msg-text').textContent = text;
+      input.value = '';
+
+      if (currentAppMode === 'general') {
+        document.getElementById('chat-ai-msg-text').innerHTML = `Tentu! Sebagai asisten AI umum NoteRoute, ini analisis untuk <em>"${text}"</em> tanpa terbatas pada dokumen laptop Anda.`;
+      } else {
+        document.getElementById('chat-ai-msg-text').innerHTML = `Berdasarkan berkas <strong>Slide_Bab3_Distributed_Systems.pdf</strong>, Teorema CAP menyatakan sistem data terdistribusi tidak bisa menjamin ketiga hal serentak:`;
+      }
+
+      const container = document.getElementById('chat-messages-container');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // 6. SOURCES SORT & MULTI-SELECT DELETE (TWEAK ITEM 8 & 9)
+    let currentSourceSortAndroid = 'name';
+    let isSourceDeleteModeAndroid = false;
+
+    function cycleSortSourcesAndroid() {
+      const label = document.getElementById('label-sort-sources-android');
+      const container = document.getElementById('sources-list-android');
+      const cards = Array.from(container.querySelectorAll('.asrc-card'));
+      if (cards.length === 0) return;
+
+      if (currentSourceSortAndroid === 'name') {
+        currentSourceSortAndroid = 'size';
+        label.textContent = "Ukuran";
+        cards.sort((a, b) => parseFloat(b.dataset.size || 0) - parseFloat(a.dataset.size || 0));
+        showToast("Urutan", "Ukuran berkas terbesar.");
+      } else {
+        currentSourceSortAndroid = 'name';
+        label.textContent = "Nama";
+        cards.sort((a, b) => (a.dataset.name || '').localeCompare(b.dataset.name || ''));
+        showToast("Urutan", "Nama alfabetis (A-Z).");
+      }
+      cards.forEach(c => container.appendChild(c));
+    }
+
+    function toggleDeleteModeSourcesAndroid(force = null) {
+      isSourceDeleteModeAndroid = (force !== null) ? force : !isSourceDeleteModeAndroid;
+      const bar = document.getElementById('sources-delete-bar-android');
+      const chks = document.querySelectorAll('.asrc-del-chk');
+
+      if (isSourceDeleteModeAndroid) {
+        bar.classList.remove('hidden');
+        chks.forEach(c => { c.classList.remove('hidden'); c.checked = false; });
+        updateDelSourcesAndroidCount();
+      } else {
+        bar.classList.add('hidden');
+        chks.forEach(c => { c.classList.add('hidden'); c.checked = false; });
+        document.getElementById('del-all-sources-android').checked = false;
+      }
+    }
+
+    function updateDelSourcesAndroidCount() {
+      const chks = document.querySelectorAll('.asrc-del-chk');
+      const count = Array.from(chks).filter(c => c.checked).length;
+      document.getElementById('del-count-sources-android').textContent = count;
+      const allBox = document.getElementById('del-all-sources-android');
+      if (allBox) allBox.checked = (count > 0 && count === chks.length);
+    }
+
+    function toggleAllSourcesDelAndroid(master) {
+      const chks = document.querySelectorAll('.asrc-del-chk');
+      chks.forEach(c => c.checked = master.checked);
+      updateDelSourcesAndroidCount();
+    }
+
+    function executeDeleteSourcesAndroid() {
+      const checkedBoxes = Array.from(document.querySelectorAll('.asrc-del-chk:checked'));
+      if (checkedBoxes.length === 0) {
+        showToast("Pilih Sumber", "Pilih minimal 1 berkas yang ingin dihapus.");
+        return;
+      }
+      const count = checkedBoxes.length;
+      checkedBoxes.forEach(chk => {
+        const card = chk.closest('.asrc-card');
+        if (card) card.remove();
+      });
+      toggleDeleteModeSourcesAndroid(false);
+      const remaining = document.querySelectorAll('.asrc-card').length;
+      document.getElementById('android-sources-count').textContent = remaining;
+      showToast("Sumber Dihapus", `${count} berkas sumber berhasil dihapus.`);
+    }
+
+    function handleAndroidSourceClick(name, page) {
+      if (isSourceDeleteModeAndroid) return;
+      openCitationModal(name, page);
+    }
+
+    function simulateDownloadToPhone(filename, btn) {
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-[9px]"></i><span>Mengunduh...</span>';
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fa-solid fa-check text-[9px] text-emerald-400"></i><span>Tersimpan</span>';
+        showToast("Unduh Berhasil", `${filename} tersimpan di /Download/NoteRoute.`);
+      }, 700);
+    }
+
+    function addNewSourcePromptAndroid() {
+      const fname = prompt("Nama berkas dokumen baru (contoh: Bab4_Cloud.pdf):");
+      if (!fname || !fname.trim()) return;
+
+      const container = document.getElementById('sources-list-android');
+      const card = document.createElement('div');
+      card.className = "asrc-card p-3 rounded-2xl bg-[#1e232c] border border-white/5 flex items-center space-x-3 group";
+      card.dataset.name = fname.trim();
+      card.dataset.size = "1.5";
+      card.innerHTML = `
+        <input type="checkbox" onchange="updateDelSourcesAndroidCount()" class="asrc-del-chk ${isSourceDeleteModeAndroid ? '' : 'hidden'} w-4 h-4 rounded accent-rose-600 shrink-0">
+        <div class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center text-sm shrink-0">
+          <i class="fa-solid fa-file text-xs"></i>
+        </div>
+        <div class="flex-1 min-w-0" onclick="handleAndroidSourceClick('${fname.trim()}', 1)">
+          <h4 class="text-xs font-semibold text-white truncate">${fname.trim()}</h4>
+          <p class="text-[10px] text-zinc-400">Baru diunggah &bull; 1.5 MB &bull; Tersinkron</p>
+        </div>
+        <button onclick="simulateDownloadToPhone('${fname.trim()}', this)" class="px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] font-semibold flex items-center space-x-1 shrink-0">
+          <i class="fa-solid fa-download text-[9px]"></i>
+          <span>Ke HP</span>
+        </button>
+      `;
+      container.prepend(card);
+      const remaining = document.querySelectorAll('.asrc-card').length;
+      document.getElementById('android-sources-count').textContent = remaining;
+      showToast("Sumber Baru", `${fname.trim()} ditambahkan ke notebook.`);
+    }
+
+    // 7. STUDIO SORT & MULTI-SELECT DELETE (TWEAK ITEM 8 & 9)
+    let currentStudioSortAndroid = 'date';
+    let isStudioDeleteModeAndroid = false;
+
+    function cycleSortStudioAndroid() {
+      const label = document.getElementById('label-sort-studio-android');
+      const container = document.getElementById('studio-output-list-android');
+      const cards = Array.from(container.querySelectorAll('.astud-card'));
+      if (cards.length === 0) return;
+
+      if (currentStudioSortAndroid === 'date') {
+        currentStudioSortAndroid = 'title';
+        label.textContent = "Judul";
+        cards.sort((a, b) => (a.dataset.title || '').localeCompare(b.dataset.title || ''));
+        showToast("Urutan Studio", "Diurutkan secara alfabetis (A-Z).");
+      } else {
+        currentStudioSortAndroid = 'date';
+        label.textContent = "Terkini";
+        cards.reverse();
+        showToast("Urutan Studio", "Diurutkan berdasarkan catatan terbaru.");
+      }
+      cards.forEach(c => container.appendChild(c));
+    }
+
+    function toggleDeleteModeStudioAndroid(force = null) {
+      isStudioDeleteModeAndroid = (force !== null) ? force : !isStudioDeleteModeAndroid;
+      const bar = document.getElementById('studio-delete-bar-android');
+      const chks = document.querySelectorAll('.astud-del-chk');
+
+      if (isStudioDeleteModeAndroid) {
+        bar.classList.remove('hidden');
+        chks.forEach(c => { c.classList.remove('hidden'); c.checked = false; });
+        updateDelStudioAndroidCount();
+      } else {
+        bar.classList.add('hidden');
+        chks.forEach(c => { c.classList.add('hidden'); c.checked = false; });
+        document.getElementById('del-all-studio-android').checked = false;
+      }
+    }
+
+    function updateDelStudioAndroidCount() {
+      const chks = document.querySelectorAll('.astud-del-chk');
+      const count = Array.from(chks).filter(c => c.checked).length;
+      document.getElementById('del-count-studio-android').textContent = count;
+      const allBox = document.getElementById('del-all-studio-android');
+      if (allBox) allBox.checked = (count > 0 && count === chks.length);
+    }
+
+    function toggleAllStudioDelAndroid(master) {
+      const chks = document.querySelectorAll('.astud-del-chk');
+      chks.forEach(c => c.checked = master.checked);
+      updateDelStudioAndroidCount();
+    }
+
+    function executeDeleteStudioAndroid() {
+      const checkedBoxes = Array.from(document.querySelectorAll('.astud-del-chk:checked'));
+      if (checkedBoxes.length === 0) {
+        showToast("Pilih Catatan", "Pilih minimal 1 catatan studio untuk dihapus.");
+        return;
+      }
+      const count = checkedBoxes.length;
+      checkedBoxes.forEach(chk => {
+        const card = chk.closest('.astud-card');
+        if (card) card.remove();
+      });
+      toggleDeleteModeStudioAndroid(false);
+      const remaining = document.querySelectorAll('.astud-card').length;
+      document.getElementById('android-studio-count').textContent = remaining;
+      showToast("Studio Dihapus", `${count} catatan studio berhasil dihapus.`);
+    }
+
+    function generateStudioArtifact(type) {
+      const container = document.getElementById('studio-output-list-android');
+      const card = document.createElement('div');
+      card.className = "astud-card p-3 rounded-2xl bg-[#1e232c] border border-white/5 flex items-start space-x-2.5 animate-fade-in";
+      card.dataset.title = type;
+      card.innerHTML = `
+        <input type="checkbox" onchange="updateDelStudioAndroidCount()" class="astud-del-chk ${isStudioDeleteModeAndroid ? '' : 'hidden'} mt-1 w-4 h-4 rounded accent-rose-600 shrink-0">
+        <div class="flex-1 min-w-0" onclick="viewStudioItem('${type}', 'Hasil generasi otomatis ${type} siap diunduh atau dipelajari.')">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-white">${type}</span>
+            <span class="text-[9px] text-emerald-400 font-bold">Baru saja</span>
+          </div>
+          <p class="text-[11px] text-zinc-400 line-clamp-2 mt-1">Dibuat dari analisis multi-sumber dokumen laptop...</p>
+        </div>
+      `;
+      container.prepend(card);
+      const remaining = document.querySelectorAll('.astud-card').length;
+      document.getElementById('android-studio-count').textContent = remaining;
+      showToast(type, `${type} berhasil dihasilkan oleh studio AI.`);
+    }
+
+    function viewStudioItem(title, snippet) {
+      if (isStudioDeleteModeAndroid) return;
+      alert(`[${title}]\n\n${snippet}`);
+    }
+
+    // 8. CITATIONS & BOTTOM SHEETS
+    function openCitationModal(filename, page) {
+      document.getElementById('citation-file-title').textContent = filename;
+      document.getElementById('citation-page-num').textContent = `Halaman ${page}`;
+      document.getElementById('sheet-citation').classList.remove('hidden');
+    }
+
+    function closeCitationModal() {
+      document.getElementById('sheet-citation').classList.add('hidden');
+    }
+
+    function toggleProfileSheet() {
+      const sheet = document.getElementById('sheet-profile');
+      sheet.classList.toggle('hidden');
+    }
+
+    function closeProfileSheet() {
+      document.getElementById('sheet-profile').classList.add('hidden');
+    }
+
+    function openSourcePickerSheet() {
+      document.getElementById('sheet-source-picker').classList.remove('hidden');
+    }
+
+    function closeSourcePickerSheet() {
+      document.getElementById('sheet-source-picker').classList.add('hidden');
+    }
+
+    function updatePickedSources() {
+      const chks = document.querySelectorAll('.picked-source-chk');
+      const count = Array.from(chks).filter(c => c.checked).length;
+      document.getElementById('source-picker-label').textContent = `${count}/${chks.length} Sumber Dipilih`;
+    }
+
+    // 9. TOAST
+    let toastTimer = null;
+    function showToast(title, msg) {
+      const toast = document.getElementById('android-toast');
+      const text = document.getElementById('android-toast-text');
+      text.innerHTML = `<strong>${title}:</strong> ${msg}`;
+      toast.classList.remove('hidden');
+
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2400);
+    }
+  </script>
+</body>
+</html>
