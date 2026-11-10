@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">NoteRoute</string>
+    <string name="app_tagline">Cross-Device Knowledge Agent &amp; Multi-LLM Gateway</string>
+
+    <!-- Navigation Tabs -->
+    <string name="nav_explorer">File Laptop</string>
+    <string name="nav_chat">AI Chat</string>
+    <string name="nav_status">Status &amp; Server</string>
+
+    <!-- Explorer -->
+    <string name="explorer_title">Dokumen Laptop</string>
+    <string name="search_documents_hint">Cari dokumen laptop...</string>
+    <string name="btn_preview">Pratinjau Teks</string>
+    <string name="btn_download">Ambil ke HP</string>
+    <string name="downloading">Mengunduh...</string>
+    <string name="download_complete">Berhasil disimpan ke folder Unduhan</string>
+    <string name="download_failed">Gagal mengunduh file</string>
+    <string name="no_documents_found">Tidak ada dokumen yang ditemukan</string>
+    <string name="status_synced">Tersinkron</string>
+
+    <!-- Chat -->
+    <string name="chat_title">Grounded AI Chat</string>
+    <string name="chat_welcome_title">Tanyakan apa saja seputar berkas laptop Anda</string>
+    <string name="chat_welcome_subtitle">Didukung oleh multi-model router dengan kutipan sitasi akurat.</string>
+    <string name="chat_input_hint">Tanyakan isi berkas Anda...</string>
+    <string name="btn_send">Kirim</string>
+    <string name="thinking_ai">AI sedang berpikir &amp; mencari referensi dokumen...</string>
+    <string name="citations_label">Sitasi Referensi:</string>
+    <string name="fallback_active">Failover ke Groq aktif</string>
+    <string name="latency_label">%1$d ms</string>
+
+    <!-- Model Switcher -->
+    <string name="model_switcher_title">Pilih Model AI</string>
+    <string name="model_gemini_title">Google Gemini 1.5 Flash</string>
+    <string name="model_gemini_desc">Konteks raksasa 1M Token, analisis komprehensif</string>
+    <string name="model_groq_title">Groq Cloud Llama 3.3 70B</string>
+    <string name="model_groq_desc">Respon kilat, inferensi super cepat</string>
+    <string name="model_deepseek_title">DeepSeek R1 / V3</string>
+    <string name="model_deepseek_desc">Penalaran logis mendalam, efisien biaya</string>
+    <string name="model_9router_title">9Router / OmniRoute Local</string>
+    <string name="model_9router_desc">Jalur privat LAN port 20128</string>
+
+    <!-- Server & Settings -->
+    <string name="server_title">Status &amp; Konektivitas</string>
+    <string name="server_health_title">Backend Engine Status</string>
+    <string name="server_online">Online (Terhubung)</string>
+    <string name="server_offline">Offline (Gagal tersambung)</string>
+    <string name="db_connected">Database: Terhubung</string>
+    <string name="db_disconnected">Database: Terputus</string>
+    <string name="base_url_label">Pilih Lingkungan API:</string>
+    <string name="env_cloud">LocalTunnel Cloud (noteroute-zakky.loca.lt)</string>
+    <string name="env_emulator">Android Studio Emulator (10.0.2.2)</string>
+    <string name="env_lan">WiFi Laptop Zakky (Custom LAN)</string>
+    <string name="btn_apply_url">Terapkan URL</string>
+    <string name="btn_test_connection">Uji Koneksi</string>
+    <string name="token_metrics_title">Metrik Efisiensi Token</string>
+</resources>

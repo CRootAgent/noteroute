@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/slate_900"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <View
+        android:layout_width="36dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_model_pill"
+        android:backgroundTint="@color/slate_700" />
+
+    <TextView
+        android:id="@+id/tv_preview_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        tools:text="Slide_Bab3_Distributed_Systems.pdf" />
+
+    <TextView
+        android:id="@+id/tv_preview_meta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/slate_400"
+        android:textSize="12sp"
+        tools:text="2.34 MB • application/pdf" />
+
+    <!-- Summary Box -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="Ringkasan Eksekutif:"
+        android:textColor="@color/primary_light"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_preview_summary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/slate_200"
+        android:textSize="13sp"
+        tools:text="Membahas arsitektur microservices, RPC, dan konsistensi data terdistribusi." />
+
+    <!-- Text Excerpt Box -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="Pratinjau Isi Dokumen:"
+        android:textColor="@color/slate_400"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_rounded_card"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/tv_preview_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="2dp"
+            android:textColor="@color/slate_300"
+            android:textSize="12sp"
+            tools:text="Bab 3: Sistem Terdistribusi. 1. Definisi dan Karakteristik..." />
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_close_preview"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:text="Tutup"
+            android:textColor="@color/slate_300"
+            app:strokeColor="@color/slate_700" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_download_from_preview"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/primary"
+            android:text="@string/btn_download"
+            android:textColor="@color/white"
+            app:icon="@drawable/ic_download"
+            app:iconSize="16dp"
+            app:iconTint="@color/white" />
+    </LinearLayout>
+
+</LinearLayout>

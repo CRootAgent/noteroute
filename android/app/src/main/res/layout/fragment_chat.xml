@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#14171D">
+
+    <!-- Scrollable Messages Area -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_messages"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/layout_thinking"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/item_chat_assistant" />
+
+    <!-- Initial Welcome Hero Banner (Matching docs/android.html) -->
+    <ScrollView
+        android:id="@+id/scroll_welcome_banner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        app:layout_constraintBottom_toTopOf="@id/layout_chat_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="✋"
+                android:textSize="28sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Let's start your notebook..."
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:lineSpacingExtra="3dp"
+                android:text="This is your blank canvas to understand, create, or make progress on something new. I can help you get started or you can go ahead and add your own sources."
+                android:textColor="@color/slate_400"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="What would you like this notebook to help you do?"
+                android:textColor="@color/slate_200"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <!-- Starter Prompt 1 -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_starter_topic"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="#1E232B"
+                android:gravity="start|center_vertical"
+                android:paddingVertical="12dp"
+                android:text="Learn about a new topic"
+                android:textColor="@color/slate_200"
+                android:textSize="12sp"
+                app:cornerRadius="16dp"
+                app:strokeColor="#2E343E" />
+
+            <!-- Starter Prompt 2 -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_starter_create"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="#1E232B"
+                android:gravity="start|center_vertical"
+                android:paddingVertical="12dp"
+                android:text="Create something new"
+                android:textColor="@color/slate_200"
+                android:textSize="12sp"
+                app:cornerRadius="16dp"
+                app:strokeColor="#2E343E" />
+
+            <!-- Starter Prompt 3 -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_starter_project"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="#1E232B"
+                android:gravity="start|center_vertical"
+                android:paddingVertical="12dp"
+                android:text="Make progress on a project"
+                android:textColor="@color/slate_200"
+                android:textSize="12sp"
+                app:cornerRadius="16dp"
+                app:strokeColor="#2E343E" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                android:text="NoteRoute Notebook can be inaccurate, so double-check."
+                android:textColor="@color/slate_500"
+                android:textSize="10sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Thinking Progress indicator -->
+    <LinearLayout
+        android:id="@+id/layout_thinking"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#1E232B"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/layout_chat_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ProgressBar
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:indeterminate="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/thinking_ai"
+            android:textColor="@color/slate_300"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- Bottom Controls Area (Mode Switcher + Source Picker + Input Bar) -->
+    <LinearLayout
+        android:id="@+id/layout_chat_bottom"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#14171D"
+        android:orientation="vertical"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Top Bar inside Input: Mode Switcher & Source Picker -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- Mode Switcher (Mode Notebook vs AI Umum) -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:background="@drawable/bg_model_pill"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="2dp">
+
+                <TextView
+                    android:id="@+id/btn_mode_notebook"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_chat_user"
+                    android:gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:text="Mode Notebook"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/btn_mode_general"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:text="AI Umum"
+                    android:textColor="@color/slate_400"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <!-- Source Picker Button (4/4 Sumber Dipilih) -->
+            <LinearLayout
+                android:id="@+id/btn_source_picker"
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:background="@drawable/bg_model_pill"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="10dp">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:contentDescription="Shield"
+                    android:src="@drawable/ic_shield" />
+
+                <TextView
+                    android:id="@+id/tv_source_picker_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="4 Sumber Dipilih"
+                    android:textColor="@color/slate_300"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="▼"
+                    android:textColor="@color/slate_400"
+                    android:textSize="8sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Input Pill with Magic Wand Send Button -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_search_bar"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="14dp"
+            android:paddingEnd="4dp">
+
+            <EditText
+                android:id="@+id/et_message"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="Ask a question or create something"
+                android:imeOptions="actionSend"
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLines="3"
+                android:textColor="@color/white"
+                android:textColorHint="@color/slate_500"
+                android:textSize="13sp" />
+
+            <FrameLayout
+                android:id="@+id/btn_send"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:background="@drawable/bg_citation_circle"
+                android:backgroundTint="@color/primary"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Send"
+                    android:src="@drawable/ic_magic_wand" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

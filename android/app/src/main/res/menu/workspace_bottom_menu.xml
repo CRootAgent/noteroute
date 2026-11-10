@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/tab_sources"
+        android:icon="@drawable/ic_folder"
+        android:title="Sources" />
+    <item
+        android:id="@+id/tab_chat"
+        android:icon="@drawable/ic_chat"
+        android:title="Chat" />
+    <item
+        android:id="@+id/tab_studio"
+        android:icon="@drawable/ic_magic_wand"
+        android:title="Studio" />
+</menu>

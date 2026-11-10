@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="start"
+    android:orientation="vertical"
+    android:paddingVertical="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="28dp"
+        android:background="@drawable/bg_chat_assistant"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <!-- Top Provider Header (Gemini 1.5 Flash Grounded) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:contentDescription="Sparkles"
+                android:src="@drawable/ic_sparkles"
+                android:tint="@color/emerald_light" />
+
+            <TextView
+                android:id="@+id/tv_model_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:textColor="@color/emerald_light"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                tools:text="Gemini 1.5 Flash (Grounded)" />
+
+            <TextView
+                android:id="@+id/tv_latency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/slate_400"
+                android:textSize="10sp"
+                tools:text="482 ms" />
+
+            <TextView
+                android:id="@+id/tv_fallback_flag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="[Failover]"
+                android:textColor="@color/emerald_light"
+                android:textSize="10sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Response Body -->
+        <TextView
+            android:id="@+id/tv_assistant_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:lineSpacingExtra="3dp"
+            android:textColor="@color/slate_100"
+            android:textSize="13sp"
+            tools:text="Berdasarkan Slide Bab 3, Teorema CAP menyatakan sistem terdistribusi tidak bisa menjamin ketiga hal ini serentak: Consistency, Availability, Partition Tolerance." />
+
+        <!-- Citations Pills Container -->
+        <LinearLayout
+            android:id="@+id/layout_citations_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rujukan Sumber Sitasi:"
+                android:textColor="@color/slate_400"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <!-- Horizontal Container for Citation Chips -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/container_citation_badges"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_assistant_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="2dp"
+        android:textColor="@color/slate_500"
+        android:textSize="10sp"
+        tools:text="13:05" />
+
+</LinearLayout>
