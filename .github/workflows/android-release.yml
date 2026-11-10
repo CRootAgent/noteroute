@@ -2,6 +2,8 @@ name: Android Native Kotlin Release CI/CD
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
   workflow_dispatch:
@@ -75,13 +77,20 @@ jobs:
             echo "NoteRoute Android App v1.0.0 Bundle Package" > app/build/outputs/bundle/release/app-release.aab
           fi
 
-      - name: Determine Release Tag
+      - name: Determine & Auto-Create Release Tag
         id: release_tag
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             TAG_NAME="${{ github.event.inputs.version_tag }}"
-          else
+          elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG_NAME="${GITHUB_REF#refs/tags/}"
+          else
+            # Automated Auto-Tagging on push to main
+            TAG_NAME="v1.0.0"
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git tag -a "${TAG_NAME}" -m "Automated release tag ${TAG_NAME}" || true
+            git push origin "${TAG_NAME}" || true
           fi
           echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
           echo "🏷️ Target Release Tag: ${TAG_NAME}"
@@ -97,7 +106,7 @@ jobs:
 
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
         with:
           tag_name: ${{ steps.release_tag.outputs.tag_name }}
           name: "NoteRoute Release ${{ steps.release_tag.outputs.tag_name }}"

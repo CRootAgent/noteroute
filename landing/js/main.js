@@ -67,18 +67,19 @@ function setupGuideTabs() {
   const tabLaptop = document.getElementById("tab-btn-laptop");
   const tabApiKey = document.getElementById("tab-btn-apikey");
   const tab9Router = document.getElementById("tab-btn-9router");
+  const tabCloud = document.getElementById("tab-btn-cloud");
 
   if (!tabLaptop || !tabApiKey || !tab9Router) return;
 
   const resetTabStyles = () => {
-    [tabLaptop, tabApiKey, tab9Router].forEach(btn => {
-      btn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition";
+    [tabLaptop, tabApiKey, tab9Router, tabCloud].forEach(btn => {
+      if (btn) btn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer";
     });
   };
 
   const activateTab = (activeBtn) => {
     resetTabStyles();
-    activeBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 text-white shadow-sm transition";
+    activeBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 text-white shadow-xs transition cursor-pointer";
   };
 
   // Tab 1: Setup Laptop Agent
@@ -124,18 +125,67 @@ function setupGuideTabs() {
   onClick("tab-btn-9router", () => {
     activateTab(tab9Router);
     setInner("guide-box", `
-      <h3 class="font-bold text-slate-900 text-lg mb-3">Langkah 3: Menghubungkan ke 9Router / OmniRoute Lokal</h3>
-      <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+      <h3 class="font-bold text-[var(--nlm-text-primary)] text-lg mb-3">Langkah 3: Menghubungkan ke 9Router / OmniRoute Lokal</h3>
+      <p class="text-sm text-[var(--nlm-text-secondary)] mb-4 leading-relaxed">
         Jika Anda menjalankan daemon 9Router atau OmniRoute lokal di laptop pada port <code>20128</code>:
       </p>
-      <div class="bg-slate-900 text-slate-200 p-4 rounded-xl text-xs font-mono overflow-x-auto mb-4">
+      <div class="bg-slate-900 text-slate-200 p-4 rounded-xl text-xs font-mono overflow-x-auto mb-4 border border-slate-800">
         <code># 1. Pastikan 9Router daemon berjalan di laptop<br>9router start --port 20128<br><br># 2. Endpoint OpenAI-compatible otomatis aktif di:<br>http://localhost:20128/v1/chat/completions</code>
       </div>
-      <p class="text-xs text-slate-500">
-        NoteRoute Core Router akan mendeteksi instance lokal ini dan menjadikannya salah satu target inferensi pada Model Switcher.
+      <p class="text-xs text-[var(--nlm-text-tertiary)] flex items-center space-x-2">
+        <i class="fa-solid fa-circle-check text-emerald-500"></i>
+        <span>NoteRoute Core Router akan mendeteksi instance lokal ini dan menjadikannya salah satu target inferensi hemat biaya.</span>
       </p>
     `);
   });
+
+  // Tab 4: Panduan Pembuatan Akun Cloud (GCP, Alwaysdata & MongoDB)
+  if (tabCloud) {
+    onClick("tab-btn-cloud", () => {
+      activateTab(tabCloud);
+      setInner("guide-box", `
+        <h3 class="font-bold text-[var(--nlm-text-primary)] text-lg mb-3">Langkah 4: Tata Cara Pembuatan Akun Cloud (GCP, Alwaysdata & MongoDB)</h3>
+        <p class="text-sm text-[var(--nlm-text-secondary)] mb-4 leading-relaxed">
+          Ikuti tiga langkah mudah berikut untuk mengonfigurasi layanan cloud resmi NoteRoute:
+        </p>
+        <div class="space-y-3.5 mb-4 text-xs sm:text-sm">
+          <!-- GCP / Google AI Studio -->
+          <div class="p-3.5 rounded-2xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] space-y-1.5">
+            <div class="flex items-center space-x-2">
+              <span class="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold text-[11px]">1. Google Cloud Platform (GCP) / AI Studio</span>
+            </div>
+            <p class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+              Buka <a href="https://aistudio.google.com" target="_blank" class="text-blue-600 dark:text-blue-400 font-semibold underline">aistudio.google.com</a> &bull; Masuk dengan akun Google Anda &bull; Klik <em>"Get API Key"</em> &bull; Buat kunci pada project GCP default Anda. Kuota: <strong>1.500 request/hari gratis</strong> dengan 1 Juta token context window untuk membaca dokumen PDF kuliah.
+            </p>
+          </div>
+
+          <!-- Alwaysdata -->
+          <div class="p-3.5 rounded-2xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] space-y-1.5">
+            <div class="flex items-center space-x-2">
+              <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">2. Alwaysdata (Hosting Cloud Backend)</span>
+            </div>
+            <p class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+              Daftar akun gratis di <a href="https://admin.alwaysdata.com" target="_blank" class="text-emerald-600 dark:text-emerald-400 font-semibold underline">admin.alwaysdata.com</a> &bull; Buka menu <em>Web &gt; Sites</em> &bull; Tambahkan situs baru bertipe <strong>Node.js (v20.x)</strong> &bull; Masukkan repositori <code>CRootAgent/noteroute</code> &bull; Hubungkan domain publik HTTPS: <code>https://noteroute.alwaysdata.net/api</code>.
+            </p>
+          </div>
+
+          <!-- MongoDB Atlas -->
+          <div class="p-3.5 rounded-2xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] space-y-1.5">
+            <div class="flex items-center space-x-2">
+              <span class="px-2 py-0.5 rounded-md bg-teal-500/10 text-teal-600 dark:text-teal-400 font-bold text-[11px]">3. MongoDB Atlas (Cloud Database)</span>
+            </div>
+            <p class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+              Daftar di <a href="https://www.mongodb.com/atlas" target="_blank" class="text-teal-600 dark:text-teal-400 font-semibold underline">mongodb.com/atlas</a> &bull; Buat cluster gratis <strong>M0 Shared</strong> &bull; Buat Database User &amp; Password &bull; Whitelist IP Address ke <code>0.0.0.0/0</code> &bull; Salin Connection String <code>mongodb+srv://...</code> ke dalam berkas <code>.env</code> server NoteRoute.
+            </p>
+          </div>
+        </div>
+        <p class="text-xs text-[var(--nlm-text-tertiary)] flex items-center space-x-2">
+          <i class="fa-solid fa-circle-check text-emerald-500"></i>
+          <span>Setelah ketiga kredensial terpasang, backend cloud Alwaysdata akan otomatis tersambung ke MongoDB Atlas dan API Gemini.</span>
+        </p>
+      `);
+    });
+  }
 }
 
 // Inisialisasi seluruh komponen saat DOM siap
