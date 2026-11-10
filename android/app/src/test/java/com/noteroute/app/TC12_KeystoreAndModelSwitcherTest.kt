@@ -34,10 +34,15 @@ class TC12_KeystoreAndModelSwitcherTest {
         assertEquals("noteroute_key", expectedAlias)
         assertEquals("note-route-release.jks", expectedKeystoreName)
 
-        // Check that keystore file was generated according to spec
-        val androidDir = File("C:/Proyek2 Croot/noteroute/android")
-        val keystoreFile = File(androidDir, expectedKeystoreName)
-        if (keystoreFile.exists()) {
+        // Check that keystore file was generated according to spec if present
+        val candidates = listOf(
+            File(expectedKeystoreName),
+            File("..", expectedKeystoreName),
+            File("android", expectedKeystoreName),
+            File(System.getProperty("user.dir") ?: ".", expectedKeystoreName)
+        )
+        val keystoreFile = candidates.firstOrNull { it.exists() }
+        if (keystoreFile != null) {
             assertTrue("Keystore file must not be empty", keystoreFile.length() > 0)
         }
     }
