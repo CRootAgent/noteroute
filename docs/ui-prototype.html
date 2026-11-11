@@ -630,37 +630,20 @@
         <!-- ACTIVE CHAT CONVERSATION WRAPPER -->
         <div id="nlm-active-messages" class="max-w-2xl mx-auto space-y-6 hidden">
 
-          <!-- Sample User Turn with EDIT PROMPT capability -->
-          <div id="user-turn-block" class="flex justify-end group animate-fade-up">
-            <div class="flex flex-col items-end space-y-1 max-w-lg">
-              
-              <!-- Display Bubble -->
-              <div id="user-bubble-box" class="bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-primary)] border border-[var(--nlm-border)] px-4 py-3 rounded-2xl rounded-tr-sm text-xs sm:text-sm leading-relaxed shadow-2xs w-full relative">
-                <span id="user-question-text">Apa kesimpulan inti Teorema CAP pada Slide Bab 3?</span>
-              </div>
-
-              <!-- Inline Edit Form -->
-              <div id="user-edit-form" class="hidden w-full bg-[var(--nlm-surface)] border border-[var(--nlm-brand)] rounded-2xl p-3 shadow-md space-y-2">
-                <textarea id="user-edit-textarea" rows="2" onkeydown="handleEditPromptKeyDown(event)" class="w-full bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] focus:outline-none resize-none"></textarea>
-                <div class="flex items-center justify-between text-xs pt-1">
-                  <span class="text-[10px] text-[var(--nlm-text-tertiary)]"><kbd class="px-1 py-0.5 rounded bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-[9px]">Enter</kbd> simpan &bull; <kbd class="px-1 py-0.5 rounded bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-[9px]">Shift+Enter</kbd> baris</span>
-                  <div class="flex space-x-2">
-                    <button onclick="cancelPromptEdit()" class="px-2.5 py-1 rounded-lg hover:bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-secondary)]">Batal</button>
-                    <button onclick="saveAndResubmitPrompt()" class="px-3 py-1 rounded-lg bg-[var(--nlm-brand)] hover:bg-[var(--nlm-brand-hover)] text-white font-medium">Simpan &amp; Kirim</button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Action Bar (Edit Button) -->
-              <div class="flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] pr-1 opacity-0 group-hover:opacity-100 transition">
-                <button onclick="enablePromptEdit()" class="hover:text-[var(--nlm-brand)] flex items-center space-x-1">
-                  <i class="fa-solid fa-pen text-[9px]"></i>
-                  <span>Edit Pertanyaan</span>
-                </button>
-              </div>
-
+          <!-- TOP CHAT CONTROLS BAR -->
+          <div class="flex items-center justify-between pb-3 border-b border-[var(--nlm-border-subtle)] text-xs text-[var(--nlm-text-tertiary)]">
+            <div class="flex items-center space-x-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span id="chat-messages-count-label" class="font-medium text-[var(--nlm-text-primary)]">Riwayat Percakapan</span>
             </div>
+            <button onclick="clearChatHistory()" class="px-2.5 py-1 rounded-xl hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400 text-[11px] font-medium transition flex items-center space-x-1.5 cursor-pointer" title="Bersihkan riwayat percakapan notebook ini">
+              <i class="fa-regular fa-trash-can text-[10px]"></i>
+              <span>Bersihkan Chat</span>
+            </button>
           </div>
+
+          <!-- DYNAMIC MESSAGE LIST (Semua bubble pesan user & asisten dirender di sini secara berurutan) -->
+          <div id="chat-messages-container" class="space-y-6"></div>
 
           <!-- ANIMATED STATE 1: AI PERLU WAKTU / SEDANG BERPIKIR (THINKING STATE) -->
           <div id="ai-thinking-state" class="hidden flex items-start space-x-3.5 animate-fade-up">
@@ -674,7 +657,7 @@
                   <span class="w-2 h-2 rounded-full bg-[var(--nlm-brand)] dot-bounce-2"></span>
                   <span class="w-2 h-2 rounded-full bg-[var(--nlm-brand)] dot-bounce-3"></span>
                 </span>
-                <span id="ai-thinking-status-text" class="text-xs text-[var(--nlm-text-secondary)]">Menganalisis 4 berkas laptop &amp; mencocokkan semantik sitasi...</span>
+                <span id="ai-thinking-status-text" class="text-xs text-[var(--nlm-text-secondary)]">Menganalisis berkas laptop &amp; mencari rujukan dokumen...</span>
               </div>
               <div class="w-full max-w-sm h-1.5 bg-[var(--nlm-surface-variant)] rounded-full overflow-hidden">
                 <div class="h-full bg-[var(--nlm-brand)] rounded-full animate-pulse" style="width: 65%;"></div>
@@ -726,7 +709,7 @@
                   <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-700 dark:text-red-300 font-mono font-medium">Semua Kuota Terlampaui (429)</span>
                 </div>
                 <p class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
-                  Seluruh 5 penyedia AI di rantai failover Anda (Gemini, Groq, Cerebras, DeepSeek, OpenRouter) telah mencapai batas harian token. Anda dapat menambahkan kunci API baru di Pengaturan atau mengaktifkan daemon lokal tanpa kuota.
+                  Seluruh penyedia AI di rantai failover Anda telah mencapai batas harian token. Anda dapat menambahkan kunci API baru di Pengaturan atau mengaktifkan daemon lokal tanpa kuota.
                 </p>
               </div>
             </div>
@@ -739,64 +722,6 @@
                 <i class="fa-solid fa-server text-emerald-500 text-xs"></i>
                 <span>Gunakan Ollama Local (Bebas Kuota)</span>
               </button>
-            </div>
-          </div>
-
-          <!-- Sample Grounded AI Response with REGENERATE capability -->
-          <div id="ai-response-block" class="flex items-start space-x-3.5 animate-fade-up">
-            <div class="w-7 h-7 rounded-full bg-slate-900 text-white dark:bg-zinc-800 dark:text-zinc-100 border border-slate-700/20 dark:border-zinc-700 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-xs">
-              <i class="fa-solid fa-wand-magic-sparkles text-[11px] text-[var(--nlm-brand)]"></i>
-            </div>
-            
-            <div class="flex-1 space-y-3 text-xs sm:text-sm text-[var(--nlm-text-primary)] leading-relaxed">
-              
-              <!-- Subtle Auto-Failover Pill (Muncul Saat AI Utama Sibuk/Limit) -->
-              <div id="ai-failover-pill" class="hidden inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[11px] font-medium">
-                <i class="fa-solid fa-shuffle text-[10px]"></i>
-                <span>Gemini 1.5 sibuk (HTTP 429) &bull; Otomatis dialihkan ke Groq Llama 3.3 70B tanpa jeda</span>
-              </div>
-              <div id="ai-response-container">
-                <p>
-                  Berdasarkan pembahasan pada <strong>Slide Bab 3: Sistem Terdistribusi</strong>, Teorema CAP (Brewer's Theorem) menyatakan bahwa sistem data terdistribusi tidak dapat menjamin ketiga karakteristik berikut secara bersamaan <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>:
-                </p>
-                
-                <ul class="list-disc ml-5 space-y-1.5 text-[var(--nlm-text-secondary)] my-2">
-                  <li><strong>Consistency (Konsistensi):</strong> Setiap pembacaan menerima data tulis terbaru atau galat <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>.</li>
-                  <li><strong>Availability (Ketersediaan):</strong> Setiap permintaan non-galat menerima respons tanpa jaminan data terbaru.</li>
-                  <li><strong>Partition Tolerance:</strong> Sistem tetap beroperasi meski terjadi partisi jaringan fisik <span class="nlm-citation" onclick="openSourceCitation(1, 16)">2</span>.</li>
-                </ul>
-
-                <p class="text-[var(--nlm-text-secondary)]">
-                  Karena partisi jaringan tidak bisa dihindari, arsitektur sistem harus memilih antara konsistensi ketat (CP) atau ketersediaan tinggi (AP) saat terjadi pemisahan koneksi antar-node <span class="nlm-citation" onclick="openSourceCitation(1, 16)">2</span>.
-                </p>
-              </div>
-
-              <!-- Answer Actions Row (Copy, Save Note, and REGENERATE ANSWER) -->
-              <div class="pt-2 flex items-center justify-between border-t border-[var(--nlm-border-subtle)] text-xs text-[var(--nlm-text-tertiary)]">
-                <div class="flex items-center space-x-1">
-                  <!-- Regenerate Button -->
-                  <button onclick="regenerateAiResponse()" class="p-1.5 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-[var(--nlm-text-primary)] transition flex items-center space-x-1.5 text-[11px] font-medium" title="Hasilkan Ulang Jawaban">
-                    <i id="regen-icon" class="fa-solid fa-arrows-rotate text-xs"></i>
-                    <span>Hasilkan Ulang</span>
-                  </button>
-                  <button onclick="copyAnswerText()" class="p-1.5 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-[var(--nlm-text-primary)] transition" title="Salin Jawaban">
-                    <i class="fa-regular fa-copy text-xs"></i>
-                  </button>
-                  <button onclick="saveAnswerAsNote()" class="px-2.5 py-1 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-[var(--nlm-text-primary)] transition flex items-center space-x-1.5 text-[11px] font-medium" title="Simpan ke Catatan">
-                    <i class="fa-regular fa-bookmark text-xs"></i>
-                    <span>Simpan ke Catatan</span>
-                  </button>
-                </div>
-                <div class="flex items-center space-x-2 text-[11px]">
-                  <span id="response-grounding-tag">2 rujukan terverifikasi</span>
-                  <span>&bull;</span>
-                  <span class="font-medium text-[var(--nlm-text-secondary)] flex items-center space-x-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[var(--nlm-brand)]"></span>
-                    <span id="ai-provider-badge">Gemini 1.5 Flash</span>
-                  </span>
-                </div>
-              </div>
-
             </div>
           </div>
 
@@ -3168,56 +3093,190 @@
       }
     }
 
-    // 3. EDIT USER PROMPTS & REGENERATE
-    function enablePromptEdit() {
-      const bubble = document.getElementById('user-bubble-box');
-      const form = document.getElementById('user-edit-form');
-      const textarea = document.getElementById('user-edit-textarea');
-      const text = document.getElementById('user-question-text').textContent;
-
-      textarea.value = text;
-      bubble.classList.add('hidden');
-      form.classList.remove('hidden');
-      textarea.focus();
+    // 3. MULTI-TURN CHAT MESSAGE STORAGE & HELPERS
+    function loadChatMessages() {
+      try {
+        const raw = localStorage.getItem(getNotebookStorageKey('noteroute_chat_messages'));
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
     }
 
-    function cancelPromptEdit() {
-      document.getElementById('user-edit-form').classList.add('hidden');
-      document.getElementById('user-bubble-box').classList.remove('hidden');
+    function saveChatMessages(messages) {
+      try {
+        localStorage.setItem(getNotebookStorageKey('noteroute_chat_messages'), JSON.stringify(messages));
+      } catch (e) {
+        console.warn('[NoteRoute] Gagal menyimpan riwayat chat:', e);
+      }
     }
 
-    function saveAndResubmitPrompt() {
-      const textarea = document.getElementById('user-edit-textarea');
-      const newText = textarea.value.trim();
-      if (!newText) return;
-
-      document.getElementById('user-question-text').textContent = newText;
-      cancelPromptEdit();
-      showToast("Pertanyaan Diperbarui", "Menghasilkan ulang jawaban...");
-      regenerateAiResponse();
+    function clearChatHistory() {
+      if (!confirm('Apakah Anda yakin ingin menghapus seluruh riwayat chat di notebook ini?')) return;
+      saveChatMessages([]);
+      renderChatConversation();
+      showToast("Chat Dibersihkan", "Riwayat percakapan notebook ini telah direset.");
     }
 
-    function regenerateAiResponse() {
-      const icon = document.getElementById('regen-icon');
-      const container = document.getElementById('ai-response-container');
-      
-      icon.classList.add('fa-spin');
-      showToast("Menghasilkan Ulang", "Menganalisis kembali dokumen laptop...");
+    function copyTextToClipboard(encodedText) {
+      const text = decodeURIComponent(encodedText);
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Teks Disalin", "Pertanyaan berhasil disalin ke clipboard.");
+      });
+    }
 
-      setTimeout(() => {
-        icon.classList.remove('fa-spin');
-        container.innerHTML = `
-          <p><strong>[Jawaban Diperbarui]</strong> Berdasarkan analisis ulang komprehensif pada dokumen:</p>
-          <p class="text-[var(--nlm-text-secondary)] my-2">
-            Teorema CAP mengonfirmasi bahwa saat partisi jaringan terjadi di sistem terdistribusi, kompromi antara konsistensi ketat vs responsivitas tinggi bersifat mutlak <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>.
-          </p>
-          <ul class="list-disc ml-5 space-y-1 text-[var(--nlm-text-secondary)]">
-            <li>Sistem CP: Menolak kueri split-brain demi mencegah inkonsistensi <span class="nlm-citation" onclick="openSourceCitation(1, 16)">2</span>.</li>
-            <li>Sistem AP: Tetap melayani kueri walau berpotensi stale read.</li>
-          </ul>
-        `;
-        showToast("Jawaban Diperbarui", "Selesai menghasilkan ulang dari awal.");
-      }, 700);
+    function reusePromptText(encodedText) {
+      const text = decodeURIComponent(encodedText);
+      const input = document.getElementById('nlm-chat-input');
+      if (input) {
+        input.value = text;
+        autoResizeChatInput(input);
+        input.focus();
+        showToast("Draf Siap", "Pertanyaan dimuat ke input untuk diedit.");
+      }
+    }
+
+    function copyAssistantMessageText(msgId) {
+      const messages = loadChatMessages();
+      const msg = messages.find(m => m.id === msgId);
+      if (!msg) return;
+      const textToCopy = msg.text || (msg.html ? msg.html.replace(/<[^>]+>/g, '') : '');
+      if (textToCopy) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          showToast("Jawaban Disalin", "Jawaban AI disalin ke clipboard.");
+        });
+      }
+    }
+
+    function saveAssistantMessageAsNote(msgId) {
+      const messages = loadChatMessages();
+      const msg = messages.find(m => m.id === msgId);
+      if (!msg) return;
+      const snippet = msg.text ? (msg.text.slice(0, 140) + '...') : 'Catatan hasil rangkuman dari obrolan AI.';
+      addNoteToSidebar("Rangkuman dari Chat", snippet);
+      showToast("Disimpan ke Catatan", "Tersimpan di panel kiri Sumber.");
+    }
+
+    function regenerateAssistantMessage(msgId) {
+      const messages = loadChatMessages();
+      const idx = messages.findIndex(m => m.id === msgId);
+      if (idx === -1) return;
+      let promptText = '';
+      for (let i = idx - 1; i >= 0; i--) {
+        if (messages[i].role === 'user') {
+          promptText = messages[i].text;
+          break;
+        }
+      }
+      if (!promptText) return;
+
+      // Hapus pesan asisten ini dari riwayat dan kirim ulang
+      messages.splice(idx, 1);
+      saveChatMessages(messages);
+      renderChatConversation();
+
+      const input = document.getElementById('nlm-chat-input');
+      if (input) {
+        input.value = promptText;
+        submitNlmPrompt();
+      }
+    }
+
+    function renderChatConversation() {
+      const messages = loadChatMessages();
+      const hero = document.getElementById('nlm-welcome-hero');
+      const activeWrapper = document.getElementById('nlm-active-messages');
+      const container = document.getElementById('chat-messages-container');
+      const countLabel = document.getElementById('chat-messages-count-label');
+
+      if (!container) return;
+
+      if (messages.length === 0) {
+        if (hero) hero.classList.remove('hidden');
+        if (activeWrapper) activeWrapper.classList.add('hidden');
+        container.innerHTML = '';
+        return;
+      }
+
+      if (hero) hero.classList.add('hidden');
+      if (activeWrapper) activeWrapper.classList.remove('hidden');
+      if (countLabel) countLabel.textContent = `Riwayat Percakapan (${messages.length} pesan)`;
+
+      container.innerHTML = messages.map(msg => {
+        if (msg.role === 'user') {
+          const timeStr = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+          return `
+            <div class="user-turn-block flex justify-end group animate-fade-up" data-id="${msg.id}">
+              <div class="flex flex-col items-end space-y-1 max-w-xl">
+                <div class="bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-primary)] border border-[var(--nlm-border)] px-4 py-3 rounded-2xl rounded-tr-sm text-xs sm:text-sm leading-relaxed shadow-2xs w-full relative">
+                  <span>${escapeHtml(msg.text)}</span>
+                </div>
+                <div class="flex items-center space-x-3 text-[10px] text-[var(--nlm-text-tertiary)] pr-1 opacity-70 group-hover:opacity-100 transition">
+                  ${timeStr ? `<span>${timeStr}</span>` : ''}
+                  <button onclick="copyTextToClipboard('${encodeURIComponent(msg.text)}')" class="hover:text-[var(--nlm-brand)] flex items-center space-x-1 cursor-pointer" title="Salin Pertanyaan">
+                    <i class="fa-regular fa-copy text-[9px]"></i>
+                    <span>Salin</span>
+                  </button>
+                  <button onclick="reusePromptText('${encodeURIComponent(msg.text)}')" class="hover:text-[var(--nlm-brand)] flex items-center space-x-1 cursor-pointer" title="Gunakan lagi di input">
+                    <i class="fa-solid fa-pen text-[9px]"></i>
+                    <span>Edit</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        } else {
+          // Assistant turn
+          const failoverHtml = msg.failoverInfo ? `
+            <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[11px] font-medium">
+              <i class="fa-solid fa-shuffle text-[10px]"></i>
+              <span>${escapeHtml(msg.failoverInfo.failedFirstProviderName)} limit &bull; Otomatis dialihkan ke ${escapeHtml(msg.failoverInfo.usedProviderName)} tanpa jeda</span>
+            </div>
+          ` : '';
+
+          const groundingStr = msg.mode === 'general' ? 'AI Umum (Bebas Dokumen)' : 'Rujukan Dokumen Terverifikasi';
+          const providerStr = msg.providerName || 'NoteRoute AI';
+
+          return `
+            <div class="ai-turn-block flex items-start space-x-3.5 animate-fade-up" data-id="${msg.id}">
+              <div class="w-7 h-7 rounded-full bg-slate-900 text-white dark:bg-zinc-800 dark:text-zinc-100 border border-slate-700/20 dark:border-zinc-700 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-xs">
+                <i class="fa-solid fa-wand-magic-sparkles text-[11px] text-[var(--nlm-brand)]"></i>
+              </div>
+              
+              <div class="flex-1 space-y-3 text-xs sm:text-sm text-[var(--nlm-text-primary)] leading-relaxed min-w-0">
+                ${failoverHtml}
+                <div class="ai-response-container break-words">
+                  ${msg.html || formatMarkdownToHtml(msg.text)}
+                </div>
+
+                <div class="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-[var(--nlm-border-subtle)] text-xs text-[var(--nlm-text-tertiary)]">
+                  <div class="flex items-center space-x-1">
+                    <button onclick="regenerateAssistantMessage('${msg.id}')" class="p-1.5 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-[var(--nlm-text-primary)] transition flex items-center space-x-1.5 text-[11px] font-medium cursor-pointer" title="Hasilkan Ulang Jawaban">
+                      <i class="fa-solid fa-arrows-rotate text-xs"></i>
+                      <span>Hasilkan Ulang</span>
+                    </button>
+                    <button onclick="copyAssistantMessageText('${msg.id}')" class="p-1.5 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-[var(--nlm-text-primary)] transition cursor-pointer" title="Salin Jawaban">
+                      <i class="fa-regular fa-copy text-xs"></i>
+                    </button>
+                    <button onclick="saveAssistantMessageAsNote('${msg.id}')" class="px-2.5 py-1 rounded-lg hover:bg-[var(--nlm-surface-hover)] hover:text-[var(--nlm-text-primary)] transition flex items-center space-x-1.5 text-[11px] font-medium cursor-pointer" title="Simpan ke Catatan">
+                      <i class="fa-regular fa-bookmark text-xs"></i>
+                      <span>Simpan ke Catatan</span>
+                    </button>
+                  </div>
+                  <div class="flex items-center space-x-2 text-[11px]">
+                    <span>${groundingStr}</span>
+                    <span>&bull;</span>
+                    <span class="font-medium text-[var(--nlm-text-secondary)] flex items-center space-x-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[var(--nlm-brand)]"></span>
+                      <span>${escapeHtml(providerStr)}</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      }).join('');
     }
 
     // 4. THEME & APPEARANCE MANAGEMENT (TERANG, GELAP, MENGIKUTI SISTEM)
@@ -3568,11 +3627,31 @@
         // 1. Google Gemini (Support stable v1 and v1beta models with auto-fallback)
         if (id === 'gemini') {
           const candidateEndpoints = [
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`,
             `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(key)}`,
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${encodeURIComponent(key)}`,
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`,
-            `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${encodeURIComponent(key)}`
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=${encodeURIComponent(key)}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-002:generateContent?key=${encodeURIComponent(key)}`,
+            `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${encodeURIComponent(key)}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${encodeURIComponent(key)}`
           ];
+          try {
+            const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`);
+            if (listRes.ok) {
+              const listData = await listRes.json();
+              if (Array.isArray(listData.models)) {
+                const usable = listData.models.find(m => 
+                  m.supportedGenerationMethods?.includes('generateContent') && 
+                  (m.name.includes('flash') || m.name.includes('gemini-2') || m.name.includes('pro'))
+                );
+                if (usable) {
+                  const mName = usable.name.replace(/^models\//, '');
+                  candidateEndpoints.unshift(`https://generativelanguage.googleapis.com/v1beta/models/${mName}:generateContent?key=${encodeURIComponent(key)}`);
+                }
+              }
+            }
+          } catch (_) {}
+
           let geminiOk = false;
           let lastErr = null;
           for (const url of candidateEndpoints) {
@@ -3600,7 +3679,24 @@
 
         // 2. Groq Cloud (Free Tier model: llama-3.1-8b-instant active on 100% of accounts)
         else if (id === 'groq') {
-          const groqModels = ['llama-3.1-8b-instant', 'llama-3.3-70b-versatile', 'llama3-8b-8192'];
+          const groqModels = ['llama-3.1-8b-instant', 'llama3-8b-8192', 'qwen-2.5-32b', 'llama-3.3-70b-versatile'];
+          try {
+            const listRes = await fetch('https://api.groq.com/openai/v1/models', {
+              headers: { 'Authorization': `Bearer ${key}` }
+            });
+            if (listRes.ok) {
+              const listData = await listRes.json();
+              if (Array.isArray(listData.data)) {
+                const activeModel = listData.data.find(m => 
+                  m.id.includes('8b-instant') || m.id.includes('llama') || m.id.includes('qwen')
+                );
+                if (activeModel && !groqModels.includes(activeModel.id)) {
+                  groqModels.unshift(activeModel.id);
+                }
+              }
+            }
+          } catch (_) {}
+
           let groqOk = false;
           let lastErr = null;
           for (const m of groqModels) {
@@ -3627,7 +3723,7 @@
 
         // 3. OpenRouter Free (Use dynamic free-router openrouter/free)
         else if (id === 'openrouter') {
-          const orModels = ['openrouter/free', 'google/gemma-2-9b-it:free', 'mistralai/mistral-7b-instruct:free', 'openchat/openchat-7b:free'];
+          const orModels = ['openrouter/free', 'google/gemma-2-9b-it:free', 'mistralai/mistral-7b-instruct:free', 'deepseek/deepseek-r1:free', 'openchat/openchat-7b:free'];
           let orOk = false;
           let lastErr = null;
           for (const m of orModels) {
@@ -5453,52 +5549,32 @@
 
     function retryLastPrompt() {
       const timeoutCard = document.getElementById('ai-timeout-card');
-      const thinking = document.getElementById('ai-thinking-state');
-      const thinkingText = document.getElementById('ai-thinking-status-text');
-      const responseBlock = document.getElementById('ai-response-block');
-
-      timeoutCard.classList.add('hidden');
-      thinkingText.textContent = "Mencoba menyambungkan kembali ke server AI...";
-      thinking.classList.remove('hidden');
-      showToast("Menyambung Ulang", "Membangun koneksi ulang ke gateway...");
-
-      setTimeout(() => {
-        thinking.classList.add('hidden');
-        responseBlock.classList.remove('hidden');
-        responseBlock.classList.remove('animate-fade-up');
-        void responseBlock.offsetWidth;
-        responseBlock.classList.add('animate-fade-up');
-        showToast("Koneksi Pulih", "Respons AI berhasil diterima setelah mencoba ulang.");
-        const scroll = document.getElementById('nlm-chat-scroll');
-        if (scroll) scroll.scrollTop = scroll.scrollHeight;
-      }, 850);
+      if (timeoutCard) timeoutCard.classList.add('hidden');
+      const messages = loadChatMessages();
+      const lastUser = [...messages].reverse().find(m => m.role === 'user');
+      if (!lastUser) return;
+      const input = document.getElementById('nlm-chat-input');
+      if (input) {
+        input.value = lastUser.text;
+        submitNlmPrompt();
+      }
     }
 
     function failoverToFallbackProvider(providerName) {
       const timeoutCard = document.getElementById('ai-timeout-card');
       const quotaCard = document.getElementById('ai-quota-card');
-      const thinking = document.getElementById('ai-thinking-state');
-      const thinkingText = document.getElementById('ai-thinking-status-text');
-      const responseBlock = document.getElementById('ai-response-block');
-      const badge = document.getElementById('ai-provider-badge');
-
-      timeoutCard.classList.add('hidden');
-      quotaCard.classList.add('hidden');
-      thinkingText.textContent = `Mengalihkan rute cerdas (failover) ke ${providerName}...`;
-      thinking.classList.remove('hidden');
-      showToast("Failover Otomatis", `Mengalihkan permintaan ke ${providerName}...`);
-
-      setTimeout(() => {
-        thinking.classList.add('hidden');
-        if (badge) badge.textContent = providerName;
-        responseBlock.classList.remove('hidden');
-        responseBlock.classList.remove('animate-fade-up');
-        void responseBlock.offsetWidth;
-        responseBlock.classList.add('animate-fade-up');
-        showToast("Berhasil Dialihkan", `Kueri dijawab oleh ${providerName} tanpa kehilangan sesi.`);
-        const scroll = document.getElementById('nlm-chat-scroll');
-        if (scroll) scroll.scrollTop = scroll.scrollHeight;
-      }, 750);
+      if (timeoutCard) timeoutCard.classList.add('hidden');
+      if (quotaCard) quotaCard.classList.add('hidden');
+      showToast("Beralih Provider", `Mengarahkan pertanyaan ke ${providerName}...`);
+      const messages = loadChatMessages();
+      const lastUser = [...messages].reverse().find(m => m.role === 'user');
+      if (lastUser) {
+        const input = document.getElementById('nlm-chat-input');
+        if (input) {
+          input.value = lastUser.text;
+          submitNlmPrompt();
+        }
+      }
     }
 
     function sendPrompt(text) {
@@ -5529,7 +5605,7 @@
       }).join('');
     }
 
-    async function executeLlmCall(provider, userPrompt, mode) {
+    async function executeLlmCall(provider, userPrompt, mode, conversationHistory = []) {
       const isDoc = (mode === 'document');
       const sources = loadNotebookSources();
       const sourcesText = sources.map((s, idx) => `[Dokumen ${idx + 1}: ${s.name}]`).join(', ');
@@ -5538,27 +5614,70 @@
         ? `Anda adalah NoteRoute AI, asisten riset dokumen cerdas. Anda menganalisis berkas materi kuliah berikut: ${sourcesText || 'Dokumen materi kuliah'}. Jawablah secara akurat, terstruktur, ramah, dan berikan rujukan atau poin yang relevan dalam bahasa Indonesia.`
         : `Anda adalah NoteRoute AI, asisten AI umum serbaguna. Jawablah pertanyaan pengguna secara cerdas, jelas, dan komprehensif dalam bahasa Indonesia.`;
 
+      // Riwayat percakapan multi-turn (6 pesan terakhir sebelum giliran ini)
+      const recentHistory = (conversationHistory || []).slice(-6);
+      const chatMessages = [
+        { role: 'system', content: systemPrompt },
+        ...recentHistory.map(m => ({
+          role: m.role === 'assistant' ? 'assistant' : 'user',
+          content: m.text || ''
+        })),
+        { role: 'user', content: userPrompt }
+      ];
+
+      const geminiContents = [];
+      recentHistory.forEach(m => {
+        if (m.text) {
+          geminiContents.push({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.text }]
+          });
+        }
+      });
+      geminiContents.push({
+        role: 'user',
+        parts: [{ text: `${systemPrompt}\n\nPertanyaan: ${userPrompt}` }]
+      });
+
       const id = provider.id;
 
-      // 1. Google Gemini (Mendukung endpoint v1 stabil dan v1beta dengan auto-fallback)
+      // 1. Google Gemini (Mendukung endpoint v1 stabil dan v1beta dengan auto-fallback & auto-detect)
       if (id === 'gemini') {
         const key = localStorage.getItem('noteroute_key_gemini');
         if (!key) throw new Error('Kunci Gemini belum diisi');
         const candidateEndpoints = [
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`,
           `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(key)}`,
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${encodeURIComponent(key)}`,
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`,
-          `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${encodeURIComponent(key)}`
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=${encodeURIComponent(key)}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-002:generateContent?key=${encodeURIComponent(key)}`,
+          `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${encodeURIComponent(key)}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${encodeURIComponent(key)}`
         ];
+        try {
+          const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`);
+          if (listRes.ok) {
+            const listData = await listRes.json();
+            if (Array.isArray(listData.models)) {
+              const usable = listData.models.find(m => 
+                m.supportedGenerationMethods?.includes('generateContent') && 
+                (m.name.includes('flash') || m.name.includes('gemini-2') || m.name.includes('pro'))
+              );
+              if (usable) {
+                const mName = usable.name.replace(/^models\//, '');
+                candidateEndpoints.unshift(`https://generativelanguage.googleapis.com/v1beta/models/${mName}:generateContent?key=${encodeURIComponent(key)}`);
+              }
+            }
+          }
+        } catch (_) {}
+
         let lastErr = null;
         for (const url of candidateEndpoints) {
           try {
             const res = await fetch(url, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{ role: 'user', parts: [{ text: `${systemPrompt}\n\nPertanyaan: ${userPrompt}` }] }]
-              })
+              body: JSON.stringify({ contents: geminiContents })
             });
             if (res.ok) {
               const data = await res.json();
@@ -5582,7 +5701,24 @@
       if (id === 'groq') {
         const key = localStorage.getItem('noteroute_key_groq');
         if (!key) throw new Error('Kunci Groq belum diisi');
-        const groqModels = ['llama-3.1-8b-instant', 'llama-3.3-70b-versatile', 'llama3-8b-8192'];
+        const groqModels = ['llama-3.1-8b-instant', 'llama3-8b-8192', 'qwen-2.5-32b', 'llama-3.3-70b-versatile'];
+        try {
+          const listRes = await fetch('https://api.groq.com/openai/v1/models', {
+            headers: { 'Authorization': `Bearer ${key}` }
+          });
+          if (listRes.ok) {
+            const listData = await listRes.json();
+            if (Array.isArray(listData.data)) {
+              const activeModel = listData.data.find(m => 
+                m.id.includes('8b-instant') || m.id.includes('llama') || m.id.includes('qwen')
+              );
+              if (activeModel && !groqModels.includes(activeModel.id)) {
+                groqModels.unshift(activeModel.id);
+              }
+            }
+          }
+        } catch (_) {}
+
         let lastErr = null;
         for (const m of groqModels) {
           try {
@@ -5591,7 +5727,7 @@
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
               body: JSON.stringify({
                 model: m,
-                messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }]
+                messages: chatMessages
               })
             });
             if (res.ok) {
@@ -5613,7 +5749,7 @@
       if (id === 'openrouter') {
         const key = localStorage.getItem('noteroute_key_openrouter');
         if (!key) throw new Error('Kunci OpenRouter belum diisi');
-        const orModels = ['openrouter/free', 'google/gemma-2-9b-it:free', 'mistralai/mistral-7b-instruct:free', 'openchat/openchat-7b:free'];
+        const orModels = ['openrouter/free', 'google/gemma-2-9b-it:free', 'mistralai/mistral-7b-instruct:free', 'deepseek/deepseek-r1:free', 'openchat/openchat-7b:free'];
         let lastErr = null;
         for (const m of orModels) {
           try {
@@ -5622,7 +5758,7 @@
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
               body: JSON.stringify({
                 model: m,
-                messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }]
+                messages: chatMessages
               })
             });
             if (res.ok) {
@@ -5649,10 +5785,7 @@
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
           body: JSON.stringify({
             model: 'command-r-08-2024',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
+            messages: chatMessages
           })
         });
         if (!res.ok) {
@@ -5674,10 +5807,7 @@
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
           body: JSON.stringify({
             model: 'meta/llama-3.1-8b-instruct',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
+            messages: chatMessages
           })
         });
         if (!res.ok) {
@@ -5699,10 +5829,7 @@
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
           body: JSON.stringify({
             model: 'glm-4-flash',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
+            messages: chatMessages
           })
         });
         if (!res.ok) {
@@ -5724,10 +5851,7 @@
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
           body: JSON.stringify({
             model: 'gpt-4o-mini',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
+            messages: chatMessages
           })
         });
         if (!res.ok) {
@@ -5749,10 +5873,7 @@
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
           body: JSON.stringify({
             model: 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
+            messages: chatMessages
           })
         });
         if (!res.ok) {
@@ -5774,10 +5895,7 @@
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
           body: JSON.stringify({
             model: 'Meta-Llama-3.1-8B-Instruct',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
+            messages: chatMessages
           })
         });
         if (!res.ok) {
@@ -5802,10 +5920,7 @@
           },
           body: JSON.stringify({
             model: 'llama3.1-8b',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
+            messages: chatMessages
           })
         });
         if (!res.ok) {
@@ -5834,10 +5949,7 @@
           },
           body: JSON.stringify({
             model: 'deepseek-chat',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
+            messages: chatMessages
           })
         });
         if (!res.ok) {
@@ -5863,10 +5975,7 @@
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
           body: JSON.stringify({
             model: 'mistral-small-latest',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
+            messages: chatMessages
           })
         });
         if (!res.ok) {
@@ -5888,10 +5997,7 @@
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
           body: JSON.stringify({
             model: 'accounts/fireworks/models/llama-v3p1-8b-instruct',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
+            messages: chatMessages
           })
         });
         if (!res.ok) {
@@ -5913,10 +6019,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             model: 'default',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
+            messages: chatMessages
           })
         });
         if (!res.ok) throw new Error(`9Router status ${res.status}`);
@@ -5936,10 +6039,7 @@
           body: JSON.stringify({
             model: 'llama3',
             stream: false,
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
+            messages: chatMessages
           })
         });
         if (!res.ok) throw new Error(`Ollama status ${res.status}`);
@@ -5970,10 +6070,7 @@
           headers,
           body: JSON.stringify({
             model: cp.model || 'default',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
+            messages: chatMessages
           })
         });
         if (!res.ok) throw new Error(`Status ${res.status} dari provider kustom`);
@@ -5991,24 +6088,29 @@
       const text = input.value.trim();
       if (!text) return;
 
-      document.getElementById('user-question-text').textContent = text;
-      document.getElementById('nlm-welcome-hero').classList.add('hidden');
-      document.getElementById('nlm-active-messages').classList.remove('hidden');
+      const userMsg = {
+        id: 'msg_u_' + Date.now(),
+        role: 'user',
+        text: text,
+        timestamp: Date.now()
+      };
+      const messages = loadChatMessages();
+      messages.push(userMsg);
+      saveChatMessages(messages);
+
+      // Render obrolan sehingga pesan user langsung terlihat
+      renderChatConversation();
+
+      input.value = '';
+      input.style.height = 'auto';
 
       const timeoutCard = document.getElementById('ai-timeout-card');
       const quotaCard = document.getElementById('ai-quota-card');
-      const responseBlock = document.getElementById('ai-response-block');
       const thinking = document.getElementById('ai-thinking-state');
       const thinkingText = document.getElementById('ai-thinking-status-text');
-      const responseContainer = document.getElementById('ai-response-container');
-      const groundingTag = document.getElementById('response-grounding-tag');
-      const badge = document.getElementById('ai-provider-badge');
-      const failoverPill = document.getElementById('ai-failover-pill');
 
       if (timeoutCard) timeoutCard.classList.add('hidden');
       if (quotaCard) quotaCard.classList.add('hidden');
-      if (responseBlock) responseBlock.classList.add('hidden');
-      if (failoverPill) failoverPill.classList.add('hidden');
 
       if (thinkingText) {
         thinkingText.textContent = currentMode === 'general'
@@ -6017,9 +6119,6 @@
       }
       if (thinking) thinking.classList.remove('hidden');
 
-      input.value = '';
-      input.style.height = 'auto';
-
       showToast("Menjawab", "Memproses kueri...");
       const scroll = document.getElementById('nlm-chat-scroll');
       if (scroll) scroll.scrollTop = scroll.scrollHeight;
@@ -6027,18 +6126,23 @@
       const connected = getConnectedProviders();
       let answerFound = false;
       let finalHtml = '';
+      let rawAnswerText = '';
       let usedProviderName = '';
       let failoverHappened = false;
       let failedFirstProvider = null;
       let allErrors = [];
+
+      // Riwayat pesan sebelum pertanyaan ini untuk memori multi-turn LLM
+      const prevHistory = messages.slice(0, -1);
 
       if (connected.length > 0) {
         for (let i = 0; i < connected.length; i++) {
           const prov = connected[i];
           try {
             if (thinkingText) thinkingText.textContent = `Menghubungi ${prov.name}...`;
-            const result = await executeLlmCall(prov, text, currentMode);
+            const result = await executeLlmCall(prov, text, currentMode, prevHistory);
             if (result && result.text) {
+              rawAnswerText = result.text;
               finalHtml = formatMarkdownToHtml(result.text);
               usedProviderName = result.providerName || prov.name;
               answerFound = true;
@@ -6061,6 +6165,7 @@
       if (!answerFound) {
         if (connected.length === 0) {
           usedProviderName = 'Kunci API Belum Dikonfigurasi';
+          rawAnswerText = 'Kunci API belum terpasang. Masukkan kunci API Anda di menu Pengaturan.';
           finalHtml = `
             <div class="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 dark:bg-amber-950/20 space-y-3">
               <div class="flex items-center space-x-2 text-amber-600 dark:text-amber-400 font-bold text-xs sm:text-sm">
@@ -6080,6 +6185,7 @@
           `;
         } else {
           usedProviderName = 'Panggilan AI Gagal';
+          rawAnswerText = `Gagal menghubungi penyedia AI: ${allErrors.join('; ')}`;
           finalHtml = `
             <div class="p-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 dark:bg-rose-950/20 space-y-3">
               <div class="flex items-center space-x-2 text-rose-600 dark:text-rose-400 font-bold text-xs sm:text-sm">
@@ -6106,31 +6212,32 @@
       }
 
       if (thinking) thinking.classList.add('hidden');
-      if (responseContainer) responseContainer.innerHTML = finalHtml;
-      if (badge) badge.textContent = usedProviderName;
 
-      if (groundingTag) {
-        groundingTag.textContent = currentMode === 'general'
-          ? "AI Umum (Bebas Dokumen)"
-          : "2 rujukan dokumen terverifikasi";
+      const assistantMsg = {
+        id: 'msg_a_' + Date.now(),
+        role: 'assistant',
+        text: rawAnswerText,
+        html: finalHtml,
+        providerName: usedProviderName,
+        mode: currentMode,
+        timestamp: Date.now(),
+        failoverInfo: (failoverHappened && failedFirstProvider) ? {
+          failedFirstProviderName: failedFirstProvider.name,
+          usedProviderName: usedProviderName
+        } : null
+      };
+
+      const currentMessages = loadChatMessages();
+      currentMessages.push(assistantMsg);
+      saveChatMessages(currentMessages);
+
+      renderChatConversation();
+
+      if (scroll) {
+        setTimeout(() => {
+          scroll.scrollTop = scroll.scrollHeight;
+        }, 50);
       }
-
-      if (failoverHappened && failoverPill && failedFirstProvider) {
-        failoverPill.innerHTML = `
-          <i class="fa-solid fa-shuffle text-[10px]"></i>
-          <span>${escapeHtml(failedFirstProvider.name)} limit &bull; Otomatis dialihkan ke ${escapeHtml(usedProviderName)} tanpa jeda</span>
-        `;
-        failoverPill.classList.remove('hidden');
-      }
-
-      if (responseBlock) {
-        responseBlock.classList.remove('hidden');
-        responseBlock.classList.remove('animate-fade-up');
-        void responseBlock.offsetWidth;
-        responseBlock.classList.add('animate-fade-up');
-      }
-
-      if (scroll) scroll.scrollTop = scroll.scrollHeight;
     }
 
     function copyAnswerText() {
@@ -6239,6 +6346,7 @@
     renderSources();
     renderNotes();
     renderStudioNotes();
+    renderChatConversation();
     initPhotoEditorEvents();
     initResponsiveSidebars();
     updateContextCapacityWidget();
