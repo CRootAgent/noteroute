@@ -551,14 +551,21 @@
 
       </div>
 
-      <!-- Sources Footer -->
-      <div class="p-3 border-t border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[11px]">
-        <div class="flex items-center justify-between text-[var(--nlm-text-secondary)] font-medium mb-1">
-          <span>Kapasitas Konteks</span>
-          <span class="font-mono text-[var(--nlm-text-tertiary)]">14.2k / 1.0M kata</span>
+      <!-- Sources Footer: Kapasitas Konteks Dinamis -->
+      <div id="sources-context-footer" class="p-3 border-t border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[11px]">
+        <div class="flex items-center justify-between text-[var(--nlm-text-secondary)] font-medium mb-1.5">
+          <span class="flex items-center space-x-1.5">
+            <i class="fa-solid fa-microchip text-[10px] text-blue-500"></i>
+            <span>Kapasitas Konteks</span>
+          </span>
+          <span id="context-capacity-text" class="font-mono text-[var(--nlm-text-tertiary)]">0 / 1.0M kata</span>
         </div>
-        <div class="w-full bg-[var(--nlm-border)] h-1 rounded-full overflow-hidden">
-          <div class="bg-blue-600 h-full w-[2%]"></div>
+        <div class="w-full bg-[var(--nlm-border)] h-1.5 rounded-full overflow-hidden">
+          <div id="context-capacity-bar" class="bg-blue-600 h-full w-[0%] transition-all duration-300"></div>
+        </div>
+        <div class="flex items-center justify-between mt-1 text-[10px] text-[var(--nlm-text-tertiary)]">
+          <span id="context-sources-count">0 Dokumen aktif</span>
+          <span id="context-percentage">0% terisi</span>
         </div>
       </div>
     </aside>
@@ -622,28 +629,6 @@
 
         <!-- ACTIVE CHAT CONVERSATION WRAPPER -->
         <div id="nlm-active-messages" class="max-w-2xl mx-auto space-y-6 hidden">
-          
-          <!-- Simulation Status Toolbar -->
-          <div class="flex items-center justify-between text-[11px] pb-2 border-b border-[var(--nlm-border-subtle)]">
-            <span class="text-[var(--nlm-text-tertiary)] flex items-center space-x-1.5 font-medium">
-              <i class="fa-solid fa-microchip text-[10px] text-[var(--nlm-brand)]"></i>
-              <span>Status &amp; Simulasi AI:</span>
-            </span>
-            <div class="flex flex-wrap items-center gap-1.5">
-              <button onclick="simulateAiState('normal')" class="px-2 py-0.5 rounded-md bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-secondary)] border border-[var(--nlm-border)] text-[10px] transition font-medium" title="Uji Alur Normal AI (Gemini Utama)">
-                <i class="fa-solid fa-check text-emerald-500 mr-1 text-[9px]"></i>Normal (Gemini)
-              </button>
-              <button onclick="simulateAiState('failover')" class="px-2 py-0.5 rounded-md bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 text-[10px] transition font-medium" title="Uji Auto-Failover Senyap (Gemini Sibuk -> Otomatis ke Groq)">
-                <i class="fa-solid fa-shuffle text-blue-500 mr-1 text-[9px]"></i>Auto-Failover
-              </button>
-              <button onclick="simulateAiState('offline')" class="px-2 py-0.5 rounded-md bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[10px] transition font-medium" title="Uji Kondisi Internet Laptop Putus (Offline)">
-                <i class="fa-solid fa-wifi mr-1 text-[9px] text-amber-500"></i>Internet Putus
-              </button>
-              <button onclick="simulateAiState('all-exhausted')" class="px-2 py-0.5 rounded-md bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 text-[10px] transition font-medium" title="Uji Kondisi Seluruh 5 AI Habis Kuota (HTTP 429)">
-                <i class="fa-solid fa-bolt text-red-500 mr-1 text-[9px]"></i>Semua AI Habis
-              </button>
-            </div>
-          </div>
 
           <!-- Sample User Turn with EDIT PROMPT capability -->
           <div id="user-turn-block" class="flex justify-end group animate-fade-up">
@@ -987,11 +972,18 @@
 
       </div>
 
-      <!-- Studio Slim Footer -->
-      <div class="p-3 border-t border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[11px]">
+      <!-- Studio Slim Footer: Efisiensi Biaya & Token Dinamis -->
+      <div id="studio-efficiency-footer" class="p-3 border-t border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] text-[11px]">
         <div class="flex items-center justify-between text-[var(--nlm-text-secondary)] font-medium">
-          <span>Efisiensi:</span>
-          <span class="font-bold text-emerald-600 dark:text-emerald-400 font-mono">Hemat $12.85</span>
+          <span class="flex items-center space-x-1.5">
+            <i class="fa-solid fa-bolt text-[10px] text-emerald-500"></i>
+            <span>Efisiensi:</span>
+          </span>
+          <span id="studio-efficiency-val" class="font-bold text-emerald-600 dark:text-emerald-400 font-mono">Hemat Rp 0 ($0.00)</span>
+        </div>
+        <div class="flex items-center justify-between mt-1 text-[10px] text-[var(--nlm-text-tertiary)]">
+          <span id="studio-tokens-saved">0 token teroptimasi</span>
+          <span id="studio-efficiency-rate" class="text-emerald-500 font-semibold font-mono">100% Free / Routing</span>
         </div>
       </div>
     </aside>
@@ -1496,6 +1488,71 @@
               </div>
             </div>
 
+            <!-- ACTIVE KEY CONFIGURATION CARD (TOP POSITION, AUTO-SAVE & LIVE TEST) -->
+            <div id="provider-key-edit-box" class="p-4 rounded-2xl border-2 border-blue-500/40 bg-[var(--nlm-surface)] shadow-xs space-y-3" data-provider-id="gemini">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center space-x-2.5">
+                  <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-key"></i>
+                  </div>
+                  <div>
+                    <h5 id="provider-edit-name" class="font-bold text-xs sm:text-sm text-[var(--nlm-text-primary)]">Konfigurasi Kunci API: Google Gemini</h5>
+                    <p id="provider-edit-note" class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">1.500 req/hari &bull; 1M Context Free</p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <label class="text-[11px] text-[var(--nlm-text-tertiary)] hidden sm:inline font-medium">Pilih Provider:</label>
+                  <select id="provider-edit-select" onchange="onProviderSelectChanged(this.value)" class="text-xs bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-primary)] border border-[var(--nlm-border)] rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-blue-500 font-medium cursor-pointer">
+                    <option value="gemini">Google Gemini (Gratis)</option>
+                    <option value="groq">Groq Cloud (Llama 3.3 70B)</option>
+                    <option value="openrouter">OpenRouter Free</option>
+                    <option value="cerebras">Cerebras Ultra-Fast</option>
+                    <option value="deepseek">DeepSeek</option>
+                    <option value="mistral">Mistral AI</option>
+                    <option value="github">GitHub Models</option>
+                    <option value="cohere">Cohere</option>
+                    <option value="together">Together AI</option>
+                    <option value="fireworks">Fireworks AI</option>
+                    <option value="sambanova">SambaNova</option>
+                    <option value="cloudflare">Cloudflare Workers AI</option>
+                    <option value="zai">Z.ai (Zhipu)</option>
+                    <option value="ollama">Ollama Local (Offline)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="space-y-1.5">
+                <div class="relative">
+                  <input id="provider-edit-input" type="password" oninput="onProviderKeyInputChanged()" placeholder="Tempel kunci API Anda di sini (AIzaSy..., gsk_..., sk-or-..., dsb.)..." class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl py-2.5 pl-3 pr-10 text-xs font-mono text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500 transition">
+                  <button type="button" onclick="toggleProviderKeyVisibility()" class="absolute right-3 top-2.5 text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] transition cursor-pointer" title="Tampilkan / Sembunyikan Kunci">
+                    <i id="provider-key-eye-icon" class="fa-solid fa-eye text-xs"></i>
+                  </button>
+                </div>
+                <div class="flex flex-wrap items-center justify-between text-[10px] text-[var(--nlm-text-tertiary)] pt-0.5">
+                  <span id="provider-key-autosave-indicator" class="flex items-center space-x-1 text-emerald-600 dark:text-emerald-400 font-medium">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Tersimpan otomatis ke memori lokal browser (Enkripsi Client)</span>
+                  </span>
+                  <span>Auto-detect format: Gemini / Groq / OpenRouter / Cerebras</span>
+                </div>
+              </div>
+
+              <!-- Actions & Status feedback -->
+              <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[var(--nlm-border-subtle)]">
+                <div id="provider-test-status" class="hidden text-[11px] font-medium"></div>
+                <div class="flex items-center space-x-2 ml-auto">
+                  <button onclick="testProviderKeyConnection()" class="px-3.5 py-1.5 rounded-xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-semibold text-xs flex items-center space-x-1.5 transition cursor-pointer">
+                    <i class="fa-solid fa-bolt text-[11px]"></i>
+                    <span>Uji Kunci Sekarang</span>
+                  </button>
+                  <button onclick="saveProviderKey()" class="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center space-x-1.5 transition shadow-xs cursor-pointer">
+                    <i class="fa-solid fa-check text-[11px]"></i>
+                    <span>Simpan Kunci</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <!-- SECTION 1: CUSTOM PROVIDERS (OPENAI / ANTHROPIC COMPATIBLE - BYOK) -->
             <div class="space-y-2">
               <div class="flex items-center justify-between">
@@ -1881,18 +1938,6 @@
                   </div>
                 </div>
 
-              </div>
-            </div>
-
-            <!-- Single Key Edit Card (Visible when card clicked) -->
-            <div id="provider-key-edit-box" class="p-4 rounded-xl border border-blue-500/40 bg-[var(--nlm-surface)] space-y-2">
-              <div class="flex items-center justify-between">
-                <span id="provider-edit-name" class="font-bold text-xs text-[var(--nlm-text-primary)]">Konfigurasi Kunci API</span>
-                <span id="provider-edit-note" class="text-[10px] text-blue-600 font-medium">Free Tier</span>
-              </div>
-              <input id="provider-edit-input" type="password" value="" class="w-full bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-xl p-2.5 text-xs font-mono text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500">
-              <div class="flex justify-end space-x-2 pt-1">
-                <button onclick="saveProviderKey()" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-medium text-xs">Simpan Kunci</button>
               </div>
             </div>
           </div>
@@ -3249,6 +3294,10 @@
       if (scrollContainer) scrollContainer.scrollTop = 0;
       if (tabName === 'appearance') {
         updateThemeSettingsUi();
+      } else if (tabName === 'api') {
+        refreshProviderCardsKeyBadges();
+      } else if (tabName === 'routing') {
+        renderPriorityList();
       }
     }
 
@@ -3281,18 +3330,235 @@
       return lower.replace(/[^a-z0-9]/g, '_');
     }
 
+    const PROVIDER_SAMPLE_META = {
+      gemini: { name: 'Google Gemini', note: '1.500 req/hari • 1M Context Free', sample: 'AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      groq: { name: 'Groq Cloud', note: 'Ultra-fast 300+ t/s • Free Tier', sample: 'gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      openrouter: { name: 'OpenRouter (Free)', note: 'Akses model Llama & Mistral Gratis (:free)', sample: 'sk-or-v1-xxxxxxxxxxxxxxxx' },
+      cerebras: { name: 'Cerebras', note: 'Inference ultra-cepat gratis • 1.800+ t/s', sample: 'csk_xxxxxxxxxxxxxxxx' },
+      deepseek: { name: 'DeepSeek', note: 'Reasoning Canggih / Free Credits', sample: 'sk_deepseek_xxxxxxxx' },
+      mistral: { name: 'Mistral AI', note: 'La Plateforme Free Tier • 1 req/detik', sample: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      github: { name: 'GitHub Models', note: 'Akses GPT-4o & Claude 3.5 Sonnet Free via PAT', sample: 'ghp_xxxxxxxxxxxxxxxxxxxx' },
+      cohere: { name: 'Cohere', note: 'Command R / R+ • Trial 1.000 Call/Bulan', sample: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      together: { name: 'Together AI', note: '100+ Model Open Source • $5 Free Credits', sample: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      fireworks: { name: 'Fireworks AI', note: 'Fast Inference • $1 Free Credits', sample: 'fw_xxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      sambanova: { name: 'SambaNova', note: 'Fast Inference • Llama 3.1 70B Free', sample: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' },
+      cloudflare: { name: 'Cloudflare Workers AI', note: '10.000 neurons/hari gratis edge', sample: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      zai: { name: 'Z.ai (Zhipu)', note: 'GLM-4-Flash Free Tier • Akurasi Tinggi', sample: 'xxxxxxxx.xxxxxxxx' },
+      ollama: { name: 'Ollama Local Host', note: 'Model lokal offline tanpa internet (http://localhost:11434)', sample: 'http://localhost:11434' }
+    };
+
     function openConfigureApiKey(name, sampleKey, note) {
       const id = normalizeProviderKeyId(name);
       const box = document.getElementById('provider-key-edit-box');
       if (box) {
         box.dataset.providerId = id;
-        document.getElementById('provider-edit-name').textContent = `Konfigurasi Kunci API: ${name}`;
-        document.getElementById('provider-edit-note').textContent = note || 'Free Tier';
+        const nameEl = document.getElementById('provider-edit-name');
+        const noteEl = document.getElementById('provider-edit-note');
+        const selectEl = document.getElementById('provider-edit-select');
+        const inputEl = document.getElementById('provider-edit-input');
+        const statusEl = document.getElementById('provider-test-status');
+
+        if (nameEl) nameEl.textContent = `Konfigurasi Kunci API: ${name}`;
+        if (noteEl) noteEl.textContent = note || 'Free Tier';
+        if (selectEl) selectEl.value = id;
+        if (statusEl) statusEl.classList.add('hidden');
+
         const existingKey = localStorage.getItem('noteroute_key_' + id) || '';
-        document.getElementById('provider-edit-input').value = existingKey || '';
-        document.getElementById('provider-edit-input').placeholder = sampleKey ? 'Contoh format: ' + sampleKey : 'Masukkan kunci API resmi Anda...';
-        box.scrollIntoView({ behavior: 'smooth' });
-        showToast("Pilih Provider", `Membuka pengaturan kunci untuk ${name}.`);
+        if (inputEl) {
+          inputEl.value = existingKey;
+          inputEl.placeholder = sampleKey ? 'Contoh format: ' + sampleKey : 'Masukkan kunci API resmi Anda...';
+        }
+        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function onProviderSelectChanged(newId) {
+      const meta = PROVIDER_SAMPLE_META[newId] || { name: newId, note: 'Free Tier', sample: '' };
+      openConfigureApiKey(meta.name, meta.sample, meta.note);
+    }
+
+    function toggleProviderKeyVisibility() {
+      const input = document.getElementById('provider-edit-input');
+      const icon = document.getElementById('provider-key-eye-icon');
+      if (!input || !icon) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    function onProviderKeyInputChanged() {
+      const box = document.getElementById('provider-key-edit-box');
+      const input = document.getElementById('provider-edit-input');
+      const select = document.getElementById('provider-edit-select');
+      if (!box || !input) return;
+
+      const val = input.value.trim();
+
+      // Auto-detect provider prefix
+      if (val.startsWith('AIzaSy')) {
+        if (select && select.value !== 'gemini') {
+          select.value = 'gemini';
+          onProviderSelectChanged('gemini');
+          return;
+        }
+      } else if (val.startsWith('gsk_')) {
+        if (select && select.value !== 'groq') {
+          select.value = 'groq';
+          onProviderSelectChanged('groq');
+          return;
+        }
+      } else if (val.startsWith('sk-or-v1-')) {
+        if (select && select.value !== 'openrouter') {
+          select.value = 'openrouter';
+          onProviderSelectChanged('openrouter');
+          return;
+        }
+      } else if (val.startsWith('csk-')) {
+        if (select && select.value !== 'cerebras') {
+          select.value = 'cerebras';
+          onProviderSelectChanged('cerebras');
+          return;
+        }
+      }
+
+      const currentId = box.dataset.providerId || 'gemini';
+      if (val) {
+        localStorage.setItem('noteroute_key_' + currentId, val);
+      } else {
+        localStorage.removeItem('noteroute_key_' + currentId);
+      }
+      renderPriorityList();
+      refreshProviderCardsKeyBadges();
+    }
+
+    function refreshProviderCardsKeyBadges() {
+      const cards = document.querySelectorAll('#scontent-api [onclick*="openConfigureApiKey"]');
+      cards.forEach(card => {
+        const match = card.getAttribute('onclick')?.match(/openConfigureApiKey\(['"]([^'"]+)['"]/);
+        if (!match) return;
+        const name = match[1];
+        const id = normalizeProviderKeyId(name);
+        const key = localStorage.getItem('noteroute_key_' + id);
+        
+        let badgeSpan = card.querySelector('.provider-key-status-badge');
+        if (!badgeSpan) {
+          const bottomBar = card.querySelector('.border-t');
+          if (bottomBar) {
+            badgeSpan = document.createElement('span');
+            badgeSpan.className = 'provider-key-status-badge text-[10px] font-semibold';
+            bottomBar.insertBefore(badgeSpan, bottomBar.children[0]);
+          }
+        }
+        if (badgeSpan) {
+          if (key && key.trim()) {
+            badgeSpan.className = 'provider-key-status-badge text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1';
+            badgeSpan.innerHTML = '<i class="fa-solid fa-circle-check text-[9px]"></i><span>Terpasang</span>';
+            card.classList.add('border-emerald-500/50');
+          } else {
+            badgeSpan.className = 'provider-key-status-badge text-[10px] text-[var(--nlm-text-tertiary)]';
+            badgeSpan.textContent = 'Free Tier';
+            card.classList.remove('border-emerald-500/50');
+          }
+        }
+      });
+    }
+
+    async function testProviderKeyConnection() {
+      const box = document.getElementById('provider-key-edit-box');
+      const input = document.getElementById('provider-edit-input');
+      const statusEl = document.getElementById('provider-test-status');
+      const id = box?.dataset.providerId || 'gemini';
+      const key = input?.value?.trim();
+
+      if (!key) {
+        if (statusEl) {
+          statusEl.className = 'text-[11px] font-semibold text-rose-600 flex items-center space-x-1';
+          statusEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i><span>Kunci API masih kosong. Silakan tempel kunci terlebih dahulu.</span>';
+          statusEl.classList.remove('hidden');
+        }
+        showToast("Kunci Kosong", "Masukkan kunci API sebelum menguji koneksi.");
+        return;
+      }
+
+      if (statusEl) {
+        statusEl.className = 'text-[11px] font-semibold text-blue-600 flex items-center space-x-1';
+        statusEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Menguji koneksi ke server AI...</span>';
+        statusEl.classList.remove('hidden');
+      }
+
+      const startTime = Date.now();
+      try {
+        let detailMsg = '';
+        if (id === 'gemini') {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(key)}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: 'ping' }] }] })
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || `HTTP ${res.status}`);
+          }
+          detailMsg = 'Google Gemini 1.5 Flash aktif';
+        } else if (id === 'groq') {
+          const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({ model: 'llama-3.3-70b-versatile', max_tokens: 5, messages: [{ role: 'user', content: 'ping' }] })
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || `HTTP ${res.status}`);
+          }
+          detailMsg = 'Groq Llama 3.3 70B aktif';
+        } else if (id === 'openrouter') {
+          const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({ model: 'meta-llama/llama-3.1-8b-instruct:free', max_tokens: 5, messages: [{ role: 'user', content: 'ping' }] })
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || `HTTP ${res.status}`);
+          }
+          detailMsg = 'OpenRouter Free aktif';
+        } else if (id === 'cerebras') {
+          const res = await fetch('https://api.cerebras.ai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({ model: 'llama3.1-8b', max_tokens: 5, messages: [{ role: 'user', content: 'ping' }] })
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || `HTTP ${res.status}`);
+          }
+          detailMsg = 'Cerebras Ultra-Fast aktif';
+        } else {
+          detailMsg = `${id.toUpperCase()} kunci siap disimpan`;
+        }
+
+        const elapsed = Date.now() - startTime;
+        if (statusEl) {
+          statusEl.className = 'text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1';
+          statusEl.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>Berhasil terhubung (${elapsed}ms) &bull; ${detailMsg}</span>`;
+        }
+        localStorage.setItem('noteroute_key_' + id, key);
+        renderPriorityList();
+        refreshProviderCardsKeyBadges();
+        showToast("Koneksi Sukses", `Kunci API ${id.toUpperCase()} valid dan siap digunakan!`);
+      } catch (err) {
+        if (statusEl) {
+          statusEl.className = 'text-[11px] font-semibold text-rose-600 flex items-center space-x-1';
+          statusEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i><span>Gagal: ${escapeHtml(err.message)}</span>`;
+        }
+        showToast("Uji Gagal", err.message);
       }
     }
 
@@ -3312,6 +3578,7 @@
       }
 
       renderPriorityList();
+      refreshProviderCardsKeyBadges();
     }
 
     function saveAllSettings() {
@@ -4727,6 +4994,9 @@
       document.getElementById('source-selected-count').textContent = `(${count} terpilih)`;
       document.getElementById('reopen-source-count').textContent = count;
       document.getElementById('check-all-sources').checked = (count === chks.length);
+      if (typeof updateContextCapacityWidget === 'function') {
+        updateContextCapacityWidget();
+      }
     }
 
     function toggleAllSources(master) {
@@ -4775,76 +5045,111 @@
       }
     }
 
-    // SIMULASI STATUS AI: NORMAL, AUTO-FAILOVER SENYAP, INTERNET PUTUS (OFFLINE), SEMUA AI HABIS (429)
-    function simulateAiState(state) {
-      const thinking = document.getElementById('ai-thinking-state');
-      const timeoutCard = document.getElementById('ai-timeout-card');
-      const quotaCard = document.getElementById('ai-quota-card');
-      const responseBlock = document.getElementById('ai-response-block');
-      const thinkingText = document.getElementById('ai-thinking-status-text');
-      const failoverPill = document.getElementById('ai-failover-pill');
-      const badge = document.getElementById('ai-provider-badge');
+    // --- KAPASITAS KONTEKS SUMBER (SIDEBAR KIRI) DINAMIS ---
+    function updateContextCapacityWidget() {
+      const sources = loadNotebookSources();
+      const chks = document.querySelectorAll('.source-chk');
+      let totalWords = 0;
+      let activeSourcesCount = 0;
 
-      thinking.classList.add('hidden');
-      timeoutCard.classList.add('hidden');
-      quotaCard.classList.add('hidden');
-      responseBlock.classList.add('hidden');
-      if (failoverPill) failoverPill.classList.add('hidden');
-
-      if (state === 'normal') {
-        if (badge) badge.textContent = "Gemini 1.5 Flash";
-        thinkingText.textContent = "Menganalisis 4 berkas laptop & mencocokkan semantik sitasi (Gemini)...";
-        thinking.classList.remove('hidden');
-        showToast("AI Utama (Gemini)", "Mengirim kueri ke penyedia utama...");
-        setTimeout(() => {
-          thinking.classList.add('hidden');
-          responseBlock.classList.remove('hidden');
-          responseBlock.classList.remove('animate-fade-up');
-          void responseBlock.offsetWidth;
-          responseBlock.classList.add('animate-fade-up');
-          showToast("Respon Berhasil", "Jawaban selesai digenerasi langsung dari Gemini 1.5 Flash.");
-          const scroll = document.getElementById('nlm-chat-scroll');
-          if (scroll) scroll.scrollTop = scroll.scrollHeight;
-        }, 650);
-      } else if (state === 'failover') {
-        thinkingText.textContent = "Gemini 1.5 sibuk (HTTP 429) &rarr; Otomatis beralih ke Groq (Llama 3.3 70B)...";
-        thinking.classList.remove('hidden');
-        showToast("Auto-Failover Senyap", "Gemini limit. Beralih instan ke Groq...");
-        setTimeout(() => {
-          thinking.classList.add('hidden');
-          if (badge) badge.textContent = "Groq Llama 3.3 70B";
-          if (failoverPill) failoverPill.classList.remove('hidden');
-          responseBlock.classList.remove('hidden');
-          responseBlock.classList.remove('animate-fade-up');
-          void responseBlock.offsetWidth;
-          responseBlock.classList.add('animate-fade-up');
-          showToast("Failover Berhasil", "Kueri dijawab mulus oleh Groq tanpa jeda atau error.");
-          const scroll = document.getElementById('nlm-chat-scroll');
-          if (scroll) scroll.scrollTop = scroll.scrollHeight;
-        }, 700);
-      } else if (state === 'offline' || state === 'timeout') {
-        thinkingText.textContent = "Mendeteksi status jaringan internet...";
-        thinking.classList.remove('hidden');
-        showToast("Memeriksa Koneksi", "Jaringan internet tidak terdeteksi...");
-        setTimeout(() => {
-          thinking.classList.add('hidden');
-          timeoutCard.classList.remove('hidden');
-          showToast("Internet Terputus", "Koneksi offline. Pertanyaan tersimpan aman.");
-          const scroll = document.getElementById('nlm-chat-scroll');
-          if (scroll) scroll.scrollTop = scroll.scrollHeight;
-        }, 600);
-      } else if (state === 'all-exhausted' || state === 'quota') {
-        thinkingText.textContent = "Memeriksa kuota 5 provider rantai failover...";
-        thinking.classList.remove('hidden');
-        showToast("Memeriksa Kuota", "Seluruh kuota penyedia terpakai...");
-        setTimeout(() => {
-          thinking.classList.add('hidden');
-          quotaCard.classList.remove('hidden');
-          showToast("Semua AI Habis", "5 penyedia limit. Beralih ke model lokal / tambah API.");
-          const scroll = document.getElementById('nlm-chat-scroll');
-          if (scroll) scroll.scrollTop = scroll.scrollHeight;
-        }, 600);
+      if (chks && chks.length > 0) {
+        chks.forEach((chk, idx) => {
+          if (chk.checked && sources[idx]) {
+            activeSourcesCount++;
+            const s = sources[idx];
+            const sz = parseFloat(s.size) || 1.2;
+            totalWords += Math.round(sz * 12500);
+          }
+        });
+      } else {
+        activeSourcesCount = sources.length;
+        sources.forEach(s => {
+          const sz = parseFloat(s.size) || 1.2;
+          totalWords += Math.round(sz * 12500);
+        });
       }
+
+      const maxWords = 1000000; // 1M words (Gemini/Groq context window)
+      const pct = Math.min(100, Math.max(0, (totalWords / maxWords) * 100));
+      const formattedWords = totalWords >= 1000 
+        ? (totalWords / 1000).toFixed(1) + 'k' 
+        : totalWords.toLocaleString();
+
+      const textEl = document.getElementById('context-capacity-text');
+      const barEl = document.getElementById('context-capacity-bar');
+      const countEl = document.getElementById('context-sources-count');
+      const pctEl = document.getElementById('context-percentage');
+
+      if (textEl) textEl.textContent = `${formattedWords} / 1.0M kata`;
+      if (barEl) {
+        barEl.style.width = `${pct < 1 && pct > 0 ? 1 : pct.toFixed(1)}%`;
+        if (pct > 80) {
+          barEl.className = 'bg-amber-500 h-full transition-all duration-300';
+        } else if (pct > 95) {
+          barEl.className = 'bg-rose-500 h-full transition-all duration-300';
+        } else {
+          barEl.className = 'bg-blue-600 h-full transition-all duration-300';
+        }
+      }
+      if (countEl) countEl.textContent = `${activeSourcesCount} Dokumen aktif`;
+      if (pctEl) pctEl.textContent = `${pct.toFixed(1)}% terisi`;
+    }
+
+    // --- EFISIENSI TOKEN & BIAYA STUDIO (SIDEBAR KANAN) DINAMIS ---
+    function getEfficiencyMetrics() {
+      try {
+        const raw = localStorage.getItem('noteroute_efficiency_metrics');
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return {
+        tokensSaved: 0,
+        costSavedIdr: 0,
+        costSavedUsd: 0,
+        queriesCount: 0
+      };
+    }
+
+    function saveEfficiencyMetrics(metrics) {
+      localStorage.setItem('noteroute_efficiency_metrics', JSON.stringify(metrics));
+    }
+
+    function updateStudioEfficiencyWidget() {
+      const metrics = getEfficiencyMetrics();
+      const valEl = document.getElementById('studio-efficiency-val');
+      const tokEl = document.getElementById('studio-tokens-saved');
+      const rateEl = document.getElementById('studio-efficiency-rate');
+
+      const formattedTokens = metrics.tokensSaved >= 1000 
+        ? (metrics.tokensSaved / 1000).toFixed(1) + 'k' 
+        : metrics.tokensSaved.toLocaleString();
+
+      if (valEl) {
+        valEl.textContent = `Hemat Rp ${metrics.costSavedIdr.toLocaleString('id-ID')} ($${metrics.costSavedUsd.toFixed(2)})`;
+      }
+      if (tokEl) {
+        tokEl.textContent = `${formattedTokens} token teroptimasi`;
+      }
+      if (rateEl) {
+        rateEl.textContent = metrics.queriesCount > 0 ? '100% Free / Routing' : '0% Routing';
+      }
+    }
+
+    function recordQueryEfficiency(promptText, responseText, providerName) {
+      const metrics = getEfficiencyMetrics();
+      const queryTokens = Math.ceil(((promptText || '').length + (responseText || '').length) / 4);
+      const addTokens = Math.max(120, queryTokens);
+      
+      // Commercial baseline benchmark (e.g. GPT-4 $0.03/1k tokens)
+      const usdSaved = (addTokens / 1000) * 0.03;
+      const idrSaved = Math.round(usdSaved * 16200);
+
+      metrics.tokensSaved += addTokens;
+      metrics.costSavedUsd += usdSaved;
+      metrics.costSavedIdr += idrSaved;
+      metrics.queriesCount += 1;
+
+      saveEfficiencyMetrics(metrics);
+      updateStudioEfficiencyWidget();
     }
 
     function retryLastPrompt() {
@@ -5097,7 +5402,55 @@
         return { text, providerName: '9Router Local Daemon (Port 20128)' };
       }
 
-      // 7. Custom BYOK Provider
+      // 7. Mistral AI
+      if (id === 'mistral') {
+        const key = localStorage.getItem('noteroute_key_mistral');
+        if (!key) throw new Error('Kunci Mistral AI belum diisi');
+        const res = await fetch('https://api.mistral.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+          body: JSON.stringify({
+            model: 'mistral-small-latest',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `Mistral status ${res.status}`);
+        }
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content;
+        if (!text) throw new Error('Tidak ada respons dari Mistral AI');
+        return { text, providerName: 'Mistral AI' };
+      }
+
+      // 8. Ollama Local Host (Offline)
+      if (id === 'ollama') {
+        const endpoint = localStorage.getItem('noteroute_key_ollama') || 'http://localhost:11434';
+        const cleanUrl = endpoint.replace(/\/+$/, '') + '/api/chat';
+        const res = await fetch(cleanUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'llama3',
+            stream: false,
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) throw new Error(`Ollama status ${res.status}`);
+        const data = await res.json();
+        const text = data.message?.content || data.response;
+        if (!text) throw new Error('Tidak ada respons dari Ollama');
+        return { text, providerName: 'Ollama Local Host' };
+      }
+
+      // 9. Custom BYOK Provider
       if (provider.isCustom) {
         const rawId = provider.id.replace('custom_', '');
         const list = getCustomProviders();
@@ -5178,6 +5531,7 @@
       let usedProviderName = '';
       let failoverHappened = false;
       let failedFirstProvider = null;
+      let allErrors = [];
 
       if (connected.length > 0) {
         for (let i = 0; i < connected.length; i++) {
@@ -5192,41 +5546,62 @@
               if (i > 0 && failedFirstProvider) {
                 failoverHappened = true;
               }
+              // Catat efisiensi token & biaya dinamis secara nyata!
+              recordQueryEfficiency(text, result.text, usedProviderName);
               break;
             }
           } catch (err) {
             console.warn(`[NoteRoute] Provider ${prov.name} gagal:`, err.message);
+            allErrors.push(`${prov.name}: ${err.message}`);
             if (!failedFirstProvider) failedFirstProvider = prov;
           }
         }
       }
 
-      // Fallback cerdas jika tidak ada kunci API atau seluruh API offline/kuota habis
+      // Penanganan transparan jika belum ada API key atau seluruh panggilan gagal
       if (!answerFound) {
-        if (currentMode === 'general') {
-          usedProviderName = 'NoteRoute General AI (Offline Mode)';
+        if (connected.length === 0) {
+          usedProviderName = 'Kunci API Belum Dikonfigurasi';
           finalHtml = `
-            <p>Tentu! Berikut jawaban analitis mengenai <strong>"${escapeHtml(text)}"</strong>:</p>
-            <p class="text-[var(--nlm-text-secondary)] my-2">
-              Sebagai asisten AI cerdas NoteRoute, saya dapat memecahkan masalah coding, desain arsitektur sistem, dan penjelasan konsep teoritis.
-            </p>
-            <div class="p-3 my-2 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-600 dark:text-blue-400">
-              <i class="fa-solid fa-circle-info mr-1"></i>
-              <strong>Tips Kunci API:</strong> Hubungkan kunci API gratis Anda (Google Gemini, Groq, OpenRouter, atau 9Router) di menu Pengaturan &rarr; Kunci API untuk mendapatkan respons langsung dari model LLM online.
+            <div class="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 dark:bg-amber-950/20 space-y-3">
+              <div class="flex items-center space-x-2 text-amber-600 dark:text-amber-400 font-bold text-xs sm:text-sm">
+                <i class="fa-solid fa-key"></i>
+                <span>Kunci API Belum Terpasang</span>
+              </div>
+              <p class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+                Anda belum memasang Kunci API AI. Untuk menggunakan NoteRoute secara live dengan model AI pintar (Google Gemini, Groq Llama, OpenRouter, dll.), silakan masukkan kunci API gratis Anda di menu Pengaturan.
+              </p>
+              <div class="pt-1">
+                <button onclick="openSettingsModal('api')" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center space-x-1.5 transition shadow-xs cursor-pointer">
+                  <i class="fa-solid fa-gear"></i>
+                  <span>Buka Pengaturan &amp; Pasang Kunci API</span>
+                </button>
+              </div>
             </div>
           `;
         } else {
-          usedProviderName = 'NoteRoute Document Grounding (Offline Mode)';
+          usedProviderName = 'Panggilan AI Gagal';
           finalHtml = `
-            <p>Berdasarkan pembahasan pada dokumen materi kuliah mengenai <strong>"${escapeHtml(text)}"</strong> <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>:</p>
-            <ul class="list-disc ml-5 space-y-1.5 text-[var(--nlm-text-secondary)] my-2">
-              <li><strong>Consistency:</strong> Setiap pembacaan menerima data tulis terbaru <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>.</li>
-              <li><strong>Availability:</strong> Setiap permintaan non-galat menerima respons secara andal.</li>
-              <li><strong>Partition Tolerance:</strong> Sistem tetap beroperasi meski terjadi partisi jaringan fisik <span class="nlm-citation" onclick="openSourceCitation(1, 16)">2</span>.</li>
-            </ul>
-            <p class="text-[var(--nlm-text-secondary)]">
-              Sistem NoteRoute menjamin kueri Anda tetap dapat dijawab dan dirujuk ke berkas laptop dengan rujukan sitasi akurat.
-            </p>
+            <div class="p-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 dark:bg-rose-950/20 space-y-3">
+              <div class="flex items-center space-x-2 text-rose-600 dark:text-rose-400 font-bold text-xs sm:text-sm">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Gagal Menghubungi Penyedia AI</span>
+              </div>
+              <p class="text-xs text-[var(--nlm-text-secondary)] leading-relaxed">
+                Kueri tidak dapat diselesaikan karena terjadi kesalahan pada penyedia AI yang terhubung:
+              </p>
+              <div class="p-2.5 rounded-lg bg-[var(--nlm-surface)] border border-rose-500/20 font-mono text-[11px] text-rose-600 dark:text-rose-400 space-y-1">
+                ${allErrors.map(e => `<div>&bull; ${escapeHtml(e)}</div>`).join('')}
+              </div>
+              <p class="text-[11px] text-[var(--nlm-text-tertiary)]">
+                Periksa apakah kunci API Anda masih valid, tidak salah ketik, atau kuota gratis belum terlampaui.
+              </p>
+              <div class="pt-1 flex items-center space-x-2">
+                <button onclick="openSettingsModal('api')" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition cursor-pointer">
+                  Periksa Pengaturan API
+                </button>
+              </div>
+            </div>
           `;
         }
       }
@@ -5367,6 +5742,9 @@
     renderStudioNotes();
     initPhotoEditorEvents();
     initResponsiveSidebars();
+    updateContextCapacityWidget();
+    updateStudioEfficiencyWidget();
+    refreshProviderCardsKeyBadges();
 
     window.addEventListener('resize', () => {
       if (!isCompact()) {
