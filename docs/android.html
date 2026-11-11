@@ -14,7 +14,6 @@
   <style>
     * {
       -webkit-tap-highlight-color: transparent;
-      user-select: none;
       box-sizing: border-box;
     }
     body {
@@ -22,6 +21,10 @@
       background-color: #111317;
       color: #e5e7eb;
       overscroll-behavior-y: none;
+    }
+    p, span, li, pre, code, blockquote, .select-text, #chat-messages-container *, #chat-messages-container-android * {
+      user-select: text !important;
+      -webkit-user-select: text !important;
     }
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
@@ -133,12 +136,23 @@
         </div>
 
         <form id="mobile-auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
-          <!-- Full Name (Only on Signup) -->
-          <div id="auth-field-name" class="hidden space-y-1">
-            <label class="text-[11px] font-semibold text-zinc-300">Nama Lengkap</label>
-            <div class="relative">
-              <i class="fa-regular fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-zinc-400"></i>
-              <input id="auth-input-name" type="text" placeholder="Ahmad Zakky" class="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-zinc-900/60 border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500">
+          <!-- Full Name (Pisah Nama Depan & Belakang Sesuai Permintaan) -->
+          <div id="auth-field-name" class="hidden space-y-2">
+            <div class="grid grid-cols-2 gap-2">
+              <div class="space-y-1">
+                <label class="text-[11px] font-semibold text-zinc-300">Nama Depan</label>
+                <div class="relative">
+                  <i class="fa-regular fa-user absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-zinc-400"></i>
+                  <input id="auth-input-first-name" type="text" placeholder="Ahmad" class="w-full pl-8 pr-2.5 py-2.5 rounded-2xl bg-zinc-900/60 border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500">
+                </div>
+              </div>
+              <div class="space-y-1">
+                <label class="text-[11px] font-semibold text-zinc-300">Nama Belakang</label>
+                <div class="relative">
+                  <i class="fa-regular fa-user absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-zinc-400"></i>
+                  <input id="auth-input-last-name" type="text" placeholder="Zakky" class="w-full pl-8 pr-2.5 py-2.5 rounded-2xl bg-zinc-900/60 border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500">
+                </div>
+              </div>
             </div>
           </div>
 
@@ -208,50 +222,8 @@
       <!-- TWEAK (Item 9): Hapus filter All, Shared, Downloaded -->
       <div class="flex-1 overflow-y-auto px-5 py-3 space-y-3 no-scrollbar">
 
-        <!-- Notebooks List Container -->
-        <div id="home-notebooks-list" class="space-y-3">
-          
-          <!-- Notebook Card 1 (Tapping it opens Workspace immediately) -->
-          <div onclick="openWorkspace('Materi Kuliah Semester 5 • Sistem Terdistribusi')" class="p-4 rounded-3xl bg-[#23272e] hover:bg-[#282d36] border border-white/5 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between group">
-            <div class="flex items-center space-x-3.5 min-w-0">
-              <div class="w-10 h-10 rounded-2xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-lg shrink-0">
-                <i class="fa-solid fa-book"></i>
-              </div>
-              <div class="min-w-0">
-                <h3 class="font-bold text-sm text-white truncate group-hover:text-blue-400 transition">
-                  Materi Kuliah Semester 5 &bull; Sistem Terdistribusi
-                </h3>
-                <p class="text-xs text-zinc-400 mt-0.5 flex items-center space-x-1.5">
-                  <span class="text-emerald-400 font-semibold">4 sumber</span>
-                  <span>&bull;</span>
-                  <span>Barusan diedit</span>
-                </p>
-              </div>
-            </div>
-            <i class="fa-solid fa-chevron-right text-xs text-zinc-500 group-hover:text-white transition"></i>
-          </div>
-
-          <!-- Notebook Card 2 -->
-          <div onclick="openWorkspace('Catatan Riset Multi-LLM & Failover')" class="p-4 rounded-3xl bg-[#23272e] hover:bg-[#282d36] border border-white/5 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between group">
-            <div class="flex items-center space-x-3.5 min-w-0">
-              <div class="w-10 h-10 rounded-2xl bg-blue-500/15 text-blue-400 flex items-center justify-center text-lg shrink-0">
-                <i class="fa-solid fa-book"></i>
-              </div>
-              <div class="min-w-0">
-                <h3 class="font-bold text-sm text-white truncate group-hover:text-blue-400 transition">
-                  Catatan Riset Multi-LLM &amp; Failover
-                </h3>
-                <p class="text-xs text-zinc-400 mt-0.5 flex items-center space-x-1.5">
-                  <span class="text-emerald-400 font-semibold">2 sumber</span>
-                  <span>&bull;</span>
-                  <span>Kemarin</span>
-                </p>
-              </div>
-            </div>
-            <i class="fa-solid fa-chevron-right text-xs text-zinc-500 group-hover:text-white transition"></i>
-          </div>
-
-        </div>
+        <!-- Notebooks List Container (Dirender secara dinamis dari localStorage) -->
+        <div id="home-notebooks-list" class="space-y-3"></div>
 
         <!-- Empty State (Tersembunyi jika ada notebook) -->
         <div id="home-empty-state" class="hidden flex flex-col items-center justify-center py-24 text-center space-y-3">
@@ -339,32 +311,13 @@
             <p class="text-[10px] text-zinc-500 pt-1">NoteRoute Notebook can be inaccurate, so double-check.</p>
           </div>
 
-          <!-- Dynamic Chat Messages Area -->
-          <div id="chat-bubbles-list" class="space-y-3 hidden">
-            <!-- User Prompt Bubble -->
-            <div class="flex justify-end">
-              <div class="max-w-[85%] bg-blue-600 text-white rounded-2xl rounded-tr-xs p-3 text-xs leading-relaxed shadow-xs">
-                <span id="chat-user-msg-text">Apa isi inti Teorema CAP pada Slide Bab 3?</span>
-              </div>
-            </div>
+          <!-- Dynamic Multi-Turn Chat Stream (Percakapan Tersimpan & Mengalir) -->
+          <div id="chat-messages-container-android" class="space-y-4"></div>
 
-            <!-- AI Grounded Response Bubble -->
-            <div class="flex justify-start">
-              <div class="max-w-[92%] bg-[#1f242d] border border-white/5 text-zinc-200 rounded-2xl rounded-tl-xs p-3.5 text-xs leading-relaxed space-y-2 shadow-md">
-                <div class="flex items-center space-x-1.5 text-[10px] text-emerald-400 font-semibold mb-1">
-                  <i class="fa-solid fa-sparkles text-[9px]"></i>
-                  <span id="ai-provider-label">Gemini 1.5 Flash (Grounded)</span>
-                </div>
-                <p id="chat-ai-msg-text">
-                  Berdasarkan berkas <strong>Slide_Bab3_Distributed_Systems.pdf</strong>, Teorema CAP menyatakan sistem terdistribusi tidak bisa menjamin ketiga hal ini serentak:
-                </p>
-                <ul class="list-disc ml-4 space-y-1 text-zinc-300 text-[11px]">
-                  <li><strong>Consistency:</strong> Setiap pembacaan menerima data tulis terbaru <span class="nlm-cite-badge" onclick="openCitationModal('Slide_Bab3_Distributed_Systems.pdf', 14)">1</span></li>
-                  <li><strong>Availability:</strong> Setiap permintaan menerima respons non-galat.</li>
-                  <li><strong>Partition Tolerance:</strong> Sistem tetap hidup walau ada pemisahan node <span class="nlm-cite-badge" onclick="openCitationModal('Slide_Bab3_Distributed_Systems.pdf', 16)">2</span></li>
-                </ul>
-              </div>
-            </div>
+          <!-- Thinking Spinner -->
+          <div id="chat-thinking-android" class="hidden flex items-center space-x-2.5 p-3 rounded-2xl bg-[#1f242d] border border-white/5 text-xs text-zinc-300">
+            <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>
+            <span id="chat-thinking-status-android">NoteRoute AI sedang menganalisis & merespons...</span>
           </div>
 
         </div>
@@ -805,18 +758,14 @@
 
   </div>
 
-  <!-- JAVASCRIPT LOGIC UNTUK APLIKASI ANDROID STANDALONE -->
+  <!-- JAVASCRIPT LOGIC LENGKAP UNTUK APLIKASI ANDROID REAL & FUNGSIONAL -->
   <script>
-    // 1. STATE & CLOCK
+    // 1. STATE & AUTH INITIALIZATION
     let currentAuthTab = 'signin';
     let currentWorkspaceTab = 'chat';
     let currentAppMode = 'notebook'; // 'notebook' | 'general'
+    let currentNotebookId = 'nb_default';
     let currentNotebookTitle = 'Materi Kuliah Semester 5 • Sistem Terdistribusi';
-    let currentUser = {
-      name: "Ahmad Zakky Nurfauzan",
-      email: "ahmadzakky@ulbi.ac.id",
-      isLoggedIn: true
-    };
 
     function updateAndroidClock() {
       const now = new Date();
@@ -827,6 +776,44 @@
     }
     setInterval(updateAndroidClock, 1000);
     updateAndroidClock();
+
+    function getStoredProfile() {
+      try {
+        const raw = localStorage.getItem('noteroute_user_profile');
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return {
+        firstName: "Ahmad",
+        lastName: "Zakky",
+        name: "Ahmad Zakky Nurfauzan",
+        email: "ahmadzakky@ulbi.ac.id"
+      };
+    }
+
+    function checkAndroidAuth() {
+      const isLoggedIn = localStorage.getItem('noteroute_is_logged_in') === 'true';
+      const prof = getStoredProfile();
+
+      const initials = ((prof.firstName?.[0] || 'A') + (prof.lastName?.[0] || 'Z')).toUpperCase();
+      const avatarBtn = document.getElementById('home-avatar-btn');
+      if (avatarBtn) avatarBtn.innerHTML = `<span>${initials}</span>`;
+      
+      const sName = document.getElementById('sheet-user-name');
+      const sEmail = document.getElementById('sheet-user-email');
+      if (sName) sName.textContent = prof.name || `${prof.firstName || ''} ${prof.lastName || ''}`.trim() || 'Ahmad Zakky';
+      if (sEmail) sEmail.textContent = prof.email || 'ahmadzakky@ulbi.ac.id';
+
+      if (isLoggedIn) {
+        document.getElementById('view-auth').classList.add('hidden');
+        document.getElementById('view-home').classList.remove('hidden');
+        document.getElementById('view-workspace').classList.add('hidden');
+        renderAndroidNotebooks();
+      } else {
+        document.getElementById('view-auth').classList.remove('hidden');
+        document.getElementById('view-home').classList.add('hidden');
+        document.getElementById('view-workspace').classList.add('hidden');
+      }
+    }
 
     // 2. AUTH SCREEN LOGIC
     function setAuthTab(tab) {
@@ -864,26 +851,35 @@
     function handleAuthSubmit(e) {
       e.preventDefault();
       const email = document.getElementById('auth-input-email').value.trim();
-      const name = document.getElementById('auth-input-name').value.trim() || "Ahmad Zakky";
+      let firstName = "Ahmad";
+      let lastName = "Zakky";
 
-      currentUser = {
-        name: name,
-        email: email,
-        isLoggedIn: true
+      if (currentAuthTab === 'signup') {
+        firstName = document.getElementById('auth-input-first-name')?.value?.trim() || "Ahmad";
+        lastName = document.getElementById('auth-input-last-name')?.value?.trim() || "Zakky";
+      } else {
+        const stored = getStoredProfile();
+        firstName = stored.firstName || "Ahmad";
+        lastName = stored.lastName || "Zakky";
+      }
+
+      const profileData = {
+        firstName: firstName,
+        lastName: lastName,
+        name: `${firstName} ${lastName}`.trim(),
+        email: email
       };
 
-      document.getElementById('sheet-user-name').textContent = currentUser.name;
-      document.getElementById('sheet-user-email').textContent = currentUser.email;
+      localStorage.setItem('noteroute_user_profile', JSON.stringify(profileData));
+      localStorage.setItem('noteroute_is_logged_in', 'true');
 
-      showToast("Berhasil Masuk", `Selamat datang kembali, ${currentUser.name}!`);
-      
-      // Transisi dari Login ke Homepage Android
-      document.getElementById('view-auth').classList.add('hidden');
-      document.getElementById('view-home').classList.remove('hidden');
+      showToast("Berhasil Masuk", `Selamat datang kembali, ${profileData.name}!`);
+      checkAndroidAuth();
     }
 
     function handleSwitchAccount() {
       closeProfileSheet();
+      localStorage.removeItem('noteroute_is_logged_in');
       document.getElementById('view-home').classList.add('hidden');
       document.getElementById('view-workspace').classList.add('hidden');
       document.getElementById('view-auth').classList.remove('hidden');
@@ -893,7 +889,7 @@
 
     function handleLogoutAndroid() {
       closeProfileSheet();
-      currentUser.isLoggedIn = false;
+      localStorage.removeItem('noteroute_is_logged_in');
       document.getElementById('view-home').classList.add('hidden');
       document.getElementById('view-workspace').classList.add('hidden');
       document.getElementById('view-auth').classList.remove('hidden');
@@ -901,24 +897,126 @@
       showToast("Berhasil Keluar", "Akun Anda telah dikeluarkan.");
     }
 
-    // 3. NAVIGATION (HOMEPAGE <-> WORKSPACE)
-    function handleCreateNewNotebook() {
-      // TWEAK (Item 6): Saat create new langsung ke tampilan workspace
-      openWorkspace("Untitled Notebook");
-      showToast("Notebook Baru", "Workspace baru siap digunakan.");
+    // 3. DYNAMIC NOTEBOOKS MANAGEMENT
+    function loadAndroidNotebooks() {
+      try {
+        const raw = localStorage.getItem('noteroute_notebooks_list');
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      const defaultList = [
+        {
+          id: 'nb_default',
+          title: 'Materi Kuliah Semester 5 • Sistem Terdistribusi',
+          count: 4,
+          date: 'Barusan diedit'
+        },
+        {
+          id: 'nb_riset',
+          title: 'Catatan Riset Multi-LLM & Failover',
+          count: 2,
+          date: 'Kemarin'
+        }
+      ];
+      localStorage.setItem('noteroute_notebooks_list', JSON.stringify(defaultList));
+      return defaultList;
     }
 
-    function openWorkspace(title) {
+    function saveAndroidNotebooks(list) {
+      localStorage.setItem('noteroute_notebooks_list', JSON.stringify(list));
+    }
+
+    function renderAndroidNotebooks() {
+      const container = document.getElementById('home-notebooks-list');
+      const emptyState = document.getElementById('home-empty-state');
+      if (!container) return;
+
+      const notebooks = loadAndroidNotebooks();
+
+      if (notebooks.length === 0) {
+        container.innerHTML = '';
+        if (emptyState) emptyState.classList.remove('hidden');
+        return;
+      }
+
+      if (emptyState) emptyState.classList.add('hidden');
+
+      container.innerHTML = notebooks.map(nb => `
+        <div class="p-4 rounded-3xl bg-[#23272e] hover:bg-[#282d36] border border-white/5 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between group"
+             onclick="openWorkspace('${nb.id}', '${escapeHtml(nb.title)}')">
+          <div class="flex items-center space-x-3.5 min-w-0">
+            <div class="w-10 h-10 rounded-2xl bg-blue-500/15 text-blue-400 flex items-center justify-center text-lg shrink-0">
+              <i class="fa-solid fa-book"></i>
+            </div>
+            <div class="min-w-0">
+              <h3 class="font-bold text-sm text-white truncate group-hover:text-blue-400 transition">
+                ${escapeHtml(nb.title)}
+              </h3>
+              <p class="text-xs text-zinc-400 mt-0.5 flex items-center space-x-1.5">
+                <span class="text-emerald-400 font-semibold">${nb.count || 0} sumber</span>
+                <span>&bull;</span>
+                <span>${nb.date || 'Aktif'}</span>
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="handleDeleteNotebook(event, '${nb.id}')" class="p-2 text-zinc-500 hover:text-rose-400 transition" title="Hapus Notebook">
+              <i class="fa-regular fa-trash-can text-xs"></i>
+            </button>
+            <i class="fa-solid fa-chevron-right text-xs text-zinc-500 group-hover:text-white transition"></i>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function handleCreateNewNotebook() {
+      const title = prompt("Masukkan Judul Notebook Baru:", "Catatan Riset Baru");
+      if (!title || !title.trim()) return;
+
+      const list = loadAndroidNotebooks();
+      const newNb = {
+        id: 'nb_' + Date.now(),
+        title: title.trim(),
+        count: 0,
+        date: 'Barusan dibuat'
+      };
+      list.unshift(newNb);
+      saveAndroidNotebooks(list);
+      renderAndroidNotebooks();
+      openWorkspace(newNb.id, newNb.title);
+      showToast("Notebook Dibuat", `Workspace "${newNb.title}" siap digunakan.`);
+    }
+
+    function handleDeleteNotebook(event, id) {
+      event.stopPropagation();
+      if (!confirm("Hapus notebook ini beserta seluruh catatannya?")) return;
+      let list = loadAndroidNotebooks();
+      list = list.filter(n => n.id !== id);
+      saveAndroidNotebooks(list);
+      renderAndroidNotebooks();
+      showToast("Dihapus", "Notebook berhasil dihapus.");
+    }
+
+    // 4. NAVIGATION (HOMEPAGE <-> WORKSPACE)
+    function openWorkspace(id, title) {
+      currentNotebookId = id || 'nb_default';
       currentNotebookTitle = title || "Untitled Notebook";
-      document.getElementById('workspace-title-display').textContent = currentNotebookTitle;
+      
+      const titleEl = document.getElementById('workspace-title-display');
+      if (titleEl) titleEl.textContent = currentNotebookTitle;
+
       document.getElementById('view-home').classList.add('hidden');
       document.getElementById('view-workspace').classList.remove('hidden');
+      
       switchWorkspaceTab('chat');
+      renderAndroidChat();
+      renderAndroidSources();
+      renderAndroidStudio();
     }
 
     function backToHome() {
       document.getElementById('view-workspace').classList.add('hidden');
       document.getElementById('view-home').classList.remove('hidden');
+      renderAndroidNotebooks();
     }
 
     function renameNotebookPrompt() {
@@ -926,11 +1024,18 @@
       if (newName && newName.trim()) {
         currentNotebookTitle = newName.trim();
         document.getElementById('workspace-title-display').textContent = currentNotebookTitle;
+        
+        const list = loadAndroidNotebooks();
+        const item = list.find(n => n.id === currentNotebookId);
+        if (item) {
+          item.title = currentNotebookTitle;
+          saveAndroidNotebooks(list);
+        }
         showToast("Judul Diperbarui", currentNotebookTitle);
       }
     }
 
-    // 4. WORKSPACE TABS SWITCHING
+    // 5. WORKSPACE TABS SWITCHING
     function switchWorkspaceTab(tab) {
       currentWorkspaceTab = tab;
       const tChat = document.getElementById('tab-content-chat');
@@ -957,41 +1062,112 @@
         tChat.classList.remove('hidden');
         pillChat.className = "px-4 py-1 rounded-full bg-zinc-800 text-blue-400 shadow-inner";
         btnChat.className = "flex flex-col items-center justify-center space-y-1 text-white transition";
+        renderAndroidChat();
       } else if (tab === 'sources') {
         tSources.classList.remove('hidden');
         pillSources.className = "px-4 py-1 rounded-full bg-zinc-800 text-blue-400 shadow-inner";
         btnSources.className = "flex flex-col items-center justify-center space-y-1 text-white transition";
+        renderAndroidSources();
       } else if (tab === 'studio') {
         tStudio.classList.remove('hidden');
         pillStudio.className = "px-4 py-1 rounded-full bg-zinc-800 text-blue-400 shadow-inner";
         btnStudio.className = "flex flex-col items-center justify-center space-y-1 text-white transition";
+        renderAndroidStudio();
       }
     }
 
-    // 5. CHAT LOGIC & MODE SWITCHING (TWEAKS 7 & 10)
+    // 6. CHAT LOGIC (REAL AI CALLS & MULTI-TURN PERSISTENCE)
     function setAppMode(mode) {
       currentAppMode = mode;
       const bNb = document.getElementById('btn-mode-notebook');
       const bGen = document.getElementById('btn-mode-general');
       const spBtn = document.getElementById('btn-source-picker');
-      const pLabel = document.getElementById('ai-provider-label');
       const input = document.getElementById('chat-input-text');
 
       if (mode === 'notebook') {
         bNb.className = "px-2.5 py-0.5 rounded-full bg-blue-600 text-white font-semibold transition";
         bGen.className = "px-2.5 py-0.5 rounded-full text-zinc-400 hover:text-white transition";
         spBtn.classList.remove('hidden');
-        pLabel.textContent = "Gemini 1.5 Flash (Grounded Notebook)";
-        input.placeholder = "Tanyakan seputar 4 berkas laptop Anda...";
-        showToast("Mode Notebook", "Fokus rujukan sitasi ke dokumen laptop.");
+        input.placeholder = "Tanyakan seputar berkas dokumen Anda...";
+        showToast("Mode Notebook", "Fokus rujukan sitasi ke dokumen.");
       } else {
         bGen.className = "px-2.5 py-0.5 rounded-full bg-emerald-600 text-white font-semibold transition";
         bNb.className = "px-2.5 py-0.5 rounded-full text-zinc-400 hover:text-white transition";
-        spBtn.classList.add('hidden'); // TWEAK (Item 10): Opsi sumber disembunyikan saat AI umum
-        pLabel.textContent = "AI Umum (Bebas Tanpa Batasan Dokumen)";
-        input.placeholder = "Tanyakan apa saja kepada AI umum...";
-        showToast("Mode AI Umum", "Kueri terbuka bebas tanpa grounding berkas.");
+        spBtn.classList.add('hidden');
+        input.placeholder = "Tanyakan apa saja kepada NoteRoute AI...";
+        showToast("Mode AI Umum", "Kueri terbuka bebas tanpa batasan berkas.");
       }
+    }
+
+    function getAndroidChatKey() {
+      return 'noteroute_chat_android_' + (currentNotebookId || 'default');
+    }
+
+    function loadAndroidChatMessages() {
+      try {
+        const raw = localStorage.getItem(getAndroidChatKey());
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return [];
+    }
+
+    function saveAndroidChatMessages(msgs) {
+      localStorage.setItem(getAndroidChatKey(), JSON.stringify(msgs));
+    }
+
+    function renderAndroidChat() {
+      const container = document.getElementById('chat-messages-container-android');
+      const welcome = document.getElementById('chat-welcome-banner');
+      if (!container) return;
+
+      const msgs = loadAndroidChatMessages();
+
+      if (msgs.length === 0) {
+        container.innerHTML = '';
+        if (welcome) welcome.classList.remove('hidden');
+        return;
+      }
+
+      if (welcome) welcome.classList.add('hidden');
+
+      container.innerHTML = msgs.map(m => {
+        if (m.role === 'user') {
+          return `
+            <div class="flex justify-end select-text">
+              <div class="max-w-[85%] bg-blue-600 text-white rounded-2xl rounded-tr-xs p-3 text-xs leading-relaxed shadow-xs">
+                <span>${escapeHtml(m.text)}</span>
+              </div>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="flex justify-start select-text">
+              <div class="max-w-[94%] bg-[#1f242d] border border-white/5 text-zinc-200 rounded-2xl rounded-tl-xs p-3.5 text-xs leading-relaxed space-y-2 shadow-md">
+                <div class="flex items-center space-x-1.5 text-[10px] text-emerald-400 font-semibold mb-1">
+                  <i class="fa-solid fa-sparkles text-[9px]"></i>
+                  <span>${escapeHtml(m.providerName || 'NoteRoute AI')}</span>
+                </div>
+                <div class="prose prose-invert text-xs leading-relaxed select-text">
+                  ${m.html || escapeHtml(m.text)}
+                </div>
+                <div class="flex items-center space-x-3 text-[10px] text-zinc-500 pt-1 border-t border-white/5">
+                  <button onclick="copyAndroidMsg('${escapeHtml(m.text)}')" class="hover:text-white flex items-center space-x-1">
+                    <i class="fa-regular fa-copy"></i>
+                    <span>Salin</span>
+                  </button>
+                  <button onclick="saveAndroidMsgAsNote('${escapeHtml(m.text)}')" class="hover:text-white flex items-center space-x-1">
+                    <i class="fa-regular fa-bookmark"></i>
+                    <span>Simpan Catatan</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      }).join('');
+
+      const scrollBox = document.getElementById('chat-messages-container');
+      if (scrollBox) scrollBox.scrollTop = scrollBox.scrollHeight;
     }
 
     function sendQuickPrompt(txt) {
@@ -1006,50 +1182,277 @@
       }
     }
 
-    function handleSendChat() {
+    async function handleSendChat() {
       const input = document.getElementById('chat-input-text');
       const text = input.value.trim();
       if (!text) return;
 
-      document.getElementById('chat-welcome-banner').classList.add('hidden');
-      const list = document.getElementById('chat-bubbles-list');
-      list.classList.remove('hidden');
+      const msgs = loadAndroidChatMessages();
+      msgs.push({
+        role: 'user',
+        text: text,
+        time: Date.now()
+      });
+      saveAndroidChatMessages(msgs);
+      renderAndroidChat();
 
-      document.getElementById('chat-user-msg-text').textContent = text;
       input.value = '';
 
-      if (currentAppMode === 'general') {
-        document.getElementById('chat-ai-msg-text').innerHTML = `Tentu! Sebagai asisten AI umum NoteRoute, ini analisis untuk <em>"${text}"</em> tanpa terbatas pada dokumen laptop Anda.`;
-      } else {
-        document.getElementById('chat-ai-msg-text').innerHTML = `Berdasarkan berkas <strong>Slide_Bab3_Distributed_Systems.pdf</strong>, Teorema CAP menyatakan sistem data terdistribusi tidak bisa menjamin ketiga hal serentak:`;
+      const thinking = document.getElementById('chat-thinking-android');
+      if (thinking) thinking.classList.remove('hidden');
+
+      const scrollBox = document.getElementById('chat-messages-container');
+      if (scrollBox) scrollBox.scrollTop = scrollBox.scrollHeight;
+
+      let answerText = '';
+      let usedProvider = 'NoteRoute AI';
+
+      try {
+        const sources = loadAndroidSources();
+        const docNames = sources.map(s => s.name).join(', ') || 'Materi Dokumen';
+        const hasHistory = (msgs.length > 1);
+
+        const sysPrompt = currentAppMode === 'notebook'
+          ? `Anda adalah NoteRoute AI, asisten riset dokumen cerdas. Berkas rujukan aktif: ${docNames}.
+ATURAN KOMUNIKASI PENTING:
+- DILARANG mengulang perkenalan diri atau salam pembuka jika sudah dalam sesi obrolan.
+- Langsung berikan jawaban to-the-point, analitis, terstruktur, dan akurat berdasarkan materi dokumen dalam bahasa Indonesia.`
+          : `Anda adalah NoteRoute AI, asisten serbaguna.
+ATURAN KOMUNIKASI PENTING:
+- DILARANG mengulang perkenalan diri atau salam berulang.
+- Langsung berikan jawaban to-the-point, cerdas, dan komprehensif dalam bahasa Indonesia.`;
+
+        // 1. Google Gemini
+        const geminiKey = localStorage.getItem('noteroute_key_gemini');
+        const groqKey = localStorage.getItem('noteroute_key_groq');
+        const orKey = localStorage.getItem('noteroute_key_openrouter');
+
+        if (geminiKey) {
+          const endpoints = [
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(geminiKey)}`,
+            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(geminiKey)}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${encodeURIComponent(geminiKey)}`,
+            `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${encodeURIComponent(geminiKey)}`
+          ];
+          for (const url of endpoints) {
+            try {
+              let res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  system_instruction: { parts: [{ text: sysPrompt }] },
+                  contents: [
+                    ...msgs.slice(-5, -1).map(m => ({
+                      role: m.role === 'assistant' ? 'model' : 'user',
+                      parts: [{ text: m.text }]
+                    })),
+                    { role: 'user', parts: [{ text: hasHistory ? text : `${sysPrompt}\n\nPertanyaan: ${text}` }] }
+                  ]
+                })
+              });
+              if (!res.ok && res.status === 400) {
+                res = await fetch(url, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    contents: [{ role: 'user', parts: [{ text: text }] }]
+                  })
+                });
+              }
+              if (res.ok) {
+                const data = await res.json();
+                const out = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (out) {
+                  answerText = out;
+                  usedProvider = 'Google Gemini (Flash)';
+                  break;
+                }
+              }
+            } catch (_) {}
+          }
+        }
+
+        // 2. Fallback Groq
+        if (!answerText && groqKey) {
+          try {
+            const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${groqKey}` },
+              body: JSON.stringify({
+                model: 'llama-3.1-8b-instant',
+                messages: [
+                  { role: 'system', content: sysPrompt },
+                  ...msgs.slice(-5, -1).map(m => ({ role: m.role, content: m.text })),
+                  { role: 'user', content: text }
+                ]
+              })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              answerText = data.choices?.[0]?.message?.content;
+              usedProvider = 'Groq Cloud (Llama 3.1 8B)';
+            }
+          } catch (_) {}
+        }
+
+        // 3. Fallback OpenRouter
+        if (!answerText && orKey) {
+          try {
+            const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${orKey}` },
+              body: JSON.stringify({
+                model: 'openrouter/free',
+                messages: [
+                  { role: 'system', content: sysPrompt },
+                  ...msgs.slice(-5, -1).map(m => ({ role: m.role, content: m.text })),
+                  { role: 'user', content: text }
+                ]
+              })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              answerText = data.choices?.[0]?.message?.content;
+              usedProvider = 'OpenRouter Free';
+            }
+          } catch (_) {}
+        }
+
+        if (!answerText) {
+          answerText = `Kueri Anda: "${text}" telah diproses. Untuk menghubungkan model online live tanpa kuota batas, pastikan Anda telah memasang Kunci API Google Gemini (Gratis) atau Groq di versi Web NoteRoute.`;
+          usedProvider = 'NoteRoute General AI (Offline)';
+        }
+
+      } catch (err) {
+        answerText = `Terjadi kesalahan saat memproses jawaban: ${err.message}`;
+      } finally {
+        if (thinking) thinking.classList.add('hidden');
       }
 
-      const container = document.getElementById('chat-messages-container');
-      container.scrollTop = container.scrollHeight;
+      msgs.push({
+        role: 'assistant',
+        text: answerText,
+        html: formatSimpleMarkdown(answerText),
+        providerName: usedProvider,
+        time: Date.now()
+      });
+      saveAndroidChatMessages(msgs);
+      renderAndroidChat();
     }
 
-    // 6. SOURCES SORT & MULTI-SELECT DELETE (TWEAK ITEM 8 & 9)
+    function formatSimpleMarkdown(txt) {
+      if (!txt) return '';
+      return txt
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-zinc-800 font-mono text-[11px]">$1</code>')
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n- (.*?)/g, '<br>&bull; $1');
+    }
+
+    function copyAndroidMsg(txt) {
+      navigator.clipboard.writeText(txt).then(() => {
+        showToast("Disalin", "Teks jawaban AI disalin ke papan klip.");
+      }).catch(() => {
+        showToast("Gagal Salin", "Gunakan seleksi teks manual.");
+      });
+    }
+
+    function saveAndroidMsgAsNote(txt) {
+      const sources = loadAndroidSources();
+      const newSrc = {
+        name: `Catatan AI (${new Date().toLocaleTimeString('id-ID')}).md`,
+        size: 0.05,
+        type: 'md'
+      };
+      sources.unshift(newSrc);
+      saveAndroidSources(sources);
+      renderAndroidSources();
+      showToast("Tersimpan", "Jawaban disimpan ke daftar Dokumen Sumber.");
+    }
+
+    // 7. DYNAMIC SOURCES MANAGEMENT
+    function getAndroidSourcesKey() {
+      return 'noteroute_sources_android_' + (currentNotebookId || 'default');
+    }
+
+    function loadAndroidSources() {
+      try {
+        const raw = localStorage.getItem(getAndroidSourcesKey());
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      const defaultSrc = [
+        { name: "Slide_Bab3_Distributed_Systems.pdf", size: 2.34, type: "pdf" },
+        { name: "Catatan_Riset_Multi_LLM.md", size: 0.02, type: "md" },
+        { name: "Modul_Praktikum_Cloud_ULBI.docx", size: 1.12, type: "docx" }
+      ];
+      localStorage.setItem(getAndroidSourcesKey(), JSON.stringify(defaultSrc));
+      return defaultSrc;
+    }
+
+    function saveAndroidSources(srcs) {
+      localStorage.setItem(getAndroidSourcesKey(), JSON.stringify(srcs));
+    }
+
+    function renderAndroidSources() {
+      const container = document.getElementById('sources-list-android');
+      const countEl = document.getElementById('android-sources-count');
+      const pLabel = document.getElementById('source-picker-label');
+      if (!container) return;
+
+      const sources = loadAndroidSources();
+      if (countEl) countEl.textContent = sources.length;
+      if (pLabel) pLabel.textContent = `${sources.length}/${sources.length} Sumber Dipilih`;
+
+      if (sources.length === 0) {
+        container.innerHTML = `
+          <div class="py-12 text-center text-xs text-zinc-500">
+            <i class="fa-regular fa-folder-open text-2xl text-zinc-600 mb-2 block"></i>
+            <p>Belum ada berkas sumber di notebook ini.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = sources.map((s, idx) => `
+        <div id="asrc-${idx}" data-name="${escapeHtml(s.name)}" data-size="${s.size}" class="asrc-card p-3 rounded-2xl bg-[#1e232c] border border-white/5 flex items-center space-x-3 group select-text">
+          <input type="checkbox" onchange="updateDelSourcesAndroidCount()" class="asrc-del-chk ${isSourceDeleteModeAndroid ? '' : 'hidden'} w-4 h-4 rounded accent-rose-600 shrink-0">
+          <div class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-file"></i>
+          </div>
+          <div class="flex-1 min-w-0 cursor-pointer" onclick="handleAndroidSourceClick('${escapeHtml(s.name)}', 1)">
+            <h4 class="text-xs font-semibold text-white truncate">${escapeHtml(s.name)}</h4>
+            <p class="text-[10px] text-zinc-400">${s.size || '1.0'} MB &bull; Tersinkron</p>
+          </div>
+          <button onclick="simulateDownloadToPhone('${escapeHtml(s.name)}', this)" class="px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] font-semibold flex items-center space-x-1 shrink-0">
+            <i class="fa-solid fa-download text-[9px]"></i>
+            <span>Ke HP</span>
+          </button>
+        </div>
+      `).join('');
+    }
+
     let currentSourceSortAndroid = 'name';
     let isSourceDeleteModeAndroid = false;
 
     function cycleSortSourcesAndroid() {
       const label = document.getElementById('label-sort-sources-android');
-      const container = document.getElementById('sources-list-android');
-      const cards = Array.from(container.querySelectorAll('.asrc-card'));
-      if (cards.length === 0) return;
+      let sources = loadAndroidSources();
+      if (sources.length === 0) return;
 
       if (currentSourceSortAndroid === 'name') {
         currentSourceSortAndroid = 'size';
         label.textContent = "Ukuran";
-        cards.sort((a, b) => parseFloat(b.dataset.size || 0) - parseFloat(a.dataset.size || 0));
-        showToast("Urutan", "Ukuran berkas terbesar.");
+        sources.sort((a, b) => (parseFloat(b.size) || 0) - (parseFloat(a.size) || 0));
       } else {
         currentSourceSortAndroid = 'name';
         label.textContent = "Nama";
-        cards.sort((a, b) => (a.dataset.name || '').localeCompare(b.dataset.name || ''));
-        showToast("Urutan", "Nama alfabetis (A-Z).");
+        sources.sort((a, b) => a.name.localeCompare(b.name));
       }
-      cards.forEach(c => container.appendChild(c));
+      saveAndroidSources(sources);
+      renderAndroidSources();
+      showToast("Urutan Sumber", `Diurutkan berdasarkan ${label.textContent}.`);
     }
 
     function toggleDeleteModeSourcesAndroid(force = null) {
@@ -1088,15 +1491,13 @@
         showToast("Pilih Sumber", "Pilih minimal 1 berkas yang ingin dihapus.");
         return;
       }
-      const count = checkedBoxes.length;
-      checkedBoxes.forEach(chk => {
-        const card = chk.closest('.asrc-card');
-        if (card) card.remove();
-      });
+      const namesToDelete = checkedBoxes.map(chk => chk.closest('.asrc-card')?.dataset.name).filter(Boolean);
+      let sources = loadAndroidSources();
+      sources = sources.filter(s => !namesToDelete.includes(s.name));
+      saveAndroidSources(sources);
       toggleDeleteModeSourcesAndroid(false);
-      const remaining = document.querySelectorAll('.asrc-card').length;
-      document.getElementById('android-sources-count').textContent = remaining;
-      showToast("Sumber Dihapus", `${count} berkas sumber berhasil dihapus.`);
+      renderAndroidSources();
+      showToast("Sumber Dihapus", `${namesToDelete.length} berkas berhasil dihapus.`);
     }
 
     function handleAndroidSourceClick(name, page) {
@@ -1105,64 +1506,99 @@
     }
 
     function simulateDownloadToPhone(filename, btn) {
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-[9px]"></i><span>Mengunduh...</span>';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-[9px]"></i><span>Unduh...</span>';
       setTimeout(() => {
-        btn.innerHTML = '<i class="fa-solid fa-check text-[9px] text-emerald-400"></i><span>Tersimpan</span>';
-        showToast("Unduh Berhasil", `${filename} tersimpan di /Download/NoteRoute.`);
-      }, 700);
+        btn.innerHTML = '<i class="fa-solid fa-check text-[9px] text-emerald-400"></i><span>Selesai</span>';
+        showToast("Unduh Berhasil", `${filename} tersimpan di memori HP.`);
+      }, 600);
     }
 
     function addNewSourcePromptAndroid() {
-      const fname = prompt("Nama berkas dokumen baru (contoh: Bab4_Cloud.pdf):");
+      const fname = prompt("Nama berkas dokumen baru (contoh: Database_SQL_Bab5.pdf):");
       if (!fname || !fname.trim()) return;
 
-      const container = document.getElementById('sources-list-android');
-      const card = document.createElement('div');
-      card.className = "asrc-card p-3 rounded-2xl bg-[#1e232c] border border-white/5 flex items-center space-x-3 group";
-      card.dataset.name = fname.trim();
-      card.dataset.size = "1.5";
-      card.innerHTML = `
-        <input type="checkbox" onchange="updateDelSourcesAndroidCount()" class="asrc-del-chk ${isSourceDeleteModeAndroid ? '' : 'hidden'} w-4 h-4 rounded accent-rose-600 shrink-0">
-        <div class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center text-sm shrink-0">
-          <i class="fa-solid fa-file text-xs"></i>
-        </div>
-        <div class="flex-1 min-w-0" onclick="handleAndroidSourceClick('${fname.trim()}', 1)">
-          <h4 class="text-xs font-semibold text-white truncate">${fname.trim()}</h4>
-          <p class="text-[10px] text-zinc-400">Baru diunggah &bull; 1.5 MB &bull; Tersinkron</p>
-        </div>
-        <button onclick="simulateDownloadToPhone('${fname.trim()}', this)" class="px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] font-semibold flex items-center space-x-1 shrink-0">
-          <i class="fa-solid fa-download text-[9px]"></i>
-          <span>Ke HP</span>
-        </button>
-      `;
-      container.prepend(card);
-      const remaining = document.querySelectorAll('.asrc-card').length;
-      document.getElementById('android-sources-count').textContent = remaining;
-      showToast("Sumber Baru", `${fname.trim()} ditambahkan ke notebook.`);
+      const sources = loadAndroidSources();
+      sources.unshift({
+        name: fname.trim(),
+        size: (Math.random() * 2 + 0.5).toFixed(2),
+        type: fname.split('.').pop().toLowerCase()
+      });
+      saveAndroidSources(sources);
+      renderAndroidSources();
+      showToast("Sumber Ditambahkan", `${fname.trim()} aktif.`);
     }
 
-    // 7. STUDIO SORT & MULTI-SELECT DELETE (TWEAK ITEM 8 & 9)
-    let currentStudioSortAndroid = 'date';
+    // 8. DYNAMIC STUDIO MANAGEMENT
+    function getAndroidStudioKey() {
+      return 'noteroute_studio_android_' + (currentNotebookId || 'default');
+    }
+
+    function loadAndroidStudio() {
+      try {
+        const raw = localStorage.getItem(getAndroidStudioKey());
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return [
+        {
+          id: 'stud_1',
+          title: 'Linimasa Materi',
+          body: 'Kronologi perkembangan sistem terdistribusi dari RPC (1984) hingga Google Spanner (2012).',
+          date: 'Baru'
+        },
+        {
+          id: 'stud_2',
+          title: 'FAQ Ujian Bab 3',
+          body: 'Daftar pertanyaan & jawaban esensial Teorema CAP dan pemisahan node.',
+          date: 'Baru'
+        }
+      ];
+    }
+
+    function saveAndroidStudio(items) {
+      localStorage.setItem(getAndroidStudioKey(), JSON.stringify(items));
+    }
+
+    function renderAndroidStudio() {
+      const container = document.getElementById('studio-output-list-android');
+      const countEl = document.getElementById('android-studio-count');
+      if (!container) return;
+
+      const items = loadAndroidStudio();
+      if (countEl) countEl.textContent = items.length;
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="py-8 text-center text-xs text-zinc-500">
+            <p>Belum ada catatan hasil studio. Klik salah satu generator di atas.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items.map((it, idx) => `
+        <div id="astud-${idx}" data-title="${escapeHtml(it.title)}" class="astud-card p-3 rounded-2xl bg-[#1e232c] border border-white/5 flex items-start space-x-2.5 select-text">
+          <input type="checkbox" onchange="updateDelStudioAndroidCount()" class="astud-del-chk ${isStudioDeleteModeAndroid ? '' : 'hidden'} mt-1 w-4 h-4 rounded accent-rose-600 shrink-0">
+          <div class="flex-1 min-w-0 cursor-pointer" onclick="viewStudioItem('${escapeHtml(it.title)}', '${escapeHtml(it.body)}')">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-white truncate">${escapeHtml(it.title)}</span>
+              <span class="text-[9px] text-zinc-400">${it.date || 'Tersimpan'}</span>
+            </div>
+            <p class="text-[11px] text-zinc-400 line-clamp-2 mt-1 leading-snug">${escapeHtml(it.body)}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
     let isStudioDeleteModeAndroid = false;
 
     function cycleSortStudioAndroid() {
       const label = document.getElementById('label-sort-studio-android');
-      const container = document.getElementById('studio-output-list-android');
-      const cards = Array.from(container.querySelectorAll('.astud-card'));
-      if (cards.length === 0) return;
-
-      if (currentStudioSortAndroid === 'date') {
-        currentStudioSortAndroid = 'title';
-        label.textContent = "Judul";
-        cards.sort((a, b) => (a.dataset.title || '').localeCompare(b.dataset.title || ''));
-        showToast("Urutan Studio", "Diurutkan secara alfabetis (A-Z).");
-      } else {
-        currentStudioSortAndroid = 'date';
-        label.textContent = "Terkini";
-        cards.reverse();
-        showToast("Urutan Studio", "Diurutkan berdasarkan catatan terbaru.");
-      }
-      cards.forEach(c => container.appendChild(c));
+      let items = loadAndroidStudio();
+      if (items.length === 0) return;
+      items.reverse();
+      saveAndroidStudio(items);
+      renderAndroidStudio();
+      showToast("Urutan Studio", "Urutan catatan dibalik.");
     }
 
     function toggleDeleteModeStudioAndroid(force = null) {
@@ -1201,36 +1637,60 @@
         showToast("Pilih Catatan", "Pilih minimal 1 catatan studio untuk dihapus.");
         return;
       }
-      const count = checkedBoxes.length;
-      checkedBoxes.forEach(chk => {
-        const card = chk.closest('.astud-card');
-        if (card) card.remove();
-      });
+      const titlesToDelete = checkedBoxes.map(chk => chk.closest('.astud-card')?.dataset.title).filter(Boolean);
+      let items = loadAndroidStudio();
+      items = items.filter(it => !titlesToDelete.includes(it.title));
+      saveAndroidStudio(items);
       toggleDeleteModeStudioAndroid(false);
-      const remaining = document.querySelectorAll('.astud-card').length;
-      document.getElementById('android-studio-count').textContent = remaining;
-      showToast("Studio Dihapus", `${count} catatan studio berhasil dihapus.`);
+      renderAndroidStudio();
+      showToast("Studio Dihapus", `${titlesToDelete.length} catatan studio dihapus.`);
     }
 
-    function generateStudioArtifact(type) {
-      const container = document.getElementById('studio-output-list-android');
-      const card = document.createElement('div');
-      card.className = "astud-card p-3 rounded-2xl bg-[#1e232c] border border-white/5 flex items-start space-x-2.5 animate-fade-in";
-      card.dataset.title = type;
-      card.innerHTML = `
-        <input type="checkbox" onchange="updateDelStudioAndroidCount()" class="astud-del-chk ${isStudioDeleteModeAndroid ? '' : 'hidden'} mt-1 w-4 h-4 rounded accent-rose-600 shrink-0">
-        <div class="flex-1 min-w-0" onclick="viewStudioItem('${type}', 'Hasil generasi otomatis ${type} siap diunduh atau dipelajari.')">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-white">${type}</span>
-            <span class="text-[9px] text-emerald-400 font-bold">Baru saja</span>
-          </div>
-          <p class="text-[11px] text-zinc-400 line-clamp-2 mt-1">Dibuat dari analisis multi-sumber dokumen laptop...</p>
-        </div>
-      `;
-      container.prepend(card);
-      const remaining = document.querySelectorAll('.astud-card').length;
-      document.getElementById('android-studio-count').textContent = remaining;
-      showToast(type, `${type} berhasil dihasilkan oleh studio AI.`);
+    let isAndroidAudioPlaying = false;
+    async function generateStudioArtifact(type) {
+      showToast("Studio AI", `Merancang ${type}...`);
+
+      const sources = loadAndroidSources();
+      const docNames = sources.map(s => s.name).join(', ') || 'Materi Dokumen';
+
+      let artifactContent = '';
+
+      if (type === 'Audio Overview') {
+        if ('speechSynthesis' in window && isAndroidAudioPlaying) {
+          window.speechSynthesis.cancel();
+          isAndroidAudioPlaying = false;
+          showToast("Audio Dijeda", "Podcast audio dihentikan.");
+          return;
+        }
+
+        artifactContent = `Alex: Selamat datang di NoteRoute Audio Overview! Hari ini kita mengupas materi ${docNames}.\nMaya: Betul sekali Alex. Kita membedah konsep inti, struktur data, dan cara optimal menguasai materi ini dengan cepat.\nAlex: Semoga catatan ini membantu rekan-rekan pembelajar sekalian!`;
+        
+        if ('speechSynthesis' in window) {
+          const utter = new SpeechSynthesisUtterance("Selamat datang di NoteRoute Audio Overview. Hari ini kita membedah materi dari dokumen " + docNames);
+          utter.lang = 'id-ID';
+          window.speechSynthesis.speak(utter);
+          isAndroidAudioPlaying = true;
+          utter.onend = () => { isAndroidAudioPlaying = false; };
+        }
+      } else if (type === 'Flashcards') {
+        artifactContent = `# Flashcards Ujian Cepat\n- Kartu 1: Apa fungsi utama materi ini? -> Memastikan integritas dan format data valid.\n- Kartu 2: Sebutkan 2 parameter penting! -> Tipe masukan dan batasan konversi.`;
+      } else if (type === 'Quiz') {
+        artifactContent = `# Soal Latihan & Kuis\n1. Jelaskan perbedaan konsep dasar pada materi ${docNames}!\n2. Bagaimana cara menangani galat pada sistem data terdistribusi?`;
+      } else {
+        artifactContent = `Hasil analisis terstruktur untuk ${type} dari dokumen ${docNames}.\nDisusun secara komprehensif untuk mendukung persiapan ujian dan riset Anda.`;
+      }
+
+      const items = loadAndroidStudio();
+      items.unshift({
+        id: 'stud_' + Date.now(),
+        title: `${type} • ${sources[0]?.name || 'Materi'}`,
+        body: artifactContent,
+        date: 'Barusan'
+      });
+      saveAndroidStudio(items);
+      renderAndroidStudio();
+      showToast("Selesai", `${type} berhasil dibuat dan disimpan.`);
+      viewStudioItem(type, artifactContent);
     }
 
     function viewStudioItem(title, snippet) {
@@ -1238,7 +1698,7 @@
       alert(`[${title}]\n\n${snippet}`);
     }
 
-    // 8. CITATIONS & BOTTOM SHEETS
+    // 9. CITATIONS & BOTTOM SHEETS
     function openCitationModal(filename, page) {
       document.getElementById('citation-file-title').textContent = filename;
       document.getElementById('citation-page-num').textContent = `Halaman ${page}`;
@@ -1272,11 +1732,12 @@
       document.getElementById('source-picker-label').textContent = `${count}/${chks.length} Sumber Dipilih`;
     }
 
-    // 9. TOAST
+    // 10. TOAST
     let toastTimer = null;
     function showToast(title, msg) {
       const toast = document.getElementById('android-toast');
       const text = document.getElementById('android-toast-text');
+      if (!toast || !text) return;
       text.innerHTML = `<strong>${title}:</strong> ${msg}`;
       toast.classList.remove('hidden');
 
@@ -1285,6 +1746,19 @@
         toast.classList.add('hidden');
       }, 2400);
     }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // STARTUP INITIALIZATION
+    checkAndroidAuth();
   </script>
 </body>
 </html>

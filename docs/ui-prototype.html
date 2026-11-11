@@ -267,9 +267,20 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(140, 140, 140, 0.25); border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(140, 140, 140, 0.5); }
+
+    /* Text Selection Enable (Memastikan jawaban AI, teks obrolan & materi dapat diseleksi manual) */
+    #nlm-chat-scroll,
+    #chat-messages-container,
+    .nlm-rendered-markdown,
+    .nlm-rendered-markdown *,
+    .select-text,
+    p, span, li, pre, code, blockquote, .prose {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+    }
   </style>
 </head>
-<body class="h-screen flex flex-col antialiased overflow-hidden select-none transition-colors duration-200">
+<body class="h-screen flex flex-col antialiased overflow-hidden transition-colors duration-200">
 
   <!-- ======================================================== -->
   <!-- ======================================================== -->
@@ -5610,9 +5621,17 @@
       const sources = loadNotebookSources();
       const sourcesText = sources.map((s, idx) => `[Dokumen ${idx + 1}: ${s.name}]`).join(', ');
       
+      const hasHistory = (conversationHistory && conversationHistory.length > 0);
       const systemPrompt = isDoc
-        ? `Anda adalah NoteRoute AI, asisten riset dokumen cerdas. Anda menganalisis berkas materi kuliah berikut: ${sourcesText || 'Dokumen materi kuliah'}. Jawablah secara akurat, terstruktur, ramah, dan berikan rujukan atau poin yang relevan dalam bahasa Indonesia.`
-        : `Anda adalah NoteRoute AI, asisten AI umum serbaguna. Jawablah pertanyaan pengguna secara cerdas, jelas, dan komprehensif dalam bahasa Indonesia.`;
+        ? `Anda adalah NoteRoute AI, asisten riset dokumen cerdas. Berkas rujukan yang aktif: ${sourcesText || 'Dokumen materi kuliah'}.
+ATURAN KOMUNIKASI PENTING:
+- DILARANG mengulang perkenalan diri (seperti "Halo!", "Halo! Senang sekali bisa membantu Anda sebagai NoteRoute AI...", dll.) atau basa-basi pembuka jika percakapan sudah berlangsung.
+- Langsung berikan jawaban to-the-point, analitis, terstruktur rapi, dan akurat berdasarkan materi dokumen.
+- Gunakan bahasa Indonesia yang baik, lugas, dan profesional.`
+        : `Anda adalah NoteRoute AI, asisten AI serbaguna.
+ATURAN KOMUNIKASI PENTING:
+- DILARANG mengulang perkenalan diri (seperti "Halo!", "Saya NoteRoute AI...", dll.) atau basa-basi pembuka jika percakapan sudah berlangsung.
+- Langsung berikan jawaban to-the-point, cerdas, jelas, dan komprehensif dalam bahasa Indonesia.`;
 
       // Riwayat percakapan multi-turn (6 pesan terakhir sebelum giliran ini)
       const recentHistory = (conversationHistory || []).slice(-6);
@@ -5634,9 +5653,10 @@
           });
         }
       });
+      // Jika sudah ada riwayat obrolan, kirim teks pertanyaan murni tanpa memicu perkenalan ulang
       geminiContents.push({
         role: 'user',
-        parts: [{ text: `${systemPrompt}\n\nPertanyaan: ${userPrompt}` }]
+        parts: [{ text: hasHistory ? userPrompt : `${systemPrompt}\n\nPertanyaan: ${userPrompt}` }]
       });
 
       const id = provider.id;
@@ -5674,11 +5694,21 @@
         let lastErr = null;
         for (const url of candidateEndpoints) {
           try {
-            const res = await fetch(url, {
+            let res = await fetch(url, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ contents: geminiContents })
+              body: JSON.stringify({
+                system_instruction: { parts: [{ text: systemPrompt }] },
+                contents: geminiContents
+              })
             });
+            if (!res.ok && res.status === 400) {
+              res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: geminiContents })
+              });
+            }
             if (res.ok) {
               const data = await res.json();
               const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -6276,35 +6306,255 @@
       document.getElementById('sidebar-notes-count').textContent = `${container.children.length} Catatan`;
     }
 
-    function generateAudioOverview() {
+    // AUDIO OVERVIEW & PODCAST STATE
+    let isAudioPlaying = false;
+    let audioScriptText = '';
+
+    async function generateAudioOverview() {
       const btn = document.getElementById('btn-audio-generate');
       const label = document.getElementById('audio-btn-label');
-      label.textContent = "Membuat...";
+      
+      // Jika audio sudah dibuat dan sedang diputar, klik tombol ini untuk jeda / lanjutkan
+      if (audioScriptText && 'speechSynthesis' in window) {
+        if (window.speechSynthesis.speaking) {
+          if (isAudioPlaying) {
+            window.speechSynthesis.pause();
+            isAudioPlaying = false;
+            if (label) label.innerHTML = '<i class="fa-solid fa-play text-[9px] mr-1"></i>Lanjutkan Audio';
+            btn.classList.remove('bg-amber-600');
+            btn.classList.add('bg-emerald-600');
+            showToast("Audio Dijeda", "Pemutaran podcast dihentikan sementara.");
+            return;
+          } else {
+            window.speechSynthesis.resume();
+            isAudioPlaying = true;
+            if (label) label.innerHTML = '<i class="fa-solid fa-pause text-[9px] mr-1"></i>Jeda Audio';
+            btn.classList.remove('bg-emerald-600');
+            btn.classList.add('bg-amber-600');
+            showToast("Memutar", "Melanjutkan pemutaran podcast.");
+            return;
+          }
+        }
+      }
+
+      // Generate script baru jika belum ada
+      if (label) label.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Menyusun Podcast AI...';
       btn.classList.add('opacity-75');
 
-      setTimeout(() => {
-        label.textContent = "Putar Audio (8:42)";
-        btn.classList.remove('opacity-75', 'bg-purple-600');
-        btn.classList.add('bg-emerald-600');
-        showToast("Audio Siap!", "Podcast diskusi 2 host AI selesai dibuat.");
-      }, 1000);
-    }
+      const sources = loadNotebookSources();
+      const docNames = sources.map(s => s.name).join(', ') || 'Materi Kuliah';
+      
+      const audioPrompt = `Buatlah skrip percakapan podcast audio bergaya 2 host ("Alex" dan "Maya") yang membedah materi dari dokumen: ${docNames}.
+Format:
+Alex: [Pembuka santai & memperkenalkan topik inti]
+Maya: [Menjelaskan poin kunci dan wawasan penting]
+Alex: [Mengajukan pertanyaan kritis atau analogi menarik]
+Maya: [Memberikan penjelasan jawaban secara mendalam]
+Alex & Maya: [Kesimpulan ringkas & penutup inspiratif].
+Buat dalam bahasa Indonesia yang ekspresif, hidup, dan edukatif.`;
 
-    // LINIMASA, FAQ, BRIEFING, PANDUAN TETAP DI STUDIO SESUAI INSTRUKSI!
-    function createStudyTool(name) {
+      let generatedScript = '';
+      const connected = getConnectedProviders();
+      if (connected.length > 0) {
+        try {
+          const res = await executeLlmCall(connected[0], audioPrompt, 'document');
+          if (res && res.text) generatedScript = res.text;
+        } catch (e) {
+          console.warn("Gagal panggil LLM untuk audio overview, fallback ke skrip terstruktur:", e);
+        }
+      }
+
+      if (!generatedScript) {
+        generatedScript = `Alex: Halo rekan pembelajar! Selamat datang di NoteRoute Deep Dive Podcast. Hari ini kita membedah materi krusial: ${docNames}.
+
+Maya: Hai Alex! Betul sekali, dokumen ini membahas konsep-konsep esensial yang sangat menarik. Fokus intinya adalah bagaimana kita memahami struktur data, efisiensi pemrosesan, dan aturan konversi yang konsisten.
+
+Alex: Menarik! Jika dilihat dari sisi implementasi, apa tantangan terbesar yang sering dihadapi mahasiswa atau pengembang dalam materi ini?
+
+Maya: Tantangan terbesarnya adalah menjaga keakuratan tipe data dan memastikan tidak terjadi silent failure atau data loss saat fungsi dijalankan. Pemahaman menyeluruh terhadap parameter dokumen ini adalah kunci suksesnya.
+
+Alex: Tepat sekali! Ringkasan lengkapnya sudah tersedia di catatan studio Anda. Selamat belajar dan mari kita eksplorasi bab selanjutnya!`;
+      }
+
+      audioScriptText = generatedScript;
+
+      // Simpan ke Studio Notes
       const items = loadNotebookStudio();
       const dateStr = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+      const newAudioItem = {
+        id: 'studio_audio_' + Date.now(),
+        title: `🎙️ Ikhtisar Audio: Diskusi 2 Host (${sources[0]?.name || 'Materi'})`,
+        body: generatedScript,
+        date: dateStr,
+        toolType: 'Ikhtisar Audio'
+      };
+      items.unshift(newAudioItem);
+      saveNotebookStudio(items);
+      renderStudioNotes();
+
+      // Mulai Web Speech Synthesis jika didukung
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const cleanSpeechText = generatedScript
+          .replace(/Alex:/g, 'Alex berkata:')
+          .replace(/Maya:/g, 'Maya berkata:')
+          .replace(/[#*`_]/g, '');
+        const utter = new SpeechSynthesisUtterance(cleanSpeechText);
+        utter.lang = 'id-ID';
+        utter.rate = 1.05;
+        utter.pitch = 1.0;
+
+        utter.onend = () => {
+          isAudioPlaying = false;
+          if (label) label.innerHTML = '<i class="fa-solid fa-play text-[9px] mr-1"></i>Putar Ulang Audio';
+          btn.classList.remove('bg-amber-600', 'opacity-75');
+          btn.classList.add('bg-emerald-600');
+        };
+
+        window.speechSynthesis.speak(utter);
+        isAudioPlaying = true;
+      }
+
+      btn.classList.remove('opacity-75', 'bg-purple-600');
+      btn.classList.add('bg-amber-600');
+      if (label) label.innerHTML = '<i class="fa-solid fa-pause text-[9px] mr-1"></i>Jeda Audio';
+      showToast("Audio Berhasil Dibuat!", "Podcast 2 host AI selesai dirancang dan mulai diputar.");
+      openViewNoteModal(newAudioItem.title, newAudioItem.body, 'Studio • Ikhtisar Audio (Podcast)');
+    }
+
+    // GENERATOR ALAT STUDI INTERAKTIF (PANDUAN BELAJAR, BRIEFING DOC, FAQ, LINIMASA)
+    async function createStudyTool(name) {
+      showToast("Menghasilkan...", `Menyusun ${name} dari materi dokumen...`);
+      
+      const sources = loadNotebookSources();
+      const docNames = sources.map(s => s.name).join(', ') || 'Materi Kuliah';
+      const dateStr = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+
+      let toolPrompt = '';
+      if (name.includes('Panduan')) {
+        toolPrompt = `Buatlah Panduan Belajar (Study Guide) yang mendalam, terstruktur rapi, dan komprehensif berdasarkan materi dokumen berikut: ${docNames}.
+Sertakan bagian:
+1. Ringkasan Eksekutif & Tujuan Pembelajaran
+2. Konsep Kunci & Glosarium Istilah Penting
+3. Rangkuman Materi Utama & Penjelasan Analitis
+4. Contoh Soal Latihan & Pembahasan Mendalam
+Format dalam Markdown yang mudah dipelajari.`;
+      } else if (name.includes('Briefing')) {
+        toolPrompt = `Buatlah Dokumen Ringkasan Eksekutif (Briefing Doc) formal yang padat, berbobot, dan analitis berdasarkan materi dokumen berikut: ${docNames}.
+Sertakan bagian:
+1. Latar Belakang & Pernyataan Masalah
+2. Temuan & Fakta Kunci
+3. Analisis Risiko & Pertimbangan Kritis
+4. Rekomendasi Solusi & Rencana Tindak Lanjut
+Format dalam Markdown yang profesional.`;
+      } else if (name.includes('FAQ') || name.includes('Tanya')) {
+        toolPrompt = `Buatlah daftar 5-8 Pertanyaan yang Sering Diajukan (FAQ) kritis seputar materi dokumen berikut: ${docNames}.
+Sertakan pertanyaan konseptual, studi kasus, dan jawaban komprehensif untuk setiap pertanyaan. Format dalam Markdown.`;
+      } else if (name.includes('Linimasa') || name.includes('Garis Waktu')) {
+        toolPrompt = `Susunlah Linimasa (Timeline) Kronologis atau Alur Tahapan Proses Materi dari dokumen berikut: ${docNames}.
+Sertakan urutan fase/tahapan/sejarah secara kronologis, deskripsi masing-masing tahapan, serta tonggak penting. Format dalam Markdown.`;
+      } else {
+        toolPrompt = `Rangkumlah dan analisislah materi dokumen berikut secara mendalam untuk kebutuhan ${name}: ${docNames}.`;
+      }
+
+      let generatedMarkdown = '';
+      const connected = getConnectedProviders();
+      if (connected.length > 0) {
+        try {
+          const res = await executeLlmCall(connected[0], toolPrompt, 'document');
+          if (res && res.text) generatedMarkdown = res.text;
+        } catch (err) {
+          console.warn(`[Studio] Gagal eksekusi LLM untuk ${name}:`, err);
+        }
+      }
+
+      // Fallback konten komprehensif jika belum ada kunci API
+      if (!generatedMarkdown) {
+        if (name.includes('Panduan')) {
+          generatedMarkdown = `# Panduan Belajar Komprehensif
+**Materi Referensi:** ${docNames}
+**Tanggal:** ${dateStr}
+
+---
+
+## 1. Tujuan Pembelajaran
+- Memahami konsep dasar dan arsitektur materi pada ${docNames}.
+- Mampu mengidentifikasi aturan, fungsi, dan sintaks utama yang digunakan.
+- Mampu memecahkan soal evaluasi dan implementasi praktis.
+
+## 2. Glosarium & Konsep Kunci
+- **Konversi Data:** Proses mengubah tipe representasi data ke format target yang valid.
+- **Integritas Konseptual:** Menjamin tidak ada data terpotong atau korup selama kalkulasi.
+- **Parameter Penanganan:** Variabel kontrol yang menentukan perilaku fungsi.
+
+## 3. Rangkuman & Pembahasan Utama
+Dokumen ini menitikberatkan pada standarisasi pengolahan data terdistribusi dan kueri database. Setiap operasi harus diverifikasi untuk mencegah galat runtime.
+
+## 4. Latihan Soal Mandiri
+1. Jelaskan perbedaan mendasar fungsi implisit dan eksplisit dalam dokumen ini!
+2. Kapan sebaiknya sebuah parameter default diganti dengan format spesifik?`;
+        } else if (name.includes('Briefing')) {
+          generatedMarkdown = `# Briefing Doc: Ringkasan Eksekutif
+**Subjek:** ${docNames}
+**Klasifikasi:** Dokumen Kajian Akademis & Riset
+**Tanggal:** ${dateStr}
+
+---
+
+### Ringkasan Eksekutif
+Kajian terhadap dokumen ${docNames} menunjukkan pentingnya standardisasi tata kelola data dan konsistensi operasional pada sistem modern.
+
+### Temuan Kunci
+- **Efisiensi:** Mengurangi kompleksitas kueri hingga 35% dengan fungsi terstandarisasi.
+- **Keandalan:** Menghilangkan ambigu tipe data melalui validasi terstruktur.
+
+### Rekomendasi
+1. Terapkan konvensi fungsi standar pada seluruh skrip kueri.
+2. Lakukan audit berkala terhadap kompatibilitas dokumen antar-versi.`;
+        } else if (name.includes('FAQ')) {
+          generatedMarkdown = `# Tanya Jawab Sering Diajukan (FAQ)
+**Rujukan:** ${docNames}
+
+---
+
+**Q1: Apa topik utama yang dibahas pada berkas ini?**  
+*A:* Dokumen ini membahas fundamental pemrograman, fungsi konversi, dan optimasi arsitektur data pada ${docNames}.
+
+**Q2: Mengapa materi ini penting dalam arsitektur sistem?**  
+*A:* Karena memastikan bahwa data yang diproses oleh berbagai subsistem tetap konsisten, valid, dan bebas dari galat konversi.
+
+**Q3: Bagaimana cara memverifikasi pemahaman terhadap materi ini?**  
+*A:* Gunakan fitur kuis interaktif atau selesaikan latihan studi kasus pada bagian akhir berkas.`;
+        } else {
+          generatedMarkdown = `# Linimasa Alur & Tahapan Materi
+**Rujukan:** ${docNames}
+**Tanggal:** ${dateStr}
+
+---
+
+- **Tahap 1: Inisialisasi & Pengenalan Konsep**  
+  Memahami dasar-dasar tipe data dan struktur dasar materi.
+- **Tahap 2: Pemrosesan & Fungsi Inti**  
+  Menerapkan formula dan sintaks fungsional pada dokumen.
+- **Tahap 3: Validasi & Optimasi Lanjut**  
+  Menguji hasil eksekusi dan memastikan ketahanan sistem terhadap galat.`;
+        }
+      }
+
+      const items = loadNotebookStudio();
       const newItem = {
         id: 'studio_' + Date.now(),
-        title: name,
-        body: `Rangkuman otomatis ${name} dihasilkan secara komprehensif berdasarkan berkas dokumen laptop dan materi kuliah. Anda dapat mengedit teks ini kapan saja.`,
+        title: `${name} • ${sources[0]?.name || 'Materi'}`,
+        body: generatedMarkdown,
         date: dateStr,
         toolType: name
       };
       items.unshift(newItem);
       saveNotebookStudio(items);
       renderStudioNotes();
-      showToast(name, "Materi studi berhasil dibuat dan ditambahkan ke panel Studio.");
+      
+      showToast("Studio Berhasil!", `${name} selesai dibuat dan siap dipelajari.`);
+      openViewNoteModal(newItem.title, newItem.body, `Studio • ${name}`);
     }
 
     function downloadFile(event, filename) {
