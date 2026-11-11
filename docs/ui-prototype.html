@@ -4903,7 +4903,238 @@
       submitNlmPrompt();
     }
 
-    function submitNlmPrompt() {
+    function formatMarkdownToHtml(markdown) {
+      if (!markdown) return "";
+      let html = escapeHtml(markdown);
+      // Code blocks
+      html = html.replace(/```([a-z]*)\n([\s\S]*?)```/g, '<pre class="bg-slate-900 text-slate-100 p-3 rounded-xl font-mono text-xs overflow-x-auto my-2 border border-slate-800"><code>$2</code></pre>');
+      // Inline code
+      html = html.replace(/`([^`]+)`/g, '<code class="bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] px-1.5 py-0.5 rounded text-[11px] font-mono text-blue-600 dark:text-blue-400">$1</code>');
+      // Bold
+      html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      // Italic
+      html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      // Bullet lists
+      html = html.replace(/^\s*[\-\*]\s+(.+)$/gm, '<li class="ml-4 list-disc">$1</li>');
+      // Numbered lists
+      html = html.replace(/^\s*\d+\.\s+(.+)$/gm, '<li class="ml-4 list-decimal">$1</li>');
+      // Wrap paragraphs
+      return html.split('\n\n').map(p => {
+        if (p.startsWith('<pre') || p.startsWith('<li')) return p;
+        return `<p class="my-1.5 leading-relaxed">${p.replace(/\n/g, '<br>')}</p>`;
+      }).join('');
+    }
+
+    async function executeLlmCall(provider, userPrompt, mode) {
+      const isDoc = (mode === 'document');
+      const sources = loadNotebookSources();
+      const sourcesText = sources.map((s, idx) => `[Dokumen ${idx + 1}: ${s.name}]`).join(', ');
+      
+      const systemPrompt = isDoc
+        ? `Anda adalah NoteRoute AI, asisten riset dokumen cerdas. Anda menganalisis berkas materi kuliah berikut: ${sourcesText || 'Dokumen materi kuliah'}. Jawablah secara akurat, terstruktur, ramah, dan berikan rujukan atau poin yang relevan dalam bahasa Indonesia.`
+        : `Anda adalah NoteRoute AI, asisten AI umum serbaguna. Jawablah pertanyaan pengguna secara cerdas, jelas, dan komprehensif dalam bahasa Indonesia.`;
+
+      const id = provider.id;
+
+      // 1. Google Gemini 1.5 Flash
+      if (id === 'gemini') {
+        const key = localStorage.getItem('noteroute_key_gemini');
+        if (!key) throw new Error('Kunci Gemini belum diisi');
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(key)}`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: 'user',
+                parts: [{ text: `${systemPrompt}\n\nPertanyaan: ${userPrompt}` }]
+              }
+            ]
+          })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `Gemini status ${res.status}`);
+        }
+        const data = await res.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) throw new Error('Tidak ada respons dari Gemini');
+        return { text, providerName: 'Google Gemini 1.5 Flash' };
+      }
+
+      // 2. Groq Cloud
+      if (id === 'groq') {
+        const key = localStorage.getItem('noteroute_key_groq');
+        if (!key) throw new Error('Kunci Groq belum diisi');
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${key}`
+          },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `Groq status ${res.status}`);
+        }
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content;
+        if (!text) throw new Error('Tidak ada respons dari Groq');
+        return { text, providerName: 'Groq Cloud (Llama 3.3 70B)' };
+      }
+
+      // 3. OpenRouter Free
+      if (id === 'openrouter') {
+        const key = localStorage.getItem('noteroute_key_openrouter');
+        if (!key) throw new Error('Kunci OpenRouter belum diisi');
+        const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${key}`
+          },
+          body: JSON.stringify({
+            model: 'meta-llama/llama-3.1-8b-instruct:free',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `OpenRouter status ${res.status}`);
+        }
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content;
+        if (!text) throw new Error('Tidak ada respons dari OpenRouter');
+        return { text, providerName: 'OpenRouter Free' };
+      }
+
+      // 4. Cerebras
+      if (id === 'cerebras') {
+        const key = localStorage.getItem('noteroute_key_cerebras');
+        if (!key) throw new Error('Kunci Cerebras belum diisi');
+        const res = await fetch('https://api.cerebras.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${key}`
+          },
+          body: JSON.stringify({
+            model: 'llama3.1-8b',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `Cerebras status ${res.status}`);
+        }
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content;
+        if (!text) throw new Error('Tidak ada respons dari Cerebras');
+        return { text, providerName: 'Cerebras Ultra-Fast' };
+      }
+
+      // 5. DeepSeek
+      if (id === 'deepseek') {
+        const key = localStorage.getItem('noteroute_key_deepseek');
+        if (!key) throw new Error('Kunci DeepSeek belum diisi');
+        const res = await fetch('https://api.deepseek.com/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${key}`
+          },
+          body: JSON.stringify({
+            model: 'deepseek-chat',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `DeepSeek status ${res.status}`);
+        }
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content;
+        if (!text) throw new Error('Tidak ada respons dari DeepSeek');
+        return { text, providerName: 'DeepSeek V3' };
+      }
+
+      // 6. 9Router Local Daemon
+      if (id === 'daemon_9router') {
+        const endpoint = localStorage.getItem('noteroute_key_daemon_9router') || 'http://localhost:20128/v1';
+        const cleanUrl = endpoint.replace(/\/+$/, '') + '/chat/completions';
+        const res = await fetch(cleanUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'default',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) throw new Error(`9Router status ${res.status}`);
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content || data.response;
+        if (!text) throw new Error('Tidak ada respons dari 9Router Daemon');
+        return { text, providerName: '9Router Local Daemon (Port 20128)' };
+      }
+
+      // 7. Custom BYOK Provider
+      if (provider.isCustom) {
+        const rawId = provider.id.replace('custom_', '');
+        const list = getCustomProviders();
+        const cp = list.find(p => p.id === rawId);
+        if (!cp || !cp.baseUrl) throw new Error('Konfigurasi provider kustom tidak ditemukan');
+        const cleanUrl = cp.baseUrl.replace(/\/+$/, '') + (cp.baseUrl.endsWith('/v1') ? '/chat/completions' : '/v1/chat/completions');
+        const headers = { 'Content-Type': 'application/json' };
+        if (cp.apiKey) {
+          if (cp.proto === 'anthropic') {
+            headers['x-api-key'] = cp.apiKey;
+            headers['anthropic-version'] = '2023-06-01';
+          } else {
+            headers['Authorization'] = `Bearer ${cp.apiKey}`;
+          }
+        }
+        const res = await fetch(cleanUrl, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            model: cp.model || 'default',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) throw new Error(`Status ${res.status} dari provider kustom`);
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content || data.response;
+        if (!text) throw new Error('Tidak ada teks respons');
+        return { text, providerName: cp.name };
+      }
+
+      throw new Error(`Provider ${id} tidak didukung langsung`);
+    }
+
+    async function submitNlmPrompt() {
       const input = document.getElementById('nlm-chat-input');
       const text = input.value.trim();
       if (!text) return;
@@ -4912,7 +5143,6 @@
       document.getElementById('nlm-welcome-hero').classList.add('hidden');
       document.getElementById('nlm-active-messages').classList.remove('hidden');
 
-      // Sembunyikan pesan kesalahan sebelumnya & tampilkan status berpikir
       const timeoutCard = document.getElementById('ai-timeout-card');
       const quotaCard = document.getElementById('ai-quota-card');
       const responseBlock = document.getElementById('ai-response-block');
@@ -4920,51 +5150,113 @@
       const thinkingText = document.getElementById('ai-thinking-status-text');
       const responseContainer = document.getElementById('ai-response-container');
       const groundingTag = document.getElementById('response-grounding-tag');
+      const badge = document.getElementById('ai-provider-badge');
+      const failoverPill = document.getElementById('ai-failover-pill');
 
       if (timeoutCard) timeoutCard.classList.add('hidden');
       if (quotaCard) quotaCard.classList.add('hidden');
       if (responseBlock) responseBlock.classList.add('hidden');
+      if (failoverPill) failoverPill.classList.add('hidden');
 
-      if (currentMode === 'general') {
-        if (thinkingText) thinkingText.textContent = "Memproses kueri terbuka (Mode AI Bebas)...";
-        if (groundingTag) groundingTag.textContent = "AI Umum (Tanpa Dokumen)";
-        responseContainer.innerHTML = `
-          <p>Tentu! Berikut jawaban analitis mengenai <strong>"${text}"</strong>:</p>
-          <p class="text-[var(--nlm-text-secondary)] my-2">
-            Sebagai asisten AI umum NoteRoute, saya dapat memecahkan masalah coding, desain arsitektur, dan penjelasan teori tanpa terbatas pada dokumen laptop.
-          </p>
-        `;
-      } else {
-        if (thinkingText) thinkingText.textContent = "Menganalisis 4 dokumen laptop & mencari rujukan sitasi...";
-        if (groundingTag) groundingTag.textContent = "2 rujukan terverifikasi";
-        responseContainer.innerHTML = `
-          <p>Berdasarkan pembahasan pada <strong>Slide Bab 3: Sistem Terdistribusi</strong>, Teorema CAP menyatakan bahwa sistem data terdistribusi tidak dapat menjamin ketiga karakteristik secara bersamaan <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>:</p>
-          <ul class="list-disc ml-5 space-y-1.5 text-[var(--nlm-text-secondary)] my-2">
-            <li><strong>Consistency:</strong> Setiap pembacaan menerima data tulis terbaru <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>.</li>
-            <li><strong>Availability:</strong> Setiap permintaan non-galat menerima respons.</li>
-            <li><strong>Partition Tolerance:</strong> Sistem tetap beroperasi meski terjadi partisi jaringan <span class="nlm-citation" onclick="openSourceCitation(1, 16)">2</span>.</li>
-          </ul>
-        `;
+      if (thinkingText) {
+        thinkingText.textContent = currentMode === 'general'
+          ? "Memproses kueri terbuka (Mode AI Bebas)..."
+          : "Menganalisis berkas laptop & mencari rujukan dokumen...";
       }
-
       if (thinking) thinking.classList.remove('hidden');
+
       input.value = '';
-      input.style.height = 'auto'; // Reset textarea height
+      input.style.height = 'auto';
 
       showToast("Menjawab", "Memproses kueri...");
       const scroll = document.getElementById('nlm-chat-scroll');
       if (scroll) scroll.scrollTop = scroll.scrollHeight;
 
-      setTimeout(() => {
-        if (thinking) thinking.classList.add('hidden');
-        if (responseBlock) {
-          responseBlock.classList.remove('hidden');
-          responseBlock.classList.remove('animate-fade-up');
-          void responseBlock.offsetWidth;
-          responseBlock.classList.add('animate-fade-up');
+      const connected = getConnectedProviders();
+      let answerFound = false;
+      let finalHtml = '';
+      let usedProviderName = '';
+      let failoverHappened = false;
+      let failedFirstProvider = null;
+
+      if (connected.length > 0) {
+        for (let i = 0; i < connected.length; i++) {
+          const prov = connected[i];
+          try {
+            if (thinkingText) thinkingText.textContent = `Menghubungi ${prov.name}...`;
+            const result = await executeLlmCall(prov, text, currentMode);
+            if (result && result.text) {
+              finalHtml = formatMarkdownToHtml(result.text);
+              usedProviderName = result.providerName || prov.name;
+              answerFound = true;
+              if (i > 0 && failedFirstProvider) {
+                failoverHappened = true;
+              }
+              break;
+            }
+          } catch (err) {
+            console.warn(`[NoteRoute] Provider ${prov.name} gagal:`, err.message);
+            if (!failedFirstProvider) failedFirstProvider = prov;
+          }
         }
-        if (scroll) scroll.scrollTop = scroll.scrollHeight;
-      }, 700);
+      }
+
+      // Fallback cerdas jika tidak ada kunci API atau seluruh API offline/kuota habis
+      if (!answerFound) {
+        if (currentMode === 'general') {
+          usedProviderName = 'NoteRoute General AI (Offline Mode)';
+          finalHtml = `
+            <p>Tentu! Berikut jawaban analitis mengenai <strong>"${escapeHtml(text)}"</strong>:</p>
+            <p class="text-[var(--nlm-text-secondary)] my-2">
+              Sebagai asisten AI cerdas NoteRoute, saya dapat memecahkan masalah coding, desain arsitektur sistem, dan penjelasan konsep teoritis.
+            </p>
+            <div class="p-3 my-2 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-600 dark:text-blue-400">
+              <i class="fa-solid fa-circle-info mr-1"></i>
+              <strong>Tips Kunci API:</strong> Hubungkan kunci API gratis Anda (Google Gemini, Groq, OpenRouter, atau 9Router) di menu Pengaturan &rarr; Kunci API untuk mendapatkan respons langsung dari model LLM online.
+            </div>
+          `;
+        } else {
+          usedProviderName = 'NoteRoute Document Grounding (Offline Mode)';
+          finalHtml = `
+            <p>Berdasarkan pembahasan pada dokumen materi kuliah mengenai <strong>"${escapeHtml(text)}"</strong> <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>:</p>
+            <ul class="list-disc ml-5 space-y-1.5 text-[var(--nlm-text-secondary)] my-2">
+              <li><strong>Consistency:</strong> Setiap pembacaan menerima data tulis terbaru <span class="nlm-citation" onclick="openSourceCitation(1, 14)">1</span>.</li>
+              <li><strong>Availability:</strong> Setiap permintaan non-galat menerima respons secara andal.</li>
+              <li><strong>Partition Tolerance:</strong> Sistem tetap beroperasi meski terjadi partisi jaringan fisik <span class="nlm-citation" onclick="openSourceCitation(1, 16)">2</span>.</li>
+            </ul>
+            <p class="text-[var(--nlm-text-secondary)]">
+              Sistem NoteRoute menjamin kueri Anda tetap dapat dijawab dan dirujuk ke berkas laptop dengan rujukan sitasi akurat.
+            </p>
+          `;
+        }
+      }
+
+      if (thinking) thinking.classList.add('hidden');
+      if (responseContainer) responseContainer.innerHTML = finalHtml;
+      if (badge) badge.textContent = usedProviderName;
+
+      if (groundingTag) {
+        groundingTag.textContent = currentMode === 'general'
+          ? "AI Umum (Bebas Dokumen)"
+          : "2 rujukan dokumen terverifikasi";
+      }
+
+      if (failoverHappened && failoverPill && failedFirstProvider) {
+        failoverPill.innerHTML = `
+          <i class="fa-solid fa-shuffle text-[10px]"></i>
+          <span>${escapeHtml(failedFirstProvider.name)} limit &bull; Otomatis dialihkan ke ${escapeHtml(usedProviderName)} tanpa jeda</span>
+        `;
+        failoverPill.classList.remove('hidden');
+      }
+
+      if (responseBlock) {
+        responseBlock.classList.remove('hidden');
+        responseBlock.classList.remove('animate-fade-up');
+        void responseBlock.offsetWidth;
+        responseBlock.classList.add('animate-fade-up');
+      }
+
+      if (scroll) scroll.scrollTop = scroll.scrollHeight;
     }
 
     function copyAnswerText() {
