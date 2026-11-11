@@ -1503,20 +1503,27 @@
                 <div class="flex items-center space-x-2">
                   <label class="text-[11px] text-[var(--nlm-text-tertiary)] hidden sm:inline font-medium">Pilih Provider:</label>
                   <select id="provider-edit-select" onchange="onProviderSelectChanged(this.value)" class="text-xs bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-primary)] border border-[var(--nlm-border)] rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-blue-500 font-medium cursor-pointer">
-                    <option value="gemini">Google Gemini (Gratis)</option>
-                    <option value="groq">Groq Cloud (Llama 3.3 70B)</option>
-                    <option value="openrouter">OpenRouter Free</option>
-                    <option value="cerebras">Cerebras Ultra-Fast</option>
-                    <option value="deepseek">DeepSeek</option>
-                    <option value="mistral">Mistral AI</option>
-                    <option value="github">GitHub Models</option>
-                    <option value="cohere">Cohere</option>
-                    <option value="together">Together AI</option>
-                    <option value="fireworks">Fireworks AI</option>
-                    <option value="sambanova">SambaNova</option>
-                    <option value="cloudflare">Cloudflare Workers AI</option>
-                    <option value="zai">Z.ai (Zhipu)</option>
-                    <option value="ollama">Ollama Local (Offline)</option>
+                    <optgroup label="✅ 100% Gratis Tanpa Kartu Kredit">
+                      <option value="gemini">Google Gemini 1.5 (100% Gratis Tanpa CC)</option>
+                      <option value="groq">Groq Cloud (100% Gratis Tanpa CC • 300+ t/s)</option>
+                      <option value="openrouter">OpenRouter Free (100% Gratis Tanpa CC)</option>
+                      <option value="github">GitHub Models (100% Gratis via PAT)</option>
+                      <option value="ollama">Ollama Local (100% Offline Lokal)</option>
+                    </optgroup>
+                    <optgroup label="💳 Perlu Kartu Kredit / Saldo / Form">
+                      <option value="cerebras">Cerebras (Perlu Kartu Kredit)</option>
+                      <option value="sambanova">SambaNova (Perlu Form Billing)</option>
+                      <option value="together">Together AI (Perlu Saldo / Billing)</option>
+                      <option value="mistral">Mistral AI (Perlu Kartu Kredit / No. HP)</option>
+                      <option value="deepseek">DeepSeek (Perlu Saldo Aktif)</option>
+                    </optgroup>
+                    <optgroup label="🎁 Trial Credits & Kuota Terbatas">
+                      <option value="cohere">Cohere (Trial 1.000 Call/Bln Tanpa CC)</option>
+                      <option value="nvidia">NVIDIA NIM (1.000 Dev Credits Tanpa CC)</option>
+                      <option value="zai">Z.ai / Zhipu (GLM-4-Flash Free)</option>
+                      <option value="cloudflare">Cloudflare Workers AI (10.000 Neurons/Hari)</option>
+                      <option value="fireworks">Fireworks AI ($1 Trial Credits)</option>
+                    </optgroup>
                   </select>
                 </div>
               </div>
@@ -1567,23 +1574,23 @@
               </div>
             </div>
 
-            <!-- SECTION 2: FREE TIER PROVIDERS (LENGKAP SESUAI GITHUB OuterSpacee/free-ai-apis) -->
+            <!-- SECTION 2: FREE TIER & CLOUD PROVIDERS -->
             <div class="space-y-2.5 pt-2 border-t border-[var(--nlm-border-subtle)]">
               <div class="flex items-center justify-between">
                 <div>
                   <h5 class="font-bold text-xs text-[var(--nlm-text-primary)] flex items-center space-x-1.5">
                     <i class="fa-solid fa-gift text-emerald-500"></i>
-                    <span>Free Tier Providers (Kurasi OuterSpacee/free-ai-apis)</span>
+                    <span>Provider AI Cloud &amp; Lokal (Status Akses)</span>
                   </h5>
-                  <p class="text-[10px] text-[var(--nlm-text-tertiary)]">100% Free tier tanpa kartu kredit atau AI lokal offline.</p>
+                  <p class="text-[10px] text-[var(--nlm-text-tertiary)]">Gunakan provider berlabel <strong class="text-emerald-600 dark:text-emerald-400">100% Gratis Tanpa CC</strong> (Gemini, Groq, OpenRouter, GitHub Models, Ollama). Provider lain saat ini memerlukan kartu kredit/deposit saldo.</p>
                 </div>
-                <button onclick="showToast('Uji Koneksi', 'Memeriksa status semua provider AI gratis...')" class="px-2.5 py-1 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-[11px] font-semibold text-blue-600 flex items-center space-x-1 transition">
-                  <i class="fa-solid fa-play text-[9px]"></i>
-                  <span>Test All Free</span>
+                <button onclick="showToast('Uji Koneksi', 'Pilih salah satu provider lalu klik Uji Kunci Sekarang.')" class="px-2.5 py-1 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] text-[11px] font-semibold text-blue-600 flex items-center space-x-1 transition">
+                  <i class="fa-solid fa-bolt text-[9px]"></i>
+                  <span>Status Provider</span>
                 </button>
               </div>
 
-              <!-- GRID 15 FREE TIER PROVIDERS DARI REPO GITHUB (KIRO TELAH DIHAPUS) -->
+              <!-- GRID PROVIDER DENGAN BADGE TRANSPARAN -->
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                 
                 <!-- 1. Google Gemini AI -->
@@ -1701,7 +1708,30 @@
                   </div>
                 </div>
 
-                <!-- 6. Mistral AI -->
+                <!-- 6. GitHub Models (100% Gratis via PAT) -->
+                <div onclick="openConfigureApiKey('GitHub Models', 'ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', '100% Gratis Tanpa Kartu Kredit &bull; Akses GPT-4o-mini via PAT')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
+                  <div class="flex items-start space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-brands fa-github"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-bold text-xs text-[var(--nlm-text-primary)] group-hover:text-blue-600 truncate">GitHub Models</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>GPT-4o-mini &bull; Gratis PAT</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)] flex items-center justify-between">
+                    <span class="text-[10px] text-[var(--nlm-text-tertiary)]">GitHub PAT</span>
+                    <button onclick="openApiTutorial('github', event)" class="px-2 py-0.5 rounded-md text-[10px] font-semibold text-purple-600 dark:text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 flex items-center space-x-1 transition" title="Tutorial Cara Dapat API">
+                      <i class="fa-solid fa-circle-question text-[9px]"></i>
+                      <span>Tutorial API</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 7. Mistral AI -->
                 <div onclick="openConfigureApiKey('Mistral AI', 'mis_xxxxxxxxxxxxxxxx', 'Codestral &amp; Mistral 7B &bull; Free Tier')" class="p-3 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] hover:border-blue-500 cursor-pointer transition flex flex-col justify-between group">
                   <div class="flex items-start space-x-2.5">
                     <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm shrink-0">
@@ -3314,6 +3344,7 @@
       const lower = (name || '').toLowerCase();
       if (lower.includes('gemini')) return 'gemini';
       if (lower.includes('groq')) return 'groq';
+      if (lower.includes('github')) return 'github';
       if (lower.includes('9router')) return 'daemon_9router';
       if (lower.includes('cerebras')) return 'cerebras';
       if (lower.includes('deepseek')) return 'deepseek';
@@ -3330,21 +3361,41 @@
       return lower.replace(/[^a-z0-9]/g, '_');
     }
 
+    const PROVIDER_TIER_INFO = {
+      gemini: { status: '100% Gratis Tanpa CC', isFreeNoCC: true },
+      groq: { status: '100% Gratis Tanpa CC', isFreeNoCC: true },
+      openrouter: { status: '100% Gratis Tanpa CC', isFreeNoCC: true },
+      github: { status: '100% Gratis Tanpa CC (PAT)', isFreeNoCC: true },
+      ollama: { status: '100% Offline Lokal', isFreeNoCC: true },
+      daemon_9router: { status: '100% Offline Port 20128', isFreeNoCC: true },
+      cerebras: { status: 'Perlu Kartu Kredit', isFreeNoCC: false, badgeClass: 'text-amber-600 dark:text-amber-400' },
+      sambanova: { status: 'Perlu Form Billing', isFreeNoCC: false, badgeClass: 'text-amber-600 dark:text-amber-400' },
+      together: { status: 'Perlu Saldo / Billing', isFreeNoCC: false, badgeClass: 'text-amber-600 dark:text-amber-400' },
+      mistral: { status: 'Perlu Kartu Kredit', isFreeNoCC: false, badgeClass: 'text-amber-600 dark:text-amber-400' },
+      deepseek: { status: 'Perlu Saldo Aktif', isFreeNoCC: false, badgeClass: 'text-blue-600 dark:text-blue-400' },
+      cohere: { status: 'Trial 1.000 Call/Bln', isFreeNoCC: false, badgeClass: 'text-teal-600 dark:text-teal-400' },
+      nvidia: { status: 'Dev Credits 1.000 Call', isFreeNoCC: false, badgeClass: 'text-emerald-600 dark:text-emerald-400' },
+      zai: { status: 'Free Tier (Tanpa CC)', isFreeNoCC: false, badgeClass: 'text-cyan-600 dark:text-cyan-400' },
+      cloudflare: { status: 'Free Edge 10k/Hari', isFreeNoCC: false, badgeClass: 'text-amber-600 dark:text-amber-400' },
+      fireworks: { status: 'Trial $1 Credits', isFreeNoCC: false, badgeClass: 'text-rose-600 dark:text-rose-400' }
+    };
+
     const PROVIDER_SAMPLE_META = {
-      gemini: { name: 'Google Gemini', note: '1.500 req/hari • 1M Context Free', sample: 'AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
-      groq: { name: 'Groq Cloud', note: 'Ultra-fast 300+ t/s • Free Tier', sample: 'gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
-      openrouter: { name: 'OpenRouter (Free)', note: 'Akses model Llama & Mistral Gratis (:free)', sample: 'sk-or-v1-xxxxxxxxxxxxxxxx' },
-      cerebras: { name: 'Cerebras', note: 'Inference ultra-cepat gratis • 1.800+ t/s', sample: 'csk_xxxxxxxxxxxxxxxx' },
-      deepseek: { name: 'DeepSeek', note: 'Reasoning Canggih / Free Credits', sample: 'sk_deepseek_xxxxxxxx' },
-      mistral: { name: 'Mistral AI', note: 'La Plateforme Free Tier • 1 req/detik', sample: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
-      github: { name: 'GitHub Models', note: 'Akses GPT-4o & Claude 3.5 Sonnet Free via PAT', sample: 'ghp_xxxxxxxxxxxxxxxxxxxx' },
-      cohere: { name: 'Cohere', note: 'Command R / R+ • Trial 1.000 Call/Bulan', sample: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
-      together: { name: 'Together AI', note: '100+ Model Open Source • $5 Free Credits', sample: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
-      fireworks: { name: 'Fireworks AI', note: 'Fast Inference • $1 Free Credits', sample: 'fw_xxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
-      sambanova: { name: 'SambaNova', note: 'Fast Inference • Llama 3.1 70B Free', sample: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' },
-      cloudflare: { name: 'Cloudflare Workers AI', note: '10.000 neurons/hari gratis edge', sample: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
-      zai: { name: 'Z.ai (Zhipu)', note: 'GLM-4-Flash Free Tier • Akurasi Tinggi', sample: 'xxxxxxxx.xxxxxxxx' },
-      ollama: { name: 'Ollama Local Host', note: 'Model lokal offline tanpa internet (http://localhost:11434)', sample: 'http://localhost:11434' }
+      gemini: { name: 'Google Gemini', note: '100% Gratis Tanpa Kartu Kredit • 1.500 req/hari', sample: 'AIzaSyAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      groq: { name: 'Groq Cloud', note: '100% Gratis Tanpa Kartu Kredit • Ultra-fast 300+ t/s', sample: 'gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      openrouter: { name: 'OpenRouter (Free)', note: '100% Gratis Tanpa Kartu Kredit • Dynamic Free Router', sample: 'sk-or-v1-xxxxxxxxxxxxxxxx' },
+      github: { name: 'GitHub Models', note: '100% Gratis Tanpa Kartu Kredit • Akses GPT-4o-mini via PAT', sample: 'ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      cerebras: { name: 'Cerebras', note: 'Inference ultra-cepat • Catatan: Memerlukan kartu kredit di akun', sample: 'csk_xxxxxxxxxxxxxxxx' },
+      deepseek: { name: 'DeepSeek', note: 'Reasoning Canggih • Catatan: Memerlukan saldo akun aktif', sample: 'sk-deepseek_xxxxxxxx' },
+      mistral: { name: 'Mistral AI', note: 'La Plateforme • Catatan: Memerlukan nomor HP/kartu kredit', sample: 'mis_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      cohere: { name: 'Cohere', note: 'Trial 1.000 Call/Bulan • Tanpa Kartu Kredit', sample: 'coh_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      together: { name: 'Together AI', note: '100+ Model • Catatan: Memerlukan verifikasi billing/saldo', sample: 'tog_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      fireworks: { name: 'Fireworks AI', note: 'Fast Inference • $1 Uji Coba Gratis', sample: 'fw_xxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      sambanova: { name: 'SambaNova', note: 'Fast Inference • Catatan: Memerlukan pengisian form billing', sample: 'samba_xxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      cloudflare: { name: 'Cloudflare Workers AI', note: '10.000 neurons/hari gratis edge', sample: 'cf_api_xxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      zai: { name: 'Z.ai (Zhipu)', note: 'GLM-4-Flash Free Tier • Akurasi Tinggi Tanpa CC', sample: 'zai_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' },
+      ollama: { name: 'Ollama Local Host', note: '100% Offline Lokal tanpa internet', sample: 'http://localhost:11434' },
+      daemon_9router: { name: '9Router Local Daemon', note: '100% Offline Port 20128 di Laptop', sample: 'http://localhost:20128/v1' }
     };
 
     function openConfigureApiKey(name, sampleKey, note) {
@@ -3425,6 +3476,18 @@
           onProviderSelectChanged('cerebras');
           return;
         }
+      } else if (val.startsWith('ghp_') || val.startsWith('github_pat_')) {
+        if (select && select.value !== 'github') {
+          select.value = 'github';
+          onProviderSelectChanged('github');
+          return;
+        }
+      } else if (val.startsWith('nvapi-')) {
+        if (select && select.value !== 'nvidia') {
+          select.value = 'nvidia';
+          onProviderSelectChanged('nvidia');
+          return;
+        }
       }
 
       const currentId = box.dataset.providerId || 'gemini';
@@ -3445,6 +3508,7 @@
         const name = match[1];
         const id = normalizeProviderKeyId(name);
         const key = localStorage.getItem('noteroute_key_' + id);
+        const tier = PROVIDER_TIER_INFO[id] || { status: 'Free Tier', isFreeNoCC: false };
         
         let badgeSpan = card.querySelector('.provider-key-status-badge');
         if (!badgeSpan) {
@@ -3458,11 +3522,16 @@
         if (badgeSpan) {
           if (key && key.trim()) {
             badgeSpan.className = 'provider-key-status-badge text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1';
-            badgeSpan.innerHTML = '<i class="fa-solid fa-circle-check text-[9px]"></i><span>Terpasang</span>';
+            badgeSpan.innerHTML = '<i class="fa-solid fa-circle-check text-[9px]"></i><span>Terpasang &amp; Siap</span>';
             card.classList.add('border-emerald-500/50');
           } else {
-            badgeSpan.className = 'provider-key-status-badge text-[10px] text-[var(--nlm-text-tertiary)]';
-            badgeSpan.textContent = 'Free Tier';
+            if (tier.isFreeNoCC) {
+              badgeSpan.className = 'provider-key-status-badge text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1';
+              badgeSpan.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span><span>' + tier.status + '</span>';
+            } else {
+              badgeSpan.className = 'provider-key-status-badge text-[10px] font-semibold ' + (tier.badgeClass || 'text-[var(--nlm-text-tertiary)]');
+              badgeSpan.textContent = tier.status;
+            }
             card.classList.remove('border-emerald-500/50');
           }
         }
@@ -3495,41 +3564,96 @@
       const startTime = Date.now();
       try {
         let detailMsg = '';
+
+        // 1. Google Gemini (Support stable v1 and v1beta models with auto-fallback)
         if (id === 'gemini') {
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(key)}`;
-          const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: 'ping' }] }] })
-          });
-          if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            throw new Error(err.error?.message || `HTTP ${res.status}`);
+          const candidateEndpoints = [
+            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(key)}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${encodeURIComponent(key)}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`,
+            `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${encodeURIComponent(key)}`
+          ];
+          let geminiOk = false;
+          let lastErr = null;
+          for (const url of candidateEndpoints) {
+            try {
+              const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: 'ping' }] }] })
+              });
+              if (res.ok) {
+                geminiOk = true;
+                const matchModel = url.match(/models\/([^:]+)/);
+                detailMsg = `Google Gemini (${matchModel ? matchModel[1] : 'Flash'}) aktif & siap`;
+                break;
+              } else {
+                const err = await res.json().catch(() => ({}));
+                lastErr = new Error(err.error?.message || `HTTP ${res.status}`);
+              }
+            } catch (e) {
+              lastErr = e;
+            }
           }
-          detailMsg = 'Google Gemini 1.5 Flash aktif';
-        } else if (id === 'groq') {
-          const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-            body: JSON.stringify({ model: 'llama-3.3-70b-versatile', max_tokens: 5, messages: [{ role: 'user', content: 'ping' }] })
-          });
-          if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            throw new Error(err.error?.message || `HTTP ${res.status}`);
+          if (!geminiOk) throw (lastErr || new Error('Gagal menghubungi Google Gemini API'));
+        }
+
+        // 2. Groq Cloud (Free Tier model: llama-3.1-8b-instant active on 100% of accounts)
+        else if (id === 'groq') {
+          const groqModels = ['llama-3.1-8b-instant', 'llama-3.3-70b-versatile', 'llama3-8b-8192'];
+          let groqOk = false;
+          let lastErr = null;
+          for (const m of groqModels) {
+            try {
+              const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                body: JSON.stringify({ model: m, max_tokens: 5, messages: [{ role: 'user', content: 'ping' }] })
+              });
+              if (res.ok) {
+                groqOk = true;
+                detailMsg = `Groq Cloud (${m}) aktif kilat`;
+                break;
+              } else {
+                const err = await res.json().catch(() => ({}));
+                lastErr = new Error(err.error?.message || `HTTP ${res.status}`);
+              }
+            } catch (e) {
+              lastErr = e;
+            }
           }
-          detailMsg = 'Groq Llama 3.3 70B aktif';
-        } else if (id === 'openrouter') {
-          const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-            body: JSON.stringify({ model: 'meta-llama/llama-3.1-8b-instruct:free', max_tokens: 5, messages: [{ role: 'user', content: 'ping' }] })
-          });
-          if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            throw new Error(err.error?.message || `HTTP ${res.status}`);
+          if (!groqOk) throw (lastErr || new Error('Gagal menghubungi Groq API'));
+        }
+
+        // 3. OpenRouter Free (Use dynamic free-router openrouter/free)
+        else if (id === 'openrouter') {
+          const orModels = ['openrouter/free', 'google/gemma-2-9b-it:free', 'mistralai/mistral-7b-instruct:free', 'openchat/openchat-7b:free'];
+          let orOk = false;
+          let lastErr = null;
+          for (const m of orModels) {
+            try {
+              const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                body: JSON.stringify({ model: m, max_tokens: 5, messages: [{ role: 'user', content: 'ping' }] })
+              });
+              if (res.ok) {
+                orOk = true;
+                detailMsg = `OpenRouter Free (${m}) aktif`;
+                break;
+              } else {
+                const err = await res.json().catch(() => ({}));
+                lastErr = new Error(err.error?.message || `HTTP ${res.status}`);
+              }
+            } catch (e) {
+              lastErr = e;
+            }
           }
-          detailMsg = 'OpenRouter Free aktif';
-        } else if (id === 'cerebras') {
+          if (!orOk) throw (lastErr || new Error('Gagal menghubungi OpenRouter API'));
+        }
+
+        // 4. Cerebras
+        else if (id === 'cerebras') {
           const res = await fetch('https://api.cerebras.ai/v1/chat/completions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
@@ -3537,10 +3661,169 @@
           });
           if (!res.ok) {
             const err = await res.json().catch(() => ({}));
-            throw new Error(err.error?.message || `HTTP ${res.status}`);
+            const msg = err.error?.message || `HTTP ${res.status}`;
+            if (msg.toLowerCase().includes('card') || msg.toLowerCase().includes('payment')) {
+              throw new Error('Cerebras saat ini mewajibkan verifikasi kartu kredit di akun mereka.');
+            }
+            throw new Error(msg);
           }
           detailMsg = 'Cerebras Ultra-Fast aktif';
-        } else {
+        }
+
+        // 5. DeepSeek
+        else if (id === 'deepseek') {
+          const res = await fetch('https://api.deepseek.com/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 5, messages: [{ role: 'user', content: 'ping' }] })
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            const msg = err.error?.message || `HTTP ${res.status}`;
+            if (msg.toLowerCase().includes('balance') || res.status === 402) {
+              throw new Error('Insufficient Balance: Saldo akun DeepSeek kosong. Gunakan Google Gemini atau Groq yang 100% gratis.');
+            }
+            throw new Error(msg);
+          }
+          detailMsg = 'DeepSeek V3 aktif';
+        }
+
+        // 6. Cohere
+        else if (id === 'cohere') {
+          const res = await fetch('https://api.cohere.com/v2/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({
+              model: 'command-r-08-2024',
+              messages: [{ role: 'user', content: 'ping' }]
+            })
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.message || `Cohere HTTP ${res.status}`);
+          }
+          detailMsg = 'Cohere Command R aktif & siap';
+        }
+
+        // 7. NVIDIA NIM
+        else if (id === 'nvidia') {
+          const res = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({
+              model: 'meta/llama-3.1-8b-instruct',
+              max_tokens: 5,
+              messages: [{ role: 'user', content: 'ping' }]
+            })
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || `NVIDIA HTTP ${res.status}`);
+          }
+          detailMsg = 'NVIDIA NIM (Llama 3.1 8B) aktif';
+        }
+
+        // 8. Z.ai (Zhipu BigModel GLM-4-Flash)
+        else if (id === 'zai') {
+          const res = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({
+              model: 'glm-4-flash',
+              max_tokens: 5,
+              messages: [{ role: 'user', content: 'ping' }]
+            })
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || `Z.ai HTTP ${res.status}`);
+          }
+          detailMsg = 'Z.ai GLM-4-Flash aktif & 100% gratis';
+        }
+
+        // 9. GitHub Models (via GitHub PAT)
+        else if (id === 'github') {
+          const res = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({
+              model: 'gpt-4o-mini',
+              max_tokens: 5,
+              messages: [{ role: 'user', content: 'ping' }]
+            })
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || `GitHub Models HTTP ${res.status}`);
+          }
+          detailMsg = 'GitHub Models (GPT-4o-mini) aktif';
+        }
+
+        // 10. Together AI
+        else if (id === 'together') {
+          const res = await fetch('https://api.together.xyz/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({
+              model: 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo',
+              max_tokens: 5,
+              messages: [{ role: 'user', content: 'ping' }]
+            })
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || `Together AI HTTP ${res.status}`);
+          }
+          detailMsg = 'Together AI aktif';
+        }
+
+        // 11. SambaNova
+        else if (id === 'sambanova') {
+          const res = await fetch('https://api.sambanova.ai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({
+              model: 'Meta-Llama-3.1-8B-Instruct',
+              max_tokens: 5,
+              messages: [{ role: 'user', content: 'ping' }]
+            })
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || `SambaNova HTTP ${res.status}`);
+          }
+          detailMsg = 'SambaNova aktif';
+        }
+
+        // 12. Mistral AI
+        else if (id === 'mistral') {
+          const res = await fetch('https://api.mistral.ai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({
+              model: 'mistral-small-latest',
+              max_tokens: 5,
+              messages: [{ role: 'user', content: 'ping' }]
+            })
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || `Mistral HTTP ${res.status}`);
+          }
+          detailMsg = 'Mistral AI aktif';
+        }
+
+        // 13. Ollama Local Host
+        else if (id === 'ollama') {
+          const endpoint = key || 'http://localhost:11434';
+          const cleanUrl = endpoint.replace(/\/+$/, '') + '/api/tags';
+          const res = await fetch(cleanUrl);
+          if (!res.ok) throw new Error(`Ollama HTTP ${res.status}`);
+          const data = await res.json();
+          detailMsg = `Ollama Local aktif (${data.models ? data.models.length : 0} model offline)`;
+        }
+
+        else {
           detailMsg = `${id.toUpperCase()} kunci siap disimpan`;
         }
 
@@ -4199,11 +4482,12 @@
 
     const BUILTIN_PROVIDERS_MAP = {
       gemini: { id: 'gemini', name: 'Google Gemini 1.5 Flash', icon: 'fa-brands fa-google', iconColor: 'blue', desc: '1.500 req/hari • 1M Context Free' },
-      groq: { id: 'groq', name: 'Groq Cloud (Llama 3.3 70B)', icon: 'fa-solid fa-bolt', iconColor: 'orange', desc: 'Inference ultra-cepat • 300+ token/detik' },
-      daemon_9router: { id: 'daemon_9router', name: '9Router Local Daemon', icon: 'fa-solid fa-network-wired', iconColor: 'emerald', desc: '100% Offline di Port 20128 • 1 Jaringan LAN' },
-      deepseek: { id: 'deepseek', name: 'DeepSeek V3 / R1', icon: 'fa-solid fa-brain', iconColor: 'indigo', desc: 'Reasoning Canggih • Free Credits' },
-      cerebras: { id: 'cerebras', name: 'Cerebras', icon: 'fa-solid fa-microchip', iconColor: 'purple', desc: 'Inference wafer-scale ultra-cepat • 1.800+ t/s' },
+      groq: { id: 'groq', name: 'Groq Cloud (Llama 3.1 / 3.3)', icon: 'fa-solid fa-bolt', iconColor: 'orange', desc: 'Inference ultra-cepat • 300+ token/detik' },
       openrouter: { id: 'openrouter', name: 'OpenRouter (Free)', icon: 'fa-solid fa-route', iconColor: 'sky', desc: 'Akses model Llama & Mistral Gratis (:free)' },
+      github: { id: 'github', name: 'GitHub Models', icon: 'fa-brands fa-github', iconColor: 'purple', desc: 'GPT-4o-mini & Llama 3.3 • 100% Gratis via PAT' },
+      daemon_9router: { id: 'daemon_9router', name: '9Router Local Daemon', icon: 'fa-solid fa-network-wired', iconColor: 'emerald', desc: '100% Offline di Port 20128 • 1 Jaringan LAN' },
+      deepseek: { id: 'deepseek', name: 'DeepSeek V3 / R1', icon: 'fa-solid fa-brain', iconColor: 'indigo', desc: 'Reasoning Canggih • Saldo Aktif' },
+      cerebras: { id: 'cerebras', name: 'Cerebras', icon: 'fa-solid fa-microchip', iconColor: 'purple', desc: 'Inference wafer-scale • Perlu Kartu Kredit' },
       mistral: { id: 'mistral', name: 'Mistral AI', icon: 'fa-solid fa-wind', iconColor: 'amber', desc: 'Codestral & Mistral 7B • Free Tier' },
       cohere: { id: 'cohere', name: 'Cohere', icon: 'fa-solid fa-cubes', iconColor: 'teal', desc: 'Command R / R+ • Trial 1.000 Call/Bulan' },
       together: { id: 'together', name: 'Together AI', icon: 'fa-solid fa-layer-group', iconColor: 'pink', desc: '100+ Model Open Source • $5 Free' },
@@ -4394,7 +4678,7 @@
         name: "OpenRouter (Free Tier)",
         icon: "fa-solid fa-shuffle text-indigo-600",
         badge: "Free Models",
-        quota: "Model gratis: Llama 3.1 8B, Gemma 2 9B, Mistral 7B (:free)",
+        quota: "Model gratis: Dynamic openrouter/free, Llama 3.1 8B, Gemma 2 9B (:free)",
         sample: "sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         link: "https://openrouter.ai/keys",
         is9Router: false,
@@ -4403,6 +4687,21 @@
           "Klik tombol 'Create Key'.",
           "Beri nama kunci 'NoteRoute'. Batas kredit $0 tetap dapat mengakses model berlabel :free.",
           "Salin string kunci yang diawali 'sk-or-v1-...' ke NoteRoute."
+        ]
+      },
+      github: {
+        name: "GitHub Models",
+        icon: "fa-brands fa-github text-purple-600",
+        badge: "100% Gratis via PAT",
+        quota: "GPT-4o-mini & Llama 3.3 • 100% Gratis untuk Pengguna Akun GitHub",
+        sample: "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        link: "https://github.com/settings/tokens",
+        is9Router: false,
+        steps: [
+          "Buka github.com/settings/tokens (Personal access tokens -> Tokens classic).",
+          "Klik 'Generate new token (classic)'.",
+          "Beri nama 'NoteRoute AI' tanpa perlu mencentang permission khusus apapun.",
+          "Salin token yang berawalan 'ghp_...' dan tempelkan ke NoteRoute untuk menikmati GPT-4o-mini gratis tanpa kartu kredit."
         ]
       },
       mistral: {
@@ -5241,73 +5540,115 @@
 
       const id = provider.id;
 
-      // 1. Google Gemini 1.5 Flash
+      // 1. Google Gemini (Mendukung endpoint v1 stabil dan v1beta dengan auto-fallback)
       if (id === 'gemini') {
         const key = localStorage.getItem('noteroute_key_gemini');
         if (!key) throw new Error('Kunci Gemini belum diisi');
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(key)}`;
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [
-              {
-                role: 'user',
-                parts: [{ text: `${systemPrompt}\n\nPertanyaan: ${userPrompt}` }]
+        const candidateEndpoints = [
+          `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(key)}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${encodeURIComponent(key)}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`,
+          `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${encodeURIComponent(key)}`
+        ];
+        let lastErr = null;
+        for (const url of candidateEndpoints) {
+          try {
+            const res = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ role: 'user', parts: [{ text: `${systemPrompt}\n\nPertanyaan: ${userPrompt}` }] }]
+              })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (text) {
+                const matchModel = url.match(/models\/([^:]+)/);
+                return { text, providerName: `Google Gemini (${matchModel ? matchModel[1] : 'Flash'})` };
               }
-            ]
-          })
-        });
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error?.message || `Gemini status ${res.status}`);
+            } else {
+              const errData = await res.json().catch(() => ({}));
+              lastErr = new Error(errData.error?.message || `Gemini status ${res.status}`);
+            }
+          } catch (e) {
+            lastErr = e;
+          }
         }
-        const data = await res.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!text) throw new Error('Tidak ada respons dari Gemini');
-        return { text, providerName: 'Google Gemini 1.5 Flash' };
+        throw (lastErr || new Error('Tidak ada respons dari Google Gemini'));
       }
 
-      // 2. Groq Cloud
+      // 2. Groq Cloud (Prioritas model universal gratis: llama-3.1-8b-instant)
       if (id === 'groq') {
         const key = localStorage.getItem('noteroute_key_groq');
         if (!key) throw new Error('Kunci Groq belum diisi');
-        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${key}`
-          },
-          body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
-          })
-        });
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error?.message || `Groq status ${res.status}`);
+        const groqModels = ['llama-3.1-8b-instant', 'llama-3.3-70b-versatile', 'llama3-8b-8192'];
+        let lastErr = null;
+        for (const m of groqModels) {
+          try {
+            const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+              body: JSON.stringify({
+                model: m,
+                messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }]
+              })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              const text = data.choices?.[0]?.message?.content;
+              if (text) return { text, providerName: `Groq (${m})` };
+            } else {
+              const errData = await res.json().catch(() => ({}));
+              lastErr = new Error(errData.error?.message || `Groq status ${res.status}`);
+            }
+          } catch (e) {
+            lastErr = e;
+          }
         }
-        const data = await res.json();
-        const text = data.choices?.[0]?.message?.content;
-        if (!text) throw new Error('Tidak ada respons dari Groq');
-        return { text, providerName: 'Groq Cloud (Llama 3.3 70B)' };
+        throw (lastErr || new Error('Tidak ada respons dari Groq'));
       }
 
-      // 3. OpenRouter Free
+      // 3. OpenRouter Free (Menggunakan openrouter/free dynamic router)
       if (id === 'openrouter') {
         const key = localStorage.getItem('noteroute_key_openrouter');
         if (!key) throw new Error('Kunci OpenRouter belum diisi');
-        const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        const orModels = ['openrouter/free', 'google/gemma-2-9b-it:free', 'mistralai/mistral-7b-instruct:free', 'openchat/openchat-7b:free'];
+        let lastErr = null;
+        for (const m of orModels) {
+          try {
+            const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+              body: JSON.stringify({
+                model: m,
+                messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }]
+              })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              const text = data.choices?.[0]?.message?.content;
+              if (text) return { text, providerName: `OpenRouter (${m})` };
+            } else {
+              const errData = await res.json().catch(() => ({}));
+              lastErr = new Error(errData.error?.message || `OpenRouter status ${res.status}`);
+            }
+          } catch (e) {
+            lastErr = e;
+          }
+        }
+        throw (lastErr || new Error('Tidak ada respons dari OpenRouter'));
+      }
+
+      // 4. Cohere
+      if (id === 'cohere') {
+        const key = localStorage.getItem('noteroute_key_cohere');
+        if (!key) throw new Error('Kunci Cohere belum diisi');
+        const res = await fetch('https://api.cohere.com/v2/chat', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${key}`
-          },
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
           body: JSON.stringify({
-            model: 'meta-llama/llama-3.1-8b-instruct:free',
+            model: 'command-r-08-2024',
             messages: [
               { role: 'system', content: systemPrompt },
               { role: 'user', content: userPrompt }
@@ -5316,15 +5657,140 @@
         });
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error?.message || `OpenRouter status ${res.status}`);
+          throw new Error(errData.message || `Cohere status ${res.status}`);
+        }
+        const data = await res.json();
+        const text = data.message?.content?.[0]?.text;
+        if (!text) throw new Error('Tidak ada respons dari Cohere');
+        return { text, providerName: 'Cohere (Command R)' };
+      }
+
+      // 5. NVIDIA NIM
+      if (id === 'nvidia') {
+        const key = localStorage.getItem('noteroute_key_nvidia');
+        if (!key) throw new Error('Kunci NVIDIA NIM belum diisi');
+        const res = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+          body: JSON.stringify({
+            model: 'meta/llama-3.1-8b-instruct',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `NVIDIA NIM status ${res.status}`);
         }
         const data = await res.json();
         const text = data.choices?.[0]?.message?.content;
-        if (!text) throw new Error('Tidak ada respons dari OpenRouter');
-        return { text, providerName: 'OpenRouter Free' };
+        if (!text) throw new Error('Tidak ada respons dari NVIDIA NIM');
+        return { text, providerName: 'NVIDIA NIM (Llama 3.1 8B)' };
       }
 
-      // 4. Cerebras
+      // 6. Z.ai (Zhipu BigModel GLM-4-Flash)
+      if (id === 'zai') {
+        const key = localStorage.getItem('noteroute_key_zai');
+        if (!key) throw new Error('Kunci Z.ai belum diisi');
+        const res = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+          body: JSON.stringify({
+            model: 'glm-4-flash',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `Z.ai status ${res.status}`);
+        }
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content;
+        if (!text) throw new Error('Tidak ada respons dari Z.ai');
+        return { text, providerName: 'Z.ai (GLM-4-Flash)' };
+      }
+
+      // 7. GitHub Models (via GitHub PAT)
+      if (id === 'github') {
+        const key = localStorage.getItem('noteroute_key_github');
+        if (!key) throw new Error('Kunci GitHub Personal Access Token (PAT) belum diisi');
+        const res = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `GitHub Models status ${res.status}`);
+        }
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content;
+        if (!text) throw new Error('Tidak ada respons dari GitHub Models');
+        return { text, providerName: 'GitHub Models (GPT-4o-mini)' };
+      }
+
+      // 8. Together AI
+      if (id === 'together') {
+        const key = localStorage.getItem('noteroute_key_together');
+        if (!key) throw new Error('Kunci Together AI belum diisi');
+        const res = await fetch('https://api.together.xyz/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+          body: JSON.stringify({
+            model: 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `Together AI status ${res.status}`);
+        }
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content;
+        if (!text) throw new Error('Tidak ada respons dari Together AI');
+        return { text, providerName: 'Together AI' };
+      }
+
+      // 9. SambaNova
+      if (id === 'sambanova') {
+        const key = localStorage.getItem('noteroute_key_sambanova');
+        if (!key) throw new Error('Kunci SambaNova belum diisi');
+        const res = await fetch('https://api.sambanova.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+          body: JSON.stringify({
+            model: 'Meta-Llama-3.1-8B-Instruct',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `SambaNova status ${res.status}`);
+        }
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content;
+        if (!text) throw new Error('Tidak ada respons dari SambaNova');
+        return { text, providerName: 'SambaNova' };
+      }
+
+      // 10. Cerebras
       if (id === 'cerebras') {
         const key = localStorage.getItem('noteroute_key_cerebras');
         if (!key) throw new Error('Kunci Cerebras belum diisi');
@@ -5344,7 +5810,11 @@
         });
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error?.message || `Cerebras status ${res.status}`);
+          const msg = errData.error?.message || `Cerebras status ${res.status}`;
+          if (msg.toLowerCase().includes('card') || msg.toLowerCase().includes('payment')) {
+            throw new Error('Cerebras saat ini mewajibkan verifikasi kartu kredit di akun mereka.');
+          }
+          throw new Error(msg);
         }
         const data = await res.json();
         const text = data.choices?.[0]?.message?.content;
@@ -5352,7 +5822,7 @@
         return { text, providerName: 'Cerebras Ultra-Fast' };
       }
 
-      // 5. DeepSeek
+      // 11. DeepSeek
       if (id === 'deepseek') {
         const key = localStorage.getItem('noteroute_key_deepseek');
         if (!key) throw new Error('Kunci DeepSeek belum diisi');
@@ -5372,7 +5842,11 @@
         });
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error?.message || `DeepSeek status ${res.status}`);
+          const msg = errData.error?.message || `DeepSeek status ${res.status}`;
+          if (msg.toLowerCase().includes('balance') || res.status === 402) {
+            throw new Error('Insufficient Balance: Saldo akun DeepSeek kosong. Gunakan Google Gemini atau Groq yang 100% gratis.');
+          }
+          throw new Error(msg);
         }
         const data = await res.json();
         const text = data.choices?.[0]?.message?.content;
@@ -5380,29 +5854,7 @@
         return { text, providerName: 'DeepSeek V3' };
       }
 
-      // 6. 9Router Local Daemon
-      if (id === 'daemon_9router') {
-        const endpoint = localStorage.getItem('noteroute_key_daemon_9router') || 'http://localhost:20128/v1';
-        const cleanUrl = endpoint.replace(/\/+$/, '') + '/chat/completions';
-        const res = await fetch(cleanUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'default',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
-          })
-        });
-        if (!res.ok) throw new Error(`9Router status ${res.status}`);
-        const data = await res.json();
-        const text = data.choices?.[0]?.message?.content || data.response;
-        if (!text) throw new Error('Tidak ada respons dari 9Router Daemon');
-        return { text, providerName: '9Router Local Daemon (Port 20128)' };
-      }
-
-      // 7. Mistral AI
+      // 12. Mistral AI
       if (id === 'mistral') {
         const key = localStorage.getItem('noteroute_key_mistral');
         if (!key) throw new Error('Kunci Mistral AI belum diisi');
@@ -5427,7 +5879,54 @@
         return { text, providerName: 'Mistral AI' };
       }
 
-      // 8. Ollama Local Host (Offline)
+      // 13. Fireworks AI
+      if (id === 'fireworks') {
+        const key = localStorage.getItem('noteroute_key_fireworks');
+        if (!key) throw new Error('Kunci Fireworks AI belum diisi');
+        const res = await fetch('https://api.fireworks.ai/inference/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+          body: JSON.stringify({
+            model: 'accounts/fireworks/models/llama-v3p1-8b-instruct',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `Fireworks status ${res.status}`);
+        }
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content;
+        if (!text) throw new Error('Tidak ada respons dari Fireworks AI');
+        return { text, providerName: 'Fireworks AI' };
+      }
+
+      // 14. 9Router Local Daemon
+      if (id === 'daemon_9router') {
+        const endpoint = localStorage.getItem('noteroute_key_daemon_9router') || 'http://localhost:20128/v1';
+        const cleanUrl = endpoint.replace(/\/+$/, '') + '/chat/completions';
+        const res = await fetch(cleanUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'default',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) throw new Error(`9Router status ${res.status}`);
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content || data.response;
+        if (!text) throw new Error('Tidak ada respons dari 9Router Daemon');
+        return { text, providerName: '9Router Local Daemon (Port 20128)' };
+      }
+
+      // 15. Ollama Local Host (Offline)
       if (id === 'ollama') {
         const endpoint = localStorage.getItem('noteroute_key_ollama') || 'http://localhost:11434';
         const cleanUrl = endpoint.replace(/\/+$/, '') + '/api/chat';
@@ -5450,7 +5949,7 @@
         return { text, providerName: 'Ollama Local Host' };
       }
 
-      // 9. Custom BYOK Provider
+      // 16. Custom BYOK Provider
       if (provider.isCustom) {
         const rawId = provider.id.replace('custom_', '');
         const list = getCustomProviders();
