@@ -18,6 +18,18 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Auto-connect MongoDB on incoming requests (useful for serverless environments like Vercel)
+app.use(async (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    try {
+      await connectDB();
+    } catch (err) {
+      // Handled inside connectDB fallback
+    }
+  }
+  next();
+});
+
 // Health Check Endpoint (TC-11 / Section 3.A API Contract)
 const healthHandler = (req, res) => {
   const isDbConnected = mongoose.connection.readyState === 1;
