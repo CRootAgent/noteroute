@@ -76,11 +76,14 @@ app.use('/router', routerEndpoints);
 app.use('/api/auth', authRouter);
 app.use('/auth', authRouter);
 
-// Modern React Web Application Serving at Root (/)
-const webDistPath = path.join(__dirname, '..', 'web', 'dist');
-if (fs.existsSync(webDistPath)) {
-  app.use(express.static(webDistPath));
-}
+// NoteRoute Authentic Main Application Serving at Root (/)
+const appRootPath = path.join(__dirname, '..');
+app.use(express.static(appRootPath));
+
+// Direct alias for workspace
+app.get(['/workspace', '/workspace.html'], (req, res) => {
+  res.sendFile(path.join(appRootPath, 'workspace.html'));
+});
 
 // Test error trigger route for test suite
 if (process.env.NODE_ENV === 'test') {
@@ -99,16 +102,6 @@ app.use('/api/*', (req, res) => {
     error_code: 'ENDPOINT_NOT_FOUND'
   });
 });
-
-// SPA Fallback for client-side routing
-if (fs.existsSync(webDistPath)) {
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
-      return next();
-    }
-    res.sendFile(path.join(webDistPath, 'index.html'));
-  });
-}
 
 // Global Error Handler
 app.use((err, req, res, next) => {
