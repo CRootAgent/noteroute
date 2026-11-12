@@ -64,17 +64,10 @@ app.use('/router', routerEndpoints);
 app.use('/api/auth', authRouter);
 app.use('/auth', authRouter);
 
-// Static uploads / landing serving
-const landingPath = path.join(__dirname, '..', 'landing');
-app.use(express.static(landingPath));
-
-// Modern React Web Application Serving
+// Modern React Web Application Serving at Root (/)
 const webDistPath = path.join(__dirname, '..', 'web', 'dist');
 if (fs.existsSync(webDistPath)) {
-  app.use('/app', express.static(webDistPath));
-  app.get('/app/*', (req, res) => {
-    res.sendFile(path.join(webDistPath, 'index.html'));
-  });
+  app.use(express.static(webDistPath));
 }
 
 // Test error trigger route for test suite
@@ -94,6 +87,16 @@ app.use('/api/*', (req, res) => {
     error_code: 'ENDPOINT_NOT_FOUND'
   });
 });
+
+// SPA Fallback for client-side routing
+if (fs.existsSync(webDistPath)) {
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+      return next();
+    }
+    res.sendFile(path.join(webDistPath, 'index.html'));
+  });
+}
 
 // Global Error Handler
 app.use((err, req, res, next) => {

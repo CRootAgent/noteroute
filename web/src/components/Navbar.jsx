@@ -7,7 +7,9 @@ import {
   LogOut, 
   LogIn, 
   Layers,
-  Download
+  Download,
+  BookOpen,
+  ExternalLink
 } from 'lucide-react';
 
 export default function Navbar({ 
@@ -54,6 +56,19 @@ export default function Navbar({
 
       {/* Right Controls */}
       <div className="flex items-center space-x-3">
+        {/* Direct Link to Official Landing Page & Documentation */}
+        <a 
+          href="https://crootagent.github.io/noteroute.home/"
+          target="_blank"
+          rel="noreferrer"
+          className="hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition"
+          title="Buka Landing Page & Portal Panduan Resmi"
+        >
+          <BookOpen className="w-3.5 h-3.5 text-sky-400" />
+          <span>Panduan</span>
+          <ExternalLink className="w-3 h-3 text-slate-400" />
+        </a>
+
         {/* Direct Link to APK Download */}
         <a 
           href="https://github.com/CRootAgent/noteroute/releases/latest/download/app-release.apk"
