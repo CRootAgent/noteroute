@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.noteroute.app.R
 import com.noteroute.app.databinding.FragmentChatBinding
 import com.noteroute.app.ui.components.CitationInspectorBottomSheet
-import com.noteroute.app.ui.components.ModelSwitcherBottomSheet
 import com.noteroute.app.ui.components.SourcePickerBottomSheet
 import kotlinx.coroutines.launch
 
@@ -46,6 +45,11 @@ class ChatFragment : Fragment() {
         observeViewModel()
     }
 
+    fun clearChatHistory() {
+        viewModel.clearChat()
+        binding.scrollWelcomeBanner.visibility = View.VISIBLE
+    }
+
     private fun setupRecyclerView() {
         chatAdapter = ChatAdapter(
             onCitationClick = { citation, index ->
@@ -65,13 +69,13 @@ class ChatFragment : Fragment() {
     private fun setupListeners() {
         // Starter Prompt Buttons
         binding.btnStarterTopic.setOnClickListener {
-            sendMessage("Learn about a new topic")
+            sendMessage("Pelajari materi baru")
         }
         binding.btnStarterCreate.setOnClickListener {
-            sendMessage("Create something new")
+            sendMessage("Buat sesuatu yang baru")
         }
         binding.btnStarterProject.setOnClickListener {
-            sendMessage("Make progress on a project")
+            sendMessage("Progres proyek riset")
         }
 
         // Mode Switcher: Mode Notebook vs AI Umum

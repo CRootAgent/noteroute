@@ -4312,9 +4312,11 @@
 
     window.jscroot = { get, setInner, onClick };
 
-    const ALWAYS_DATA_API_WORKSPACES = "https://noteroute.alwaysdata.net/api/workspaces";
+    const RENDER_API_WORKSPACES = window.location.origin.includes('onrender.com') 
+      ? `${window.location.origin}/api/workspaces` 
+      : "https://noteroute-backend.onrender.com/api/workspaces";
     try {
-      get(ALWAYS_DATA_API_WORKSPACES, (res) => {
+      get(RENDER_API_WORKSPACES, (res) => {
         try {
           if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
             const localNbs = loadStoredNotebooks();

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
 
-    private var currentBaseUrl: String = Constants.BASE_URL_PRODUCTION
+    private var currentBaseUrl: String = Constants.BASE_URL_LAN_DEFAULT
     val mockInterceptor = MockInterceptor()
 
     private var okHttpClient: OkHttpClient = buildOkHttpClient()

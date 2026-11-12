@@ -99,12 +99,23 @@ npm test
 
 ---
 
-## ☁️ Panduan Deployment ke Alwaysdata (Public HTTPS)
+## ☁️ Panduan Deployment ke Render (Public HTTPS - 100% Free & No CC)
 
-1. Buka dashboard Alwaysdata di [admin.alwaysdata.com](https://admin.alwaysdata.com).
-2. Buat aplikasi baru tipe **Node.js**:
-   - **Command:** `node server.js`
-   - **Directory:** `/home/noteroute/noteroute/server`
-   - **Environment Variables:** Masukkan nilai dari file `.env`.
-3. Hubungkan domain publik HTTPS: `https://noteroute.alwaysdata.net/api`.
-4. Uji kesehatan server melalui endpoint `GET /api/health`.
+1. Buka dashboard Render di [dashboard.render.com](https://dashboard.render.com) (login dengan akun GitHub).
+2. Klik tombol **New +** > pilih **Web Service**.
+3. Hubungkan repositori GitHub `CRootAgent/noteroute`.
+4. Isi konfigurasi dasar:
+   - **Name:** `noteroute-backend`
+   - **Region:** `Singapore` (Terdekat & latensi rendah)
+   - **Root Directory:** `server`
+   - **Runtime:** `Node`
+   - **Build Command:** `npm install`
+   - **Start Command:** `node server.js`
+   - **Instance Type:** `Free` (0.1 CPU, 512 MB RAM, $0/month tanpa kartu kredit)
+5. Tambahkan **Environment Variables** (dari file `.env`):
+   - `MONGODB_URI`: Connection string MongoDB Atlas kamu
+   - `GEMINI_API_KEY`: Kunci API Google AI Studio kamu
+   - `GROQ_API_KEY`: Kunci API Groq Cloud kamu
+   - `NODE_ENV`: `production`
+6. Klik **Create Web Service**. URL publik otomatis aktif dengan SSL HTTPS: `https://noteroute-backend.onrender.com`.
+7. Uji kesehatan server melalui endpoint `GET /api/health`.

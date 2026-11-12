@@ -12,6 +12,8 @@
     <color name="emerald_light">#34D399</color>
     <color name="emerald_dark">#059669</color>
     <color name="emerald_container">#ECFDF5</color>
+    <color name="amber_light">#FBBF24</color>
+    <color name="purple_light">#C084FC</color>
 
     <!-- Neutral / Dark Base -->
     <color name="slate_950">#020617</color>

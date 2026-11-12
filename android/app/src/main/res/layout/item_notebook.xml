@@ -53,7 +53,7 @@
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                tools:text="Materi Kuliah Semester 5 • Sistem Terdistribusi" />
+                tools:text="Riset Skripsi AI • Multi-LLM Agent" />
 
             <TextView
                 android:id="@+id/tv_notebook_meta"
@@ -62,17 +62,19 @@
                 android:layout_marginTop="3dp"
                 android:textColor="@color/slate_400"
                 android:textSize="12sp"
-                tools:text="4 sumber • Barusan diedit" />
+                tools:text="0 sumber • Barusan dibuat" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="›"
-            android:textColor="@color/slate_500"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+        <!-- 3-Dots Options Menu Button -->
+        <ImageButton
+            android:id="@+id/btn_notebook_menu"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Options Menu"
+            android:src="@drawable/ic_more_vert"
+            app:tint="@color/slate_400" />
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

@@ -29,10 +29,12 @@ class MockInterceptor : Interceptor {
 
         val jsonResponse = when {
             path.endsWith("/health") -> mockHealthResponse()
+            path.endsWith("/workspaces") && request.method == "POST" -> mockCreateWorkspaceResponse()
             path.endsWith("/workspaces") -> mockWorkspacesResponse()
+            path.endsWith("/documents/upload") -> mockUploadDocumentResponse()
             path.endsWith("/documents") -> mockDocumentsResponse()
             path.contains("/download") -> return mockDownloadResponse(chain)
-            path.endsWith("/router/chat") -> mockChatResponse()
+            path.endsWith("/router/chat") -> mockChatResponse(chain)
             path.endsWith("/router/metrics") -> mockMetricsResponse()
             else -> """{"success":false,"message":"Endpoint mock not found","error_code":"NOT_FOUND"}"""
         }
@@ -59,19 +61,43 @@ class MockInterceptor : Interceptor {
     }
     """.trimIndent()
 
+    private fun mockCreateWorkspaceResponse() = """
+    {
+      "success": true,
+      "message": "Notebook berhasil dibuat",
+      "data": {
+        "id": "${System.currentTimeMillis()}",
+        "name": "Notebook Baru NoteRoute",
+        "description": "Notebook AI terhubung dokumen laptop & web",
+        "document_count": 0,
+        "created_at": "2026-11-10T10:00:00.000Z"
+      }
+    }
+    """.trimIndent()
+
+    private fun mockUploadDocumentResponse() = """
+    {
+      "success": true,
+      "message": "Berkas dari HP berhasil diunggah & tersinkronisasi",
+      "data": {
+        "id": "doc_${System.currentTimeMillis()}",
+        "workspace_id": "6727bd89f1a23b0012e84101",
+        "filename": "Dokumen_HP_Uploaded.pdf",
+        "file_size": 1024000,
+        "file_size_formatted": "1.00 MB",
+        "mime_type": "application/pdf",
+        "summary": "Dokumen berhasil diunggah dari perangkat Android.",
+        "preview_text": "Isi dokumen tersinkronisasi otomatis dengan NoteRoute web.",
+        "created_at": "2026-11-10T10:00:00.000Z"
+      }
+    }
+    """.trimIndent()
+
     private fun mockWorkspacesResponse() = """
     {
       "success": true,
       "message": "Daftar workspace berhasil diambil",
-      "data": [
-        {
-          "id": "6727bd89f1a23b0012e84101",
-          "name": "Materi Kuliah Semester 5",
-          "description": "Slide kuliah, modul praktikum, dan riset",
-          "document_count": 8,
-          "created_at": "2026-11-04T08:00:00.000Z"
-        }
-      ]
+      "data": []
     }
     """.trimIndent()
 
@@ -79,41 +105,7 @@ class MockInterceptor : Interceptor {
     {
       "success": true,
       "message": "Daftar dokumen berhasil dimuat",
-      "data": [
-        {
-          "id": "6727be01f1a23b0012e84102",
-          "workspace_id": "6727bd89f1a23b0012e84101",
-          "filename": "Slide_Bab3_Distributed_Systems.pdf",
-          "file_size": 2457600,
-          "file_size_formatted": "2.34 MB",
-          "mime_type": "application/pdf",
-          "summary": "Membahas arsitektur microservices, RPC, dan konsistensi data terdistribusi.",
-          "preview_text": "Bab 3: Sistem Terdistribusi. 1. Definisi dan Karakteristik Sistem Terdistribusi. Jaringan komputer mandiri yang tampak sebagai sistem tunggal...",
-          "created_at": "2026-11-04T08:15:00.000Z"
-        },
-        {
-          "id": "6727be15f1a23b0012e84103",
-          "workspace_id": "6727bd89f1a23b0012e84101",
-          "filename": "Catatan_Riset_LLM_Router.md",
-          "file_size": 15420,
-          "file_size_formatted": "15.06 KB",
-          "mime_type": "text/markdown",
-          "summary": "Analisis perbandingan latensi antara Gemini 1.5 Flash dan Groq Llama 3.3.",
-          "preview_text": "# Riset LLM Router\nEvaluasi penghematan token menggunakan failover cerdas...",
-          "created_at": "2026-11-04T08:30:00.000Z"
-        },
-        {
-          "id": "6727be20f1a23b0012e84104",
-          "workspace_id": "6727bd89f1a23b0012e84101",
-          "filename": "Laporan_Praktikum_Jaringan.docx",
-          "file_size": 819200,
-          "file_size_formatted": "800 KB",
-          "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "summary": "Konfigurasi subnetting VLAN dan routing OSPF multi-area.",
-          "preview_text": "BAB I PENDAHULUAN\nTopologi jaringan virtual menggunakan GNS3...",
-          "created_at": "2026-11-05T09:00:00.000Z"
-        }
-      ]
+      "data": []
     }
     """.trimIndent()
 
@@ -131,26 +123,64 @@ class MockInterceptor : Interceptor {
             .build()
     }
 
-    private fun mockChatResponse() = """
-    {
-      "success": true,
-      "message": "Inferensi sukses",
-      "data": {
-        "response_text": "Berdasarkan Slide Bab 3, kesimpulan utamanya adalah bahwa dalam sistem terdistribusi, teorema CAP menyatakan bahwa kita hanya dapat menjamin dua dari tiga sifat: Consistency, Availability, dan Partition Tolerance.",
-        "model_used": "gemini-1.5-flash",
-        "latency_ms": 482,
-        "fallback_triggered": false,
-        "citations": [
+    private fun mockChatResponse(chain: Interceptor.Chain): String {
+        val request = chain.request()
+        var prompt = ""
+        try {
+            val buffer = okio.Buffer()
+            request.body?.writeTo(buffer)
+            val bodyString = buffer.readUtf8()
+            val gson = com.google.gson.Gson()
+            val jsonObj = gson.fromJson(bodyString, com.google.gson.JsonObject::class.java)
+            prompt = jsonObj?.get("prompt")?.asString?.lowercase() ?: ""
+        } catch (e: Exception) {
+            // ignore
+        }
+
+        val responseText = when {
+            prompt.contains("halo") || prompt.contains("hi") || prompt.contains("pagi") || prompt.contains("siapa") -> {
+                "Halo! Saya NoteRoute AI Agent. Ada yang bisa saya bantu terkait materi kuliah atau dokumen notebook Anda?"
+            }
+            prompt.contains("ringkas") || prompt.contains("rangkum") || prompt.contains("singkat") -> {
+                "Berikut adalah ringkasan utama dari dokumen notebook Anda:\n\n1. Konsep Utama: Arsitektur Multi-LLM Router dan Grounded Knowledge Agent.\n2. Keunggulan: Penghematan token gratis dengan failover otomatis ke Groq/DeepSeek.\n3. Akses Lintas Perangkat: Mengambil & mengunduh berkas dari laptop langsung ke HP."
+            }
+            prompt.contains("kuis") || prompt.contains("soal") -> {
+                "Latihan Kuis dari Dokumen Notebook Anda:\n\n1. Soal: Apa fungsi utama Multi-LLM Gateway Router?\n   Kunci: Melakukan perutean cerdas dan failover otomatis saat rate limit.\n2. Soal: Berapa konteks gratis Google Gemini 1.5 Flash?\n   Kunci: 1 Juta Token."
+            }
+            prompt.isNotBlank() -> {
+                "Mengenai pertanyaan Anda, berdasarkan analisis dokumen notebook, NoteRoute mengintegrasikan sistem grounding terverifikasi dengan rujukan nomor halaman."
+            }
+            else -> {
+                "Halo! Silakan tanyakan materi atau ringkasan dari dokumen notebook Anda."
+            }
+        }
+
+        val hasCitations = prompt.contains("ringkas") || prompt.contains("soal") || prompt.contains("materi")
+        val citationsJson = if (hasCitations) """
+        [
           {
-            "doc_id": "6727be01f1a23b0012e84102",
-            "filename": "Slide_Bab3_Distributed_Systems.pdf",
-            "page": 14,
-            "snippet": "Teorema CAP membuktikan ketidakmungkinan mencapai konsistensi kuat secara bersamaan dengan ketersediaan penuh pada partisi jaringan."
+            "doc_id": "doc_101",
+            "filename": "Materi_Notebook_NoteRoute.pdf",
+            "page": 1,
+            "snippet": "NoteRoute Knowledge Agent terhubung dengan dokumen tersinkronisasi."
           }
         ]
-      }
+        """.trimIndent() else "[]"
+
+        return """
+        {
+          "success": true,
+          "message": "Inferensi sukses",
+          "data": {
+            "response_text": "$responseText",
+            "model_used": "gemini-1.5-flash",
+            "latency_ms": 320,
+            "fallback_triggered": false,
+            "citations": $citationsJson
+          }
+        }
+        """.trimIndent()
     }
-    """.trimIndent()
 
     private fun mockMetricsResponse() = """
     {

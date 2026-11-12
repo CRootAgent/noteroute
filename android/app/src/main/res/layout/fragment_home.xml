@@ -6,14 +6,14 @@
     android:layout_height="match_parent"
     android:background="#14171D">
 
-    <!-- Topbar: NoteRoute Notebook, Search, Profile Avatar A -->
+    <!-- Topbar: NoteRoute Notebook, Batch Delete, Search, Profile Avatar -->
     <LinearLayout
         android:id="@+id/layout_home_topbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="20dp"
+        android:paddingHorizontal="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
@@ -22,19 +22,29 @@
             android:layout_weight="1"
             android:text="NoteRoute Notebook"
             android:textColor="@color/white"
-            android:textSize="19sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btn_batch_delete"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Hapus Masal"
+            android:src="@drawable/ic_close"
+            app:tint="@color/slate_300" />
 
         <ImageButton
             android:id="@+id/btn_home_search"
             android:layout_width="38dp"
             android:layout_height="38dp"
+            android:layout_marginStart="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Search"
             android:src="@drawable/ic_search"
             app:tint="@color/slate_300" />
 
-        <!-- Profile Avatar Circle 'A' -->
+        <!-- Profile Avatar Circle -->
         <FrameLayout
             android:id="@+id/btn_profile_avatar"
             android:layout_width="34dp"
@@ -46,6 +56,7 @@
             android:focusable="true">
 
             <TextView
+                android:id="@+id/tv_profile_initial"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -54,6 +65,53 @@
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </FrameLayout>
+    </LinearLayout>
+
+    <!-- Expandable Search Input Bar -->
+    <LinearLayout
+        android:id="@+id/layout_home_search_bar"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_search_bar"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_home_topbar">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:contentDescription="Search Icon"
+            android:src="@drawable/ic_search"
+            app:tint="@color/slate_400" />
+
+        <EditText
+            android:id="@+id/et_home_search"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="Cari notebook kuliah / riset..."
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:paddingHorizontal="8dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/slate_500"
+            android:textSize="13sp" />
+
+        <ImageButton
+            android:id="@+id/btn_clear_home_search"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Clear Search"
+            android:src="@drawable/ic_close"
+            app:tint="@color/slate_400" />
     </LinearLayout>
 
     <!-- Notebooks RecyclerView -->
@@ -68,7 +126,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layout_home_topbar"
+        app:layout_constraintTop_toBottomOf="@id/layout_home_search_bar"
         tools:listitem="@layout/item_notebook" />
 
     <!-- Empty State -->
@@ -79,7 +137,7 @@
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btn_create_new_notebook"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layout_home_topbar">
@@ -110,36 +168,24 @@
     </LinearLayout>
 
     <!-- Bottom Floating Action Button: + Create New -->
-    <LinearLayout
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_create_new_notebook"
+        style="@style/Widget.Material3.Button"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="52dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/bg_floating_fab"
-        android:clickable="true"
+        android:backgroundTint="@color/white"
         android:elevation="8dp"
-        android:focusable="true"
-        android:gravity="center"
-        android:orientation="horizontal"
         android:paddingHorizontal="26dp"
+        android:text="Create New"
+        android:textColor="@color/slate_950"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:cornerRadius="26dp"
+        app:icon="@drawable/ic_plus"
+        app:iconTint="@color/slate_950"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:contentDescription="Plus"
-            android:src="@drawable/ic_plus" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Create New"
-            android:textColor="@color/slate_950"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

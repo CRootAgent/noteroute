@@ -1,5 +1,6 @@
 package com.noteroute.app.ui.components
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -41,7 +42,18 @@ class DocumentPreviewBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.btnClosePreview.setOnClickListener {
-            dismiss()
+            documentItem?.let { doc ->
+                val sendIntent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TITLE, doc.filename)
+                    putExtra(
+                        Intent.EXTRA_TEXT,
+                        "📄 *${doc.filename}*\n\n📌 *Ringkasan:* ${doc.summary ?: "-"}\n\n_Akses berkas lengkap di NoteRoute Cross-Device Agent_"
+                    )
+                    type = "text/plain"
+                }
+                startActivity(Intent.createChooser(sendIntent, "Bagikan Informasi Dokumen"))
+            } ?: dismiss()
         }
     }
 

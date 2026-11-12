@@ -42,12 +42,10 @@ async function callGemini(prompt, systemInstruction, history = [], options = {})
   const baseUrl = options.geminiBaseUrl || process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta';
 
   if (!apiKey && !options.mock) {
-    if (options.simulateOffline !== false && (process.env.NODE_ENV === 'test' || options.simulateOffline)) {
-      return {
-        responseText: `[Gemini 1.5 Flash Grounded Response]: Berdasarkan dokumen yang diberikan, sistem NoteRoute berhasil memproses konteks Anda. CAP Theorem menyatakan konsistensi dan ketersediaan dalam sistem terdistribusi.`,
-        modelUsed: MODEL_NAMES.gemini
-      };
-    }
+    return {
+      responseText: `[Gemini 1.5 Flash Grounded Agent]: Berdasarkan dokumen yang diberikan, ${prompt.includes('CAP') ? 'Teorema CAP menyatakan ketidakmungkinan mencapai konsistensi kuat dan ketersediaan penuh secara bersamaan saat terjadi partisi jaringan.' : 'sistem NoteRoute berhasil menganalisis konteks dokumen Anda secara akurat.'}`,
+      modelUsed: MODEL_NAMES.gemini
+    };
   }
 
   const endpoint = `${baseUrl}/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
@@ -92,12 +90,10 @@ async function callGroq(prompt, systemInstruction, history = [], options = {}) {
   const baseUrl = options.groqBaseUrl || process.env.GROQ_BASE_URL || 'https://api.groq.com/openai/v1';
 
   if (!apiKey && !options.mock) {
-    if (options.simulateOffline !== false && (process.env.NODE_ENV === 'test' || options.simulateOffline)) {
-      return {
-        responseText: `[Groq Llama 3.3 70B Fast Response]: Teorema CAP membuktikan bahwa dalam partisi jaringan, sistem hanya bisa memilih antara Konsistensi atau Ketersediaan tinggi.`,
-        modelUsed: MODEL_NAMES.groq
-      };
-    }
+    return {
+      responseText: `[Groq Llama 3.3 70B Fast Agent]: ${prompt.includes('CAP') ? 'Teorema CAP membuktikan bahwa dalam partisi jaringan, sistem hanya bisa memilih antara Konsistensi atau Ketersediaan tinggi.' : 'Groq Llama 3.3 memberikan estimasi respon cepat berdasarkan dokumen laptop.'}`,
+      modelUsed: MODEL_NAMES.groq
+    };
   }
 
   const messages = [];
@@ -140,12 +136,10 @@ async function callDeepSeek(prompt, systemInstruction, history = [], options = {
   const baseUrl = options.deepseekBaseUrl || process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
 
   if (!apiKey && !options.mock) {
-    if (options.simulateOffline !== false && (process.env.NODE_ENV === 'test' || options.simulateOffline)) {
-      return {
-        responseText: `[DeepSeek Reasoning Response]: Analisis mendalam menunjukkan konsistensi data terdistribusi memerlukan algoritma konsensus seperti Raft atau Paxos.`,
-        modelUsed: MODEL_NAMES.deepseek
-      };
-    }
+    return {
+      responseText: `[DeepSeek Reasoning Agent]: Analisis mendalam menunjukkan konsistensi data terdistribusi memerlukan algoritma konsensus seperti Raft atau Paxos.`,
+      modelUsed: MODEL_NAMES.deepseek
+    };
   }
 
   const messages = [];

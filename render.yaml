@@ -1,0 +1,28 @@
+# ==========================================
+# 🚀 NOTE-ROUTE: RENDER BLUEPRINT CONFIGURATION
+# Free Cloud Web Service Deployment (Zero Credit Card)
+# Pengembang: Ahmad Zakky Nurfauzan (NPM: 714250028)
+# ==========================================
+
+services:
+  - type: web
+    name: noteroute-backend
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false # Masukkan connection string MongoDB Atlas di Render Environment
+      - key: GEMINI_API_KEY
+        sync: false # Kunci Google Gemini 1.5 Flash (Gratis 1.500 req/hari)
+      - key: GROQ_API_KEY
+        sync: false # Kunci Groq Cloud Llama 3.3 (Gratis)
+      - key: PORT
+        value: 10000

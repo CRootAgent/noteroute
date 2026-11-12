@@ -1,6 +1,7 @@
 package com.noteroute.app.ui.explorer
 
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noteroute.app.data.model.DocumentItem
@@ -72,6 +73,32 @@ class ExplorerViewModel(
         return list.filter {
             it.filename.contains(query, ignoreCase = true) ||
                     (it.summary?.contains(query, ignoreCase = true) == true)
+        }
+    }
+
+    fun uploadDocument(context: Context, uri: Uri, workspaceId: String? = null) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            val result = repository.uploadDocument(context, uri, workspaceId)
+            result.fold(
+                onSuccess = { newDoc ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            downloadedMessage = "Berkas '${newDoc.filename}' berhasil diunggah & tersinkronisasi!"
+                        )
+                    }
+                    loadDocuments(workspaceId)
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.message ?: "Gagal mengunggah berkas"
+                        )
+                    }
+                }
+            )
         }
     }
 

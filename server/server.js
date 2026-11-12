@@ -2,11 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const { connectDB, mongoose } = require('./config/db');
 
 const workspacesRouter = require('./routes/workspaces');
 const documentsRouter = require('./routes/documents');
 const routerEndpoints = require('./routes/router');
+const authRouter = require('./routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -59,9 +61,21 @@ app.use('/documents', documentsRouter);
 app.use('/api/router', routerEndpoints);
 app.use('/router', routerEndpoints);
 
+app.use('/api/auth', authRouter);
+app.use('/auth', authRouter);
+
 // Static uploads / landing serving
 const landingPath = path.join(__dirname, '..', 'landing');
 app.use(express.static(landingPath));
+
+// Modern React Web Application Serving
+const webDistPath = path.join(__dirname, '..', 'web', 'dist');
+if (fs.existsSync(webDistPath)) {
+  app.use('/app', express.static(webDistPath));
+  app.get('/app/*', (req, res) => {
+    res.sendFile(path.join(webDistPath, 'index.html'));
+  });
+}
 
 // Test error trigger route for test suite
 if (process.env.NODE_ENV === 'test') {

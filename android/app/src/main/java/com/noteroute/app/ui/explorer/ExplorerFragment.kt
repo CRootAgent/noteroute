@@ -1,5 +1,6 @@
 package com.noteroute.app.ui.explorer
 
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -26,6 +28,15 @@ class ExplorerFragment : Fragment() {
     private lateinit var documentAdapter: DocumentAdapter
 
     private var currentSortOrder: Int = 0 // 0: Nama, 1: Ukuran, 2: Tanggal
+
+    private val filePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            Toast.makeText(requireContext(), "Mengunggah berkas dari HP...", Toast.LENGTH_SHORT).show()
+            viewModel.uploadDocument(requireContext(), it)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -93,7 +104,7 @@ class ExplorerFragment : Fragment() {
         }
 
         binding.btnAddSource.setOnClickListener {
-            Toast.makeText(requireContext(), "Sinkronkan berkas baru dari folder laptop...", Toast.LENGTH_SHORT).show()
+            filePickerLauncher.launch("*/*")
         }
 
         binding.etSearch.addTextChangedListener(object : TextWatcher {
@@ -120,7 +131,7 @@ class ExplorerFragment : Fragment() {
                     documentAdapter.setDownloadingId(state.downloadingDocId)
 
                     val count = state.filteredDocuments.size
-                    binding.tvSourcesCountSubtitle.text = "$count berkas tersinkronisasi LocalTunnel"
+                    binding.tvSourcesCountSubtitle.text = "$count berkas tersinkronisasi"
 
                     val isEmpty = !state.isLoading && state.filteredDocuments.isEmpty()
                     binding.layoutEmpty.visibility = if (isEmpty) View.VISIBLE else View.GONE

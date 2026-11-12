@@ -1,11 +1,11 @@
 package com.noteroute.app.utils
 
 object Constants {
-    // Official Base URLs (Updated to LocalTunnel)
-    const val BASE_URL_LOCALTUNNEL = "https://noteroute-zakky.loca.lt/api/"
-    const val BASE_URL_PRODUCTION = BASE_URL_LOCALTUNNEL
+    // Official Base URLs
+    const val BASE_URL_RENDER_DEFAULT = "https://noteroute-backend.onrender.com/api/"
+    const val BASE_URL_PRODUCTION = BASE_URL_RENDER_DEFAULT
+    const val BASE_URL_LAN_DEFAULT = "http://192.168.0.102:3000/api/"
     const val BASE_URL_EMULATOR = "http://10.0.2.2:3000/api/"
-    const val BASE_URL_LAN_DEFAULT = "http://192.168.1.100:3000/api/"
 
     // LocalTunnel Specific IP Confirmation & Bypass Header
     const val LOCALTUNNEL_BYPASS_IP = "103.139.10.180"

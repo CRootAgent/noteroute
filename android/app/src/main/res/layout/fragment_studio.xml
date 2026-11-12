@@ -12,23 +12,23 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Header: Generate new -->
+        <!-- Header: Studio AI Tools -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="GENERATE NEW"
+            android:text="STUDIO AI TOOLS"
             android:textColor="@color/slate_400"
             android:textSize="11sp"
             android:textStyle="bold" />
 
-        <!-- 2-Column Grid of Studio Generation Tools -->
+        <!-- 2-Column Grid of 5 Official Studio AI Tools -->
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:alignmentMode="alignMargins"
             android:columnCount="2"
-            android:rowCount="4">
+            android:rowCount="3">
 
             <!-- 1. Audio Overview -->
             <com.google.android.material.card.MaterialCardView
@@ -47,13 +47,14 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="12dp">
+                    android:padding="14dp">
 
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:contentDescription="Audio"
-                        android:src="@drawable/ic_headphones" />
+                        android:contentDescription="Audio Overview"
+                        android:src="@drawable/ic_headphones"
+                        app:tint="#3B82F6" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -66,9 +67,9 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- 2. Video Overview -->
+            <!-- 2. Panduan Belajar -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_studio_video"
+                android:id="@+id/card_studio_study_guide"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
@@ -83,176 +84,103 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="12dp">
+                    android:padding="14dp">
 
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:contentDescription="Video"
-                        android:src="@drawable/ic_video" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Video Overview"
-                        android:textColor="@color/slate_200"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- 3. Slide Deck -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_studio_slide"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                app:cardBackgroundColor="#1E232B"
-                app:cardCornerRadius="16dp"
-                app:strokeColor="#2E343E"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:contentDescription="Slide"
-                        android:src="@drawable/ic_folder"
-                        app:tint="#F59E0B" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Slide Deck"
-                        android:textColor="@color/slate_200"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- 4. Flashcards -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_studio_flashcards"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                app:cardBackgroundColor="#1E232B"
-                app:cardCornerRadius="16dp"
-                app:strokeColor="#2E343E"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:contentDescription="Flashcards"
-                        android:src="@drawable/ic_sparkles"
-                        app:tint="#EAB308" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Flashcards"
-                        android:textColor="@color/slate_200"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- 5. Quiz -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_studio_quiz"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                app:cardBackgroundColor="#1E232B"
-                app:cardCornerRadius="16dp"
-                app:strokeColor="#2E343E"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:contentDescription="Quiz"
-                        android:src="@drawable/ic_citation"
-                        app:tint="#3B82F6" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Quiz"
-                        android:textColor="@color/slate_200"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- 6. Infographic -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_studio_infographic"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                app:cardBackgroundColor="#1E232B"
-                app:cardCornerRadius="16dp"
-                app:strokeColor="#2E343E"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:contentDescription="Infographic"
-                        android:src="@drawable/ic_server"
+                        android:contentDescription="Panduan Belajar"
+                        android:src="@drawable/ic_book"
                         app:tint="#10B981" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Infographic"
+                        android:text="Panduan Belajar"
                         android:textColor="@color/slate_200"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- 7. Reports (Span 2) -->
+            <!-- 3. Briefing Docs -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_studio_reports"
+                android:id="@+id/card_studio_briefing_docs"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                app:cardBackgroundColor="#1E232B"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="#2E343E"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="14dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="Briefing Docs"
+                        android:src="@drawable/ic_citation"
+                        app:tint="#F59E0B" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Briefing Docs"
+                        android:textColor="@color/slate_200"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 4. FAQ -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_studio_faq"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                app:cardBackgroundColor="#1E232B"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="#2E343E"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="14dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="FAQ"
+                        android:src="@drawable/ic_sparkles"
+                        app:tint="#8B5CF6" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="FAQ"
+                        android:textColor="@color/slate_200"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 5. Linimasa (Span 2) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_studio_timeline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_columnSpan="2"
@@ -267,128 +195,47 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="12dp">
+                    android:padding="14dp">
 
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:contentDescription="Reports"
-                        android:src="@drawable/ic_citation"
-                        app:tint="#06B6D4" />
+                        android:contentDescription="Linimasa"
+                        android:src="@drawable/ic_folder"
+                        app:tint="#EC4899" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Reports &amp; Executive Summary"
+                        android:text="Linimasa (Timeline)"
                         android:textColor="@color/slate_200"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
         </GridLayout>
 
         <!-- Section 2: Catatan Studio Output -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="CATATAN STUDIO (2)"
+            android:layout_marginTop="24dp"
+            android:text="CATATAN STUDIO AI"
             android:textColor="@color/slate_400"
             android:textSize="11sp"
             android:textStyle="bold" />
 
-        <!-- Studio Note 1: Linimasa Materi -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:cardBackgroundColor="#1E232C"
-            app:cardCornerRadius="16dp"
-            app:strokeColor="#2E343E"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="14dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Linimasa Materi"
-                        android:textColor="@color/white"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Baru"
-                        android:textColor="@color/slate_400"
-                        android:textSize="10sp" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Kronologi perkembangan sistem terdistribusi dari RPC (1984) hingga Google Spanner (2012)."
-                    android:textColor="@color/slate_400"
-                    android:textSize="12sp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Studio Note 2: FAQ Ujian Bab 3 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:cardBackgroundColor="#1E232C"
-            app:cardCornerRadius="16dp"
-            app:strokeColor="#2E343E"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="14dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="FAQ Ujian Bab 3"
-                    android:textColor="@color/white"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="1. Mengapa konsistensi data penting dalam partisi jaringan? Pembahasan mendalam Teorema CAP."
-                    android:textColor="@color/slate_400"
-                    android:textSize="12sp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Bottom Placeholder Note -->
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_studio_empty_hint"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="32dp"
-            android:text="Studio output will be saved here."
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="40dp"
+            android:gravity="center"
+            android:lineSpacingExtra="2dp"
+            android:text="Pilih salah satu alat Studio AI di atas untuk menghasilkan catatan otomatis dari dokumen notebook Anda."
             android:textColor="@color/slate_500"
             android:textSize="12sp" />
 

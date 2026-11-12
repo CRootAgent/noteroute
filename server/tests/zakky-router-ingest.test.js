@@ -538,4 +538,107 @@ describe('🔬 Unit Tests: documentParser & llmRouterService', () => {
     expect(metrics.total_queries).toBeGreaterThan(0);
     expect(metrics.prompt_tokens_total).toBeGreaterThan(0);
   });
+
+  describe('🔐 Modul A: User Authentication & Profile (MongoDB Real)', () => {
+    test('POST /api/auth/register - Registrasi user baru ke MongoDB', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .send({
+          name: 'Ahmad Zakky',
+          email: 'zakky@example.com',
+          password: 'Password123!'
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.name).toBe('Ahmad Zakky');
+      expect(res.body.data.email).toBe('zakky@example.com');
+      expect(res.body.data.id).toBeDefined();
+    });
+
+    test('POST /api/auth/register - Tolak duplikasi email', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .send({
+          name: 'Ahmad Zakky Duplicate',
+          email: 'zakky@example.com',
+          password: 'Password123!'
+        });
+
+      expect(res.status).toBe(409);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error_code).toBe('EMAIL_ALREADY_EXISTS');
+    });
+
+    test('POST /api/auth/register - Validasi input kosong', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .send({
+          name: '',
+          email: ''
+        });
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error_code).toBe('VALIDATION_ERROR');
+    });
+
+    test('POST /api/auth/login - Login sukses dengan kredensial valid', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'zakky@example.com',
+          password: 'Password123!'
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.email).toBe('zakky@example.com');
+    });
+
+    test('POST /api/auth/login - Tolak password salah', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'zakky@example.com',
+          password: 'SalahPassword123'
+        });
+
+      expect(res.status).toBe(401);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error_code).toBe('INVALID_CREDENTIALS');
+    });
+
+    test('POST /api/auth/login - Tolak user tidak terdaftar', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'belumdaftar@example.com',
+          password: 'Password123'
+        });
+
+      expect(res.status).toBe(401);
+      expect(res.body.success).toBe(false);
+    });
+
+    test('POST /api/auth/login - Validasi input login kosong', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .send({});
+
+      expect(res.status).toBe(400);
+      expect(res.body.error_code).toBe('VALIDATION_ERROR');
+    });
+
+    test('GET /api/auth/me - Cek status profil', async () => {
+      const resValid = await request(app)
+        .get('/api/auth/me?email=zakky@example.com');
+      expect(resValid.status).toBe(200);
+      expect(resValid.body.data.email).toBe('zakky@example.com');
+
+      const resGuest = await request(app).get('/api/auth/me');
+      expect(resGuest.status).toBe(200);
+      expect(resGuest.body.data.status).toBe('guest');
+    });
+  });
 });
