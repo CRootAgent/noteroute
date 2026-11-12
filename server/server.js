@@ -48,7 +48,7 @@ app.get('/health', healthHandler);
 app.get('/api/health', healthHandler);
 
 // API Root Index
-app.get(['/', '/api'], (req, res) => {
+app.get('/api', (req, res) => {
   return res.status(200).json({
     success: true,
     message: 'NoteRoute Multi-LLM Gateway & Knowledge Agent API v1.0.0',
