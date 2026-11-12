@@ -10,9 +10,8 @@ services:
     runtime: node
     plan: free
     region: singapore
-    rootDir: server
-    buildCommand: npm install
-    startCommand: node server.js
+    buildCommand: npm --prefix web install && npm --prefix web run build && npm --prefix server install
+    startCommand: node server/server.js
     healthCheckPath: /health
     autoDeploy: true
     envVars:
