@@ -270,11 +270,20 @@
 
     /* Text Selection Enable (Memastikan jawaban AI, teks obrolan & materi dapat diseleksi manual) */
     #nlm-chat-scroll,
+    #nlm-chat-scroll *,
     #chat-messages-container,
+    #chat-messages-container *,
+    .ai-response-container,
+    .ai-response-container *,
+    .user-turn-block span,
+    .ai-turn-block p,
+    .ai-turn-block span,
+    .ai-turn-block li,
+    .ai-turn-block code,
+    .ai-turn-block pre,
     .nlm-rendered-markdown,
     .nlm-rendered-markdown *,
-    .select-text,
-    p, span, li, pre, code, blockquote, .prose {
+    .select-text {
       user-select: text !important;
       -webkit-user-select: text !important;
     }
@@ -1955,7 +1964,7 @@
                   </div>
                   <span class="priority-rank-badge w-6 h-6 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center shrink-0">2</span>
                   <div class="min-w-0">
-                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">Groq Cloud (Llama 3.3 70B)</div>
+                    <div class="font-bold text-xs text-[var(--nlm-text-primary)] truncate">Groq Cloud (Llama 3.1 8B)</div>
                     <div class="text-[10px] text-[var(--nlm-text-tertiary)] truncate">Respon kilat 300+ token/s &bull; Failover otomatis bila 429</div>
                   </div>
                 </div>
@@ -3690,7 +3699,7 @@
 
         // 2. Groq Cloud (Free Tier model: llama-3.1-8b-instant active on 100% of accounts)
         else if (id === 'groq') {
-          const groqModels = ['llama-3.1-8b-instant', 'llama3-8b-8192', 'qwen-2.5-32b', 'llama-3.3-70b-versatile'];
+          const groqModels = ['llama-3.1-8b-instant', 'llama3-8b-8192', 'qwen-2.5-32b'];
           try {
             const listRes = await fetch('https://api.groq.com/openai/v1/models', {
               headers: { 'Authorization': `Bearer ${key}` }
@@ -3732,9 +3741,9 @@
           if (!groqOk) throw (lastErr || new Error('Gagal menghubungi Groq API'));
         }
 
-        // 3. OpenRouter Free (Use dynamic free-router openrouter/free)
+        // 3. OpenRouter Free (Use direct :free tagged models - openrouter/free is deprecated)
         else if (id === 'openrouter') {
-          const orModels = ['openrouter/free', 'google/gemma-2-9b-it:free', 'mistralai/mistral-7b-instruct:free', 'deepseek/deepseek-r1:free', 'openchat/openchat-7b:free'];
+          const orModels = ['meta-llama/llama-3.1-8b-instruct:free', 'google/gemma-2-9b-it:free', 'mistralai/mistral-7b-instruct:free', 'deepseek/deepseek-r1:free', 'openchat/openchat-7b:free'];
           let orOk = false;
           let lastErr = null;
           for (const m of orModels) {
@@ -4735,7 +4744,7 @@
         ]
       },
       groq: {
-        name: "Groq Cloud (Llama 3.3 70B)",
+        name: "Groq Cloud (Llama 3.1 8B)",
         icon: "fa-solid fa-bolt text-orange-500",
         badge: "Ultra-Fast Free Tier",
         quota: "Inference 300+ token/detik • Kuota gratis harian",
@@ -4785,7 +4794,7 @@
         name: "OpenRouter (Free Tier)",
         icon: "fa-solid fa-shuffle text-indigo-600",
         badge: "Free Models",
-        quota: "Model gratis: Dynamic openrouter/free, Llama 3.1 8B, Gemma 2 9B (:free)",
+        quota: "Model gratis: Llama 3.1 8B, Gemma 2 9B, Mistral 7B (:free tags)",
         sample: "sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         link: "https://openrouter.ai/keys",
         is9Router: false,
@@ -5622,16 +5631,19 @@
       const sourcesText = sources.map((s, idx) => `[Dokumen ${idx + 1}: ${s.name}]`).join(', ');
       
       const hasHistory = (conversationHistory && conversationHistory.length > 0);
+      const noGreetRule = hasHistory
+        ? `\nATURAN WAJIB: Percakapan sudah berjalan. JANGAN memulai dengan salam atau perkenalan apapun ("Halo", "Hai", "Tentu!", "Baik!", dll.). Langsung jawab pertanyaannya saja.`
+        : '';
       const systemPrompt = isDoc
-        ? `Anda adalah NoteRoute AI, asisten riset dokumen cerdas. Berkas rujukan yang aktif: ${sourcesText || 'Dokumen materi kuliah'}.
-ATURAN KOMUNIKASI PENTING:
-- DILARANG mengulang perkenalan diri (seperti "Halo!", "Halo! Senang sekali bisa membantu Anda sebagai NoteRoute AI...", dll.) atau basa-basi pembuka jika percakapan sudah berlangsung.
-- Langsung berikan jawaban to-the-point, analitis, terstruktur rapi, dan akurat berdasarkan materi dokumen.
-- Gunakan bahasa Indonesia yang baik, lugas, dan profesional.`
+        ? `Anda adalah NoteRoute AI, asisten riset dokumen. Berkas rujukan aktif: ${sourcesText || 'Dokumen materi kuliah'}.
+ATURAN KOMUNIKASI:
+- DILARANG mengulang perkenalan diri atau salam pembuka jika percakapan sudah berlangsung.
+- Langsung berikan jawaban analitis, terstruktur, dan akurat berdasarkan materi dokumen.
+- Gunakan bahasa Indonesia yang lugas dan profesional.${noGreetRule}`
         : `Anda adalah NoteRoute AI, asisten AI serbaguna.
-ATURAN KOMUNIKASI PENTING:
-- DILARANG mengulang perkenalan diri (seperti "Halo!", "Saya NoteRoute AI...", dll.) atau basa-basi pembuka jika percakapan sudah berlangsung.
-- Langsung berikan jawaban to-the-point, cerdas, jelas, dan komprehensif dalam bahasa Indonesia.`;
+ATURAN KOMUNIKASI:
+- DILARANG membuka dengan salam atau perkenalan diri jika percakapan sudah berlangsung.
+- Langsung berikan jawaban cerdas, jelas, dan komprehensif dalam bahasa Indonesia.${noGreetRule}`;
 
       // Riwayat percakapan multi-turn (6 pesan terakhir sebelum giliran ini)
       const recentHistory = (conversationHistory || []).slice(-6);
@@ -5653,10 +5665,10 @@ ATURAN KOMUNIKASI PENTING:
           });
         }
       });
-      // Jika sudah ada riwayat obrolan, kirim teks pertanyaan murni tanpa memicu perkenalan ulang
+      // Selalu sertakan konteks sistem di pesan pertama agar AI tidak lupa aturan
       geminiContents.push({
         role: 'user',
-        parts: [{ text: hasHistory ? userPrompt : `${systemPrompt}\n\nPertanyaan: ${userPrompt}` }]
+        parts: [{ text: userPrompt }]
       });
 
       const id = provider.id;
@@ -5731,7 +5743,7 @@ ATURAN KOMUNIKASI PENTING:
       if (id === 'groq') {
         const key = localStorage.getItem('noteroute_key_groq');
         if (!key) throw new Error('Kunci Groq belum diisi');
-        const groqModels = ['llama-3.1-8b-instant', 'llama3-8b-8192', 'qwen-2.5-32b', 'llama-3.3-70b-versatile'];
+        const groqModels = ['llama-3.1-8b-instant', 'llama3-8b-8192', 'qwen-2.5-32b'];
         try {
           const listRes = await fetch('https://api.groq.com/openai/v1/models', {
             headers: { 'Authorization': `Bearer ${key}` }
@@ -5775,11 +5787,11 @@ ATURAN KOMUNIKASI PENTING:
         throw (lastErr || new Error('Tidak ada respons dari Groq'));
       }
 
-      // 3. OpenRouter Free (Menggunakan openrouter/free dynamic router)
+      // 3. OpenRouter Free (Menggunakan direct :free tagged models - openrouter/free deprecated)
       if (id === 'openrouter') {
         const key = localStorage.getItem('noteroute_key_openrouter');
         if (!key) throw new Error('Kunci OpenRouter belum diisi');
-        const orModels = ['openrouter/free', 'google/gemma-2-9b-it:free', 'mistralai/mistral-7b-instruct:free', 'deepseek/deepseek-r1:free', 'openchat/openchat-7b:free'];
+        const orModels = ['meta-llama/llama-3.1-8b-instruct:free', 'google/gemma-2-9b-it:free', 'mistralai/mistral-7b-instruct:free', 'deepseek/deepseek-r1:free', 'openchat/openchat-7b:free'];
         let lastErr = null;
         for (const m of orModels) {
           try {
