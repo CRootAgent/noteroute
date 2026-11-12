@@ -396,17 +396,17 @@
               </div>
               <span class="text-[11px] font-medium text-[var(--nlm-text-primary)]">Beranda</span>
             </a>
-            <a href="../docs/ui-prototype.html" class="p-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group">
+            <a href="/app" onclick="if(window.location.protocol==='file:'){this.href='../web/dist/index.html';}" class="p-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group">
               <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-base group-hover:scale-110 transition-transform">
                 <i class="fa-solid fa-book-bookmark"></i>
               </div>
               <span class="text-[11px] font-medium text-[var(--nlm-text-primary)]">Workspace</span>
             </a>
-            <a href="../docs/android.html" class="p-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group">
+            <a href="https://github.com/CRootAgent/noteroute/releases/latest/download/app-release.apk" target="_blank" class="p-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group">
               <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-base group-hover:scale-110 transition-transform">
                 <i class="fa-brands fa-android"></i>
               </div>
-              <span class="text-[11px] font-medium text-[var(--nlm-text-primary)]">Android</span>
+              <span class="text-[11px] font-medium text-[var(--nlm-text-primary)]">Android APK</span>
             </a>
           </div>
           <div class="mt-2 pt-2 border-t border-[var(--nlm-border-subtle)] space-y-2">
@@ -2422,7 +2422,7 @@
       const targetTitle = title || (found ? found.title : 'Notebook Baru');
       showToast("Membuka Notebook", targetTitle);
       setTimeout(() => {
-        window.location.href = `../docs/ui-prototype.html?id=${encodeURIComponent(targetId)}&title=${encodeURIComponent(targetTitle)}`;
+        window.location.href = window.location.protocol === 'file:' ? '../web/dist/index.html' : '/app';
       }, 350);
     }
 
@@ -2632,7 +2632,7 @@
         icon: currentSelectedCategory.icon,
         iconColor: currentSelectedCategory.color,
         createdOrder: 0,
-        targetUrl: '../docs/ui-prototype.html'
+        targetUrl: window.location.protocol === 'file:' ? '../web/dist/index.html' : '/app'
       };
 
       notebooksData.unshift(newNb);

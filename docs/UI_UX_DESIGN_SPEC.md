@@ -80,10 +80,10 @@
 
 ---
 
-## 4. CARA MENCOBA INTERACTIVE PROTOTYPE
-Buka file `noteroute/docs/ui-prototype.html` di browser Anda. Anda dapat menguji:
-1. Tombol simulasi **Desktop**, **Tablet**, dan **Mobile HP** di pojok kanan atas.
-2. Mengganti model AI melalui dropdown Model Switcher.
-3. Menekan tombol *"Ambil ke HP"* untuk melihat simulasi download manager.
-4. Menekan lencana sitasi (*Citation Badge*) untuk membuka panel cuplikan dokumen asli.
-5. Mengirimkan prompt chat pertanyaan dokumen.
+## 4. CARA MENCOBA WEB APPLICATION & INTERFACE
+Akses Web Application NoteRoute pada endpoint `/app` (atau jalankan `npm run dev` pada direktori `web/`). Anda dapat menguji:
+1. Antarmuka responsif **Desktop**, **Tablet**, dan **Mobile**.
+2. Mengganti model AI melalui komponen Model Switcher (Gemini, Groq, DeepSeek, 9Router).
+3. Mengunggah berkas PDF/DOCX/MD langsung ke backend Express & MongoDB Atlas.
+4. Menekan lencana sitasi (*Citation Badge*) untuk membuka cuplikan rujukan dokumen asli.
+5. Mengirimkan prompt chat pertanyaan dokumen yang terhubung ke live REST API.
