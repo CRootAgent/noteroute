@@ -87,9 +87,6 @@ app.use(express.static(appRootPath));
 
 // Direct alias for workspace
 app.get(['/workspace', '/workspace.html'], (req, res) => {
-  if (fs.existsSync(path.join(appRootPath, 'workspace.html'))) {
-    return res.sendFile(path.join(appRootPath, 'workspace.html'));
-  }
   if (fs.existsSync(webDistPath)) {
     return res.sendFile(path.join(webDistPath, 'index.html'));
   }

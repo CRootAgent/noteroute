@@ -17,7 +17,7 @@
     },
     {
       "src": "/workspace",
-      "dest": "/workspace.html"
+      "dest": "/index.html"
     },
     {
       "handle": "filesystem"

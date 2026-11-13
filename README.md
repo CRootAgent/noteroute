@@ -17,13 +17,13 @@
 
 ## 🌐 Ekosistem Repositori
 1. **`noteroute` (Repo Ini - Aplikasi Utama)**:
-   - Frontend Aplikasi Web Utama NoteRoute: Beranda Notebook (`index.html`) & Workspace 3-Kolom (`workspace.html`)
+   - Frontend Aplikasi Web Utama NoteRoute: React 18 + Vite + Tailwind CSS (`web/`, SPA built to `index.html` & `assets/`)
    - Backend Express.js REST API & Multi-LLM Gateway Router (`server/`)
    - Aplikasi Android Native Kotlin (`android/`)
    - Deployment Cloud Render (`render.yaml`) & GitHub Actions Auto-Tag Release (`.github/workflows/`)
    - GitHub Pages Web App: [crootagent.github.io/noteroute](https://crootagent.github.io/noteroute/)
 2. **[`noteroute.home`](https://github.com/CRootAgent/noteroute.home) (Landing Page & Portal Resmi)**:
-   - Portal publik & dokumentasi panduan setup (GCP, Render, MongoDB Atlas)
+   - Portal publik & dokumentasi panduan setup (GCP, MongoDB Atlas, OmniRoute/9Router)
    - Akses langsung ke aplikasi utama dan tombol unduh APK resmi dari GitHub Releases.
    - Hosted di GitHub Pages: [crootagent.github.io/noteroute.home](https://crootagent.github.io/noteroute.home/)
 
@@ -32,8 +32,9 @@
 ## 📂 Struktur Repositori Aplikasi Utama
 ```
 noteroute/
-├── index.html          # 🌐 Beranda Notebook Utama (NotebookLM-style Dashboard)
-├── workspace.html      # 🔬 Workspace 3-Kolom (Sumber Dokumen, Multi-LLM Chat & Studio)
+├── index.html          # 🌐 Entry Point SPA (React 18 + Vite + Tailwind CSS)
+├── assets/             # 🎨 Asset Terkompilasi Web App
+├── web/                # ⚛️ Source Code React 18 + Vite + Tailwind CSS Modular
 ├── server/             # 🖥️ Modul A: Express.js REST API, MongoDB Mongoose, AI Router, 35 Tests (87%+ Coverage)
 ├── android/            # 📱 Modul B: Native Android Kotlin Client (NotebookLM-style, Auto-Release)
 ├── render.yaml         # ☁️ Konfigurasi Cloud Web Service Render (Free Tier, Singapore)

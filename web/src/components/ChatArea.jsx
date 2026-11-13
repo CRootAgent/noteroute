@@ -108,10 +108,31 @@ export default function ChatArea({
             <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
               Tanyakan apa saja seputar berkas rujukan Anda. AI akan merespons dengan sitasi kutipan transparan nomor halaman dan dokumen aslinya.
             </p>
-            {documents.length === 0 && (
+            {documents.length === 0 ? (
               <div className="mt-4 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[11px] flex items-center space-x-1.5">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 <span>Belum ada dokumen yang diunggah di ruang kerja ini.</span>
+              </div>
+            ) : (
+              <div className="mt-5 w-full grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
+                {[
+                  { title: 'Ringkasan Eksekutif', prompt: 'Buatkan ringkasan eksekutif dan poin-poin penting dari berkas materi ini.' },
+                  { title: 'Konsep Kunci', prompt: 'Jelaskan konsep-konsep kunci dan glosarium istilah teknis yang dibahas di dokumen ini.' },
+                  { title: 'Latihan Soal & Kuis', prompt: 'Buatkan 3 soal latihan pemahaman materi beserta kunci pembahasannya berdasarkan dokumen.' },
+                  { title: 'Analisis Komparasi', prompt: 'Bandingkan pendekatan atau teori yang dijelaskan dalam materi ini.' },
+                ].map((sug, i) => (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      setInputPrompt(sug.prompt);
+                      onSendMessage(sug.prompt, selectedModel);
+                    }}
+                    className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500/40 text-left transition group cursor-pointer"
+                  >
+                    <div className="text-[11px] font-semibold text-slate-300 group-hover:text-indigo-300">{sug.title}</div>
+                    <div className="text-[10px] text-slate-500 truncate mt-0.5">{sug.prompt}</div>
+                  </button>
+                ))}
               </div>
             )}
           </div>

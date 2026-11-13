@@ -1,7 +1,7 @@
 # 🎨 NOTE-ROUTE: UNIFIED UI/UX DESIGN SYSTEM SPECIFICATION
 **Target Platform:** Web, Desktop (Electron/PWA), & Native Android (Kotlin Jetpack Compose / XML)  
 **Filosofi Desain:** **Unified UX-First & Adaptive Ergonomics**  
-**Interactive Prototype:** [ui-prototype.html](./ui-prototype.html) (Desktop/Workspace), [mobile.html](./mobile.html) (Responsive Web Mobile), & [android.html](./android.html) (Native Android App)
+**Aplikasi Web Utama:** React 18 + Vite + Tailwind CSS (`/web/`, SPA [crootagent.github.io/noteroute](https://crootagent.github.io/noteroute/)) & Native Android App (`/android/`)
 
 ---
 
