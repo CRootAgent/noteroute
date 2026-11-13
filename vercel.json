@@ -4,13 +4,6 @@
     {
       "src": "server/server.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "web/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
     }
   ],
   "routes": [
@@ -23,11 +16,15 @@
       "dest": "/server/server.js"
     },
     {
+      "src": "/workspace",
+      "dest": "/workspace.html"
+    },
+    {
       "handle": "filesystem"
     },
     {
       "src": "/(.*)",
-      "dest": "/web/dist/$1"
+      "dest": "/index.html"
     }
   ]
 }
