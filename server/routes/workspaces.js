@@ -5,7 +5,9 @@ const { Workspace, Document } = require('../config/db');
 // GET /api/workspaces
 router.get('/', async (req, res) => {
   try {
-    const workspaces = await Workspace.find().sort({ created_at: -1 });
+    const userId = req.query.user_id || req.headers['x-user-id'];
+    const query = userId ? { user_id: userId } : {};
+    const workspaces = await Workspace.find(query).sort({ created_at: -1 });
 
     // Populate document count if available
     const result = await Promise.all(
@@ -34,7 +36,7 @@ router.get('/', async (req, res) => {
 // POST /api/workspaces
 router.post('/', async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { name, description, user_id } = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({
         success: false,
@@ -43,9 +45,11 @@ router.post('/', async (req, res) => {
       });
     }
 
+    const userId = user_id || req.headers['x-user-id'] || '';
     const ws = await Workspace.create({
       name: name.trim(),
-      description: description || ''
+      description: description || '',
+      user_id: userId
     });
 
     return res.status(201).json({

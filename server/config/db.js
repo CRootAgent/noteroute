@@ -8,7 +8,8 @@ const workspaceSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
     description: { type: String, default: '' },
-    document_count: { type: Number, default: 0 }
+    document_count: { type: Number, default: 0 },
+    user_id: { type: String, default: '', index: true }
   },
   {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }

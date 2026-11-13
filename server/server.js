@@ -76,13 +76,24 @@ app.use('/router', routerEndpoints);
 app.use('/api/auth', authRouter);
 app.use('/auth', authRouter);
 
-// NoteRoute Authentic Main Application Serving at Root (/)
+// NoteRoute Modern React Web Application Serving at Root (/)
+const webDistPath = path.join(__dirname, '..', 'web', 'dist');
+if (fs.existsSync(webDistPath)) {
+  app.use(express.static(webDistPath));
+}
+
 const appRootPath = path.join(__dirname, '..');
 app.use(express.static(appRootPath));
 
 // Direct alias for workspace
 app.get(['/workspace', '/workspace.html'], (req, res) => {
-  res.sendFile(path.join(appRootPath, 'workspace.html'));
+  if (fs.existsSync(path.join(appRootPath, 'workspace.html'))) {
+    return res.sendFile(path.join(appRootPath, 'workspace.html'));
+  }
+  if (fs.existsSync(webDistPath)) {
+    return res.sendFile(path.join(webDistPath, 'index.html'));
+  }
+  res.sendFile(path.join(appRootPath, 'index.html'));
 });
 
 // Test error trigger route for test suite
@@ -102,6 +113,16 @@ app.use('/api/*', (req, res) => {
     error_code: 'ENDPOINT_NOT_FOUND'
   });
 });
+
+// SPA Fallback for client-side routing
+if (fs.existsSync(webDistPath)) {
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+      return next();
+    }
+    res.sendFile(path.join(webDistPath, 'index.html'));
+  });
+}
 
 // Global Error Handler
 app.use((err, req, res, next) => {
