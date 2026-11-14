@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -195,7 +196,14 @@ router.get('/:id/download', async (req, res) => {
 // DELETE /api/documents/:id
 router.delete('/:id', async (req, res) => {
   try {
-    const doc = await Document.findByIdAndDelete(req.params.id);
+    let doc = null;
+    if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+      doc = await Document.findByIdAndDelete(req.params.id);
+    } else {
+      doc = await Document.findOneAndDelete({
+        $or: [{ _id: req.params.id }, { id: req.params.id }]
+      });
+    }
     if (!doc) {
       return res.status(404).json({
         success: false,

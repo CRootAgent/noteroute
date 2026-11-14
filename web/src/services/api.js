@@ -105,9 +105,21 @@ function getLocalDocuments(workspaceId) {
   try {
     const key = `noteroute_docs_${workspaceId}`;
     const raw = localStorage.getItem(key);
-    if (raw) return JSON.parse(raw);
+    const deletedIds = JSON.parse(localStorage.getItem('noteroute_deleted_doc_ids') || '[]');
 
-    // Default starter documents
+    if (raw !== null) {
+      const docs = JSON.parse(raw);
+      return docs.filter((d) => !deletedIds.includes(d.id) && !deletedIds.includes(d._id));
+    }
+
+    // Check if this workspace has already been initialized previously
+    const wasInit = localStorage.getItem(`noteroute_initialized_${workspaceId}`);
+    if (wasInit) {
+      return [];
+    }
+
+    // Default starter documents (only once upon first initialization)
+    localStorage.setItem(`noteroute_initialized_${workspaceId}`, 'true');
     const defaultDocs = [
       {
         id: 'doc_demo_1',
@@ -129,7 +141,8 @@ function getLocalDocuments(workspaceId) {
         text_content: 'Analisis Multi-LLM Router: Penghematan biaya hingga 100% dapat dicapai menggunakan kuota Google Gemini 1.5 Flash dan Groq Cloud Llama 3.3 70B sebelum fallback ke model lokal.',
         created_at: new Date().toISOString()
       }
-    ];
+    ].filter((d) => !deletedIds.includes(d.id));
+
     localStorage.setItem(key, JSON.stringify(defaultDocs));
     return defaultDocs;
   } catch {
@@ -312,6 +325,7 @@ export async function apiUploadDocument(workspaceId, file) {
   try {
     const formData = new FormData();
     formData.append('workspace_id', workspaceId);
+    formData.append('file', file);
     formData.append('document', file);
 
     const res = await apiRequest('/documents/upload', {
@@ -362,10 +376,31 @@ export async function apiDeleteDocument(id, workspaceId) {
   } catch (err) {
     console.info('[apiDeleteDocument] Menghapus dokumen lokal:', err.message);
   }
-  if (workspaceId) {
-    const current = getLocalDocuments(workspaceId);
-    saveLocalDocuments(workspaceId, current.filter((d) => d.id !== id));
+
+  // Persistently record deleted document tombstone ID so it never reappears
+  try {
+    const deletedIds = JSON.parse(localStorage.getItem('noteroute_deleted_doc_ids') || '[]');
+    if (!deletedIds.includes(id)) {
+      deletedIds.push(id);
+      localStorage.setItem('noteroute_deleted_doc_ids', JSON.stringify(deletedIds));
+    }
+
+    // Clean across all workspace document caches
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('noteroute_docs_')) {
+        const raw = localStorage.getItem(k);
+        if (raw) {
+          const list = JSON.parse(raw);
+          const filtered = list.filter((d) => d.id !== id && d._id !== id);
+          localStorage.setItem(k, JSON.stringify(filtered));
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Gagal membersihkan cache dokumen lokal:', e);
   }
+
   return true;
 }
 

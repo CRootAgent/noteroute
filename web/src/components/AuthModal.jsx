@@ -339,7 +339,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
                   required
                   value={signUpEmail}
                   onChange={(e) => setSignUpEmail(e.target.value)}
-                  placeholder="email@kampus.ac.id"
+                  placeholder="nama@email.com"
                   className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500 transition"
                 />
               </div>
@@ -446,11 +446,11 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
             {/* OVERLAY RIGHT CONTENT (VISIBLE WHEN SIGN IN IS ACTIVE) */}
             <div className="overlay-content overlay-right-content space-y-4">
               <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-2xl mx-auto shadow-inner">
-                <i className="fa-solid fa-graduation-cap text-white"></i>
+                <i className="fa-solid fa-book-bookmark text-white"></i>
               </div>
-              <h2 className="text-2xl font-bold tracking-tight text-white">Halo, Rekan Mahasiswa!</h2>
+              <h2 className="text-2xl font-bold tracking-tight text-white">Selamat Datang di NoteRoute!</h2>
               <p className="text-xs text-blue-100 leading-relaxed max-w-xs">
-                Belum memiliki akun? Daftarkan diri Anda secara gratis untuk mulai menghubungkan materi kuliah.
+                Belum memiliki akun? Daftarkan diri Anda secara gratis untuk mulai menghubungkan dokumen dan analisis AI.
               </p>
               <button
                 type="button"

@@ -375,10 +375,6 @@ export default function Navbar({
                   <div className="text-[11px] text-[var(--nlm-text-tertiary)] truncate">
                     {user.email}
                   </div>
-                  <div className="text-[10px] text-emerald-500 font-semibold mt-0.5 flex items-center space-x-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    <span>MongoDB Atlas &bull; Aktif</span>
-                  </div>
                 </div>
               </div>
 

@@ -48,10 +48,11 @@ export default function WorkspaceView({
       {!isLeftSidebarOpen && (
         <button
           onClick={onToggleLeftSidebar}
-          className="hidden lg:flex absolute top-3 left-3 z-20 px-3 py-1.5 rounded-full bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] shadow-md text-xs font-semibold text-[var(--nlm-text-primary)] items-center space-x-2 transition cursor-pointer"
+          className="absolute top-3 left-3 z-20 px-3 py-1.5 rounded-full bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] shadow-lg text-xs font-semibold text-[var(--nlm-text-primary)] flex items-center space-x-2 transition cursor-pointer animate-fadeIn"
+          title="Tampilkan Panel Sumber & Catatan"
         >
           <i className="fa-solid fa-folder-open text-amber-500"></i>
-          <span>Sumber &amp; Catatan ({documents.length})</span>
+          <span>Sumber ({documents.length})</span>
         </button>
       )}
 
@@ -59,10 +60,11 @@ export default function WorkspaceView({
       {!isRightSidebarOpen && (
         <button
           onClick={onToggleRightSidebar}
-          className="hidden lg:flex absolute top-3 right-3 z-20 px-3 py-1.5 rounded-full bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] shadow-md text-xs font-semibold text-[var(--nlm-text-primary)] items-center space-x-2 transition cursor-pointer"
+          className="absolute top-3 right-3 z-20 px-3 py-1.5 rounded-full bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] border border-[var(--nlm-border)] shadow-lg text-xs font-semibold text-[var(--nlm-text-primary)] flex items-center space-x-2 transition cursor-pointer animate-fadeIn"
+          title="Tampilkan Panel Studio & Alat Bantu"
         >
           <i className="fa-solid fa-headphones text-purple-600"></i>
-          <span>Studio &bull; Alat</span>
+          <span>Studio</span>
         </button>
       )}
 
@@ -70,7 +72,7 @@ export default function WorkspaceView({
       <div
         className={`${
           isLeftSidebarOpen ? 'flex' : 'hidden'
-        } lg:flex h-full shrink-0 z-30 lg:z-10`}
+        } h-full shrink-0 z-30 transition-all duration-300`}
       >
         <SourcesPanel
           notebook={notebook}
@@ -105,7 +107,7 @@ export default function WorkspaceView({
       <div
         className={`${
           isRightSidebarOpen ? 'flex' : 'hidden'
-        } lg:flex h-full shrink-0 z-30 lg:z-10`}
+        } h-full shrink-0 z-30 transition-all duration-300`}
       >
         <StudioPanel
           documents={documents}

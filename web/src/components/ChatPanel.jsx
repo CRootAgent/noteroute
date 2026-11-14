@@ -48,34 +48,21 @@ export default function ChatPanel({
   return (
     <main className="flex-1 flex flex-col bg-[var(--nlm-bg)] min-w-0 h-full overflow-hidden select-none">
       
-      {/* Top Header: Model Switcher & Document Context */}
+      {/* Top Header: Active Workspace & Document Context (Target AI selector removed) */}
       <div className="h-14 border-b border-[var(--nlm-border)] bg-[var(--nlm-surface)]/95 px-4 sm:px-6 flex items-center justify-between z-10 shrink-0">
-        <div className="flex items-center space-x-2">
-          <i className="fa-solid fa-microchip text-blue-500 text-xs"></i>
-          <span className="text-xs font-bold text-[var(--nlm-text-secondary)]">Target AI:</span>
-          
-          <div className="flex items-center space-x-1.5 overflow-x-auto py-1">
-            {MODELS.map((m) => {
-              const active = selectedModel === m.id;
-              return (
-                <button
-                  key={m.id}
-                  onClick={() => onSelectModel(m.id)}
-                  className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold transition cursor-pointer flex items-center space-x-1 ${
-                    active
-                      ? 'bg-[var(--nlm-brand)] text-white shadow-xs'
-                      : 'bg-[var(--nlm-surface-variant)] text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] hover:bg-[var(--nlm-surface-hover)]'
-                  }`}
-                >
-                  <span>{m.name}</span>
-                </button>
-              );
-            })}
-          </div>
+        <div className="flex items-center space-x-2.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span className="text-xs sm:text-sm font-bold text-[var(--nlm-text-primary)] truncate max-w-[180px] sm:max-w-xs">
+            {notebook?.name || 'Ruang Kerja NoteRoute'}
+          </span>
+          <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-mono font-semibold">
+            Multi-LLM Router
+          </span>
         </div>
 
-        <div className="text-[11px] font-mono text-[var(--nlm-text-tertiary)] hidden md:block">
-          {documents.length} Dokumen Rujukan Aktif
+        <div className="text-[11px] font-mono text-[var(--nlm-text-tertiary)] flex items-center space-x-1.5">
+          <i className="fa-regular fa-file-lines text-xs text-amber-500"></i>
+          <span>{documents.length} Dokumen Rujukan Aktif</span>
         </div>
       </div>
 
@@ -302,7 +289,7 @@ export default function ChatPanel({
             disabled={!notebook || loading}
             placeholder={
               notebook
-                ? 'Tanyakan isi materi kuliah, ringkasan bab, atau konsep teoritis...'
+                ? 'Tanyakan isi dokumen rujukan, minta ringkasan, atau ajukan pertanyaan...'
                 : 'Pilih notebook terlebih dahulu'
             }
             className="w-full pl-4 pr-12 py-3 bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-2xl text-xs sm:text-sm text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none focus:border-blue-500 transition shadow-inner disabled:opacity-50"
@@ -316,7 +303,7 @@ export default function ChatPanel({
           </button>
         </form>
         <p className="text-center text-[10px] text-[var(--nlm-text-tertiary)] mt-2">
-          NoteRoute Router memadukan Gemini 1M context, Groq Cloud, dan 9Router dengan failover otomatis.
+          NoteRoute Router memadukan Gemini 1.5 Flash, Groq Cloud, DeepSeek, dan 9Router dengan failover otomatis.
         </p>
       </div>
     </main>

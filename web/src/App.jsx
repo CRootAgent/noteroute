@@ -244,8 +244,8 @@ export default function App() {
   };
 
   const handleDeleteDocument = async (id) => {
-    await apiDeleteDocument(id);
-    setDocuments((prev) => prev.filter((d) => d.id !== id));
+    await apiDeleteDocument(id, activeNotebook?.id);
+    setDocuments((prev) => prev.filter((d) => d.id !== id && d._id !== id));
     setSelectedDocIds((prev) => prev.filter((x) => x !== id));
     if (activeNotebook) {
       setNotebooks((prev) =>
