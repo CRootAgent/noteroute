@@ -12,6 +12,7 @@ export default function Navbar({
   onOpenSettings,
   onOpenAuth,
   onLogout,
+  onOpenQuickGuide,
   searchQuery,
   onSearchChange,
   viewMode,
@@ -258,64 +259,75 @@ export default function Navbar({
           </button>
 
           {isAppsDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-72 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl p-3 z-50 animate-dropdown">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-2 mb-2">
-                Ekosistem NoteRoute
+            <div className="absolute right-0 mt-2 w-80 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-2xl shadow-2xl p-3 z-50 animate-dropdown">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] px-2 mb-2 flex items-center justify-between">
+                <span>Ekosistem NoteRoute</span>
+                <span className="text-[10px] text-blue-500 font-normal">Multi-Platform</span>
               </div>
-              <div className="grid grid-cols-3 gap-2 text-center text-xs">
+              <div className="grid grid-cols-4 gap-1.5 text-center text-xs">
+                {/* 1. Beranda -> Membuka noteroute.home */}
+                <a
+                  href="https://crootagent.github.io/noteroute.home/"
+                  className="p-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group cursor-pointer"
+                  title="Buka Portal Beranda NoteRoute"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center text-base group-hover:scale-110 transition-transform">
+                    <i className="fa-solid fa-compass"></i>
+                  </div>
+                  <span className="text-[10px] font-medium text-[var(--nlm-text-primary)]">Beranda</span>
+                </a>
+
+                {/* 2. Workspace -> Ruang Kerja Web */}
                 <button
                   onClick={() => {
                     onNavigateHome();
                     setIsAppsDropdownOpen(false);
                   }}
                   className="p-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group cursor-pointer"
-                >
-                  <div className="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center text-base group-hover:scale-110 transition-transform">
-                    <i className="fa-solid fa-compass"></i>
-                  </div>
-                  <span className="text-[11px] font-medium text-[var(--nlm-text-primary)]">Beranda</span>
-                </button>
-                <button
-                  onClick={() => {
-                    if (activeNotebook) {
-                      // Stay or switch to workspace
-                    }
-                    setIsAppsDropdownOpen(false);
-                  }}
-                  className="p-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group cursor-pointer"
+                  title="Kembali ke Ruang Kerja Notebook"
                 >
                   <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-base group-hover:scale-110 transition-transform">
                     <i className="fa-solid fa-book-bookmark"></i>
                   </div>
-                  <span className="text-[11px] font-medium text-[var(--nlm-text-primary)]">Workspace</span>
+                  <span className="text-[10px] font-medium text-[var(--nlm-text-primary)]">Workspace</span>
                 </button>
+
+                {/* 3. Android -> Ekosistem Android */}
                 <a
-                  href="https://crootagent.github.io/noteroute.home/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group"
+                  href="https://crootagent.github.io/noteroute.home/#panduan"
+                  className="p-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group cursor-pointer"
+                  title="Unduh & Pasang APK Android"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-base group-hover:scale-110 transition-transform">
+                    <i className="fa-brands fa-android"></i>
+                  </div>
+                  <span className="text-[10px] font-medium text-[var(--nlm-text-primary)]">Android</span>
+                </a>
+
+                {/* 4. Panduan -> Modal Tutorial Cepat */}
+                <button
+                  onClick={() => {
+                    setIsAppsDropdownOpen(false);
+                    if (onOpenQuickGuide) onOpenQuickGuide();
+                  }}
+                  className="p-2 rounded-xl hover:bg-[var(--nlm-surface-hover)] flex flex-col items-center space-y-1.5 transition group cursor-pointer"
+                  title="Buka Panduan & Tutorial"
                 >
                   <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-base group-hover:scale-110 transition-transform">
                     <i className="fa-solid fa-book-open"></i>
                   </div>
-                  <span className="text-[11px] font-medium text-[var(--nlm-text-primary)]">Portal Panduan</span>
-                </a>
+                  <span className="text-[10px] font-medium text-[var(--nlm-text-primary)]">Panduan</span>
+                </button>
               </div>
-              <div className="mt-2 pt-2 border-t border-[var(--nlm-border-subtle)] space-y-2">
+
+              <div className="mt-2.5 pt-2 border-t border-[var(--nlm-border-subtle)]">
                 <a
-                  href="https://github.com/CRootAgent/noteroute/releases/latest"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center justify-center space-x-1.5 text-[11px] shadow-xs transition"
+                  href="https://crootagent.github.io/noteroute.home/#panduan"
+                  className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center justify-center space-x-2 text-xs shadow-xs transition"
                 >
-                  <i className="fa-solid fa-download"></i>
-                  <span>Unduh APK (v1.0.0)</span>
+                  <i className="fa-brands fa-android text-sm"></i>
+                  <span>Unduh APK Android (v1.0.0)</span>
                 </a>
-                <div className="text-center">
-                  <span className="text-[10px] text-[var(--nlm-text-tertiary)]">
-                    Proyek 2 &bull; Kelompok 12 D4 TI ULBI
-                  </span>
-                </div>
               </div>
             </div>
           )}

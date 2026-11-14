@@ -7,6 +7,7 @@ import AuthModal from './components/AuthModal';
 import AddSourceModal from './components/AddSourceModal';
 import CreateNoteModal from './components/CreateNoteModal';
 import NoteViewerModal from './components/NoteViewerModal';
+import QuickGuideModal from './components/QuickGuideModal';
 import {
   apiGetWorkspaces,
   apiCreateWorkspace,
@@ -89,15 +90,31 @@ export default function App() {
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
 
-  // Modals
+  // Modals & Notifications
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [settingsInitialTab, setSettingsInitialTab] = useState('profile');
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState('signin');
   const [isAddSourceOpen, setIsAddSourceOpen] = useState(false);
   const [isCreateNoteOpen, setIsCreateNoteOpen] = useState(false);
+  const [isQuickGuideOpen, setIsQuickGuideOpen] = useState(false);
   const [previewItem, setPreviewItem] = useState(null);
   const [previewType, setPreviewType] = useState('document');
+  const [welcomeToast, setWelcomeToast] = useState(null);
+
+  // Check if just logged in from noteroute.home
+  useEffect(() => {
+    try {
+      const justLoggedIn = sessionStorage.getItem('noteroute_just_logged_in');
+      if (justLoggedIn && user?.name) {
+        setWelcomeToast(`Selamat datang, ${user.name}!`);
+        sessionStorage.removeItem('noteroute_just_logged_in');
+        setTimeout(() => setWelcomeToast(null), 3500);
+      }
+    } catch {
+      // ignore
+    }
+  }, [user]);
 
   // 1. Sync Theme & AI Mode Classes on HTML Element
   useEffect(() => {
@@ -325,6 +342,10 @@ export default function App() {
     localStorage.setItem('noteroute_user', JSON.stringify(userData));
     localStorage.setItem('noteroute_auth_user', JSON.stringify(userData));
     loadNotebooks(userData);
+    setWelcomeToast(`Selamat datang, ${userData.name}!`);
+    setTimeout(() => {
+      setWelcomeToast(null);
+    }, 3500);
   };
 
   const handleUpdateUser = (updates) => {
@@ -380,6 +401,7 @@ export default function App() {
           setIsAuthOpen(true);
         }}
         onLogout={handleLogout}
+        onOpenQuickGuide={() => setIsQuickGuideOpen(true)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         viewMode={viewMode}
@@ -491,6 +513,31 @@ export default function App() {
         item={previewItem}
         type={previewType}
       />
+
+      {/* 8. QUICK GUIDE / TUTORIAL MODAL */}
+      <QuickGuideModal
+        isOpen={isQuickGuideOpen}
+        onClose={() => setIsQuickGuideOpen(false)}
+      />
+
+      {/* 9. WELCOME TOAST NOTIFICATION */}
+      {welcomeToast && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-3 px-4 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-2xl animate-slideUp">
+          <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-sm font-bold">
+            👋
+          </div>
+          <div>
+            <div className="text-xs font-bold">{welcomeToast}</div>
+            <div className="text-[10px] text-blue-100">Ruang kerja dan catatan Anda telah siap.</div>
+          </div>
+          <button
+            onClick={() => setWelcomeToast(null)}
+            className="text-white/70 hover:text-white p-1"
+          >
+            <i className="fa-solid fa-xmark text-xs"></i>
+          </button>
+        </div>
+      )}
 
     </div>
   );
