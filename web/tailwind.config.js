@@ -9,13 +9,16 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        mono: ['"Fira Code"', 'monospace'],
       },
       colors: {
-        brand: {
-          50: '#eef2ff',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
+        nlm: {
+          blue: '#1a73e8',
+          blueHover: '#1557b0',
+          blueDark: '#8ab4f8',
+          cardDark: '#14171d',
+          cardDarkHover: '#1c212a',
+          borderDark: '#232834',
         }
       }
     },

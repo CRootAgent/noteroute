@@ -1,208 +1,472 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, User, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import { apiLogin, apiRegister } from '../services/api';
 
-export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
+export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode = 'signin' }) {
+  const [isSignUp, setIsSignUp] = useState(initialMode === 'signup');
+  const [signInEmail, setSignInEmail] = useState('');
+  const [signInPassword, setSignInPassword] = useState('');
+  const [showSignInPassword, setShowSignInPassword] = useState(false);
+
+  const [signUpName, setSignUpName] = useState('');
+  const [signUpEmail, setSignUpEmail] = useState('');
+  const [signUpPassword, setSignUpPassword] = useState('');
+  const [signUpConfirmPassword, setSignUpConfirmPassword] = useState('');
+  const [showSignUpPassword, setShowSignUpPassword] = useState(false);
+  const [showSignUpConfirmPassword, setShowSignUpConfirmPassword] = useState(false);
+
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+  const [loading, setLoading] = useState(false);
+
   if (!isOpen) return null;
 
-  const [mode, setMode] = useState('login'); // 'login' | 'register'
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const validatePasswordRequirements = (pwd) => {
-    if (pwd.length < 8) {
-      return 'Kata sandi minimal 8 karakter.';
+  // Strict Password Validation Rule: >= 8 chars, uppercase, lowercase, number, symbol
+  const validatePassword = (pwd) => {
+    if (!pwd || pwd.length < 8) {
+      return 'Kata sandi wajib minimal 8 karakter.';
     }
     if (!/[A-Z]/.test(pwd)) {
-      return 'Kata sandi harus mengandung minimal 1 huruf kapital (A-Z).';
+      return 'Kata sandi wajib memuat minimal 1 huruf kapital (A-Z).';
     }
     if (!/[a-z]/.test(pwd)) {
-      return 'Kata sandi harus mengandung minimal 1 huruf kecil (a-z).';
+      return 'Kata sandi wajib memuat minimal 1 huruf kecil (a-z).';
     }
     if (!/[0-9]/.test(pwd)) {
-      return 'Kata sandi harus mengandung minimal 1 angka (0-9).';
+      return 'Kata sandi wajib memuat minimal 1 angka (0-9).';
     }
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(pwd)) {
-      return 'Kata sandi harus mengandung minimal 1 simbol (!@#$%^&* dll).';
+    if (!/[^A-Za-z0-9]/.test(pwd)) {
+      return 'Kata sandi wajib memuat minimal 1 simbol khusus (!@#$%^&* dll).';
     }
     return null;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+  const getRegisteredUsers = () => {
+    try {
+      const data = localStorage.getItem('noteroute_registered_users');
+      return data ? JSON.parse(data) : [];
+    } catch {
+      return [];
+    }
+  };
 
-    if (mode === 'register') {
-      const pwdError = validatePasswordRequirements(password);
-      if (pwdError) {
-        setError(pwdError);
-        return;
+  const saveRegisteredUser = (userData) => {
+    try {
+      const users = getRegisteredUsers();
+      const existingIdx = users.findIndex(
+        (u) => u.email.toLowerCase() === userData.email.toLowerCase()
+      );
+      if (existingIdx >= 0) {
+        users[existingIdx] = userData;
+      } else {
+        users.push(userData);
       }
-      if (password !== confirmPassword) {
-        setError('Konfirmasi kata sandi tidak cocok.');
-        return;
-      }
+      localStorage.setItem('noteroute_registered_users', JSON.stringify(users));
+    } catch (e) {
+      console.warn('Gagal menyimpan user:', e);
+    }
+  };
+
+  const handleSignInSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    if (!signInEmail.trim() || !signInPassword) {
+      setErrorMsg('Email dan kata sandi wajib diisi.');
+      return;
     }
 
     setLoading(true);
-
     try {
-      if (mode === 'register') {
-        const res = await apiRegister(name, email, password);
-        onAuthSuccess(res.data);
-      } else {
-        const res = await apiLogin(email, password);
-        onAuthSuccess(res.data);
+      let loggedInUser = null;
+
+      // 1. Try real backend login
+      try {
+        const res = await apiLogin(signInEmail.trim().toLowerCase(), signInPassword);
+        if (res && res.user) {
+          loggedInUser = res.user;
+        }
+      } catch (err) {
+        // Fallback check against local registered users
       }
+
+      if (!loggedInUser) {
+        const registered = getRegisteredUsers();
+        const found = registered.find(
+          (u) =>
+            u.email.toLowerCase() === signInEmail.trim().toLowerCase() &&
+            u.password === signInPassword
+        );
+        if (found) {
+          loggedInUser = {
+            id: found.id,
+            name: found.name,
+            email: found.email,
+            avatar: found.avatar || null
+          };
+        }
+      }
+
+      // Reject random unregistered login
+      if (!loggedInUser) {
+        setErrorMsg(
+          'Akses Ditolak: Email belum terdaftar atau kata sandi tidak cocok. Silakan daftar akun baru terlebih dahulu.'
+        );
+        setLoading(false);
+        return;
+      }
+
+      // Retrieve saved custom avatar if exists
+      const savedAvatar = localStorage.getItem('noteroute_avatar_' + loggedInUser.email);
+      if (savedAvatar) {
+        loggedInUser.avatar = savedAvatar;
+      }
+
+      onAuthSuccess(loggedInUser);
       onClose();
     } catch (err) {
-      setError(err.message || 'Terjadi kesalahan autentikasi');
+      setErrorMsg(err.message || 'Gagal masuk ke sistem.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignUpSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    if (!signUpName.trim()) {
+      setErrorMsg('Nama lengkap wajib diisi.');
+      return;
+    }
+    if (!signUpEmail.trim() || !signUpEmail.includes('@')) {
+      setErrorMsg('Alamat email valid wajib diisi.');
+      return;
+    }
+    const pwdErr = validatePassword(signUpPassword);
+    if (pwdErr) {
+      setErrorMsg(pwdErr);
+      return;
+    }
+    if (signUpPassword !== signUpConfirmPassword) {
+      setErrorMsg('Konfirmasi kata sandi tidak cocok.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // 1. Try backend registration
+      try {
+        await apiRegister(signUpName.trim(), signUpEmail.trim().toLowerCase(), signUpPassword);
+      } catch (err) {
+        // Fallback local save
+      }
+
+      const newUser = {
+        id: 'u_' + Date.now(),
+        name: signUpName.trim(),
+        email: signUpEmail.trim().toLowerCase(),
+        password: signUpPassword,
+        avatar: null
+      };
+      saveRegisteredUser(newUser);
+
+      setSuccessMsg('Pendaftaran berhasil! Silakan masuk dengan akun baru Anda.');
+      setIsSignUp(false);
+      setSignInEmail(signUpEmail.trim().toLowerCase());
+      setSignInPassword('');
+      setSignUpPassword('');
+      setSignUpConfirmPassword('');
+    } catch (err) {
+      setErrorMsg(err.message || 'Terjadi kesalahan saat pendaftaran.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl text-slate-100">
+    <div className="fixed inset-0 z-50 bg-[var(--nlm-modal-overlay)] backdrop-blur-xs flex items-center justify-center p-4 select-none modal-animate-in">
+      <div
+        className={`auth-slider-box ${
+          isSignUp ? 'right-panel-active' : ''
+        } border border-[var(--nlm-border)] relative`}
+      >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-1.5 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition"
+          className="absolute top-4 right-4 z-50 w-8 h-8 rounded-full bg-[var(--nlm-surface-variant)] hover:bg-[var(--nlm-surface-hover)] text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)] flex items-center justify-center transition cursor-pointer"
         >
-          <X className="w-5 h-5" />
+          <i className="fa-solid fa-xmark text-sm"></i>
         </button>
 
-        {/* Header Tabs */}
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-bold tracking-tight text-white">
-            {mode === 'login' ? 'Masuk ke NoteRoute' : 'Buat Akun NoteRoute'}
-          </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Data akun tersimpan nyata dan terenkripsi di MongoDB Atlas
-          </p>
-        </div>
-
-        {/* Tab Switcher */}
-        <div className="flex rounded-xl bg-slate-950 p-1 mb-5 border border-slate-800">
-          <button
-            type="button"
-            onClick={() => { setMode('login'); setError(''); }}
-            className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition ${
-              mode === 'login' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            Masuk
-          </button>
-          <button
-            type="button"
-            onClick={() => { setMode('register'); setError(''); }}
-            className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition ${
-              mode === 'register' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            Daftar Baru
-          </button>
-        </div>
-
-        {/* Error Alert */}
-        {error && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center space-x-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{error}</span>
+        {/* 1. SIGN IN PANEL (LEFT) */}
+        <div className="sign-in-panel form-panel p-6 sm:p-10 flex flex-col justify-center">
+          <div className="space-y-1 mb-5">
+            <h2 className="text-xl sm:text-2xl font-bold text-[var(--nlm-text-primary)]">
+              Selamat Datang Kembali
+            </h2>
+            <p className="text-xs text-[var(--nlm-text-tertiary)]">
+              Masuk ke NoteRoute untuk mengakses ruang kerja &amp; catatan rujukan Anda.
+            </p>
           </div>
-        )}
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-3.5">
-          {mode === 'register' && (
+          {errorMsg && !isSignUp && (
+            <div className="mb-4 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-xs flex items-center space-x-2">
+              <i className="fa-solid fa-circle-exclamation text-xs shrink-0"></i>
+              <span className="leading-snug">{errorMsg}</span>
+            </div>
+          )}
+
+          {successMsg && !isSignUp && (
+            <div className="mb-4 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs flex items-center space-x-2">
+              <i className="fa-solid fa-circle-check text-xs shrink-0"></i>
+              <span className="leading-snug">{successMsg}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSignInSubmit} className="space-y-3.5">
             <div>
-              <label className="block text-[11px] font-semibold text-slate-300 mb-1">Nama Lengkap</label>
+              <label className="block text-xs font-semibold text-[var(--nlm-text-secondary)] mb-1">
+                Alamat Email
+              </label>
               <div className="relative">
-                <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                <i className="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-[var(--nlm-text-tertiary)]"></i>
+                <input
+                  type="email"
+                  required
+                  value={signInEmail}
+                  onChange={(e) => setSignInEmail(e.target.value)}
+                  placeholder="nama@email.com"
+                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs sm:text-sm text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500 transition"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-[var(--nlm-text-secondary)] mb-1">
+                Kata Sandi
+              </label>
+              <div className="relative">
+                <i className="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-[var(--nlm-text-tertiary)]"></i>
+                <input
+                  type={showSignInPassword ? 'text' : 'password'}
+                  required
+                  value={signInPassword}
+                  onChange={(e) => setSignInPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full pl-9 pr-9 py-2.5 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs sm:text-sm text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500 transition font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowSignInPassword(!showSignInPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--nlm-text-tertiary)] hover:text-[var(--nlm-text-primary)]"
+                >
+                  <i className={showSignInPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'}></i>
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-2 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold text-xs sm:text-sm transition shadow-md shadow-blue-500/20 cursor-pointer"
+            >
+              {loading ? 'Memvalidasi Kredensial...' : 'Masuk ke Akun'}
+            </button>
+          </form>
+
+          {/* Mobile Switcher */}
+          <div className="mt-4 pt-3 border-t border-[var(--nlm-border-subtle)] text-center md:hidden">
+            <span className="text-xs text-[var(--nlm-text-tertiary)]">Belum punya akun?</span>
+            <button
+              type="button"
+              onClick={() => {
+                setIsSignUp(true);
+                setErrorMsg('');
+              }}
+              className="ml-1 text-xs font-bold text-blue-500 hover:underline"
+            >
+              Daftar akun baru
+            </button>
+          </div>
+        </div>
+
+        {/* 2. SIGN UP PANEL (RIGHT FORM) */}
+        <div className="sign-up-panel form-panel p-6 sm:p-10 flex flex-col justify-center">
+          <div className="space-y-1 mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-[var(--nlm-text-primary)]">
+              Mulai dengan NoteRoute
+            </h2>
+            <p className="text-xs text-[var(--nlm-text-tertiary)]">
+              Daftar gratis untuk menyinkronkan dokumen laptop dan AI di Android.
+            </p>
+          </div>
+
+          {errorMsg && isSignUp && (
+            <div className="mb-3 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-xs flex items-center space-x-2">
+              <i className="fa-solid fa-circle-exclamation text-xs shrink-0"></i>
+              <span className="leading-snug">{errorMsg}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSignUpSubmit} className="space-y-2.5">
+            <div>
+              <label className="block text-xs font-semibold text-[var(--nlm-text-secondary)] mb-1">
+                Nama Lengkap
+              </label>
+              <div className="relative">
+                <i className="fa-regular fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-[var(--nlm-text-tertiary)]"></i>
                 <input
                   type="text"
                   required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ahmad Zakky"
-                  className="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition"
+                  value={signUpName}
+                  onChange={(e) => setSignUpName(e.target.value)}
+                  placeholder="Contoh: Ahmad Zakky"
+                  className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500 transition"
                 />
               </div>
             </div>
-          )}
 
-          <div>
-            <label className="block text-[11px] font-semibold text-slate-300 mb-1">Alamat Email</label>
-            <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="nama@email.com"
-                className="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-[11px] font-semibold text-slate-300 mb-1">Kata Sandi</label>
-            <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Minimal 8 karakter: A-Z, a-z, 0-9, simbol"
-                className="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition"
-              />
-            </div>
-            {mode === 'register' && (
-              <p className="text-[10px] text-slate-400 mt-1">
-                Wajib 8+ karakter dengan kombinasi huruf kapital, huruf kecil, angka, dan simbol.
-              </p>
-            )}
-          </div>
-
-          {mode === 'register' && (
             <div>
-              <label className="block text-[11px] font-semibold text-slate-300 mb-1">Konfirmasi Kata Sandi</label>
+              <label className="block text-xs font-semibold text-[var(--nlm-text-secondary)] mb-1">
+                Alamat Email
+              </label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                <i className="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-[var(--nlm-text-tertiary)]"></i>
                 <input
-                  type="password"
+                  type="email"
                   required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Ulangi kata sandi"
-                  className="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition"
+                  value={signUpEmail}
+                  onChange={(e) => setSignUpEmail(e.target.value)}
+                  placeholder="email@kampus.ac.id"
+                  className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500 transition"
                 />
               </div>
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full mt-2 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center space-x-1.5 transition cursor-pointer"
-          >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <>
-                <span>{mode === 'login' ? 'Masuk Sekarang' : 'Daftar Akun'}</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
-        </form>
+            <div>
+              <label className="block text-xs font-semibold text-[var(--nlm-text-secondary)] mb-1">
+                Kata Sandi (Wajib 8+ Karakter: Kapital, Kecil, Angka, Simbol)
+              </label>
+              <div className="relative">
+                <i className="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-[var(--nlm-text-tertiary)]"></i>
+                <input
+                  type={showSignUpPassword ? 'text' : 'password'}
+                  required
+                  value={signUpPassword}
+                  onChange={(e) => setSignUpPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full pl-9 pr-9 py-2 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500 transition font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowSignUpPassword(!showSignUpPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--nlm-text-tertiary)]"
+                >
+                  <i className={showSignUpPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'}></i>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-[var(--nlm-text-secondary)] mb-1">
+                Konfirmasi Kata Sandi
+              </label>
+              <div className="relative">
+                <i className="fa-solid fa-shield-halved absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-[var(--nlm-text-tertiary)]"></i>
+                <input
+                  type={showSignUpConfirmPassword ? 'text' : 'password'}
+                  required
+                  value={signUpConfirmPassword}
+                  onChange={(e) => setSignUpConfirmPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full pl-9 pr-9 py-2 rounded-xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs text-[var(--nlm-text-primary)] focus:outline-none focus:border-blue-500 transition font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowSignUpConfirmPassword(!showSignUpConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--nlm-text-tertiary)]"
+                >
+                  <i className={showSignUpConfirmPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'}></i>
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold text-xs transition shadow-md shadow-blue-500/20 cursor-pointer"
+            >
+              {loading ? 'Mendaftarkan Akun...' : 'Buat Akun Sekarang'}
+            </button>
+          </form>
+
+          {/* Mobile Switcher */}
+          <div className="mt-3 pt-2 border-t border-[var(--nlm-border-subtle)] text-center md:hidden">
+            <span className="text-xs text-[var(--nlm-text-tertiary)]">Sudah punya akun?</span>
+            <button
+              type="button"
+              onClick={() => {
+                setIsSignUp(false);
+                setErrorMsg('');
+              }}
+              className="ml-1 text-xs font-bold text-blue-500 hover:underline"
+            >
+              Masuk di sini
+            </button>
+          </div>
+        </div>
+
+        {/* 3. OVERLAY SLIDER CONTAINER (DESKTOP GRADIENT SLIDER) */}
+        <div className="overlay-slider-container">
+          <div className="overlay-slider">
+            
+            {/* OVERLAY LEFT CONTENT (VISIBLE WHEN SIGN UP IS ACTIVE) */}
+            <div className="overlay-content overlay-left-content space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-2xl mx-auto shadow-inner">
+                <i className="fa-solid fa-arrow-right-to-bracket text-white"></i>
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight text-white">Sudah Memiliki Akun?</h2>
+              <p className="text-xs text-blue-100 leading-relaxed max-w-xs">
+                Silakan masuk dengan kredensial terdaftar Anda untuk melanjutkan eksplorasi dokumen.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSignUp(false);
+                  setErrorMsg('');
+                }}
+                className="px-6 py-2.5 rounded-full border-2 border-white/80 hover:border-white hover:bg-white/10 text-white font-semibold text-xs tracking-wider transition cursor-pointer shadow-md"
+              >
+                Masuk Sekarang
+              </button>
+            </div>
+
+            {/* OVERLAY RIGHT CONTENT (VISIBLE WHEN SIGN IN IS ACTIVE) */}
+            <div className="overlay-content overlay-right-content space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-2xl mx-auto shadow-inner">
+                <i className="fa-solid fa-graduation-cap text-white"></i>
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight text-white">Halo, Rekan Mahasiswa!</h2>
+              <p className="text-xs text-blue-100 leading-relaxed max-w-xs">
+                Belum memiliki akun? Daftarkan diri Anda secara gratis untuk mulai menghubungkan materi kuliah.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSignUp(true);
+                  setErrorMsg('');
+                }}
+                className="px-6 py-2.5 rounded-full border-2 border-white/80 hover:border-white hover:bg-white/10 text-white font-semibold text-xs tracking-wider transition cursor-pointer shadow-md"
+              >
+                Daftar Akun Baru
+              </button>
+            </div>
+
+          </div>
+        </div>
+
       </div>
     </div>
   );

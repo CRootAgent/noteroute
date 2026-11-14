@@ -2,11 +2,347 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: dark;
+/* ======================================================== */
+/* 1. CSS VARIABLES (AUTHENTIC NOTEROUTE LIGHT & DARK THEMES) */
+/* ======================================================== */
+:root.light, html.light, html.light.mode-doc {
+  --nlm-bg: #f8fafc;
+  --nlm-surface: #ffffff;
+  --nlm-surface-variant: #f1f5f9;
+  --nlm-surface-hover: #e2e8f0;
+  --nlm-border: #e2e8f0;
+  --nlm-border-subtle: #edf2f7;
+  --nlm-text-primary: #0f172a;
+  --nlm-text-secondary: #475569;
+  --nlm-text-tertiary: #94a3b8;
+  --nlm-card-bg: #ffffff;
+  --nlm-card-border: #e2e8f0;
+  --nlm-card-hover-border: #cbd5e1;
+  --nlm-btn-primary: #1a73e8;
+  --nlm-btn-primary-hover: #1557b0;
+  --nlm-search-bg: #f1f5f9;
+  --nlm-search-border: #e2e8f0;
+  --nlm-modal-overlay: rgba(15, 23, 42, 0.5);
+  --nlm-brand: #0b57d0;
+  --nlm-brand-hover: #0842a0;
+  --nlm-brand-light: #eff6ff;
+  --nlm-brand-dark: #042b6a;
+  --nlm-brand-ring: rgba(11, 87, 208, 0.25);
+  --nlm-citation-bg: #e0eafd;
+  --nlm-citation-text: #0842a0;
+  --nlm-dropzone-bg: #f8fafc;
+  --nlm-dropzone-border: #cbd5e1;
+  --nlm-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+html.light.mode-general {
+  --nlm-bg: #f9fafb;
+  --nlm-surface: #ffffff;
+  --nlm-surface-variant: #f3f4f6;
+  --nlm-surface-hover: #e5e7eb;
+  --nlm-border: #e5e7eb;
+  --nlm-border-subtle: #f3f4f6;
+  --nlm-text-primary: #0f172a;
+  --nlm-text-secondary: #475569;
+  --nlm-text-tertiary: #94a3b8;
+  --nlm-brand: #059669;
+  --nlm-brand-hover: #047857;
+  --nlm-brand-light: #ecfdf5;
+  --nlm-brand-dark: #064e3b;
+  --nlm-brand-ring: rgba(5, 150, 105, 0.25);
+  --nlm-citation-bg: #ecfdf5;
+  --nlm-citation-text: #047857;
+  --nlm-modal-overlay: rgba(15, 23, 42, 0.5);
+  --nlm-dropzone-bg: #f9fafb;
+  --nlm-dropzone-border: #d1d5db;
+}
+
+:root.dark, html.dark, html.dark.mode-doc {
+  --nlm-bg: #0b0f14;
+  --nlm-surface: #121820;
+  --nlm-surface-variant: #1a222c;
+  --nlm-surface-hover: #222b37;
+  --nlm-border: #222d3b;
+  --nlm-border-subtle: #161e27;
+  --nlm-text-primary: #f8fafc;
+  --nlm-text-secondary: #94a3b8;
+  --nlm-text-tertiary: #64748b;
+  --nlm-card-bg: #141822;
+  --nlm-card-border: #232c3a;
+  --nlm-card-hover-border: #3b475c;
+  --nlm-btn-primary: #1a73e8;
+  --nlm-btn-primary-hover: #1b66c9;
+  --nlm-search-bg: #141822;
+  --nlm-search-border: #263040;
+  --nlm-modal-overlay: rgba(0, 0, 0, 0.75);
+  --nlm-brand: #3b82f6;
+  --nlm-brand-hover: #2563eb;
+  --nlm-brand-light: rgba(59, 130, 246, 0.14);
+  --nlm-brand-dark: #1d4ed8;
+  --nlm-brand-ring: rgba(59, 130, 246, 0.35);
+  --nlm-citation-bg: rgba(59, 130, 246, 0.2);
+  --nlm-citation-text: #93c5fd;
+  --nlm-dropzone-bg: #0e1319;
+  --nlm-dropzone-border: #242e3b;
+  --nlm-card-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+html.dark.mode-general {
+  --nlm-bg: #0b0d0c;
+  --nlm-surface: #131614;
+  --nlm-surface-variant: #1a1e1b;
+  --nlm-surface-hover: #222824;
+  --nlm-border: #232b26;
+  --nlm-border-subtle: #171c18;
+  --nlm-text-primary: #f8fafc;
+  --nlm-text-secondary: #94a3b8;
+  --nlm-text-tertiary: #64748b;
+  --nlm-brand: #10b981;
+  --nlm-brand-hover: #059669;
+  --nlm-brand-light: rgba(16, 185, 129, 0.12);
+  --nlm-brand-dark: #047857;
+  --nlm-brand-ring: rgba(16, 185, 129, 0.3);
+  --nlm-citation-bg: rgba(16, 185, 129, 0.18);
+  --nlm-citation-text: #6ee7b7;
+  --nlm-modal-overlay: rgba(0, 0, 0, 0.75);
+  --nlm-dropzone-bg: #0e1210;
+  --nlm-dropzone-border: #222a25;
 }
 
 body {
-  margin: 0;
+  background-color: var(--nlm-bg);
+  color: var(--nlm-text-primary);
+  transition: background-color 0.25s ease, color 0.25s ease;
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+}
+
+/* Notebook Cards */
+.notebook-card {
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.18s ease;
+}
+.notebook-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.35);
+}
+html.light .notebook-card:hover {
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+}
+
+/* ======================================================== */
+/* 2. ANIMATIONS & SLIDING AUTH MODAL                       */
+/* ======================================================== */
+@keyframes nlmModalFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.modal-animate-in, .animate-scale-up {
+  animation: nlmModalFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes nlmDropdownFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-dropdown {
+  animation: nlmDropdownFade 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes nlmFadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: nlmFadeSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* SLIDING AUTH MODAL STYLES */
+.auth-slider-box {
+  background-color: var(--nlm-surface);
+  border-radius: 28px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+  width: 780px;
+  max-width: 100%;
+  min-height: 520px;
+  transition: all 0.3s ease;
+}
+
+.form-panel {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: all 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.sign-in-panel {
+  left: 0;
+  width: 50%;
+  z-index: 2;
+}
+
+.auth-slider-box.right-panel-active .sign-in-panel {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sign-up-panel {
+  left: 0;
+  width: 50%;
+  opacity: 0;
+  z-index: 1;
+}
+
+.auth-slider-box.right-panel-active .sign-up-panel {
+  transform: translateX(100%);
+  opacity: 1;
+  z-index: 5;
+  animation: authShowAnim 0.6s;
+}
+
+@keyframes authShowAnim {
+  0%, 49.99% {
+    opacity: 0;
+    z-index: 1;
+  }
+  50%, 100% {
+    opacity: 1;
+    z-index: 5;
+  }
+}
+
+.overlay-slider-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+  z-index: 40;
+  border-radius: 24px;
+}
+
+.auth-slider-box.right-panel-active .overlay-slider-container {
+  transform: translateX(-100%);
+}
+
+.overlay-slider {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 45%, #4f46e5 100%);
+  color: #ffffff;
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transform: translateX(0);
+  transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+  border-radius: 24px;
+}
+
+.auth-slider-box.right-panel-active .overlay-slider {
+  transform: translateX(50%);
+}
+
+.overlay-content {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+  text-align: center;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  transform: translateX(0);
+  transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.overlay-left-content {
+  transform: translateX(-20%);
+}
+
+.auth-slider-box.right-panel-active .overlay-left-content {
+  transform: translateX(0);
+}
+
+.overlay-right-content {
+  right: 0;
+  transform: translateX(0);
+}
+
+.auth-slider-box.right-panel-active .overlay-right-content {
+  transform: translateX(20%);
+}
+
+@media (max-width: 768px) {
+  .auth-slider-box {
+    width: 100%;
+    max-width: 440px;
+    min-height: 540px;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  .sign-in-panel,
+  .sign-up-panel {
+    width: 100%;
+    position: relative;
+    min-height: 480px;
+  }
+  .overlay-slider-container {
+    display: none;
+  }
+  .auth-slider-box.right-panel-active .sign-in-panel {
+    display: none;
+  }
+  .auth-slider-box.right-panel-active .sign-up-panel {
+    transform: none;
+    opacity: 1;
+    display: block;
+  }
+  .auth-slider-box:not(.right-panel-active) .sign-up-panel {
+    display: none;
+  }
+  .auth-slider-box:not(.right-panel-active) .sign-in-panel {
+    display: block;
+    opacity: 1;
+    transform: none;
+  }
 }
