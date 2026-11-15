@@ -25,6 +25,8 @@ export default function WorkspaceView({
   onSelectModel,
   onCreateStudyTool,
   onGenerateAudio,
+  onEditMessage,
+  onRegenerateMessage,
   isLeftSidebarOpen,
   isRightSidebarOpen,
   onToggleLeftSidebar,
@@ -97,6 +99,8 @@ export default function WorkspaceView({
         documents={documents}
         messages={messages}
         onSendMessage={onSendMessage}
+        onEditMessage={onEditMessage}
+        onRegenerateMessage={onRegenerateMessage}
         loading={loadingChat}
         selectedModel={selectedModel}
         onSelectModel={onSelectModel}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ImageCropperModal from './ImageCropperModal';
+import DialogModal from './DialogModal';
 
 export default function SettingsModal({
   isOpen,
@@ -17,54 +18,52 @@ export default function SettingsModal({
   const [newPass, setNewPass] = useState('');
   const [confirmPass, setConfirmPass] = useState('');
   const [statusMsg, setStatusMsg] = useState('');
+  const [dialogModal, setDialogModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info',
+    confirmText: 'OK',
+    cancelText: 'Batal',
+    onConfirm: null
+  });
 
   // Image Cropper States
   const [cropperOpen, setCropperOpen] = useState(false);
   const [selectedImageSrc, setSelectedImageSrc] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Synchronize activeTab whenever modal opens or initialTab prop changes
+  // Active Sessions State (Tab 3: Keamanan Akun - Clean per-user sessions)
+  const sessionKey = user?.email ? `noteroute_user_sessions_${user.email}` : 'noteroute_user_sessions_guest';
+  const [sessions, setSessions] = useState(() => {
+    try {
+      const saved = localStorage.getItem(sessionKey);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Synchronize activeTab and sessions whenever modal opens or initialTab prop changes
   useEffect(() => {
     if (isOpen) {
       setActiveTab(initialTab);
       setName(user?.name || 'Ahmad Zakky');
       setEmail(user?.email || 'user@noteroute.app');
       setStatusMsg('');
-    }
-  }, [initialTab, isOpen, user]);
-
-  // Active Sessions State (Tab 3: Keamanan Akun)
-  const [sessions, setSessions] = useState(() => {
-    try {
-      const saved = localStorage.getItem('noteroute_user_sessions');
-      if (saved) return JSON.parse(saved);
-    } catch {}
-    return [
-      {
-        id: 'sess_android_1',
-        device: 'Samsung Galaxy / Android Device',
-        app: 'NoteRoute Mobile APK v1.0.0',
-        location: 'Bandung, Jawa Barat, ID',
-        ip: '182.253.14.72',
-        lastActive: 'Hari ini, 20:15 WIB',
-        isCurrent: false
-      },
-      {
-        id: 'sess_tab_1',
-        device: 'Apple iPad / Tablet',
-        app: 'NoteRoute Web Safari',
-        location: 'Jakarta, Indonesia',
-        ip: '114.122.20.91',
-        lastActive: 'Kemarin, 14:30 WIB',
-        isCurrent: false
+      try {
+        const saved = localStorage.getItem(sessionKey);
+        setSessions(saved ? JSON.parse(saved) : []);
+      } catch {
+        setSessions([]);
       }
-    ];
-  });
+    }
+  }, [initialTab, isOpen, user, sessionKey]);
 
   const saveSessions = (updated) => {
     setSessions(updated);
     try {
-      localStorage.setItem('noteroute_user_sessions', JSON.stringify(updated));
+      localStorage.setItem(sessionKey, JSON.stringify(updated));
     } catch (e) {
       console.warn('Gagal menyimpan sesi:', e);
     }
@@ -78,11 +77,19 @@ export default function SettingsModal({
   };
 
   const handleRevokeAllOtherSessions = () => {
-    if (confirm('Cabut akses untuk semua perangkat lain? Anda akan tetap masuk di perangkat ini.')) {
-      saveSessions([]);
-      setStatusMsg('Semua sesi perangkat lain berhasil dicabut.');
-      setTimeout(() => setStatusMsg(''), 3000);
-    }
+    setDialogModal({
+      isOpen: true,
+      title: 'Cabut Semua Sesi Lain',
+      message: 'Apakah Anda yakin ingin mencabut akses untuk semua perangkat lain? Anda akan tetap masuk di perangkat ini.',
+      type: 'danger',
+      confirmText: 'Cabut Akses',
+      cancelText: 'Batal',
+      onConfirm: () => {
+        saveSessions([]);
+        setStatusMsg('Semua sesi perangkat lain berhasil dicabut.');
+        setTimeout(() => setStatusMsg(''), 3000);
+      }
+    });
   };
 
   // Detect current client device info
@@ -150,7 +157,12 @@ export default function SettingsModal({
   const handleAddCustomApi = (e) => {
     e.preventDefault();
     if (!customName.trim() || !customBaseUrl.trim()) {
-      alert('Nama Provider dan Base URL wajib diisi.');
+      setDialogModal({
+        isOpen: true,
+        title: 'Form Belum Lengkap',
+        message: 'Nama Provider dan Base URL wajib diisi.',
+        type: 'warning'
+      });
       return;
     }
     const newApi = {
@@ -341,11 +353,21 @@ export default function SettingsModal({
 
   const handleChangePassword = () => {
     if (newPass.length < 8) {
-      alert('Kata sandi baru minimal 8 karakter.');
+      setDialogModal({
+        isOpen: true,
+        title: 'Kata Sandi Terlalu Pendek',
+        message: 'Kata sandi baru minimal 8 karakter.',
+        type: 'warning'
+      });
       return;
     }
     if (newPass !== confirmPass) {
-      alert('Konfirmasi kata sandi tidak cocok.');
+      setDialogModal({
+        isOpen: true,
+        title: 'Konfirmasi Sandi Gagal',
+        message: 'Konfirmasi kata sandi tidak cocok dengan kata sandi baru.',
+        type: 'danger'
+      });
       return;
     }
     setCurrentPass('');
@@ -480,11 +502,8 @@ export default function SettingsModal({
 
                   <div className="space-y-1.5 text-center sm:text-left flex-1">
                     <div className="font-bold text-xs text-[var(--nlm-text-primary)]">
-                      Foto Profil / Inisial 2 Suku Kata ({getInitials(name)})
+                      Foto Profil
                     </div>
-                    <p className="text-[11px] text-[var(--nlm-text-tertiary)]">
-                      Unggah foto baru untuk membuka editor visual (rasio lingkaran/persegi, zoom, rotasi &amp; posisi geser).
-                    </p>
                     <div className="flex items-center justify-center sm:justify-start space-x-2 pt-1">
                       <button
                         type="button"
@@ -1250,6 +1269,18 @@ export default function SettingsModal({
         imageSrc={selectedImageSrc}
         onClose={() => setCropperOpen(false)}
         onSave={handleSaveCroppedAvatar}
+      />
+
+      {/* Styled Dialog Modal for alerts/confirmations */}
+      <DialogModal
+        isOpen={dialogModal.isOpen}
+        title={dialogModal.title}
+        message={dialogModal.message}
+        type={dialogModal.type}
+        confirmText={dialogModal.confirmText}
+        cancelText={dialogModal.cancelText}
+        onConfirm={dialogModal.onConfirm}
+        onClose={() => setDialogModal((prev) => ({ ...prev, isOpen: false }))}
       />
     </div>
   );

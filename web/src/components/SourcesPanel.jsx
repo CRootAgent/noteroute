@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { getDownloadUrl } from '../services/api';
+import DialogModal from './DialogModal';
 
 export default function SourcesPanel({
   notebook,
@@ -19,6 +20,7 @@ export default function SourcesPanel({
   const [docSort, setDocSort] = useState('name'); // 'name', 'date', 'size'
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [markedForDeletion, setMarkedForDeletion] = useState([]);
+  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', message: '', type: 'danger', confirmText: 'Ya, Hapus', onConfirm: null });
 
   // Sort documents
   const sortedDocs = [...documents].sort((a, b) => {
@@ -45,15 +47,22 @@ export default function SourcesPanel({
     );
   };
 
-  const handleExecuteDelete = async () => {
+  const handleExecuteDelete = () => {
     if (markedForDeletion.length === 0) return;
-    if (confirm(`Hapus ${markedForDeletion.length} berkas yang dipilih?`)) {
-      for (const id of markedForDeletion) {
-        await onDeleteDocument(id);
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Hapus Berkas Terpilih',
+      message: `Apakah Anda yakin ingin menghapus ${markedForDeletion.length} berkas yang dipilih?`,
+      type: 'danger',
+      confirmText: 'Ya, Hapus',
+      onConfirm: async () => {
+        for (const id of markedForDeletion) {
+          await onDeleteDocument(id);
+        }
+        setMarkedForDeletion([]);
+        setIsDeleteMode(false);
       }
-      setMarkedForDeletion([]);
-      setIsDeleteMode(false);
-    }
+    });
   };
 
   // Calculate approximate context capacity used
@@ -257,9 +266,14 @@ export default function SourcesPanel({
                       </a>
                       <button
                         onClick={() => {
-                          if (confirm(`Hapus berkas "${doc.filename}"?`)) {
-                            onDeleteDocument(doc.id);
-                          }
+                          setConfirmDialog({
+                            isOpen: true,
+                            title: 'Hapus Berkas',
+                            message: `Apakah Anda yakin ingin menghapus berkas "${doc.filename}"?`,
+                            type: 'danger',
+                            confirmText: 'Ya, Hapus',
+                            onConfirm: () => onDeleteDocument(doc.id)
+                          });
                         }}
                         className="p-1 rounded text-[var(--nlm-text-tertiary)] hover:text-rose-500 transition cursor-pointer"
                         title="Hapus Berkas"
@@ -348,6 +362,17 @@ export default function SourcesPanel({
           {((totalBytes || 0) / 1024).toFixed(1)} KB / 5 MB batas sesi lokal
         </div>
       </div>
+      {/* MODAL KONFIRMASI HAPUS DOKUMEN */}
+      <DialogModal
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog((prev) => ({ ...prev, isOpen: false }))}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        type={confirmDialog.type}
+        confirmText={confirmDialog.confirmText}
+        cancelText="Batal"
+        onConfirm={confirmDialog.onConfirm}
+      />
     </aside>
   );
 }

@@ -8,6 +8,7 @@ import AddSourceModal from './components/AddSourceModal';
 import CreateNoteModal from './components/CreateNoteModal';
 import NoteViewerModal from './components/NoteViewerModal';
 import QuickGuideModal from './components/QuickGuideModal';
+import DialogModal from './components/DialogModal';
 import {
   apiGetWorkspaces,
   apiCreateWorkspace,
@@ -67,20 +68,7 @@ export default function App() {
   const [studioNotes, setStudioNotes] = useState(() => {
     try {
       const saved = localStorage.getItem('noteroute_studio_notes');
-      return saved ? JSON.parse(saved) : [
-        {
-          id: 'sn_1',
-          title: 'Briefing Doc: Ringkasan Eksekutif Bab 3',
-          content: 'Kajian terhadap konsistensi data terdistribusi menunjukkan pentingnya replikasi sinkron dan asinkron.',
-          date: '12 Nov'
-        },
-        {
-          id: 'sn_2',
-          title: 'Panduan Belajar: Konsep Kunci Paxos & Raft',
-          content: 'Rangkuman algoritma konsensus dalam menjaga ketersediaan layanan.',
-          date: '10 Nov'
-        }
-      ];
+      return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
     }
@@ -101,6 +89,15 @@ export default function App() {
   const [previewItem, setPreviewItem] = useState(null);
   const [previewType, setPreviewType] = useState('document');
   const [welcomeToast, setWelcomeToast] = useState(null);
+  const [dialogModal, setDialogModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info',
+    confirmText: 'OK',
+    cancelText: 'Batal',
+    onConfirm: null
+  });
 
   // Check if just logged in from noteroute.home
   useEffect(() => {
@@ -201,7 +198,12 @@ export default function App() {
       setActiveNotebook(newNb);
       setCurrentView('workspace');
     } catch (err) {
-      alert('Gagal membuat notebook: ' + err.message);
+      setDialogModal({
+        isOpen: true,
+        title: 'Gagal Membuat Notebook',
+        message: err.message || 'Terjadi kesalahan saat membuat notebook.',
+        type: 'danger'
+      });
     }
   };
 
@@ -225,7 +227,12 @@ export default function App() {
         setCurrentView('home');
       }
     } catch (err) {
-      alert('Gagal menghapus notebook: ' + err.message);
+      setDialogModal({
+        isOpen: true,
+        title: 'Gagal Menghapus Notebook',
+        message: err.message || 'Terjadi kesalahan saat menghapus notebook.',
+        type: 'danger'
+      });
     }
   };
 
@@ -306,6 +313,121 @@ export default function App() {
         created_at: new Date().toISOString()
       };
       setMessages((prev) => [...prev, errorMsg]);
+    } finally {
+      setLoadingChat(false);
+    }
+  };
+
+  // Edit a previously sent message and re-run inference
+  const handleEditMessage = async (msgId, newContent) => {
+    const targetIdx = messages.findIndex((m) => m.id === msgId);
+    if (targetIdx === -1) return;
+
+    const truncatedHistory = messages.slice(0, targetIdx);
+    const updatedUserMsg = {
+      ...messages[targetIdx],
+      content: newContent,
+      created_at: new Date().toISOString()
+    };
+
+    setMessages([...truncatedHistory, updatedUserMsg]);
+    setLoadingChat(true);
+
+    try {
+      const historyPayload = truncatedHistory.slice(-6).map((m) => ({
+        role: m.role,
+        content: m.content
+      }));
+
+      const res = await apiSendChat({
+        workspaceId: activeNotebook?.id,
+        prompt: newContent,
+        modelTarget: selectedModel,
+        history: historyPayload
+      });
+
+      const assistantMsg = {
+        id: 'a_' + Date.now(),
+        role: 'assistant',
+        content: res.answer || res.content,
+        citations: res.citations || [],
+        model_used: res.model_used || selectedModel,
+        failover: res.failover || false,
+        created_at: new Date().toISOString()
+      };
+
+      setMessages([...truncatedHistory, updatedUserMsg, assistantMsg]);
+    } catch (err) {
+      const errorMsg = {
+        id: 'err_' + Date.now(),
+        role: 'assistant',
+        content: `Galat inferensi AI: ${
+          err.message || 'Gagal menghubungi router AI. Periksa koneksi atau kunci API.'
+        }`,
+        created_at: new Date().toISOString()
+      };
+      setMessages([...truncatedHistory, updatedUserMsg, errorMsg]);
+    } finally {
+      setLoadingChat(false);
+    }
+  };
+
+  // Regenerate an assistant response from the preceding user prompt
+  const handleRegenerateMessage = async (msgId) => {
+    const targetIdx = messages.findIndex((m) => m.id === msgId);
+    if (targetIdx === -1) return;
+
+    let promptToReplay = '';
+    let truncatedHistory = [];
+
+    for (let i = targetIdx - 1; i >= 0; i--) {
+      if (messages[i].role === 'user') {
+        promptToReplay = messages[i].content;
+        truncatedHistory = messages.slice(0, i);
+        break;
+      }
+    }
+
+    if (!promptToReplay) return;
+
+    const retainedMessages = messages.slice(0, targetIdx);
+    setMessages(retainedMessages);
+    setLoadingChat(true);
+
+    try {
+      const historyPayload = truncatedHistory.slice(-6).map((m) => ({
+        role: m.role,
+        content: m.content
+      }));
+
+      const res = await apiSendChat({
+        workspaceId: activeNotebook?.id,
+        prompt: promptToReplay,
+        modelTarget: selectedModel,
+        history: historyPayload
+      });
+
+      const newAssistantMsg = {
+        id: 'a_' + Date.now(),
+        role: 'assistant',
+        content: res.answer || res.content,
+        citations: res.citations || [],
+        model_used: res.model_used || selectedModel,
+        failover: res.failover || false,
+        created_at: new Date().toISOString()
+      };
+
+      setMessages([...retainedMessages, newAssistantMsg]);
+    } catch (err) {
+      const errorMsg = {
+        id: 'err_' + Date.now(),
+        role: 'assistant',
+        content: `Galat inferensi AI: ${
+          err.message || 'Gagal menghubungi router AI. Periksa koneksi atau kunci API.'
+        }`,
+        created_at: new Date().toISOString()
+      };
+      setMessages([...retainedMessages, errorMsg]);
     } finally {
       setLoadingChat(false);
     }
@@ -459,6 +581,8 @@ export default function App() {
             }}
             messages={messages}
             onSendMessage={handleSendMessage}
+            onEditMessage={handleEditMessage}
+            onRegenerateMessage={handleRegenerateMessage}
             loadingChat={loadingChat}
             selectedModel={selectedModel}
             onSelectModel={setSelectedModel}
@@ -539,6 +663,17 @@ export default function App() {
         </div>
       )}
 
+      {/* 10. GLOBAL DIALOG MODAL (ALERTS & CONFIRMS) */}
+      <DialogModal
+        isOpen={dialogModal.isOpen}
+        title={dialogModal.title}
+        message={dialogModal.message}
+        type={dialogModal.type}
+        confirmText={dialogModal.confirmText}
+        cancelText={dialogModal.cancelText}
+        onConfirm={dialogModal.onConfirm}
+        onClose={() => setDialogModal((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

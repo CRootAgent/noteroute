@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import DialogModal from './DialogModal';
 
 export default function HomeView({
   notebooks,
@@ -17,6 +18,7 @@ export default function HomeView({
   const [newNotebookTitle, setNewNotebookTitle] = useState('');
   const [editingNotebook, setEditingNotebook] = useState(null);
   const [editTitle, setEditTitle] = useState('');
+  const [confirmDeleteNb, setConfirmDeleteNb] = useState(null);
 
   // Filter notebooks by search query
   const query = (searchQuery || '').toLowerCase().trim();
@@ -261,9 +263,7 @@ export default function HomeView({
                         <button
                           onClick={() => {
                             setActiveMenuId(null);
-                            if (confirm(`Hapus notebook "${nb.name}" beserta seluruh berkasnya?`)) {
-                              onDeleteNotebook(nb.id);
-                            }
+                            setConfirmDeleteNb(nb);
                           }}
                           className="w-full text-left px-3 py-1.5 rounded-xl hover:bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center space-x-2 transition cursor-pointer font-medium"
                         >
@@ -456,6 +456,23 @@ export default function HomeView({
           </div>
         </div>
       )}
+
+      {/* MODAL KONFIRMASI HAPUS NOTEBOOK */}
+      <DialogModal
+        isOpen={Boolean(confirmDeleteNb)}
+        onClose={() => setConfirmDeleteNb(null)}
+        title="Hapus Notebook"
+        message={`Apakah Anda yakin ingin menghapus notebook "${confirmDeleteNb?.name}" beserta seluruh berkas dokumennya? Tindakan ini tidak dapat dibatalkan.`}
+        type="danger"
+        confirmText="Ya, Hapus"
+        cancelText="Batal"
+        onConfirm={() => {
+          if (confirmDeleteNb) {
+            onDeleteNotebook(confirmDeleteNb.id);
+            setConfirmDeleteNb(null);
+          }
+        }}
+      />
 
     </main>
   );

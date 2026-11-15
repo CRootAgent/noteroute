@@ -171,59 +171,12 @@ let memoryServer = null;
 
 async function seedDefaultData() {
   try {
-    const wsCount = await Workspace.countDocuments();
-    if (wsCount === 0) {
-      const defaultWs = await Workspace.create({
-        _id: '6727bd89f1a23b0012e84101',
-        name: 'Materi Kuliah Semester 5',
-        description: 'Slide kuliah, modul praktikum, dan riset',
-        document_count: 2
-      });
-
-      const uploadsDir = path.join(__dirname, '..', 'uploads');
-      if (!fs.existsSync(uploadsDir)) {
-        fs.mkdirSync(uploadsDir, { recursive: true });
-      }
-
-      const samplePdfPath = path.join(uploadsDir, 'Slide_Bab3_Distributed_Systems.pdf');
-      const sampleMdPath = path.join(uploadsDir, 'Catatan_Riset_LLM_Router.md');
-
-      if (!fs.existsSync(samplePdfPath)) {
-        fs.writeFileSync(samplePdfPath, 'Bab 3: Sistem Terdistribusi. Teorema CAP membuktikan ketidakmungkinan mencapai konsistensi kuat.');
-      }
-      if (!fs.existsSync(sampleMdPath)) {
-        fs.writeFileSync(sampleMdPath, '# Riset LLM Router\nEvaluasi penghematan token menggunakan failover cerdas...');
-      }
-
-      await Document.create([
-        {
-          _id: '6727be01f1a23b0012e84102',
-          workspace_id: defaultWs.id,
-          filename: 'Slide_Bab3_Distributed_Systems.pdf',
-          file_path: samplePdfPath,
-          file_size: 2457600,
-          file_size_formatted: '2.34 MB',
-          mime_type: 'application/pdf',
-          summary: 'Membahas arsitektur microservices, RPC, dan konsistensi data terdistribusi.',
-          preview_text: 'Bab 3: Sistem Terdistribusi. Teorema CAP membuktikan ketidakmungkinan mencapai konsistensi kuat.',
-          extracted_text: 'Bab 3: Sistem Terdistribusi. Teorema CAP membuktikan ketidakmungkinan mencapai konsistensi kuat secara bersamaan dengan ketersediaan penuh pada partisi jaringan.'
-        },
-        {
-          _id: '6727be15f1a23b0012e84103',
-          workspace_id: defaultWs.id,
-          filename: 'Catatan_Riset_LLM_Router.md',
-          file_path: sampleMdPath,
-          file_size: 15420,
-          file_size_formatted: '15.06 KB',
-          mime_type: 'text/markdown',
-          summary: 'Analisis perbandingan latensi antara Gemini 1.5 Flash dan Groq Llama 3.3.',
-          preview_text: '# Riset LLM Router\nEvaluasi penghematan token menggunakan failover cerdas...',
-          extracted_text: '# Riset LLM Router\nEvaluasi penghematan token menggunakan failover cerdas antara Google Gemini 1.5 Flash dan Groq Llama 3.3.'
-        }
-      ]);
+    const uploadsDir = path.join(__dirname, '..', 'uploads');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
     }
   } catch (e) {
-    console.warn('[DB Seed] Seeding warning:', e.message);
+    console.warn('[DB Init] Directory check warning:', e.message);
   }
 }
 

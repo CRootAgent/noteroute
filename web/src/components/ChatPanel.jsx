@@ -1,17 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const MODELS = [
-  { id: 'gemini', name: 'Gemini 1.5 Flash', badge: '1M Context Free', provider: 'Google AI' },
-  { id: 'groq', name: 'Llama 3.3 70B', badge: '300+ t/s Ultra-Fast', provider: 'Groq Cloud' },
-  { id: 'deepseek', name: 'DeepSeek R1/V3', badge: 'Penalaran Hemat', provider: 'DeepSeek' },
-  { id: '9router_local', name: '9Router Local', badge: 'Port 20128', provider: 'OmniRoute/Local' },
-];
-
 export default function ChatPanel({
   notebook,
   documents,
   messages,
   onSendMessage,
+  onEditMessage,
+  onRegenerateMessage,
   loading,
   selectedModel,
   onSelectModel,
@@ -19,6 +14,8 @@ export default function ChatPanel({
 }) {
   const [inputPrompt, setInputPrompt] = useState('');
   const [copiedId, setCopiedId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editPromptText, setEditPromptText] = useState('');
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -45,26 +42,31 @@ export default function ChatPanel({
     onSendMessage(promptText, selectedModel);
   };
 
+  const handleStartEdit = (id, currentText) => {
+    setEditingId(id);
+    setEditPromptText(currentText);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditPromptText('');
+  };
+
+  const handleSaveAndSendEdit = (msgId) => {
+    if (!editPromptText.trim() || loading) return;
+    if (onEditMessage) {
+      onEditMessage(msgId, editPromptText.trim());
+    } else {
+      onSendMessage(editPromptText.trim(), selectedModel);
+    }
+    setEditingId(null);
+    setEditPromptText('');
+  };
+
   return (
     <main className="flex-1 flex flex-col bg-[var(--nlm-bg)] min-w-0 h-full overflow-hidden select-none">
       
-      {/* Top Header: Active Workspace & Document Context (Target AI selector removed) */}
-      <div className="h-14 border-b border-[var(--nlm-border)] bg-[var(--nlm-surface)]/95 px-4 sm:px-6 flex items-center justify-between z-10 shrink-0">
-        <div className="flex items-center space-x-2.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span className="text-xs sm:text-sm font-bold text-[var(--nlm-text-primary)] truncate max-w-[180px] sm:max-w-xs">
-            {notebook?.name || 'Ruang Kerja NoteRoute'}
-          </span>
-          <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-mono font-semibold">
-            Multi-LLM Router
-          </span>
-        </div>
-
-        <div className="text-[11px] font-mono text-[var(--nlm-text-tertiary)] flex items-center space-x-1.5">
-          <i className="fa-regular fa-file-lines text-xs text-amber-500"></i>
-          <span>{documents.length} Dokumen Rujukan Aktif</span>
-        </div>
-      </div>
+      {/* Topbar removed as requested in User Request #3 */}
 
       {/* Messages Scroll Container */}
       <div
@@ -73,10 +75,14 @@ export default function ChatPanel({
       >
         {!notebook ? (
           <div className="h-full flex flex-col items-center justify-center text-center max-w-sm mx-auto p-6 text-[var(--nlm-text-tertiary)]">
-            <i className="fa-solid fa-folder-open text-3xl mb-3 text-blue-500/40"></i>
-            <h3 className="text-sm font-bold text-[var(--nlm-text-primary)]">Pilih Notebook</h3>
-            <p className="text-xs mt-1 text-[var(--nlm-text-secondary)]">
-              Buka notebook dari beranda untuk mulai bertanya seputar dokumen Anda.
+            <div className="w-16 h-16 rounded-3xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-2xl mb-4 shadow-sm">
+              <i className="fa-solid fa-folder-open"></i>
+            </div>
+            <h3 className="text-sm sm:text-base font-bold text-[var(--nlm-text-primary)]">
+              Pilih atau Buat Notebook
+            </h3>
+            <p className="text-xs mt-1.5 text-[var(--nlm-text-secondary)] leading-relaxed">
+              Buka notebook dari beranda atau buat notebook baru untuk mulai mengunggah dokumen dan berdiskusi dengan AI.
             </p>
           </div>
         ) : messages.length === 0 ? (
@@ -168,11 +174,13 @@ export default function ChatPanel({
           </div>
         ) : (
           /* Active Chat Messages */
-          messages.map((msg) => {
+          messages.map((msg, index) => {
             const isUser = msg.role === 'user';
+            const isEditing = editingId === msg.id;
+
             return (
               <div
-                key={msg.id}
+                key={msg.id || index}
                 className={`flex items-start space-x-3.5 max-w-3xl mx-auto ${
                   isUser ? 'justify-end' : 'justify-start'
                 }`}
@@ -183,64 +191,123 @@ export default function ChatPanel({
                   </div>
                 )}
 
-                <div className={`space-y-2 max-w-2xl ${isUser ? 'items-end' : 'items-start'}`}>
-                  {/* Bubble Content */}
-                  <div
-                    className={`p-4 rounded-3xl text-xs sm:text-sm leading-relaxed ${
-                      isUser
-                        ? 'bg-blue-600 text-white rounded-tr-xs shadow-md shadow-blue-600/10'
-                        : 'bg-[var(--nlm-surface)] border border-[var(--nlm-border)] text-[var(--nlm-text-primary)] rounded-tl-xs shadow-xs'
-                    }`}
-                  >
-                    {/* Heuristic failover badge */}
-                    {msg.failover && (
-                      <div className="mb-2 px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/20 text-amber-500 text-[11px] font-semibold flex items-center space-x-1.5">
-                        <i className="fa-solid fa-shuffle text-xs"></i>
-                        <span>Dialihkan otomatis via Heuristic Failover Router</span>
+                <div className={`space-y-1.5 max-w-2xl ${isUser ? 'items-end' : 'items-start'}`}>
+                  {/* Bubble Content or Inline Edit */}
+                  {isEditing ? (
+                    <div className="p-3 rounded-2xl bg-[var(--nlm-surface)] border border-blue-500 shadow-md space-y-2 w-72 sm:w-96">
+                      <textarea
+                        value={editPromptText}
+                        onChange={(e) => setEditPromptText(e.target.value)}
+                        className="w-full p-2 bg-[var(--nlm-surface-variant)] text-xs text-[var(--nlm-text-primary)] rounded-xl border border-[var(--nlm-border)] focus:outline-none focus:border-blue-500 resize-none h-20"
+                        placeholder="Ubah pertanyaan Anda..."
+                      />
+                      <div className="flex justify-end space-x-2">
+                        <button
+                          type="button"
+                          onClick={handleCancelEdit}
+                          className="px-2.5 py-1 rounded-lg border border-[var(--nlm-border)] text-[11px] text-[var(--nlm-text-secondary)] hover:bg-[var(--nlm-surface-hover)]"
+                        >
+                          Batal
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveAndSendEdit(msg.id)}
+                          className="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-[11px] shadow-xs"
+                        >
+                          Kirim Ulang
+                        </button>
                       </div>
-                    )}
+                    </div>
+                  ) : (
+                    <div
+                      className={`p-4 rounded-3xl text-xs sm:text-sm leading-relaxed ${
+                        isUser
+                          ? 'bg-blue-600 text-white rounded-tr-xs shadow-md shadow-blue-600/10'
+                          : 'bg-[var(--nlm-surface)] border border-[var(--nlm-border)] text-[var(--nlm-text-primary)] rounded-tl-xs shadow-xs'
+                      }`}
+                    >
+                      {/* Heuristic failover badge */}
+                      {msg.failover && (
+                        <div className="mb-2 px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/20 text-amber-500 text-[11px] font-semibold flex items-center space-x-1.5">
+                          <i className="fa-solid fa-shuffle text-xs"></i>
+                          <span>Dialihkan otomatis via Heuristic Failover Router</span>
+                        </div>
+                      )}
 
-                    <div className="whitespace-pre-wrap select-text">{msg.content}</div>
+                      <div className="whitespace-pre-wrap select-text">{msg.content}</div>
 
-                    {/* Verified Citations Badges */}
-                    {msg.citations && msg.citations.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-[var(--nlm-border-subtle)] flex flex-wrap gap-1.5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] block w-full mb-1">
-                          Sumber Rujukan Terverifikasi:
-                        </span>
-                        {msg.citations.map((cite, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => onSelectCitation && onSelectCitation(cite)}
-                            className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-[11px] text-blue-600 dark:text-blue-400 transition cursor-pointer"
-                            title={cite.snippet || 'Klik untuk melihat rujukan'}
-                          >
-                            <i className="fa-solid fa-file-shield text-xs"></i>
-                            <span className="font-semibold truncate max-w-[160px]">{cite.filename}</span>
-                            {cite.page && <span>(Hal. {cite.page})</span>}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                      {/* Verified Citations Badges */}
+                      {msg.citations && msg.citations.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-[var(--nlm-border-subtle)] flex flex-wrap gap-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--nlm-text-tertiary)] block w-full mb-1">
+                            Sumber Rujukan Terverifikasi:
+                          </span>
+                          {msg.citations.map((cite, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => onSelectCitation && onSelectCitation(cite)}
+                              className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-[11px] text-blue-600 dark:text-blue-400 transition cursor-pointer"
+                              title={cite.snippet || 'Klik untuk melihat rujukan'}
+                            >
+                              <i className="fa-solid fa-file-shield text-xs"></i>
+                              <span className="font-semibold truncate max-w-[160px]">{cite.filename || cite.source}</span>
+                              {cite.page && <span>(Hal. {cite.page})</span>}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Actions & Meta */}
                   <div
-                    className={`flex items-center space-x-2 text-[10px] text-[var(--nlm-text-tertiary)] px-1 ${
+                    className={`flex items-center space-x-2.5 text-[10px] text-[var(--nlm-text-tertiary)] px-1 ${
                       isUser ? 'justify-end' : 'justify-start'
                     }`}
                   >
-                    {msg.model_used && (
-                      <span className="font-mono text-[var(--nlm-text-secondary)] font-medium">
-                        {msg.model_used}
-                      </span>
+                    {/* User Edit Prompt Button */}
+                    {isUser && !isEditing && (
+                      <>
+                        <button
+                          onClick={() => handleStartEdit(msg.id, msg.content)}
+                          className="hover:text-[var(--nlm-text-primary)] flex items-center space-x-1 transition cursor-pointer"
+                          title="Edit pertanyaan ini"
+                        >
+                          <i className="fa-solid fa-pen text-[10px]"></i>
+                          <span>Edit</span>
+                        </button>
+                        <span>&bull;</span>
+                      </>
                     )}
-                    <span>&bull;</span>
+
+                    {/* AI Provider Badge & Regenerate Button */}
+                    {!isUser && (
+                      <>
+                        {msg.model_used && (
+                          <span className="font-mono text-[var(--nlm-text-secondary)] font-medium">
+                            {msg.model_used}
+                          </span>
+                        )}
+                        <span>&bull;</span>
+                        <button
+                          onClick={() => onRegenerateMessage && onRegenerateMessage(msg.id)}
+                          disabled={loading}
+                          className="hover:text-blue-500 flex items-center space-x-1 transition cursor-pointer disabled:opacity-40"
+                          title="Muat ulang jawaban AI"
+                        >
+                          <i className={`fa-solid fa-arrows-rotate text-[10px] ${loading ? 'fa-spin' : ''}`}></i>
+                          <span>Muat Ulang</span>
+                        </button>
+                        <span>&bull;</span>
+                      </>
+                    )}
+
+                    {/* Copy Button */}
                     <button
-                      onClick={() => handleCopy(msg.id, msg.content)}
+                      onClick={() => handleCopy(msg.id || index, msg.content)}
                       className="hover:text-[var(--nlm-text-primary)] flex items-center space-x-1 transition cursor-pointer"
                     >
-                      {copiedId === msg.id ? (
+                      {copiedId === (msg.id || index) ? (
                         <>
                           <i className="fa-solid fa-check text-emerald-500 text-xs"></i>
                           <span className="text-emerald-500">Tersalin</span>
@@ -273,38 +340,44 @@ export default function ChatPanel({
             </div>
             <div className="p-4 rounded-3xl bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-tl-xs flex items-center space-x-2 text-xs text-[var(--nlm-text-secondary)]">
               <i className="fa-solid fa-circle-notch fa-spin text-blue-500"></i>
-              <span>Membedah konteks dokumen &amp; merutekan kueri...</span>
+              <span>Membedah konteks dokumen &amp; memanggil AI router...</span>
             </div>
           </div>
         )}
       </div>
 
-      {/* Input Prompt Box */}
-      <div className="p-4 border-t border-[var(--nlm-border)] bg-[var(--nlm-surface)] shrink-0">
-        <form onSubmit={handleSubmit} className="relative max-w-3xl mx-auto">
-          <input
-            type="text"
-            value={inputPrompt}
-            onChange={(e) => setInputPrompt(e.target.value)}
-            disabled={!notebook || loading}
-            placeholder={
-              notebook
-                ? 'Tanyakan isi dokumen rujukan, minta ringkasan, atau ajukan pertanyaan...'
-                : 'Pilih notebook terlebih dahulu'
-            }
-            className="w-full pl-4 pr-12 py-3 bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-2xl text-xs sm:text-sm text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none focus:border-blue-500 transition shadow-inner disabled:opacity-50"
-          />
-          <button
-            type="submit"
-            disabled={!inputPrompt.trim() || loading || !notebook}
-            className="absolute right-2 top-2 p-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white transition shadow-sm shadow-blue-500/20 cursor-pointer"
+      {/* Input Prompt Box - Centered floating modern chatbox (Request #9 & #10) */}
+      <div className="p-3 sm:p-4 bg-[var(--nlm-surface)]/80 backdrop-blur-md shrink-0 border-t border-[var(--nlm-border)]">
+        <div className="max-w-3xl mx-auto">
+          <form
+            onSubmit={handleSubmit}
+            className="flex items-center gap-2 p-1.5 sm:p-2 pl-4 sm:pl-5 bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-3xl shadow-sm focus-within:ring-2 focus-within:ring-blue-500/30 focus-within:border-blue-500 transition-all"
           >
-            <i className="fa-solid fa-paper-plane text-xs"></i>
-          </button>
-        </form>
-        <p className="text-center text-[10px] text-[var(--nlm-text-tertiary)] mt-2">
-          NoteRoute Router memadukan Gemini 1.5 Flash, Groq Cloud, DeepSeek, dan 9Router dengan failover otomatis.
-        </p>
+            <input
+              type="text"
+              value={inputPrompt}
+              onChange={(e) => setInputPrompt(e.target.value)}
+              disabled={!notebook || loading}
+              placeholder={
+                notebook
+                  ? 'Tanyakan isi dokumen rujukan, minta ringkasan, atau ajukan pertanyaan...'
+                  : 'Pilih notebook terlebih dahulu'
+              }
+              className="flex-1 bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none disabled:opacity-50"
+            />
+            <button
+              type="submit"
+              disabled={!inputPrompt.trim() || loading || !notebook}
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-blue-600 hover:bg-blue-700 disabled:opacity-30 disabled:cursor-not-allowed text-white flex items-center justify-center shadow-md shadow-blue-500/25 active:scale-95 transition-transform cursor-pointer shrink-0"
+              title="Kirim Pertanyaan"
+            >
+              <i className="fa-solid fa-paper-plane text-xs"></i>
+            </button>
+          </form>
+          <p className="text-center text-[10px] sm:text-[11px] text-[var(--nlm-text-tertiary)] mt-2">
+            NoteRoute dapat membuat kesalahan. Selalu periksa kembali informasi penting dari dokumen rujukan.
+          </p>
+        </div>
       </div>
     </main>
   );
