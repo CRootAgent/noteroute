@@ -494,53 +494,97 @@ ${contextBlock || '(Tidak ada dokumen rujukan yang aktif pada sesi ini.)'}
 
   // Provider Runners
   async function callGemini(apiKey) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`;
-    const payload = {
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: `${systemInstruction}\n\nRiwayat Percakapan:\n${cleanHistory.map(m => `${m.role}: ${m.content}`).join('\n')}\n\nPertanyaan Pengguna Saat Ini:\n${prompt}` }]
+    const key = apiKey.trim();
+    const modelsToTry = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest'];
+    let lastGeminiErr = null;
+
+    for (const modelName of modelsToTry) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`;
+        const payload = {
+          contents: [
+            {
+              role: 'user',
+              parts: [{ text: `${systemInstruction}\n\nRiwayat Percakapan:\n${cleanHistory.map(m => `${m.role}: ${m.content}`).join('\n')}\n\nPertanyaan Pengguna Saat Ini:\n${prompt}` }]
+            }
+          ]
+        };
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        if (!resp.ok) {
+          const errDetail = data.error?.message || `HTTP ${resp.status}`;
+          if (resp.status === 400 && (errDetail.includes('API_KEY_INVALID') || errDetail.includes('API key not valid'))) {
+            throw new Error(`Kunci API Gemini tidak valid (${errDetail})`);
+          }
+          if (resp.status === 429) {
+            throw new Error(`Batas kuota Gemini tercapai (429 Rate Limit): ${errDetail}`);
+          }
+          throw new Error(`Gemini (${modelName}) error: ${errDetail}`);
         }
-      ]
-    };
-    const resp = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const data = await resp.json();
-    if (!resp.ok) {
-      throw new Error(data.error?.message || `Gemini Error ${resp.status}`);
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) throw new Error('Respon Gemini kosong');
+        return text;
+      } catch (err) {
+        lastGeminiErr = err;
+        // If not a 404 (model not found), break early to allow failover to next provider
+        if (!err.message.includes('404') && !err.message.includes('not found')) {
+          break;
+        }
+      }
     }
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) throw new Error('Respon Gemini kosong');
-    return text;
+    throw lastGeminiErr || new Error('Gagal memanggil Google Gemini');
   }
 
   async function callGroq(apiKey) {
-    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey.trim()}`
-      },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          { role: 'system', content: systemInstruction },
-          ...cleanHistory,
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7
-      })
-    });
-    const data = await resp.json();
-    if (!resp.ok) {
-      throw new Error(data.error?.message || `Groq Error ${resp.status}`);
+    const key = apiKey.trim();
+    // Groq active production models: llama-3.1-8b-instant (widely available for all free tiers), llama-3.3-70b-versatile, openai/gpt-oss-120b
+    const modelsToTry = ['llama-3.1-8b-instant', 'llama-3.3-70b-versatile', 'openai/gpt-oss-120b'];
+    let lastGroqErr = null;
+
+    for (const modelName of modelsToTry) {
+      try {
+        const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${key}`
+          },
+          body: JSON.stringify({
+            model: modelName,
+            messages: [
+              { role: 'system', content: systemInstruction },
+              ...cleanHistory,
+              { role: 'user', content: prompt }
+            ],
+            temperature: 0.7
+          })
+        });
+        const data = await resp.json();
+        if (!resp.ok) {
+          const errMsg = data.error?.message || `Groq Error ${resp.status}`;
+          if (resp.status === 401) {
+            throw new Error(`Kunci API Groq tidak valid (${errMsg})`);
+          }
+          if (resp.status === 429) {
+            throw new Error(`Batas kuota Groq tercapai (429 Rate Limit): ${errMsg}`);
+          }
+          throw new Error(`Groq (${modelName}) error: ${errMsg}`);
+        }
+        const text = data.choices?.[0]?.message?.content;
+        if (!text) throw new Error('Respon Groq kosong');
+        return text;
+      } catch (err) {
+        lastGroqErr = err;
+        if (!err.message.includes('does not exist') && !err.message.includes('not found')) {
+          break;
+        }
+      }
     }
-    const text = data.choices?.[0]?.message?.content;
-    if (!text) throw new Error('Respon Groq kosong');
-    return text;
+    throw lastGroqErr || new Error('Gagal memanggil Groq Cloud');
   }
 
   async function callOpenRouter(apiKey) {
@@ -593,6 +637,26 @@ ${contextBlock || '(Tidak ada dokumen rujukan yang aktif pada sesi ini.)'}
     return text;
   }
 
+  async function call9RouterLocal() {
+    const resp = await fetch('http://127.0.0.1:20128/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'default',
+        messages: [
+          { role: 'system', content: systemInstruction },
+          ...cleanHistory,
+          { role: 'user', content: prompt }
+        ]
+      })
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      throw new Error(`9Router Local Error ${resp.status}`);
+    }
+    return data.choices?.[0]?.message?.content || 'Respon dari model lokal 9Router.';
+  }
+
   async function callCustom(customObj) {
     const url = customObj.baseUrl.endsWith('/chat/completions')
       ? customObj.baseUrl
@@ -620,43 +684,76 @@ ${contextBlock || '(Tidak ada dokumen rujukan yang aktif pada sesi ini.)'}
     return data.choices?.[0]?.message?.content || 'Respon berhasil diterima.';
   }
 
-  // Compile candidate failover list based on configured keys
+  // Compile candidate failover list based strictly on User's Configured Priority (Settings > Atur prioritas AI)
+  let priorityList = [];
+  try {
+    const rawPriority = localStorage.getItem('noteroute_router_priority');
+    if (rawPriority) {
+      const parsed = JSON.parse(rawPriority);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        priorityList = parsed;
+      }
+    }
+  } catch {}
+
+  if (priorityList.length === 0) {
+    priorityList = [
+      { id: 'gemini', name: 'Google Gemini 1.5 Flash' },
+      { id: 'groq', name: 'Groq Cloud' },
+      { id: 'deepseek', name: 'DeepSeek R1/V3' },
+      { id: 'router9', name: '9Router Local (Port 20128)' }
+    ];
+  }
+
   const candidateList = [];
+  const skippedProviders = [];
 
-  // Preferred initial target
-  if (modelTarget === 'gemini' && storedKeys.gemini) {
-    candidateList.push({ name: 'gemini', fn: () => callGemini(storedKeys.gemini), label: 'Google Gemini 1.5 Flash' });
-  } else if (modelTarget === 'groq' && storedKeys.groq) {
-    candidateList.push({ name: 'groq', fn: () => callGroq(storedKeys.groq), label: 'Groq Cloud Llama 3.3 70B' });
-  } else if (modelTarget === 'openrouter' && storedKeys.openrouter) {
-    candidateList.push({ name: 'openrouter', fn: () => callOpenRouter(storedKeys.openrouter), label: 'OpenRouter Free' });
-  } else if (modelTarget === 'deepseek' && storedKeys.deepseek) {
-    candidateList.push({ name: 'deepseek', fn: () => callDeepSeek(storedKeys.deepseek), label: 'DeepSeek R1/V3' });
+  for (const prio of priorityList) {
+    if (prio.id === 'gemini') {
+      if (storedKeys.gemini && storedKeys.gemini.trim()) {
+        candidateList.push({ name: 'gemini', fn: () => callGemini(storedKeys.gemini), label: 'Google Gemini 1.5 Flash' });
+      } else {
+        skippedProviders.push('Google Gemini (Kunci API belum diisi di Pengaturan)');
+      }
+    } else if (prio.id === 'groq') {
+      if (storedKeys.groq && storedKeys.groq.trim()) {
+        candidateList.push({ name: 'groq', fn: () => callGroq(storedKeys.groq), label: 'Groq Cloud' });
+      } else {
+        skippedProviders.push('Groq Cloud (Kunci API belum diisi di Pengaturan)');
+      }
+    } else if (prio.id === 'deepseek') {
+      if (storedKeys.deepseek && storedKeys.deepseek.trim()) {
+        candidateList.push({ name: 'deepseek', fn: () => callDeepSeek(storedKeys.deepseek), label: 'DeepSeek R1/V3' });
+      } else {
+        skippedProviders.push('DeepSeek (Kunci API belum diisi di Pengaturan)');
+      }
+    } else if (prio.id === 'router9') {
+      candidateList.push({ name: '9router_local', fn: () => call9RouterLocal(), label: '9Router Local (Port 20128)' });
+    } else if (prio.id === 'openrouter') {
+      if (storedKeys.openrouter && storedKeys.openrouter.trim()) {
+        candidateList.push({ name: 'openrouter', fn: () => callOpenRouter(storedKeys.openrouter), label: 'OpenRouter Free' });
+      } else {
+        skippedProviders.push('OpenRouter (Kunci API belum diisi di Pengaturan)');
+      }
+    }
   }
 
-  // Add remaining available configured providers as failover
-  if (storedKeys.gemini && !candidateList.some((c) => c.name === 'gemini')) {
-    candidateList.push({ name: 'gemini', fn: () => callGemini(storedKeys.gemini), label: 'Google Gemini 1.5 Flash' });
-  }
-  if (storedKeys.groq && !candidateList.some((c) => c.name === 'groq')) {
-    candidateList.push({ name: 'groq', fn: () => callGroq(storedKeys.groq), label: 'Groq Cloud Llama 3.3 70B' });
-  }
-  if (storedKeys.openrouter && !candidateList.some((c) => c.name === 'openrouter')) {
+  // Also include OpenRouter if configured but not explicitly in priority list
+  if (storedKeys.openrouter && storedKeys.openrouter.trim() && !candidateList.some((c) => c.name === 'openrouter')) {
     candidateList.push({ name: 'openrouter', fn: () => callOpenRouter(storedKeys.openrouter), label: 'OpenRouter Free' });
   }
-  if (storedKeys.deepseek && !candidateList.some((c) => c.name === 'deepseek')) {
-    candidateList.push({ name: 'deepseek', fn: () => callDeepSeek(storedKeys.deepseek), label: 'DeepSeek R1/V3' });
-  }
+
+  // Also append custom APIs if any
   for (const cApi of customApis) {
     if (cApi.baseUrl) {
       candidateList.push({ name: cApi.name, fn: () => callCustom(cApi), label: cApi.name });
     }
   }
 
-  // If user has not configured any API keys yet:
+  // If user has not configured any usable API keys yet:
   if (candidateList.length === 0) {
     return {
-      answer: `⚠️ Kunci API AI belum dikonfigurasi.\n\nUntuk memulai tanya-jawab cerdas dengan dokumen Anda, silakan buka menu profil (kanan atas) > **Pengaturan** > **Mengatur Kunci API**, lalu masukkan kunci API Anda (misalnya Google Gemini gratis dari Google AI Studio atau Groq Cloud).\n\nSetelah disimpan, NoteRoute akan langsung terhubung ke model AI untuk memproses berkas dan pertanyaan Anda.`,
+      answer: `⚠️ **Kunci API AI Belum Dikonfigurasi**\n\nUntuk memulai tanya-jawab cerdas dengan dokumen rujukan Anda:\n1. Buka menu profil (kanan atas) > **Pengaturan** > **Mengatur Kunci API**.\n2. Masukkan kunci API Anda (misalnya Google Gemini gratis dari [Google AI Studio](https://aistudio.google.com) atau Groq Cloud dari [Groq Console](https://console.groq.com/keys)).\n3. Simpan, dan NoteRoute akan otomatis memproses pertanyaan Anda sesuai urutan prioritas yang Anda atur.`,
       citations: [],
       routing_info: {
         provider_name: 'Belum Dikonfigurasi',
@@ -665,9 +762,8 @@ ${contextBlock || '(Tidak ada dokumen rujukan yang aktif pada sesi ini.)'}
     };
   }
 
-  // Execute with smart failover
-  let lastError = null;
-  let failoverCount = 0;
+  // Execute with smart failover and track attempt trail
+  const attempts = [];
 
   for (let i = 0; i < candidateList.length; i++) {
     const candidate = candidateList[i];
@@ -676,12 +772,13 @@ ${contextBlock || '(Tidak ada dokumen rujukan yang aktif pada sesi ini.)'}
       return {
         answer,
         citations: citations.slice(0, 3),
-        failover: failoverCount > 0,
+        failover: attempts.length > 0,
         model_used: candidate.name,
         routing_info: {
           selected_provider: candidate.name,
           provider_name: candidate.label,
-          failover_occurred: failoverCount > 0,
+          failover_occurred: attempts.length > 0,
+          attempt_trail: attempts,
           latency_ms: 320 + Math.round(Math.random() * 200),
           tokens: {
             prompt: Math.round(prompt.length / 3),
@@ -693,17 +790,23 @@ ${contextBlock || '(Tidak ada dokumen rujukan yang aktif pada sesi ini.)'}
       };
     } catch (err) {
       console.warn(`[apiSendChat] Provider ${candidate.label} gagal:`, err.message);
-      lastError = err;
-      failoverCount++;
+      attempts.push({ provider: candidate.label, error: err.message });
     }
   }
 
+  // When all configured candidates failed, provide crystal-clear diagnostic
+  const attemptSummary = attempts.map((a, idx) => `${idx + 1}. **${a.provider}**: ${a.error}`).join('\n');
+  const skippedSummary = skippedProviders.length > 0
+    ? `\n\n📌 **Provider Prioritas yang Dilewati (Kunci Belum Diisi):**\n${skippedProviders.map(s => `- ${s}`).join('\n')}`
+    : '';
+
   return {
-    answer: `Gagal memproses respon dari provider AI yang dikonfigurasi (${lastError?.message || 'Koneksi gagal'}). Periksa kembali validitas API key Anda di Pengaturan.`,
+    answer: `⚠️ **Gagal Memproses Respons Router AI**\n\nNoteRoute telah mencoba memproses pertanyaan Anda sesuai urutan prioritas yang Anda atur, namun terjadi kendala pada provider berikut:\n\n${attemptSummary}${skippedSummary}\n\n👉 **Saran Perbaikan:**\n- Buka menu **Pengaturan** (ikon profil kanan atas) > **Mengatur Kunci API**.\n- Pastikan kunci API Gemini atau Groq sudah dimasukkan dengan benar tanpa spasi tambahan.\n- Untuk Google Gemini gratis, dapatkan kunci di [aistudio.google.com](https://aistudio.google.com).\n- Untuk Groq Cloud gratis, dapatkan kunci di [console.groq.com/keys](https://console.groq.com/keys).`,
     citations: [],
     routing_info: {
       provider_name: 'Error',
-      failover_occurred: true
+      failover_occurred: true,
+      attempts
     }
   };
 }

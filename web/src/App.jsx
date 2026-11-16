@@ -22,7 +22,9 @@ import {
 
 export default function App() {
   // Navigation View: 'home' (Beranda Notebook) vs 'workspace' (Workspace 3-Kolom)
-  const [currentView, setCurrentView] = useState('home');
+  const [currentView, setCurrentView] = useState(() => {
+    return localStorage.getItem('noteroute_current_view') || 'home';
+  });
 
   // Theme: 'dark', 'light', 'system'
   const [theme, setTheme] = useState(() => {
@@ -44,14 +46,33 @@ export default function App() {
 
   // Notebooks / Workspaces
   const [notebooks, setNotebooks] = useState([]);
-  const [activeNotebook, setActiveNotebook] = useState(null);
+  const [activeNotebook, setActiveNotebook] = useState(() => {
+    try {
+      const saved = localStorage.getItem('noteroute_active_notebook');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
 
-  // Documents & Chat Messages
+  // Documents & Chat Messages (Persisted across refreshes & tab closes)
   const [documents, setDocuments] = useState([]);
   const [selectedDocIds, setSelectedDocIds] = useState([]);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    try {
+      const savedNb = localStorage.getItem('noteroute_active_notebook');
+      if (savedNb) {
+        const nb = JSON.parse(savedNb);
+        if (nb?.id) {
+          const savedChat = localStorage.getItem(`noteroute_chat_messages_${nb.id}`);
+          if (savedChat) return JSON.parse(savedChat);
+        }
+      }
+    } catch {}
+    return [];
+  });
   const [selectedModel, setSelectedModel] = useState('gemini');
   const [loadingChat, setLoadingChat] = useState(false);
 
@@ -153,13 +174,25 @@ export default function App() {
     loadNotebooks(user);
   }, [user]);
 
-  // 3. Load Documents when activeNotebook changes
+  // 3. Load Documents & Persisted Chat when activeNotebook changes
   useEffect(() => {
     if (!activeNotebook?.id) {
       setDocuments([]);
       setSelectedDocIds([]);
       setMessages([]);
       return;
+    }
+
+    // Load persisted chat history for this specific notebook
+    try {
+      const savedChat = localStorage.getItem(`noteroute_chat_messages_${activeNotebook.id}`);
+      if (savedChat) {
+        setMessages(JSON.parse(savedChat));
+      } else {
+        setMessages([]);
+      }
+    } catch {
+      setMessages([]);
     }
 
     const loadDocs = async () => {
@@ -173,6 +206,30 @@ export default function App() {
     };
 
     loadDocs();
+  }, [activeNotebook?.id]);
+
+  // Persist chat messages whenever messages array updates for active notebook
+  useEffect(() => {
+    if (activeNotebook?.id && Array.isArray(messages)) {
+      try {
+        localStorage.setItem(`noteroute_chat_messages_${activeNotebook.id}`, JSON.stringify(messages));
+      } catch (e) {
+        console.warn('Gagal menyimpan riwayat chat:', e);
+      }
+    }
+  }, [messages, activeNotebook?.id]);
+
+  // Sync currentView and activeNotebook to localStorage
+  useEffect(() => {
+    localStorage.setItem('noteroute_current_view', currentView);
+  }, [currentView]);
+
+  useEffect(() => {
+    if (activeNotebook) {
+      localStorage.setItem('noteroute_active_notebook', JSON.stringify(activeNotebook));
+    } else {
+      localStorage.removeItem('noteroute_active_notebook');
+    }
   }, [activeNotebook]);
 
   // Save notes to localStorage
@@ -220,6 +277,9 @@ export default function App() {
   const handleDeleteNotebook = async (id) => {
     try {
       await apiDeleteWorkspace(id);
+      try {
+        localStorage.removeItem(`noteroute_chat_messages_${id}`);
+      } catch {}
       const remaining = notebooks.filter((nb) => nb.id !== id);
       setNotebooks(remaining);
       if (activeNotebook?.id === id) {
@@ -433,6 +493,25 @@ export default function App() {
     }
   };
 
+  // Clear chat history for active notebook
+  const handleClearChat = () => {
+    if (!activeNotebook?.id) return;
+    setDialogModal({
+      isOpen: true,
+      title: 'Bersihkan Riwayat Percakapan',
+      message: 'Apakah Anda yakin ingin mengosongkan riwayat percakapan notebook ini? Tindakan ini tidak dapat dibatalkan.',
+      type: 'confirm',
+      confirmText: 'Ya, Bersihkan',
+      cancelText: 'Batal',
+      onConfirm: () => {
+        setMessages([]);
+        try {
+          localStorage.removeItem(`noteroute_chat_messages_${activeNotebook.id}`);
+        } catch {}
+      }
+    });
+  };
+
   // 7. Studio Actions
   const handleCreateStudyTool = (toolName) => {
     const promptText = `Buatkan ${toolName} yang mendalam dan terstruktur rapi berdasarkan materi berkas yang dipilih.`;
@@ -491,6 +570,8 @@ export default function App() {
     setMessages([]);
     localStorage.removeItem('noteroute_user');
     localStorage.removeItem('noteroute_auth_user');
+    localStorage.removeItem('noteroute_active_notebook');
+    localStorage.removeItem('noteroute_current_view');
 
     const landingUrl =
       window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -583,6 +664,7 @@ export default function App() {
             onSendMessage={handleSendMessage}
             onEditMessage={handleEditMessage}
             onRegenerateMessage={handleRegenerateMessage}
+            onClearChat={handleClearChat}
             loadingChat={loadingChat}
             selectedModel={selectedModel}
             onSelectModel={setSelectedModel}

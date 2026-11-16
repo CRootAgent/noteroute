@@ -7,6 +7,7 @@ export default function ChatPanel({
   onSendMessage,
   onEditMessage,
   onRegenerateMessage,
+  onClearChat,
   loading,
   selectedModel,
   onSelectModel,
@@ -174,17 +175,35 @@ export default function ChatPanel({
           </div>
         ) : (
           /* Active Chat Messages */
-          messages.map((msg, index) => {
-            const isUser = msg.role === 'user';
-            const isEditing = editingId === msg.id;
+          <>
+            {onClearChat && (
+              <div className="flex items-center justify-between max-w-3xl mx-auto pb-3 border-b border-[var(--nlm-border)]/60 select-none">
+                <span className="text-[11px] text-[var(--nlm-text-tertiary)] flex items-center space-x-1.5">
+                  <i className="fa-solid fa-clock-rotate-left text-[10px] text-blue-500"></i>
+                  <span>Riwayat Percakapan Tersimpan ({messages.length} pesan)</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={onClearChat}
+                  className="text-[11px] text-[var(--nlm-text-tertiary)] hover:text-rose-500 transition cursor-pointer flex items-center space-x-1 px-2.5 py-1 rounded-xl border border-[var(--nlm-border)] bg-[var(--nlm-surface)] hover:bg-[var(--nlm-surface-hover)] shadow-2xs"
+                  title="Bersihkan riwayat percakapan notebook ini"
+                >
+                  <i className="fa-regular fa-trash-can text-[10px]"></i>
+                  <span>Bersihkan Chat</span>
+                </button>
+              </div>
+            )}
+            {messages.map((msg, index) => {
+              const isUser = msg.role === 'user';
+              const isEditing = editingId === msg.id;
 
-            return (
-              <div
-                key={msg.id || index}
-                className={`flex items-start space-x-3.5 max-w-3xl mx-auto ${
-                  isUser ? 'justify-end' : 'justify-start'
-                }`}
-              >
+              return (
+                <div
+                  key={msg.id || index}
+                  className={`flex items-start space-x-3.5 max-w-3xl mx-auto ${
+                    isUser ? 'justify-end' : 'justify-start'
+                  }`}
+                >
                 {!isUser && (
                   <div className="w-8 h-8 rounded-xl bg-blue-600/15 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center shrink-0 mt-0.5 text-xs shadow-xs">
                     <i className="fa-solid fa-robot"></i>
@@ -329,8 +348,9 @@ export default function ChatPanel({
                 )}
               </div>
             );
-          })
-        )}
+          })}
+        </>
+      )}
 
         {/* Loading Indicator */}
         {loading && (
