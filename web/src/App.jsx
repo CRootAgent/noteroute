@@ -19,6 +19,7 @@ import {
   apiSendChat,
   apiCheckHealth
 } from './services/api';
+import { setAuthCookie, removeAuthCookie, getJSCroot } from './services/jscroot';
 
 export default function App() {
   // Navigation View: 'home' (Beranda Notebook) vs 'workspace' (Workspace 3-Kolom)
@@ -149,6 +150,11 @@ export default function App() {
     root.classList.add(aiMode === 'document' ? 'mode-doc' : 'mode-general');
     localStorage.setItem('noteroute_theme', theme);
   }, [theme, aiMode]);
+
+  // Initialize JSCroot (CRootJS) on mount
+  useEffect(() => {
+    getJSCroot().catch((err) => console.warn('JSCroot init:', err));
+  }, []);
 
   // 2. Load Notebooks / Workspaces for Logged In User
   const loadNotebooks = async (targetUser = user) => {
@@ -568,6 +574,7 @@ export default function App() {
     setUser(userData);
     localStorage.setItem('noteroute_user', JSON.stringify(userData));
     localStorage.setItem('noteroute_auth_user', JSON.stringify(userData));
+    setAuthCookie(userData.token || userData.email || 'active-session');
     loadNotebooks(userData);
     setWelcomeToast(`Selamat datang, ${userData.name}!`);
     setTimeout(() => {
@@ -598,6 +605,7 @@ export default function App() {
     localStorage.removeItem('noteroute_auth_user');
     localStorage.removeItem('noteroute_active_notebook');
     localStorage.removeItem('noteroute_current_view');
+    removeAuthCookie();
 
     const landingUrl =
       window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'

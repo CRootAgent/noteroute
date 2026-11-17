@@ -3,6 +3,7 @@
  * Supports both Live Express Backend and Direct Client-Side Multi-LLM Gateway Router
  */
 import { extractPdfText } from './pdfExtractor';
+import { setAuthCookie, getAuthCookie, removeAuthCookie, jscrootGet } from './jscroot';
 
 const getBaseUrl = () => {
   if (import.meta.env.VITE_API_URL) {
@@ -174,6 +175,7 @@ export async function apiRegister(name, email, password) {
     const users = getLocalUsers();
     users.push({ name, email, password, avatar: null });
     saveLocalUsers(users);
+    setAuthCookie(email);
     return res;
   } catch (err) {
     if (err.status === 405 || err.status === 404 || !err.status) {
@@ -190,6 +192,7 @@ export async function apiRegister(name, email, password) {
       };
       users.push(newUser);
       saveLocalUsers(users);
+      setAuthCookie(email);
       return {
         success: true,
         message: 'Registrasi berhasil (Mode Mandiri)',
@@ -202,10 +205,12 @@ export async function apiRegister(name, email, password) {
 
 export async function apiLogin(email, password) {
   try {
-    return await apiRequest('/auth/login', {
+    const res = await apiRequest('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password })
     });
+    setAuthCookie(email);
+    return res;
   } catch (err) {
     if (err.status === 405 || err.status === 404 || !err.status) {
       const users = getLocalUsers();
@@ -216,6 +221,7 @@ export async function apiLogin(email, password) {
       if (found.password !== password) {
         throw new Error('Kata sandi yang Anda masukkan salah.');
       }
+      setAuthCookie(found.email);
       return {
         success: true,
         message: 'Login berhasil (Mode Mandiri)',
@@ -914,10 +920,20 @@ export async function apiCheckHealth() {
     const res = await apiRequest('/health');
     return res.data || {};
   } catch {
+    // Try pinging Alwaysdata via JSCroot getJSON
+    if (typeof window !== 'undefined' && window.jscroot?.getJSON) {
+      try {
+        window.jscroot.getJSON('https://noteroute.alwaysdata.net/api/health', '', '', (res) => {
+          if (res?.data) console.info('🚀 [JSCroot Alwaysdata Health]:', res.data);
+        });
+      } catch (e) {
+        // ignore
+      }
+    }
     return {
-      status: 'healthy',
-      database: 'standalone',
-      mode: 'Client Storage Active'
+      status: 'standby',
+      database: 'client-isolated',
+      version: '2.0.0-react'
     };
   }
 }
