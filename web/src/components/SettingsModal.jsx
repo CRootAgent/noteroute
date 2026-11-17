@@ -248,6 +248,42 @@ export default function SettingsModal({
             }
           }));
         }
+      } else if (provider === 'router9') {
+        const localUrl = (apiKeys.router9 || 'http://localhost:20128').replace(/\/$/, '');
+        try {
+          const resp = await fetch(`${localUrl}/v1/models`, { method: 'GET' });
+          const latency = Date.now() - start;
+          if (resp.ok) {
+            setTestStatus((prev) => ({
+              ...prev,
+              router9: { status: 'success', message: 'Tersambung Aktif ke 9Router / OmniRoute Local', latency }
+            }));
+          } else {
+            throw new Error(`Port lokal merespons HTTP ${resp.status}`);
+          }
+        } catch {
+          // Fallback check Ollama /api/tags
+          try {
+            const respOllama = await fetch(`${localUrl}/api/tags`, { method: 'GET' });
+            const latency = Date.now() - start;
+            if (respOllama.ok) {
+              setTestStatus((prev) => ({
+                ...prev,
+                router9: { status: 'success', message: 'Tersambung Aktif ke Ollama Local Bridge', latency }
+              }));
+            } else {
+              throw new Error('Port lokal tidak merespons.');
+            }
+          } catch {
+            setTestStatus((prev) => ({
+              ...prev,
+              router9: {
+                status: 'error',
+                message: 'Bridge lokal (port 20128 / 11434) tidak aktif. Jalankan Ollama / 9Router di komputer.'
+              }
+            }));
+          }
+        }
       }
     } catch (err) {
       setTestStatus((prev) => ({
@@ -343,18 +379,32 @@ export default function SettingsModal({
       color: 'bg-emerald-600'
     },
     {
+      id: 'openrouter',
+      name: 'OpenRouter Free Tier (Llama 3.3 & Mistral)',
+      desc: 'Failover 3: Akses model open-source :free berkecepatan tinggi tanpa kartu kredit',
+      tag: 'Failover 3',
+      color: 'bg-purple-600'
+    },
+    {
       id: 'router9',
       name: '9Router / OmniRoute Local (Port 20128)',
       desc: 'Cadangan Offline: Model lokal Ollama / LM Studio tanpa kuota internet',
       tag: 'Cadangan Offline',
-      color: 'bg-purple-600'
+      color: 'bg-slate-700'
     }
   ];
 
   const [routerPriorities, setRouterPriorities] = useState(() => {
     try {
       const saved = localStorage.getItem('noteroute_router_priority');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const list = JSON.parse(saved);
+        if (!list.some((p) => p.id === 'openrouter')) {
+          const openRouterDef = defaultPriorities.find((p) => p.id === 'openrouter');
+          if (openRouterDef) list.splice(3, 0, openRouterDef);
+        }
+        return list;
+      }
     } catch {}
     return defaultPriorities;
   });
@@ -1352,6 +1402,100 @@ export default function SettingsModal({
                           <li>Kunjungi <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" className="text-blue-500 underline">openrouter.ai/keys</a>.</li>
                           <li>Masuk dengan Google atau GitHub.</li>
                           <li>Klik <strong>Create Key</strong> dan salin kunci <code>sk-or-...</code>.</li>
+                        </ol>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 5. 9Router / OmniRoute Local Bridge */}
+                  <div className="p-3.5 rounded-2xl border border-[var(--nlm-border)] bg-[var(--nlm-surface-variant)] space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-7 h-7 rounded-lg bg-slate-700 text-white flex items-center justify-center font-bold text-xs">
+                          9R
+                        </div>
+                        <div>
+                          <div className="font-bold text-xs text-[var(--nlm-text-primary)]">
+                            9Router / OmniRoute Local (Port 20128 &amp; Ollama)
+                          </div>
+                          <div className="text-[10px] text-emerald-500 font-semibold">
+                            Model Lokal Offline &bull; Bebas Internet &amp; Tanpa Kuota Token
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setExpandedTutorial(expandedTutorial === 'router9' ? null : 'router9')}
+                        className="text-[11px] text-blue-500 hover:underline flex items-center space-x-1"
+                      >
+                        <i className="fa-solid fa-circle-question"></i>
+                        <span>Panduan Setup</span>
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={apiKeys.router9 || ''}
+                        onChange={(e) => handleApiKeyChange('router9', e.target.value)}
+                        placeholder="http://localhost:20128 (atau Ollama: http://localhost:11434)"
+                        className="flex-1 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] font-mono focus:border-blue-500 focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleTestApiKey('router9')}
+                        disabled={testStatus.router9?.status === 'testing'}
+                        className="px-3 py-2 rounded-xl bg-slate-700/20 hover:bg-slate-700/30 text-[var(--nlm-text-primary)] font-semibold text-xs border border-[var(--nlm-border)] transition cursor-pointer flex items-center space-x-1.5 shrink-0 disabled:opacity-50"
+                        title="Uji koneksi ke 9Router / OmniRoute / Ollama lokal"
+                      >
+                        {testStatus.router9?.status === 'testing' ? (
+                          <>
+                            <i className="fa-solid fa-circle-notch fa-spin text-xs"></i>
+                            <span>Menguji...</span>
+                          </>
+                        ) : (
+                          <>
+                            <i className="fa-solid fa-plug text-xs"></i>
+                            <span>Uji Port</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {testStatus.router9 && (
+                      <div className={`px-2.5 py-1.5 rounded-xl text-[11px] flex items-center justify-between font-medium ${
+                        testStatus.router9.status === 'success'
+                          ? 'bg-emerald-500/15 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400'
+                          : testStatus.router9.status === 'testing'
+                          ? 'bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400'
+                          : 'bg-rose-500/15 border border-rose-500/25 text-rose-600 dark:text-rose-400'
+                      }`}>
+                        <div className="flex items-center space-x-1.5 truncate">
+                          <i className={`fa-solid ${
+                            testStatus.router9.status === 'success'
+                              ? 'fa-circle-check text-emerald-500'
+                              : testStatus.router9.status === 'testing'
+                              ? 'fa-circle-notch fa-spin text-blue-500'
+                              : 'fa-circle-exclamation text-rose-500'
+                          }`}></i>
+                          <span className="truncate">{testStatus.router9.message}</span>
+                        </div>
+                        {testStatus.router9.latency && (
+                          <span className="font-mono text-[10px] shrink-0 font-bold ml-2">
+                            {testStatus.router9.latency} ms
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {expandedTutorial === 'router9' && (
+                      <div className="p-3 rounded-xl bg-[var(--nlm-surface)] border border-slate-500/20 text-[11px] text-[var(--nlm-text-secondary)] space-y-1 animate-fadeIn">
+                        <div className="font-bold text-slate-700 dark:text-slate-300">Cara Menjalankan 9Router / OmniRoute / Ollama:</div>
+                        <ol className="list-decimal list-inside space-y-0.5">
+                          <li>Jalankan bridge 9Router di port <strong>20128</strong>, atau pasang Ollama dari <a href="https://ollama.com" target="_blank" rel="noreferrer" className="text-blue-500 underline">ollama.com</a> di port <strong>11434</strong>.</li>
+                          <li>Jika menggunakan Ollama, jalankan model via terminal: <code>ollama run qwen2.5</code> atau <code>ollama run llama3.2</code>.</li>
+                          <li>Isi URL endpoint di atas dengan <code>http://localhost:20128</code> atau <code>http://localhost:11434</code>.</li>
+                          <li>Klik tombol <strong>Uji Port</strong> untuk memverifikasi model lokal tersambung.</li>
                         </ol>
                       </div>
                     )}

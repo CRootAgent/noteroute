@@ -361,6 +361,7 @@ export default function App() {
         citations: res.citations || [],
         model_used: res.model_used || modelTarget,
         failover: res.failover || false,
+        failover_reason: res.failover_reason || null,
         created_at: new Date().toISOString()
       };
 
@@ -416,6 +417,7 @@ export default function App() {
         citations: res.citations || [],
         model_used: res.model_used || selectedModel,
         failover: res.failover || false,
+        failover_reason: res.failover_reason || null,
         created_at: new Date().toISOString()
       };
 
@@ -478,6 +480,7 @@ export default function App() {
         citations: res.citations || [],
         model_used: res.model_used || selectedModel,
         failover: res.failover || false,
+        failover_reason: res.failover_reason || null,
         created_at: new Date().toISOString()
       };
 

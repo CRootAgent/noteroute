@@ -269,9 +269,16 @@ export default function ChatPanel({
                     >
                       {/* Heuristic failover badge */}
                       {msg.failover && (
-                        <div className="mb-2 px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/20 text-amber-500 text-[11px] font-semibold flex items-center space-x-1.5">
-                          <i className="fa-solid fa-shuffle text-xs"></i>
-                          <span>Dialihkan otomatis via Heuristic Failover Router</span>
+                        <div className="mb-2 px-2.5 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/20 text-amber-500 text-[11px] font-semibold space-y-0.5">
+                          <div className="flex items-center space-x-1.5">
+                            <i className="fa-solid fa-shuffle text-xs"></i>
+                            <span>Dialihkan otomatis via Heuristic Failover Router</span>
+                          </div>
+                          {msg.failover_reason && (
+                            <div className="text-[10px] text-amber-400/90 font-normal">
+                              Alasan: {msg.failover_reason}
+                            </div>
+                          )}
                         </div>
                       )}
 

@@ -2,6 +2,7 @@
  * NoteRoute API Client with Resilient Hybrid Adapter
  * Supports both Live Express Backend and Direct Client-Side Multi-LLM Gateway Router
  */
+import { extractPdfText } from './pdfExtractor';
 
 const getBaseUrl = () => {
   if (import.meta.env.VITE_API_URL) {
@@ -367,13 +368,16 @@ export async function apiUploadDocument(workspaceId, file) {
     console.info('[apiUploadDocument] Memproses dokumen di peramban:', err.message);
     let extractedText = '';
     try {
-      if (file.type.includes('text') || file.name.endsWith('.md') || file.name.endsWith('.txt')) {
+      const fileNameLower = (file.name || '').toLowerCase();
+      if (fileNameLower.endsWith('.pdf') || file.type.includes('pdf')) {
+        extractedText = await extractPdfText(file);
+      } else if (file.type.includes('text') || fileNameLower.endsWith('.md') || fileNameLower.endsWith('.txt')) {
         extractedText = await file.text();
       } else {
         extractedText = `Teks dokumen "${file.name}" (Ukuran ${(file.size / 1024).toFixed(1)} KB) berhasil diekstrak dan siap dianalisis oleh AI router.`;
       }
-    } catch {
-      extractedText = `Ringkasan berkas ${file.name}`;
+    } catch (e) {
+      extractedText = `Ringkasan berkas ${file.name}: ${e.message}`;
     }
 
     const localDoc = {
@@ -796,6 +800,7 @@ ${contextBlock || '(Tidak ada berkas materi/dokumen yang aktif pada sesi ini.)'}
         answer,
         citations: citations.slice(0, 3),
         failover: attempts.length > 0,
+        failover_reason: attempts.length > 0 ? attempts.map((a) => `${a.provider} gagal (${a.error})`).join(', ') : null,
         model_used: candidate.name,
         routing_info: {
           selected_provider: candidate.name,
