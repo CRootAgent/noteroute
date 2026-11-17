@@ -69,19 +69,35 @@ async function callGemini(prompt, systemInstruction, history = [], options = {})
     parts: [{ text: fullUserPrompt }]
   });
 
-  const response = await axios.post(
-    endpoint,
-    { contents },
-    { timeout: options.timeout || 15000 }
-  );
+  const modelsToTry = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+  let lastError = null;
 
-  const candidate = response.data?.candidates?.[0];
-  const responseText = candidate?.content?.parts?.[0]?.text || 'Tidak ada teks respons yang dihasilkan.';
+  for (const modelName of modelsToTry) {
+    try {
+      const endpoint = `${baseUrl}/models/${modelName}:generateContent?key=${apiKey}`;
+      const response = await axios.post(
+        endpoint,
+        { contents },
+        { timeout: options.timeout || 15000 }
+      );
 
-  return {
-    responseText,
-    modelUsed: MODEL_NAMES.gemini
-  };
+      const candidate = response.data?.candidates?.[0];
+      const responseText = candidate?.content?.parts?.[0]?.text || 'Tidak ada teks respons yang dihasilkan.';
+
+      return {
+        responseText,
+        modelUsed: `gemini (${modelName})`
+      };
+    } catch (err) {
+      lastError = err;
+      const errMsg = err.response?.data?.error?.message || err.message;
+      if (!errMsg.includes('404') && !errMsg.includes('not found') && !errMsg.includes('no longer available')) {
+        break;
+      }
+    }
+  }
+
+  throw lastError || new Error('Gagal memanggil Google Gemini');
 }
 
 async function callGroq(prompt, systemInstruction, history = [], options = {}) {

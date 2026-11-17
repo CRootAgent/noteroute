@@ -522,17 +522,54 @@ ${contextBlock || '(Tidak ada berkas materi/dokumen yang aktif pada sesi ini.)'}
   // Provider Runners
   async function callGemini(apiKey) {
     const key = apiKey.trim();
-    const modelsToTry = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest'];
+    // Default list prioritizing modern production models (including gemini-3.8-flash recommended by Google)
+    let modelsToTry = [
+      'gemini-3.8-flash',
+      'gemini-2.5-flash',
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-1.5-flash-8b',
+      'gemini-1.5-pro'
+    ];
+
+    // Attempt dynamic discovery from Google AI Studio /models endpoint
+    try {
+      const listResp = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${key}`
+      );
+      if (listResp.ok) {
+        const listData = await listResp.json();
+        const available = (listData.models || [])
+          .filter((m) => m.supportedGenerationMethods?.includes('generateContent'))
+          .map((m) => m.name.replace(/^models\//, ''));
+
+        const flash = available.filter((m) => m.includes('flash'));
+        const others = available.filter((m) => !m.includes('flash'));
+        if (flash.length > 0 || others.length > 0) {
+          modelsToTry = [...flash, ...others];
+        }
+      }
+    } catch (_) {
+      // Continue with default fallback list
+    }
+
     let lastGeminiErr = null;
 
-    for (const modelName of modelsToTry) {
+    for (let i = 0; i < modelsToTry.length; i++) {
+      const modelName = modelsToTry[i];
       try {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`;
         const payload = {
           contents: [
             {
               role: 'user',
-              parts: [{ text: `${systemInstruction}\n\nRiwayat Percakapan:\n${cleanHistory.map(m => `${m.role}: ${m.content}`).join('\n')}\n\nPertanyaan Pengguna Saat Ini:\n${prompt}` }]
+              parts: [
+                {
+                  text: `${systemInstruction}\n\nRiwayat Percakapan:\n${cleanHistory
+                    .map((m) => `${m.role}: ${m.content}`)
+                    .join('\n')}\n\nPertanyaan Pengguna Saat Ini:\n${prompt}`
+                }
+              ]
             }
           ]
         };
@@ -544,12 +581,22 @@ ${contextBlock || '(Tidak ada berkas materi/dokumen yang aktif pada sesi ini.)'}
         const data = await resp.json();
         if (!resp.ok) {
           const errDetail = data.error?.message || `HTTP ${resp.status}`;
-          if (resp.status === 400 && (errDetail.includes('API_KEY_INVALID') || errDetail.includes('API key not valid'))) {
+          if (
+            resp.status === 400 &&
+            (errDetail.includes('API_KEY_INVALID') || errDetail.includes('API key not valid'))
+          ) {
             throw new Error(`Kunci API Gemini tidak valid (${errDetail})`);
           }
           if (resp.status === 429) {
             throw new Error(`Batas kuota Gemini tercapai (429 Rate Limit): ${errDetail}`);
           }
+
+          // If Google recommends a specific newer model in error message, inject and try it immediately
+          const recMatch = errDetail.match(/use\s+models\/([a-zA-Z0-9._-]+)/i);
+          if (recMatch && recMatch[1] && !modelsToTry.includes(recMatch[1])) {
+            modelsToTry.splice(i + 1, 0, recMatch[1]);
+          }
+
           throw new Error(`Gemini (${modelName}) error: ${errDetail}`);
         }
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -557,8 +604,14 @@ ${contextBlock || '(Tidak ada berkas materi/dokumen yang aktif pada sesi ini.)'}
         return text;
       } catch (err) {
         lastGeminiErr = err;
-        // If not a 404 (model not found), break early to allow failover to next provider
-        if (!err.message.includes('404') && !err.message.includes('not found')) {
+        const isDeprecationOrNotFound =
+          err.message.includes('404') ||
+          err.message.includes('not found') ||
+          err.message.includes('no longer available') ||
+          err.message.includes('update your code');
+
+        // Only break early if it's an invalid API key or rate limit
+        if (!isDeprecationOrNotFound) {
           break;
         }
       }

@@ -175,9 +175,16 @@ export default function SettingsModal({
         const data = await resp.json();
         const latency = Date.now() - start;
         if (resp.ok && data.models) {
+          const activeModel =
+            data.models.find((m) => m.name.includes('flash'))?.name.replace('models/', '') ||
+            'gemini-3.8-flash';
           setTestStatus((prev) => ({
             ...prev,
-            gemini: { status: 'success', message: 'Tersambung Aktif ke Google Gemini', latency }
+            gemini: {
+              status: 'success',
+              message: `Tersambung Aktif ke Google Gemini (${activeModel})`,
+              latency
+            }
           }));
         } else {
           setTestStatus((prev) => ({
