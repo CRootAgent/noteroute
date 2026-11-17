@@ -24,14 +24,15 @@ export default function WorkspaceView({
   selectedModel,
   onSelectModel,
   onCreateStudyTool,
-  onGenerateAudio,
   onEditMessage,
   onRegenerateMessage,
   onClearChat,
   isLeftSidebarOpen,
   isRightSidebarOpen,
   onToggleLeftSidebar,
-  onToggleRightSidebar
+  onToggleRightSidebar,
+  aiMode,
+  generatingTool
 }) {
   return (
     <div className="flex-1 flex overflow-hidden relative h-full">
@@ -107,6 +108,7 @@ export default function WorkspaceView({
         selectedModel={selectedModel}
         onSelectModel={onSelectModel}
         onSelectCitation={onPreviewDocument}
+        aiMode={aiMode}
       />
 
       {/* PANEL 3: STUDIO & CATATAN ALAT (RIGHT PANEL) */}
@@ -119,10 +121,10 @@ export default function WorkspaceView({
           documents={documents}
           notes={studioNotes}
           onCreateStudyTool={onCreateStudyTool}
-          onGenerateAudio={onGenerateAudio}
           onViewNote={onViewNote}
           onDeleteNote={onDeleteStudioNote}
           onCollapse={onToggleRightSidebar}
+          generatingTool={generatingTool}
         />
       </div>
 

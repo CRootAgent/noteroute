@@ -65,9 +65,9 @@ export default function SourcesPanel({
     });
   };
 
-  // Calculate approximate context capacity used
+  // Calculate approximate context capacity used (10 MB notebook limit)
   const totalBytes = documents.reduce((acc, d) => acc + (d.file_size || 0), 0);
-  const capacityPercent = Math.min(100, Math.max(1, (totalBytes / (5 * 1024 * 1024)) * 100)).toFixed(1);
+  const capacityPercent = Math.min(100, Math.max(0, (totalBytes / (10 * 1024 * 1024)) * 100)).toFixed(1);
 
   return (
     <aside className="w-80 border-r border-[var(--nlm-border)] bg-[var(--nlm-surface)] flex flex-col justify-between shrink-0 select-none overflow-hidden h-full z-10">
@@ -359,7 +359,7 @@ export default function SourcesPanel({
           ></div>
         </div>
         <div className="text-[10px] text-[var(--nlm-text-tertiary)] truncate">
-          {((totalBytes || 0) / 1024).toFixed(1)} KB / 5 MB batas sesi lokal
+          {((totalBytes || 0) / 1024).toFixed(1)} KB / 10 MB batas notebook
         </div>
       </div>
       {/* MODAL KONFIRMASI HAPUS DOKUMEN */}

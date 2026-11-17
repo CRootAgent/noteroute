@@ -143,14 +143,135 @@ export default function SettingsModal({
   const [customBaseUrl, setCustomBaseUrl] = useState('');
   const [customModelId, setCustomModelId] = useState('');
   const [customApiKey, setCustomApiKey] = useState('');
+  const [testStatus, setTestStatus] = useState({});
+  const [saveSuccessMsg, setSaveSuccessMsg] = useState('');
 
   const handleApiKeyChange = (provider, value) => {
     const updated = { ...apiKeys, [provider]: value };
     setApiKeys(updated);
+  };
+
+  const handleTestApiKey = async (provider) => {
+    const key = (apiKeys[provider] || '').trim();
+    if (!key) {
+      setTestStatus((prev) => ({
+        ...prev,
+        [provider]: { status: 'error', message: 'Kunci API masih kosong. Silakan tempelkan kunci terlebih dahulu.' }
+      }));
+      return;
+    }
+
+    setTestStatus((prev) => ({
+      ...prev,
+      [provider]: { status: 'testing', message: 'Menguji koneksi...' }
+    }));
+
+    const start = Date.now();
     try {
-      localStorage.setItem('noteroute_api_keys', JSON.stringify(updated));
-    } catch (e) {
-      console.warn('Gagal menyimpan API key:', e);
+      if (provider === 'gemini') {
+        const resp = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models?key=${key}`
+        );
+        const data = await resp.json();
+        const latency = Date.now() - start;
+        if (resp.ok && data.models) {
+          setTestStatus((prev) => ({
+            ...prev,
+            gemini: { status: 'success', message: 'Tersambung Aktif ke Google Gemini', latency }
+          }));
+        } else {
+          setTestStatus((prev) => ({
+            ...prev,
+            gemini: {
+              status: 'error',
+              message: data.error?.message || 'Kunci Gemini tidak valid'
+            }
+          }));
+        }
+      } else if (provider === 'groq') {
+        const resp = await fetch('https://api.groq.com/openai/v1/models', {
+          headers: { Authorization: `Bearer ${key}` }
+        });
+        const data = await resp.json();
+        const latency = Date.now() - start;
+        if (resp.ok && data.data) {
+          setTestStatus((prev) => ({
+            ...prev,
+            groq: { status: 'success', message: 'Tersambung Aktif ke Groq Cloud', latency }
+          }));
+        } else {
+          setTestStatus((prev) => ({
+            ...prev,
+            groq: {
+              status: 'error',
+              message: data.error?.message || 'Kunci Groq tidak valid'
+            }
+          }));
+        }
+      } else if (provider === 'deepseek') {
+        const resp = await fetch('https://api.deepseek.com/models', {
+          headers: { Authorization: `Bearer ${key}` }
+        });
+        const data = await resp.json();
+        const latency = Date.now() - start;
+        if (resp.ok && (data.data || data.object)) {
+          setTestStatus((prev) => ({
+            ...prev,
+            deepseek: { status: 'success', message: 'Tersambung Aktif ke DeepSeek API', latency }
+          }));
+        } else {
+          setTestStatus((prev) => ({
+            ...prev,
+            deepseek: {
+              status: 'error',
+              message: data.error?.message || 'Kunci DeepSeek tidak valid'
+            }
+          }));
+        }
+      } else if (provider === 'openrouter') {
+        const resp = await fetch('https://openrouter.ai/api/v1/auth/key', {
+          headers: { Authorization: `Bearer ${key}` }
+        });
+        const data = await resp.json();
+        const latency = Date.now() - start;
+        if (resp.ok && (data.data || data.key)) {
+          setTestStatus((prev) => ({
+            ...prev,
+            openrouter: { status: 'success', message: 'Tersambung Aktif ke OpenRouter', latency }
+          }));
+        } else {
+          setTestStatus((prev) => ({
+            ...prev,
+            openrouter: {
+              status: 'error',
+              message: data.error?.message || 'Kunci OpenRouter tidak valid'
+            }
+          }));
+        }
+      }
+    } catch (err) {
+      setTestStatus((prev) => ({
+        ...prev,
+        [provider]: {
+          status: 'error',
+          message: err.message || 'Gagal tersambung ke server provider'
+        }
+      }));
+    }
+  };
+
+  const handleSaveAllApiKeys = () => {
+    try {
+      localStorage.setItem('noteroute_api_keys', JSON.stringify(apiKeys));
+      setSaveSuccessMsg('Semua kunci API berhasil disimpan dengan aman.');
+      setTimeout(() => setSaveSuccessMsg(''), 3500);
+    } catch (err) {
+      setDialogModal({
+        isOpen: true,
+        title: 'Gagal Menyimpan',
+        message: err.message || 'Gagal menyimpan kunci API ke penyimpanan lokal.',
+        type: 'danger'
+      });
     }
   };
 
@@ -888,13 +1009,60 @@ export default function SettingsModal({
                       </button>
                     </div>
 
-                    <input
-                      type="password"
-                      value={apiKeys.gemini || ''}
-                      onChange={(e) => handleApiKeyChange('gemini', e.target.value)}
-                      placeholder="Tempel kunci Gemini (AIzaSy...)"
-                      className="w-full bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] font-mono focus:border-blue-500 focus:outline-none"
-                    />
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="password"
+                        value={apiKeys.gemini || ''}
+                        onChange={(e) => handleApiKeyChange('gemini', e.target.value)}
+                        placeholder="Tempel kunci Gemini (AIzaSy...)"
+                        className="flex-1 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] font-mono focus:border-blue-500 focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleTestApiKey('gemini')}
+                        disabled={testStatus.gemini?.status === 'testing'}
+                        className="px-3 py-2 rounded-xl bg-blue-600/10 hover:bg-blue-600/20 text-blue-600 dark:text-blue-400 font-semibold text-xs border border-blue-500/20 transition cursor-pointer flex items-center space-x-1.5 shrink-0 disabled:opacity-50"
+                        title="Uji koneksi ke API Google Gemini"
+                      >
+                        {testStatus.gemini?.status === 'testing' ? (
+                          <>
+                            <i className="fa-solid fa-circle-notch fa-spin text-xs"></i>
+                            <span>Menguji...</span>
+                          </>
+                        ) : (
+                          <>
+                            <i className="fa-solid fa-plug text-xs"></i>
+                            <span>Uji API</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {testStatus.gemini && (
+                      <div className={`px-2.5 py-1.5 rounded-xl text-[11px] flex items-center justify-between font-medium ${
+                        testStatus.gemini.status === 'success'
+                          ? 'bg-emerald-500/15 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400'
+                          : testStatus.gemini.status === 'testing'
+                          ? 'bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400'
+                          : 'bg-rose-500/15 border border-rose-500/25 text-rose-600 dark:text-rose-400'
+                      }`}>
+                        <div className="flex items-center space-x-1.5 truncate">
+                          <i className={`fa-solid ${
+                            testStatus.gemini.status === 'success'
+                              ? 'fa-circle-check text-emerald-500'
+                              : testStatus.gemini.status === 'testing'
+                              ? 'fa-circle-notch fa-spin text-blue-500'
+                              : 'fa-circle-exclamation text-rose-500'
+                          }`}></i>
+                          <span className="truncate">{testStatus.gemini.message}</span>
+                        </div>
+                        {testStatus.gemini.latency && (
+                          <span className="font-mono text-[10px] shrink-0 font-bold ml-2">
+                            {testStatus.gemini.latency} ms
+                          </span>
+                        )}
+                      </div>
+                    )}
 
                     {expandedTutorial === 'gemini' && (
                       <div className="p-3 rounded-xl bg-[var(--nlm-surface)] border border-blue-500/20 text-[11px] text-[var(--nlm-text-secondary)] space-y-1 animate-fadeIn">
@@ -935,13 +1103,60 @@ export default function SettingsModal({
                       </button>
                     </div>
 
-                    <input
-                      type="password"
-                      value={apiKeys.groq || ''}
-                      onChange={(e) => handleApiKeyChange('groq', e.target.value)}
-                      placeholder="Tempel kunci Groq (gsk_...)"
-                      className="w-full bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] font-mono focus:border-blue-500 focus:outline-none"
-                    />
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="password"
+                        value={apiKeys.groq || ''}
+                        onChange={(e) => handleApiKeyChange('groq', e.target.value)}
+                        placeholder="Tempel kunci Groq (gsk_...)"
+                        className="flex-1 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] font-mono focus:border-blue-500 focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleTestApiKey('groq')}
+                        disabled={testStatus.groq?.status === 'testing'}
+                        className="px-3 py-2 rounded-xl bg-orange-600/10 hover:bg-orange-600/20 text-orange-600 dark:text-orange-400 font-semibold text-xs border border-orange-500/20 transition cursor-pointer flex items-center space-x-1.5 shrink-0 disabled:opacity-50"
+                        title="Uji koneksi ke API Groq Cloud"
+                      >
+                        {testStatus.groq?.status === 'testing' ? (
+                          <>
+                            <i className="fa-solid fa-circle-notch fa-spin text-xs"></i>
+                            <span>Menguji...</span>
+                          </>
+                        ) : (
+                          <>
+                            <i className="fa-solid fa-plug text-xs"></i>
+                            <span>Uji API</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {testStatus.groq && (
+                      <div className={`px-2.5 py-1.5 rounded-xl text-[11px] flex items-center justify-between font-medium ${
+                        testStatus.groq.status === 'success'
+                          ? 'bg-emerald-500/15 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400'
+                          : testStatus.groq.status === 'testing'
+                          ? 'bg-orange-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-400'
+                          : 'bg-rose-500/15 border border-rose-500/25 text-rose-600 dark:text-rose-400'
+                      }`}>
+                        <div className="flex items-center space-x-1.5 truncate">
+                          <i className={`fa-solid ${
+                            testStatus.groq.status === 'success'
+                              ? 'fa-circle-check text-emerald-500'
+                              : testStatus.groq.status === 'testing'
+                              ? 'fa-circle-notch fa-spin text-orange-500'
+                              : 'fa-circle-exclamation text-rose-500'
+                          }`}></i>
+                          <span className="truncate">{testStatus.groq.message}</span>
+                        </div>
+                        {testStatus.groq.latency && (
+                          <span className="font-mono text-[10px] shrink-0 font-bold ml-2">
+                            {testStatus.groq.latency} ms
+                          </span>
+                        )}
+                      </div>
+                    )}
 
                     {expandedTutorial === 'groq' && (
                       <div className="p-3 rounded-xl bg-[var(--nlm-surface)] border border-orange-500/20 text-[11px] text-[var(--nlm-text-secondary)] space-y-1 animate-fadeIn">
@@ -982,13 +1197,60 @@ export default function SettingsModal({
                       </button>
                     </div>
 
-                    <input
-                      type="password"
-                      value={apiKeys.deepseek || ''}
-                      onChange={(e) => handleApiKeyChange('deepseek', e.target.value)}
-                      placeholder="Tempel kunci DeepSeek (sk-...)"
-                      className="w-full bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] font-mono focus:border-blue-500 focus:outline-none"
-                    />
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="password"
+                        value={apiKeys.deepseek || ''}
+                        onChange={(e) => handleApiKeyChange('deepseek', e.target.value)}
+                        placeholder="Tempel kunci DeepSeek (sk-...)"
+                        className="flex-1 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] font-mono focus:border-blue-500 focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleTestApiKey('deepseek')}
+                        disabled={testStatus.deepseek?.status === 'testing'}
+                        className="px-3 py-2 rounded-xl bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 font-semibold text-xs border border-indigo-500/20 transition cursor-pointer flex items-center space-x-1.5 shrink-0 disabled:opacity-50"
+                        title="Uji koneksi ke API DeepSeek"
+                      >
+                        {testStatus.deepseek?.status === 'testing' ? (
+                          <>
+                            <i className="fa-solid fa-circle-notch fa-spin text-xs"></i>
+                            <span>Menguji...</span>
+                          </>
+                        ) : (
+                          <>
+                            <i className="fa-solid fa-plug text-xs"></i>
+                            <span>Uji API</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {testStatus.deepseek && (
+                      <div className={`px-2.5 py-1.5 rounded-xl text-[11px] flex items-center justify-between font-medium ${
+                        testStatus.deepseek.status === 'success'
+                          ? 'bg-emerald-500/15 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400'
+                          : testStatus.deepseek.status === 'testing'
+                          ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400'
+                          : 'bg-rose-500/15 border border-rose-500/25 text-rose-600 dark:text-rose-400'
+                      }`}>
+                        <div className="flex items-center space-x-1.5 truncate">
+                          <i className={`fa-solid ${
+                            testStatus.deepseek.status === 'success'
+                              ? 'fa-circle-check text-emerald-500'
+                              : testStatus.deepseek.status === 'testing'
+                              ? 'fa-circle-notch fa-spin text-indigo-500'
+                              : 'fa-circle-exclamation text-rose-500'
+                          }`}></i>
+                          <span className="truncate">{testStatus.deepseek.message}</span>
+                        </div>
+                        {testStatus.deepseek.latency && (
+                          <span className="font-mono text-[10px] shrink-0 font-bold ml-2">
+                            {testStatus.deepseek.latency} ms
+                          </span>
+                        )}
+                      </div>
+                    )}
 
                     {expandedTutorial === 'deepseek' && (
                       <div className="p-3 rounded-xl bg-[var(--nlm-surface)] border border-indigo-500/20 text-[11px] text-[var(--nlm-text-secondary)] space-y-1 animate-fadeIn">
@@ -1028,13 +1290,60 @@ export default function SettingsModal({
                       </button>
                     </div>
 
-                    <input
-                      type="password"
-                      value={apiKeys.openrouter || ''}
-                      onChange={(e) => handleApiKeyChange('openrouter', e.target.value)}
-                      placeholder="Tempel kunci OpenRouter (sk-or-v1-...)"
-                      className="w-full bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] font-mono focus:border-blue-500 focus:outline-none"
-                    />
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="password"
+                        value={apiKeys.openrouter || ''}
+                        onChange={(e) => handleApiKeyChange('openrouter', e.target.value)}
+                        placeholder="Tempel kunci OpenRouter (sk-or-v1-...)"
+                        className="flex-1 bg-[var(--nlm-surface)] border border-[var(--nlm-border)] rounded-xl p-2 text-xs text-[var(--nlm-text-primary)] font-mono focus:border-blue-500 focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleTestApiKey('openrouter')}
+                        disabled={testStatus.openrouter?.status === 'testing'}
+                        className="px-3 py-2 rounded-xl bg-purple-600/10 hover:bg-purple-600/20 text-purple-600 dark:text-purple-400 font-semibold text-xs border border-purple-500/20 transition cursor-pointer flex items-center space-x-1.5 shrink-0 disabled:opacity-50"
+                        title="Uji koneksi ke API OpenRouter"
+                      >
+                        {testStatus.openrouter?.status === 'testing' ? (
+                          <>
+                            <i className="fa-solid fa-circle-notch fa-spin text-xs"></i>
+                            <span>Menguji...</span>
+                          </>
+                        ) : (
+                          <>
+                            <i className="fa-solid fa-plug text-xs"></i>
+                            <span>Uji API</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {testStatus.openrouter && (
+                      <div className={`px-2.5 py-1.5 rounded-xl text-[11px] flex items-center justify-between font-medium ${
+                        testStatus.openrouter.status === 'success'
+                          ? 'bg-emerald-500/15 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400'
+                          : testStatus.openrouter.status === 'testing'
+                          ? 'bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400'
+                          : 'bg-rose-500/15 border border-rose-500/25 text-rose-600 dark:text-rose-400'
+                      }`}>
+                        <div className="flex items-center space-x-1.5 truncate">
+                          <i className={`fa-solid ${
+                            testStatus.openrouter.status === 'success'
+                              ? 'fa-circle-check text-emerald-500'
+                              : testStatus.openrouter.status === 'testing'
+                              ? 'fa-circle-notch fa-spin text-purple-500'
+                              : 'fa-circle-exclamation text-rose-500'
+                          }`}></i>
+                          <span className="truncate">{testStatus.openrouter.message}</span>
+                        </div>
+                        {testStatus.openrouter.latency && (
+                          <span className="font-mono text-[10px] shrink-0 font-bold ml-2">
+                            {testStatus.openrouter.latency} ms
+                          </span>
+                        )}
+                      </div>
+                    )}
 
                     {expandedTutorial === 'openrouter' && (
                       <div className="p-3 rounded-xl bg-[var(--nlm-surface)] border border-purple-500/20 text-[11px] text-[var(--nlm-text-secondary)] space-y-1 animate-fadeIn">
@@ -1161,6 +1470,26 @@ export default function SettingsModal({
                       ))}
                     </div>
                   )}
+                </div>
+
+                {/* Footer Simpan Kunci API */}
+                <div className="pt-4 border-t border-[var(--nlm-border)] flex items-center justify-between">
+                  <div>
+                    {saveSuccessMsg && (
+                      <span className="text-xs text-emerald-500 font-semibold flex items-center space-x-1.5 animate-fadeIn">
+                        <i className="fa-solid fa-circle-check"></i>
+                        <span>{saveSuccessMsg}</span>
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleSaveAllApiKeys}
+                    className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold text-xs shadow-md shadow-blue-500/25 flex items-center space-x-2 transition cursor-pointer"
+                  >
+                    <i className="fa-solid fa-floppy-disk text-xs"></i>
+                    <span>Simpan Kunci API</span>
+                  </button>
                 </div>
               </div>
             )}

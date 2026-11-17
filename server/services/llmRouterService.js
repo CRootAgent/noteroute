@@ -248,9 +248,11 @@ async function routeChat({
   const startTime = Date.now();
   let citations = [];
 
-  // Grounding Context Assembly
+  // Grounding Context Assembly & AI Mode Handling
+  const isGeneralMode = options.aiMode === 'general';
   let groundingContext = '';
-  if (documents && documents.length > 0) {
+
+  if (!isGeneralMode && documents && documents.length > 0) {
     const docSummaries = [];
     for (const doc of documents) {
       const { page, snippet } = findRelevantSnippet(doc.extracted_text, prompt);
@@ -265,14 +267,16 @@ async function routeChat({
       docSummaries.push(`--- DOKUMEN: ${doc.filename} ---\n${excerpt}`);
     }
 
-    groundingContext = `Gunakan konteks dokumen laptop berikut untuk menjawab pertanyaan pengguna dengan akurat.\n\n${docSummaries.join(
+    groundingContext = `Gunakan konteks dokumen rujukan berikut untuk menjawab pertanyaan pengguna dengan akurat dan faktual.\n\n${docSummaries.join(
       '\n\n'
     )}`;
   }
 
-  const systemInstruction = groundingContext
-    ? `Anda adalah NoteRoute AI Assistant, asisten cerdas yang menghubungkan file laptop dengan perangkat mobile. ${groundingContext}`
-    : 'Anda adalah NoteRoute AI Assistant.';
+  const systemInstruction = isGeneralMode
+    ? 'Anda adalah NoteRoute AI Assistant dalam Mode AI Bebas. Anda adalah asisten AI cerdas serba bisa yang membantu pengguna menjawab pertanyaan umum, coding, riset, diskusi, dan analisis secara mendalam, santun, dan komprehensif dalam Bahasa Indonesia.'
+    : groundingContext
+    ? `Anda adalah NoteRoute Document Grounding Agent. Tugas Anda adalah menjawab pertanyaan pengguna secara akurat HANYA berdasarkan konteks dokumen rujukan berikut. Jika informasi tidak ada di dokumen, nyatakan bahwa materi tidak tercantum di berkas rujukan.\n\n${groundingContext}`
+    : 'Anda adalah NoteRoute AI Assistant. Jawab pertanyaan pengguna secara akurat dan informatif dalam Bahasa Indonesia.';
 
   // Build failover candidate list
   const requestedModel = (model_target || 'gemini').toLowerCase();

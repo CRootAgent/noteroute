@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
 
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+
 mongoose.set('bufferCommands', false);
 
 const workspaceSchema = new mongoose.Schema(
@@ -188,29 +190,37 @@ async function connectDB(uri) {
   const mongoUri = uri || process.env.MONGODB_URI;
   if (mongoUri) {
     try {
-      const conn = await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 2000 });
+      const conn = await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 6000 });
       isConnected = true;
+      console.log('✅ Connected to MongoDB Atlas Cloud Database');
       await seedDefaultData();
       return conn;
     } catch (err) {
-      console.warn(`[MongoDB] Atlas connection warning: ${err.message}. Starting MongoMemoryServer...`);
+      console.error(`[MongoDB Atlas Error] ${err.message}`);
+      if (process.env.NODE_ENV !== 'test') {
+        throw err;
+      }
     }
   }
 
-  // Fallback to MongoMemoryServer
-  try {
-    const { MongoMemoryServer } = require('mongodb-memory-server');
-    memoryServer = await MongoMemoryServer.create();
-    const memUri = memoryServer.getUri();
-    const conn = await mongoose.connect(memUri);
-    isConnected = true;
-    console.log('✅ Connected to In-Memory MongoDB Server:', memUri);
-    await seedDefaultData();
-    return conn;
-  } catch (memErr) {
-    console.error('[MongoDB] Failed to start MongoMemoryServer:', memErr.message);
-    return null;
+  // Fallback to MongoMemoryServer strictly during automated tests (NODE_ENV === 'test')
+  if (process.env.NODE_ENV === 'test') {
+    try {
+      const { MongoMemoryServer } = require('mongodb-memory-server');
+      memoryServer = await MongoMemoryServer.create();
+      const memUri = memoryServer.getUri();
+      const conn = await mongoose.connect(memUri);
+      isConnected = true;
+      console.log('✅ Connected to In-Memory MongoDB Server (Test Mode):', memUri);
+      await seedDefaultData();
+      return conn;
+    } catch (memErr) {
+      console.error('[MongoDB] Failed to start MongoMemoryServer:', memErr.message);
+      return null;
+    }
   }
+
+  throw new Error('MONGODB_URI is not configured in .env and NODE_ENV is not test');
 }
 
 async function disconnectDB() {

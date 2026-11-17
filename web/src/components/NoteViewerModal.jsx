@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MarkdownView from './MarkdownView';
 
 export default function NoteViewerModal({ isOpen, onClose, item, type = 'document' }) {
   const [copied, setCopied] = useState(false);
@@ -41,8 +42,8 @@ export default function NoteViewerModal({ isOpen, onClose, item, type = 'documen
         </div>
 
         {/* Content Box */}
-        <div className="flex-1 overflow-y-auto my-4 p-4 rounded-2xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs sm:text-sm text-[var(--nlm-text-primary)] leading-relaxed select-text whitespace-pre-wrap font-mono">
-          {content}
+        <div className="flex-1 overflow-y-auto my-4 p-4 rounded-2xl bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] text-xs sm:text-sm text-[var(--nlm-text-primary)] leading-relaxed select-text">
+          <MarkdownView content={content} />
         </div>
 
         {/* Footer */}

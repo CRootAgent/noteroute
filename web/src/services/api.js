@@ -9,7 +9,10 @@ const getBaseUrl = () => {
   }
   if (typeof window !== 'undefined') {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return '/api';
+      if (window.location.port === '5173') {
+        return '/api';
+      }
+      return 'http://localhost:3000/api';
     }
   }
   return '/api';
@@ -432,7 +435,14 @@ export function getDownloadUrl(documentId) {
    4. REAL MULTI-LLM GATEWAY ROUTER (WITH USER API KEYS & HEURISTIC FAILOVER)
    ========================================================================== */
 
-export async function apiSendChat({ workspaceId, prompt, modelTarget = 'gemini', history = [], documents = [] }) {
+export async function apiSendChat({
+  workspaceId,
+  prompt,
+  modelTarget = 'gemini',
+  history = [],
+  documents = [],
+  aiMode = 'document'
+}) {
   const storedKeys = JSON.parse(localStorage.getItem('noteroute_api_keys') || '{}');
   const customApis = JSON.parse(localStorage.getItem('noteroute_custom_apis') || '[]');
   const activeDocs = documents && documents.length > 0 ? documents : getLocalDocuments(workspaceId);
@@ -446,22 +456,28 @@ export async function apiSendChat({ workspaceId, prompt, modelTarget = 'gemini',
         prompt,
         model_target: modelTarget,
         history,
-        api_keys: storedKeys
+        api_keys: storedKeys,
+        ai_mode: aiMode
       })
     });
-    if (res?.data && res.data.answer) {
-      return res.data;
+    if (res?.data && (res.data.answer || res.data.response_text)) {
+      return {
+        answer: res.data.answer || res.data.response_text,
+        citations: res.data.citations || [],
+        model_used: res.data.model_used || modelTarget,
+        failover: res.data.failover || false
+      };
     }
   } catch (err) {
     console.info('[apiSendChat] Backend offline, mengeksekusi router AI langsung via peramban:', err.message);
   }
 
   // 2. Direct client-side AI Execution (Gemini, Groq, OpenRouter, DeepSeek, Custom)
-  // Build Document Context for Grounding
+  const isGeneralMode = aiMode === 'general';
   let contextBlock = '';
   const citations = [];
 
-  if (activeDocs && activeDocs.length > 0) {
+  if (!isGeneralMode && activeDocs && activeDocs.length > 0) {
     contextBlock = activeDocs
       .map((doc, idx) => {
         const text = (doc.text_content || doc.extracted_text || doc.summary || '').trim();
@@ -480,11 +496,18 @@ export async function apiSendChat({ workspaceId, prompt, modelTarget = 'gemini',
       .join('\n\n---\n\n');
   }
 
-  const systemInstruction = `Anda adalah NoteRoute AI Assistant, asisten riset dan catatan cerdas.
-Gunakan dokumen rujukan berikut untuk menjawab pertanyaan pengguna dengan cermat, faktual, dan ramah. Jika informasi tidak ada di dokumen atau pengguna menanyakan hal umum, jawablah dengan pengetahuan Anda secara lugas dan membantu dalam Bahasa Indonesia.
+  const systemInstruction = isGeneralMode
+    ? `Anda adalah NoteRoute AI Assistant dalam Mode AI Bebas.
+Anda bertindak sebagai asisten cerdas serba bisa yang siap berdiskusi, membantu coding, menjawab pertanyaan umum, menulis naskah, merumuskan ide, dan menganalisis materi tanpa batasan dokumen rujukan.
+Jawablah secara kreatif, mendalam, akurat, dan komprehensif dalam Bahasa Indonesia yang profesional dan jelas.`
+    : `Anda adalah NoteRoute Document Grounding Agent dalam Mode Dokumen.
+Tugas utama Anda adalah menjawab pertanyaan HANYA dan STRICTLY berdasarkan dokumen rujukan yang terlampir di bawah:
+1. Dilarang mengarang fakta di luar dokumen rujukan yang terlampir.
+2. Jelaskan dengan lugas dan sertakan kutipan faktual dari dokumen.
+3. Jika informasi yang ditanyakan tidak ditemukan sama sekali di dalam dokumen rujukan, nyatakan secara sopan dan jelas bahwa informasi tersebut tidak tercantum dalam berkas rujukan Anda.
 
-KONTEKS DOKUMEN:
-${contextBlock || '(Tidak ada dokumen rujukan yang aktif pada sesi ini.)'}
+KONTEKS DOKUMEN RUJUKAN:
+${contextBlock || '(Tidak ada berkas materi/dokumen yang aktif pada sesi ini.)'}
 `;
 
   const cleanHistory = (history || []).slice(-6).map((h) => ({

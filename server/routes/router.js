@@ -32,13 +32,14 @@ router.post('/chat', async (req, res) => {
     }
 
     // Route inference through Multi-LLM Gateway
+    const effectiveAiMode = req.body.ai_mode || req.body.aiMode || options.aiMode || 'document';
     const chatResult = await routeChat({
       workspace_id,
       prompt: prompt.trim(),
       model_target,
       history,
       documents,
-      options
+      options: { ...options, aiMode: effectiveAiMode }
     });
 
     // Record session message in DB asynchronously

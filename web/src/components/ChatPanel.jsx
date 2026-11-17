@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import MarkdownView from './MarkdownView';
 
 export default function ChatPanel({
   notebook,
@@ -11,13 +12,15 @@ export default function ChatPanel({
   loading,
   selectedModel,
   onSelectModel,
-  onSelectCitation
+  onSelectCitation,
+  aiMode = 'document'
 }) {
   const [inputPrompt, setInputPrompt] = useState('');
   const [copiedId, setCopiedId] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editPromptText, setEditPromptText] = useState('');
   const scrollRef = useRef(null);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -25,11 +28,30 @@ export default function ChatPanel({
     }
   }, [messages, loading]);
 
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      const scrollH = textareaRef.current.scrollHeight;
+      textareaRef.current.style.height = Math.min(scrollH, 160) + 'px';
+    }
+  }, [inputPrompt]);
+
   const handleSubmit = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!inputPrompt.trim() || loading || !notebook) return;
     onSendMessage(inputPrompt.trim(), selectedModel);
     setInputPrompt('');
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
   };
 
   const handleCopy = (id, text) => {
@@ -253,7 +275,12 @@ export default function ChatPanel({
                         </div>
                       )}
 
-                      <div className="whitespace-pre-wrap select-text">{msg.content}</div>
+                      {/* Message Content: User plain text or AI Markdown */}
+                      {isUser ? (
+                        <div className="whitespace-pre-wrap select-text">{msg.content}</div>
+                      ) : (
+                        <MarkdownView content={msg.content} />
+                      )}
 
                       {/* Verified Citations Badges */}
                       {msg.citations && msg.citations.length > 0 && (
@@ -366,30 +393,56 @@ export default function ChatPanel({
         )}
       </div>
 
-      {/* Input Prompt Box - Centered floating modern chatbox (Request #9 & #10) */}
+      {/* Input Prompt Box - Centered floating modern chatbox with Shift+Enter & Mode Aware */}
       <div className="p-3 sm:p-4 bg-[var(--nlm-surface)]/80 backdrop-blur-md shrink-0 border-t border-[var(--nlm-border)]">
         <div className="max-w-3xl mx-auto">
+          {/* Active AI Mode Banner */}
+          <div className="flex items-center justify-between mb-1.5 px-2">
+            <div className="flex items-center space-x-1.5 text-[11px] font-medium">
+              {aiMode === 'general' ? (
+                <span className="inline-flex items-center space-x-1 text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
+                  <i className="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
+                  <span>Mode AI Bebas Aktif</span>
+                  <span className="text-[10px] text-[var(--nlm-text-tertiary)] hidden sm:inline">&mdash; Menjawab bebas tanpa batasan dokumen</span>
+                </span>
+              ) : (
+                <span className="inline-flex items-center space-x-1 text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">
+                  <i className="fa-solid fa-file-shield text-[10px]"></i>
+                  <span>Mode Dokumen Aktif</span>
+                  <span className="text-[10px] text-[var(--nlm-text-tertiary)] hidden sm:inline">&mdash; Menjawab ketat berbasis dokumen rujukan</span>
+                </span>
+              )}
+            </div>
+            <span className="text-[10px] text-[var(--nlm-text-tertiary)] hidden sm:inline">
+              Shift + Enter untuk baris baru
+            </span>
+          </div>
+
           <form
             onSubmit={handleSubmit}
-            className="flex items-center gap-2 p-1.5 sm:p-2 pl-4 sm:pl-5 bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-3xl shadow-sm focus-within:ring-2 focus-within:ring-blue-500/30 focus-within:border-blue-500 transition-all"
+            className="flex items-end gap-2 p-1.5 sm:p-2 pl-4 sm:pl-5 bg-[var(--nlm-surface-variant)] border border-[var(--nlm-border)] rounded-3xl shadow-sm focus-within:ring-2 focus-within:ring-blue-500/30 focus-within:border-blue-500 transition-all"
           >
-            <input
-              type="text"
+            <textarea
+              ref={textareaRef}
+              rows={1}
               value={inputPrompt}
               onChange={(e) => setInputPrompt(e.target.value)}
+              onKeyDown={handleKeyDown}
               disabled={!notebook || loading}
               placeholder={
-                notebook
-                  ? 'Tanyakan isi dokumen rujukan, minta ringkasan, atau ajukan pertanyaan...'
-                  : 'Pilih notebook terlebih dahulu'
+                !notebook
+                  ? 'Pilih notebook terlebih dahulu'
+                  : aiMode === 'general'
+                  ? 'Tanyakan apa saja kepada AI, diskusikan ide, atau buat tugas...'
+                  : 'Tanyakan isi dokumen rujukan, ringkasan, atau analisis materi...'
               }
-              className="flex-1 bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none disabled:opacity-50"
+              className="flex-1 bg-transparent text-xs sm:text-sm text-[var(--nlm-text-primary)] placeholder-[var(--nlm-text-tertiary)] focus:outline-none disabled:opacity-50 resize-none py-1.5 max-h-40 leading-relaxed"
             />
             <button
               type="submit"
               disabled={!inputPrompt.trim() || loading || !notebook}
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-blue-600 hover:bg-blue-700 disabled:opacity-30 disabled:cursor-not-allowed text-white flex items-center justify-center shadow-md shadow-blue-500/25 active:scale-95 transition-transform cursor-pointer shrink-0"
-              title="Kirim Pertanyaan"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-blue-600 hover:bg-blue-700 disabled:opacity-30 disabled:cursor-not-allowed text-white flex items-center justify-center shadow-md shadow-blue-500/25 active:scale-95 transition-transform cursor-pointer shrink-0 mb-0.5"
+              title="Kirim Pertanyaan (Enter)"
             >
               <i className="fa-solid fa-paper-plane text-xs"></i>
             </button>

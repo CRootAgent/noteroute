@@ -110,6 +110,7 @@ export default function App() {
   const [previewItem, setPreviewItem] = useState(null);
   const [previewType, setPreviewType] = useState('document');
   const [welcomeToast, setWelcomeToast] = useState(null);
+  const [generatingTool, setGeneratingTool] = useState(null);
   const [dialogModal, setDialogModal] = useState({
     isOpen: false,
     title: '',
@@ -349,7 +350,8 @@ export default function App() {
         workspaceId: activeNotebook.id,
         prompt,
         modelTarget,
-        history: historyPayload
+        history: historyPayload,
+        aiMode
       });
 
       const assistantMsg = {
@@ -403,7 +405,8 @@ export default function App() {
         workspaceId: activeNotebook?.id,
         prompt: newContent,
         modelTarget: selectedModel,
-        history: historyPayload
+        history: historyPayload,
+        aiMode
       });
 
       const assistantMsg = {
@@ -464,7 +467,8 @@ export default function App() {
         workspaceId: activeNotebook?.id,
         prompt: promptToReplay,
         modelTarget: selectedModel,
-        history: historyPayload
+        history: historyPayload,
+        aiMode
       });
 
       const newAssistantMsg = {
@@ -512,29 +516,48 @@ export default function App() {
     });
   };
 
-  // 7. Studio Actions
-  const handleCreateStudyTool = (toolName) => {
-    const promptText = `Buatkan ${toolName} yang mendalam dan terstruktur rapi berdasarkan materi berkas yang dipilih.`;
-    handleSendMessage(promptText, selectedModel);
+  // 7. Studio Actions (Generates content directly into Studio Notes without polluting chat)
+  const handleCreateStudyTool = async (toolName) => {
+    if (!activeNotebook) return;
+    setGeneratingTool(toolName);
 
-    // Also record note in studio
-    const newNote = {
-      id: 'sn_' + Date.now(),
-      title: `${toolName}: ${activeNotebook?.name || 'Materi Kuliah'}`,
-      content: `Dibuat otomatis oleh AI (${selectedModel}) untuk membantu persiapan materi.`,
-      date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
-    };
-    setStudioNotes((prev) => [newNote, ...prev]);
-  };
+    const promptText = `Tolong buatkan ${toolName} yang komprehensif, terstruktur rapi, lengkap dengan poin-poin penjelasan penting berbasis materi berkas dokumen rujukan yang dipilih dalam format Markdown.`;
 
-  const handleGenerateAudio = () => {
-    const audioNote = {
-      id: 'sn_' + Date.now(),
-      title: `Ikhtisar Audio: ${activeNotebook?.name || 'Materi'}`,
-      content: 'Percakapan 2 host AI membedah konsep penting dan analisis komparasi dari materi kuliah Anda.',
-      date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
-    };
-    setStudioNotes((prev) => [audioNote, ...prev]);
+    try {
+      const res = await apiSendChat({
+        workspaceId: activeNotebook.id,
+        prompt: promptText,
+        modelTarget: selectedModel,
+        history: [],
+        aiMode: 'document'
+      });
+
+      const generatedContent = res.answer || res.content || 'Catatan berhasil dibuat.';
+
+      const newNote = {
+        id: 'sn_' + Date.now(),
+        title: `${toolName}: ${activeNotebook.name}`,
+        content: generatedContent,
+        tool: toolName,
+        date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }),
+        created_at: new Date().toISOString()
+      };
+
+      setStudioNotes((prev) => [newNote, ...prev]);
+
+      // Open the note viewer immediately so the user can inspect the generated study tool
+      setPreviewItem(newNote);
+      setPreviewType('note');
+    } catch (err) {
+      setDialogModal({
+        isOpen: true,
+        title: `Gagal Membuat ${toolName}`,
+        message: err.message || 'Terjadi kesalahan saat memproses generator studio.',
+        type: 'danger'
+      });
+    } finally {
+      setGeneratingTool(null);
+    }
   };
 
   // 8. Auth & Profile
@@ -669,7 +692,8 @@ export default function App() {
             selectedModel={selectedModel}
             onSelectModel={setSelectedModel}
             onCreateStudyTool={handleCreateStudyTool}
-            onGenerateAudio={handleGenerateAudio}
+            generatingTool={generatingTool}
+            aiMode={aiMode}
             isLeftSidebarOpen={isLeftSidebarOpen}
             isRightSidebarOpen={isRightSidebarOpen}
             onToggleLeftSidebar={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}
